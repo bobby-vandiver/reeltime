@@ -1,6 +1,6 @@
 package in.reeltime.video
 
-class Segment {
+class Segment implements Comparable {
 
     int segmentId
     String location
@@ -10,5 +10,10 @@ class Segment {
         segmentId min: 0
         location blank: false, nullable: false
         duration matches: /^\d+(.\d+)?/
+    }
+
+    @Override
+    int compareTo(obj) {
+        segmentId <=> obj.segmentId
     }
 }

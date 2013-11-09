@@ -67,4 +67,24 @@ class SegmentSpec extends Specification {
         '1.foo'     |   false
         '1.'        |   false
     }
+
+    @Unroll
+    void "compare [#leftId] to [#rightId] returns [#result]"() {
+        given:
+        def leftSegment = createSegmentFromId(leftId)
+        def rightSegment = createSegmentFromId(rightId)
+
+        expect:
+        leftSegment.compareTo(rightSegment) == result
+
+        where:
+        leftId  |   rightId     |   result
+        0       |   1           |   -1
+        1       |   1           |   0
+        1       |   0           |   1
+    }
+
+    private static Segment createSegmentFromId(int id) {
+        new Segment(segmentId: id, duration: IGNORE_DURATION, location: IGNORE_LOCATION)
+    }
 }
