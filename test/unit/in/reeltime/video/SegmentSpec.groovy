@@ -1,21 +1,61 @@
 package in.reeltime.video
 
 import grails.buildtestdata.mixin.Build
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(Segment)
-@Build(Segment)
+@Build([Segment, Playlist])
 class SegmentSpec extends Specification {
 
     private static final String IGNORE_LOCATION = 'ignored'
     private static final String IGNORE_DURATION = '1.0'
+    private static final Playlist IGNORE_PLAYLIST = new Playlist()
+
+    private static Map createArgsMap(overrides = [:]) {
+        [   location: IGNORE_LOCATION,
+            duration: IGNORE_DURATION,
+            playlist: IGNORE_PLAYLIST ] << overrides
+    }
+
+    void "playlist cannot be null"() {
+        given:
+        def args = createArgsMap([playlist: null])
+
+        when:
+        def segment = new Segment(args)
+
+        then:
+        !segment.validate()
+
+        and:
+        segment.errors['playlist'].code == 'nullable'
+    }
+
+    void "segment must belong to a playlist"() {
+        given:
+        def playlist = Playlist.build()
+        def args = createArgsMap([playlist: playlist])
+
+        when:
+        def segment = new Segment(args)
+
+        then:
+        segment.validate()
+
+        and:
+        segment.playlist == playlist
+    }
 
     @Unroll
     void "segmentId [#value] is [#valid]"() {
+        given:
+        def args = createArgsMap([segmentId: value])
+
         when:
-        def segment = new Segment(segmentId: value, location: IGNORE_LOCATION, duration: IGNORE_DURATION)
+        def segment = new Segment(args)
 
         then:
         segment.validate() == valid
@@ -31,8 +71,11 @@ class SegmentSpec extends Specification {
 
     @Unroll
     void "location [#path] is [#valid]"() {
+        given:
+        def args = createArgsMap([location: path])
+
         when:
-        def segment = new Segment(location: path, duration: IGNORE_DURATION)
+        def segment = new Segment(args)
 
         then:
         segment.validate() == valid
@@ -47,8 +90,11 @@ class SegmentSpec extends Specification {
 
     @Unroll
     void "duration [#length] is [#valid]"() {
+        given:
+        def args = createArgsMap([duration: length])
+
         when:
-        def segment = new Segment(duration: length, location: IGNORE_LOCATION)
+        def segment = new Segment(args)
 
         then:
         segment.validate() == valid

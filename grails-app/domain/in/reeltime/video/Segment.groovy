@@ -6,6 +6,8 @@ class Segment implements Comparable {
     String location
     String duration
 
+    static belongsTo = [playlist: Playlist]
+
     static constraints = {
         segmentId min: 0
         location blank: false, nullable: false
