@@ -1,10 +1,12 @@
 package in.reeltime.video
 
+import grails.buildtestdata.mixin.Build
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(Segment)
+@Build(Segment)
 class SegmentSpec extends Specification {
 
     private static final String IGNORE_LOCATION = 'ignored'
@@ -71,8 +73,8 @@ class SegmentSpec extends Specification {
     @Unroll
     void "compare [#leftId] to [#rightId] returns [#result]"() {
         given:
-        def leftSegment = createSegmentFromId(leftId)
-        def rightSegment = createSegmentFromId(rightId)
+        def leftSegment = Segment.build(segmentId: leftId)
+        def rightSegment = Segment.build(segmentId: rightId)
 
         expect:
         leftSegment.compareTo(rightSegment) == result
@@ -82,9 +84,5 @@ class SegmentSpec extends Specification {
         0       |   1           |   -1
         1       |   1           |   0
         1       |   0           |   1
-    }
-
-    private static Segment createSegmentFromId(int id) {
-        new Segment(segmentId: id, duration: IGNORE_DURATION, location: IGNORE_LOCATION)
     }
 }

@@ -1,6 +1,8 @@
 testDataConfig {
     sampleData {
-        
+        'in.reeltime.video.Segment' {
+            duration = '1.0'
+        }
     }
 }
 

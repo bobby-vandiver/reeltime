@@ -1,12 +1,12 @@
 package in.reeltime.video
 
-import grails.test.mixin.Mock
+import grails.buildtestdata.mixin.Build
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(Playlist)
-@Mock(Segment)
+@Build(Segment)
 class PlaylistSpec extends Specification {
 
     @Unroll
@@ -30,8 +30,8 @@ class PlaylistSpec extends Specification {
     void "unordered segments become ordered"() {
         given:
         def segments = [
-                new Segment(segmentId: 1),
-                new Segment(segmentId: 0)
+                Segment.build(segmentId: 1),
+                Segment.build(segmentId: 0)
         ]
 
         when:
@@ -60,6 +60,6 @@ class PlaylistSpec extends Specification {
     }
 
     private static createOrderedSegments(count) {
-        (0..<count).collect { id -> new Segment(segmentId: id) }
+        (0..<count).collect { id -> Segment.build(segmentId: id) }
     }
 }
