@@ -4,6 +4,7 @@ class Playlist {
 
     SortedSet segments
 
+    static belongsTo = [video: Video]
     static hasMany = [segments: Segment]
 
     int getLength() {

@@ -9,13 +9,15 @@ import spock.lang.Unroll
 @Build(Segment)
 class PlaylistSpec extends Specification {
 
+    private static final IGNORE_VIDEO = new Video()
+
     @Unroll
     void "playlist contains [#count] ordered segments"() {
         given:
         def segments = createOrderedSegments(count)
 
         when:
-        def playlist = new Playlist(segments: segments)
+        def playlist = new Playlist(segments: segments, video: IGNORE_VIDEO)
 
         then:
         playlist.segments.size() == count
@@ -35,7 +37,7 @@ class PlaylistSpec extends Specification {
         ]
 
         when:
-        def playlist = new Playlist(segments: segments)
+        def playlist = new Playlist(segments: segments, video: IGNORE_VIDEO)
 
         then:
         playlist.segments*.segmentId == [0, 1]
