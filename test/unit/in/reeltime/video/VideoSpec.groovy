@@ -31,17 +31,13 @@ class VideoSpec extends Specification {
         given:
         mockForConstraintsTests(Video)
 
-        def user = new User()
-        def playlist = new Playlist()
-
         when:
-        def video = new Video(title: '', playlist: playlist, user: user)
+        def video = new Video(title: '')
 
         then:
         !video.validate()
 
         and:
-        video.errors.errorCount == 1
         video.errors['title'] == 'nullable'
     }
 
