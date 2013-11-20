@@ -25,6 +25,7 @@ class VideoSpec extends Specification {
         video.videoId == 3
         video.title == 'foo'
         video.playlist == playlist
+        video.status == Video.ConversionStatus.SUBMITTED
     }
 
     void "title cannot be blank"() {
