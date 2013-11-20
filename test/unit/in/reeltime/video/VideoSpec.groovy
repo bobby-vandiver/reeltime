@@ -27,25 +27,6 @@ class VideoSpec extends Specification {
         video.playlist == playlist
     }
 
-    void "videoId must be unique"() {
-        given:
-        def user = new User()
-        def playlist = new Playlist()
-
-        def existingVideo = new Video(videoId: 1, title: 'ignore', playlist: playlist, user: user )
-        mockForConstraintsTests(Video, [existingVideo])
-
-        when:
-        def duplicate = new Video(videoId: 1, title: 'ignore', playlist: playlist, user: user)
-
-        then:
-        !duplicate.validate()
-
-        and:
-        duplicate.errors.errorCount == 1
-        duplicate.errors['videoId'] == 'unique'
-    }
-
     void "title cannot be blank"() {
         given:
         mockForConstraintsTests(Video)

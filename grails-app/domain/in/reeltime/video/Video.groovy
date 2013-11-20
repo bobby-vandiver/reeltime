@@ -9,7 +9,6 @@ class Video {
     static hasOne = [playlist: Playlist]
 
     static constraints = {
-        videoId unique: true
         title blank: false
     }
 }
