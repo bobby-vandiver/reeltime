@@ -19,7 +19,7 @@ class PlaylistSpec extends Specification {
 
     void "playlist requires HLS stream information"() {
         given:
-        args << [ programId: 1, resolution: '400x170', codecs: 'avc1.42001e,mp4a.40.2', bandwidth: 474000 ]
+        args << [programId: 1, resolution: '400x170', codecs: 'avc1.42001e,mp4a.40.2', bandwidth: 474000]
 
         when:
         def playlist = new Playlist(args)
@@ -36,7 +36,7 @@ class PlaylistSpec extends Specification {
 
     void "playlist includes HLS playback metadata"() {
         given:
-        args << [ hlsVersion: 3, mediaSequence: 0, targetDuration: 12 ]
+        args << [hlsVersion: 3, mediaSequence: 0, targetDuration: 12]
 
         when:
         def playlist = new Playlist(args)

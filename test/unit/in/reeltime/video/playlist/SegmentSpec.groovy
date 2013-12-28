@@ -13,7 +13,7 @@ class SegmentSpec extends Specification {
     private static final String IGNORE_DURATION = '1.0'
     private static final Playlist IGNORE_PLAYLIST = new Playlist()
 
-    private Map args = [ location: IGNORE_LOCATION, duration: IGNORE_DURATION, playlist: IGNORE_PLAYLIST ]
+    private Map args = [location: IGNORE_LOCATION, duration: IGNORE_DURATION, playlist: IGNORE_PLAYLIST]
 
     void "playlist cannot be null"() {
         given:
