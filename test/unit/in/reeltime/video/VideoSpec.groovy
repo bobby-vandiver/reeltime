@@ -1,7 +1,7 @@
 package in.reeltime.video
 
-import grails.buildtestdata.mixin.Build
 import grails.test.mixin.TestFor
+import in.reeltime.video.playlist.Playlist
 import spock.lang.Specification
 
 @TestFor(Video)

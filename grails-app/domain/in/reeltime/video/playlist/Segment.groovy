@@ -1,4 +1,4 @@
-package in.reeltime.video
+package in.reeltime.video.playlist
 
 class Segment implements Comparable {
 

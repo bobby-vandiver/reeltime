@@ -1,5 +1,7 @@
 package in.reeltime.video
 
+import in.reeltime.video.playlist.Playlist
+
 class Video {
 
     enum ConversionStatus { SUBMITTED }
