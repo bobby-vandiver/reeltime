@@ -4,6 +4,16 @@ import in.reeltime.video.Video
 
 class Playlist {
 
+    int programId
+    int bandwidth
+
+    String codecs
+    String resolution
+
+    int hlsVersion
+    int mediaSequence
+    int targetDuration
+
     SortedSet segments
 
     static belongsTo = [video: Video]

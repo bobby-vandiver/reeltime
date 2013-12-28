@@ -12,13 +12,63 @@ class PlaylistSpec extends Specification {
 
     private static final IGNORE_VIDEO = new Video()
 
+    private static final IGNORE_CODECS = 'ignoreCodecs'
+    private static final IGNORE_RESOLUTION = 'ignoreResolution'
+
+    private static Map createArgsMap(overrides = [:]) {
+        [   video: IGNORE_VIDEO,
+            codecs: IGNORE_CODECS,
+            resolution: IGNORE_RESOLUTION ] << overrides
+    }
+
+    void "playlist requires HLS stream information"() {
+        when:
+        def playlist = new Playlist(
+                video: IGNORE_VIDEO,
+                programId: 1,
+                resolution: '400x170',
+                codecs: 'avc1.42001e,mp4a.40.2',
+                bandwidth: 474000
+        )
+
+        then:
+        playlist.validate()
+
+        and:
+        playlist.programId == 1
+        playlist.resolution == '400x170'
+        playlist.codecs == 'avc1.42001e,mp4a.40.2'
+        playlist.bandwidth == 474000
+    }
+
+    void "playlist includes HLS playback metadata"() {
+        when:
+        def playlist = new Playlist(
+                video: IGNORE_VIDEO,
+                resolution: 'ignore',
+                codecs: 'ignore',
+                hlsVersion: 3,
+                mediaSequence: 0,
+                targetDuration: 12
+        )
+
+        then:
+        playlist.validate()
+
+        and:
+        playlist.hlsVersion == 3
+        playlist.mediaSequence == 0
+        playlist.targetDuration == 12
+    }
+
     @Unroll
     void "playlist contains [#count] ordered segments"() {
         given:
         def segments = createOrderedSegments(count)
+        def args = createArgsMap([segments: segments])
 
         when:
-        def playlist = new Playlist(segments: segments, video: IGNORE_VIDEO)
+        def playlist = new Playlist(args)
 
         then:
         playlist.segments.size() == count
@@ -36,9 +86,10 @@ class PlaylistSpec extends Specification {
                 Segment.build(segmentId: 1),
                 Segment.build(segmentId: 0)
         ]
+        def args = createArgsMap([segments: segments])
 
         when:
-        def playlist = new Playlist(segments: segments, video: IGNORE_VIDEO)
+        def playlist = new Playlist(args)
 
         then:
         playlist.segments*.segmentId == [0, 1]

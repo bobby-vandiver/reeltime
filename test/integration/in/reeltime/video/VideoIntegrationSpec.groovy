@@ -8,7 +8,7 @@ class VideoIntegrationSpec extends IntegrationSpec {
     void "test deleting video deletes playlist"() {
         given:
         def user = new User().save()
-        def playlist = new Playlist()
+        def playlist = new Playlist(codecs: 'buzz', resolution: 'bazz')
 
         and:
         final def vid = 7
