@@ -13,15 +13,11 @@ class SegmentSpec extends Specification {
     private static final String IGNORE_DURATION = '1.0'
     private static final Playlist IGNORE_PLAYLIST = new Playlist()
 
-    private static Map createArgsMap(overrides = [:]) {
-        [   location: IGNORE_LOCATION,
-            duration: IGNORE_DURATION,
-            playlist: IGNORE_PLAYLIST ] << overrides
-    }
+    private Map args = [ location: IGNORE_LOCATION, duration: IGNORE_DURATION, playlist: IGNORE_PLAYLIST ]
 
     void "playlist cannot be null"() {
         given:
-        def args = createArgsMap([playlist: null])
+        args.playlist = null
 
         when:
         def segment = new Segment(args)
@@ -36,7 +32,7 @@ class SegmentSpec extends Specification {
     void "segment must belong to a playlist"() {
         given:
         def playlist = Playlist.build()
-        def args = createArgsMap([playlist: playlist])
+        args << [playlist: playlist]
 
         when:
         def segment = new Segment(args)
@@ -51,7 +47,7 @@ class SegmentSpec extends Specification {
     @Unroll
     void "segmentId [#value] is [#valid]"() {
         given:
-        def args = createArgsMap([segmentId: value])
+        args << [segmentId: value]
 
         when:
         def segment = new Segment(args)
@@ -71,7 +67,7 @@ class SegmentSpec extends Specification {
     @Unroll
     void "location [#path] is [#valid]"() {
         given:
-        def args = createArgsMap([location: path])
+        args << [location: path]
 
         when:
         def segment = new Segment(args)
@@ -90,7 +86,7 @@ class SegmentSpec extends Specification {
     @Unroll
     void "duration [#length] is [#valid]"() {
         given:
-        def args = createArgsMap([duration: length])
+        args << [duration: length]
 
         when:
         def segment = new Segment(args)
