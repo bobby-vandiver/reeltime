@@ -4,7 +4,7 @@ import grails.test.spock.IntegrationSpec
 
 class VideoIntegrationSpec extends IntegrationSpec {
 
-    void "test_deleting_video_deletes_playlist"() {
+    void "test deleting video deletes playlist"() {
         given:
         def user = new User().save()
         def playlist = new Playlist()
