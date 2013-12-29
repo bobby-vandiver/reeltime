@@ -13,10 +13,6 @@ class PlaylistParserUtils {
         reader.readLine() == '#EXTM3U'
     }
 
-    static boolean checkTag(String line, String tag) {
-        line.startsWith(tag)
-    }
-
     static List getTagAndParams(String line) {
         def endOfTag = line.indexOf(':')
 

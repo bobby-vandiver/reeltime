@@ -4,7 +4,7 @@ import in.reeltime.hls.playlist.StreamAttributes
 import in.reeltime.hls.playlist.VariantPlaylist
 
 import static in.reeltime.hls.playlist.util.PlaylistParserUtils.ensureExtendedM3U
-import static in.reeltime.hls.playlist.util.PlaylistParserUtils.checkTag
+import static in.reeltime.hls.playlist.util.PlaylistParserUtils.getTagAndParams
 import static in.reeltime.hls.playlist.parser.StreamAttributesParser.parseAttributes
 
 class VariantPlaylistParser {
@@ -16,21 +16,19 @@ class VariantPlaylistParser {
         String line = reader.readLine()
 
         while(line != null) {
-            if(isStreamInf(line)) {
-                def startIndex = line.indexOf(':') + 1
-                def text = line.substring(startIndex)
-                def attributes = parseAttributes(text)
-                def streamName = reader.readLine()
-                def args = attributes << [uri: streamName]
-                def streamAttributes = new StreamAttributes(args)
-                playlist.streams.add(streamAttributes)
+
+            def (tag, params) = getTagAndParams(line)
+
+            switch (tag) {
+                case '#EXT-X-STREAM-INF':
+                    def uri = reader.readLine()
+                    def attributes = parseAttributes(params)
+                    def args = attributes << [uri: uri]
+                    playlist.streams << new StreamAttributes(args)
             }
+
             line = reader.readLine()
         }
         return playlist
-    }
-
-    private static boolean isStreamInf(String line) {
-        checkTag(line, '#EXT-X-STREAM-INF:')
     }
 }

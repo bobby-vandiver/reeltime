@@ -8,8 +8,6 @@ import static in.reeltime.hls.playlist.util.PlaylistParserUtils.getTagAndParams
 
 class MediaPlaylistParser {
 
-    private static final int INDEX_NOT_FOUND = -1
-
     static MediaPlaylist parse(Reader reader) {
         ensureExtendedM3U(reader)
 
