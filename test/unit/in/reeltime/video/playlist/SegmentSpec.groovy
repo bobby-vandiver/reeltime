@@ -86,6 +86,7 @@ class SegmentSpec extends Specification {
     @Unroll
     void "duration [#length] is [#valid]"() {
         given:
+        println length
         args << [duration: length]
 
         when:
@@ -97,6 +98,7 @@ class SegmentSpec extends Specification {
         where:
         length      |   valid
         '0'         |   true
+        '1.0'       |   true
         '2.945244'  |   true
         '11.071933' |   true
         '12.2341'   |   true
@@ -114,10 +116,14 @@ class SegmentSpec extends Specification {
     @Unroll
     void "compare [#leftId] to [#rightId] returns [#result]"() {
         given:
-        def leftSegment = Segment.build(segmentId: leftId)
-        def rightSegment = Segment.build(segmentId: rightId)
+        def leftArgs = args.clone() << [segmentId: leftId]
+        def rightArgs = args.clone() << [segmentId: rightId]
 
-        expect:
+        when:
+        def leftSegment = new Segment(leftArgs).save()
+        def rightSegment = new Segment(rightArgs).save()
+
+        then:
         leftSegment.compareTo(rightSegment) == result
 
         where:

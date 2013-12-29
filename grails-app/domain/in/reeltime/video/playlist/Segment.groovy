@@ -11,7 +11,7 @@ class Segment implements Comparable {
     static constraints = {
         segmentId min: 0
         location blank: false, nullable: false
-        duration matches: /^\d+(.\d+)?/
+        duration blank: false, nullable: false,  matches: /^\d+(.\d+)?/
     }
 
     @Override

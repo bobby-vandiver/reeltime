@@ -39,7 +39,7 @@ class VideoSpec extends Specification {
         !video.validate()
 
         and:
-        video.errors['title'] == 'nullable'
+        video.errors['title'] == 'blank'
     }
 
 }
