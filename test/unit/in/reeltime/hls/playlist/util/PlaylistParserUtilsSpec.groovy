@@ -1,6 +1,7 @@
 package in.reeltime.hls.playlist.util
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class PlaylistParserUtilsSpec extends Specification {
 
@@ -27,14 +28,21 @@ class PlaylistParserUtilsSpec extends Specification {
         notThrown(Exception)
     }
 
-    void "check tag returns [#truth] when checking for tag [tag] on line [#line]"() {
-        expect:
-        PlaylistParserUtils.checkTag(line, tag) == truth
+    @Unroll
+    void "getTagAndParams returns [#expectedTag] and [#expectedParams] for line [#line]"() {
+        when:
+        def (tag, params) = PlaylistParserUtils.getTagAndParams(line)
+
+        then:
+        tag == expectedTag
+        params == expectedParams
 
         where:
-        truth       |   tag         |   line
-        true        |   '#EXTINF'   |   '#EXTINF:11.262022'
-        false       |   '#EXTINF'   |   ' #EXTINF:11.262022'
-        false       |   '#EXTINF'   |   '#EXT-X-VERSION:3'
+        expectedTag         |   expectedParams                                      |   line
+        '#EXTINF'           |   '11.262022,'                                        |   '#EXTINF:11.262022,'
+        ' #EXTINF'          |   '11.262022,'                                        |   ' #EXTINF:11.262022,'
+        '#EXT-X-VERSION'    |   '3'                                                 |   '#EXT-X-VERSION:3'
+        '#EXT-X-ENDLIST'    |   null                                                |   '#EXT-X-ENDLIST'
+        '#EXT-X-STREAM-INF' |   'PROGRAM-ID=1,RESOLUTION=400x170,BANDWIDTH=474000'  |   '#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=400x170,BANDWIDTH=474000'
     }
 }

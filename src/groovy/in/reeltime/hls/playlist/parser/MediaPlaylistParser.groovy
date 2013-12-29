@@ -4,6 +4,7 @@ import in.reeltime.hls.playlist.MediaPlaylist
 import in.reeltime.hls.playlist.MediaSegment
 
 import static in.reeltime.hls.playlist.util.PlaylistParserUtils.ensureExtendedM3U
+import static in.reeltime.hls.playlist.util.PlaylistParserUtils.getTagAndParams
 
 class MediaPlaylistParser {
 
@@ -47,25 +48,6 @@ class MediaPlaylistParser {
         }
 
         return playlist
-    }
-
-    private static List getTagAndParams(String line) {
-        def endOfTag = line.indexOf(':')
-
-        def tag
-        def params
-
-        if(endOfTag == INDEX_NOT_FOUND) {
-            tag = line.substring(0)
-            params = null
-        }
-        else {
-            tag = line.substring(0, endOfTag)
-            def startOfParams = endOfTag + 1
-            params = line.substring(startOfParams)
-        }
-
-        return [tag, params]
     }
 
     private static String getSegmentDuration(String line) {
