@@ -1,15 +1,18 @@
 package in.reeltime.hls.playlist.parser
 
+import in.reeltime.hls.playlist.MediaPlaylist
+import in.reeltime.hls.playlist.MediaSegment
+
 import static in.reeltime.hls.playlist.util.PlaylistParserUtils.ensureExtendedM3U
 
 class MediaPlaylistParser {
 
     private static final int INDEX_NOT_FOUND = -1
 
-    static Map parse(Reader reader) {
+    static MediaPlaylist parse(Reader reader) {
         ensureExtendedM3U(reader)
 
-        def playlist = [segments: []]
+        MediaPlaylist playlist = new MediaPlaylist()
         String line = reader.readLine()
 
         while(line != null) {
@@ -17,26 +20,26 @@ class MediaPlaylistParser {
 
             switch(tag) {
                 case '#EXT-X-TARGETDURATION':
-                    playlist += [targetDuration: params as int]
+                    playlist.targetDuration = params as int
                     break
 
                 case '#EXT-X-MEDIA-SEQUENCE':
-                    playlist += [mediaSequence: params as int]
+                    playlist.mediaSequence = params as int
                     break
 
                 case '#EXT-X-VERSION':
-                    playlist += [version: params as int]
+                    playlist.version = params as int
                     break
 
                 case '#EXT-X-ALLOW-CACHE':
                     throwIfAllowCacheIsInvalid(params)
-                    playlist += [allowCache: (params == 'YES')]
+                    playlist.allowCache = (params == 'YES')
                     break
 
                 case '#EXTINF':
                     def uri = reader.readLine()
                     def duration = getSegmentDuration(line)
-                    playlist.segments.add([(uri): duration])
+                    playlist.segments << new MediaSegment(uri: uri, duration: duration)
                     break
             }
 

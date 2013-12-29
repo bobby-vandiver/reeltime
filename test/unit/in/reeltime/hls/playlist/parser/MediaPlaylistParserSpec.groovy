@@ -23,7 +23,10 @@ class MediaPlaylistParserSpec extends Specification {
 
         and:
         playlist.segments.size() == 1
-        playlist.segments[0] == [(segmentUri): segmentDuration]
+
+        and:
+        playlist.segments[0].uri == segmentUri
+        playlist.segments[0].duration == segmentDuration
 
         where:
         targetDuration  |   segmentDuration |   segmentUri
@@ -56,9 +59,16 @@ class MediaPlaylistParserSpec extends Specification {
         playlist.segments.size() == 3
 
         and:
-        playlist.segments[0] == ['https://priv.example.com/fileSequence2680.ts': '8']
-        playlist.segments[1] == ['https://priv.example.com/fileSequence2681.ts': '8']
-        playlist.segments[2] == ['https://priv.example.com/fileSequence2682.ts': '8']
+        playlist.segments[0].uri == 'https://priv.example.com/fileSequence2680.ts'
+        playlist.segments[0].duration == '8'
+
+        and:
+        playlist.segments[1].uri == 'https://priv.example.com/fileSequence2681.ts'
+        playlist.segments[1].duration == '8'
+
+        and:
+        playlist.segments[2].uri == 'https://priv.example.com/fileSequence2682.ts'
+        playlist.segments[2].duration == '8'
     }
 
     @Unroll
@@ -148,12 +158,18 @@ class MediaPlaylistParserSpec extends Specification {
         then:
         playlist.version == 3
         playlist.mediaSequence == 0
-        playlist.allowCache == true
+        playlist.allowCache
         playlist.targetDuration == 12
 
         and:
         playlist.segments.size() == 2
-        playlist.segments[0] == ['hls-spidey00000.ts': '11.308056']
-        playlist.segments[1] == ['hls-spidey00001.ts': '11.262022']
+
+        and:
+        playlist.segments[0].uri == 'hls-spidey00000.ts'
+        playlist.segments[0].duration == '11.308056'
+
+        and:
+        playlist.segments[1].uri == 'hls-spidey00001.ts'
+        playlist.segments[1].duration == '11.262022'
     }
 }

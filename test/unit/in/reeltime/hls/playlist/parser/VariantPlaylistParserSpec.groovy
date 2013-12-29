@@ -16,13 +16,14 @@ class VariantPlaylistParserSpec extends Specification {
         def playlist = VariantPlaylistParser.parse(reader)
 
         then:
-        def stream = playlist.'hls-spidey.m3u8'
+        playlist.streams.size() == 1
 
         and:
-        stream.programId == 1
-        stream.resolution == '400x170'
-        stream.codecs == 'avc1.42001e,mp4a.40.2'
-        stream.bandwidth == 474000
+        playlist.streams[0].uri == 'hls-spidey.m3u8'
+        playlist.streams[0].programId == 1
+        playlist.streams[0].resolution == '400x170'
+        playlist.streams[0].codecs == 'avc1.42001e,mp4a.40.2'
+        playlist.streams[0].bandwidth == 474000
     }
 
     void "parse playlist with multiple streams"() {
@@ -41,24 +42,21 @@ class VariantPlaylistParserSpec extends Specification {
         def playlist = VariantPlaylistParser.parse(reader)
 
         then:
-        def lowStream = playlist.'http://example.com/low.m3u8'
+        playlist.streams.size() == 3
 
         and:
-        lowStream.programId == 1
-        lowStream.bandwidth == 1280000
+        playlist.streams[0].uri == 'http://example.com/low.m3u8'
+        playlist.streams[0].programId == 1
+        playlist.streams[0].bandwidth == 1280000
 
         and:
-        def midStream = playlist.'http://example.com/mid.m3u8'
+        playlist.streams[1].uri == 'http://example.com/mid.m3u8'
+        playlist.streams[1].programId == 1
+        playlist.streams[1].bandwidth == 2560000
 
         and:
-        midStream.programId == 1
-        midStream.bandwidth == 2560000
-
-        and:
-        def hiStream = playlist.'http://example.com/hi.m3u8'
-
-        and:
-        hiStream.programId == 1
-        hiStream.bandwidth == 7680000
+        playlist.streams[2].uri == 'http://example.com/hi.m3u8'
+        playlist.streams[2].programId == 1
+        playlist.streams[2].bandwidth == 7680000
     }
 }
