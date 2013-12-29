@@ -1,39 +1,13 @@
-package in.reeltime.hls.playlist.slurper
+package in.reeltime.hls.playlist.parser
 
-import static in.reeltime.hls.playlist.util.PlaylistSlurperUtils.ensureExtendedM3U
-import static in.reeltime.hls.playlist.util.PlaylistSlurperUtils.checkTag
-
-class VariantPlaylistSlurper {
+class StreamAttributesParser {
 
     private static final String ATTRIBUTE_SEPARATOR = ','
 
     private static final String CODEC_FORMAT_START = '"'
     private static final String CODEC_FORMAT_SEPARATOR = '",'
 
-    Map parse(Reader reader) {
-        ensureExtendedM3U(reader)
-
-        def playlist = [:]
-        String line = reader.readLine()
-
-        while(line != null) {
-            if(isStreamInf(line)) {
-                def startIndex = line.indexOf(':') + 1
-                def text = line.substring(startIndex)
-                def attributes = parseAttributes(text)
-                def streamName = reader.readLine()
-                playlist << [(streamName) : attributes]
-            }
-            line = reader.readLine()
-        }
-        return playlist
-    }
-
-    private static boolean isStreamInf(String line) {
-        checkTag(line, '#EXT-X-STREAM-INF:')
-    }
-
-    private static Map parseAttributes(String text) {
+    static Map parseAttributes(String text) {
         def attributes = [:]
         def idx = 0
 
@@ -108,4 +82,5 @@ class VariantPlaylistSlurper {
 
         return attribute
     }
+
 }

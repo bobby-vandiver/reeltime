@@ -1,6 +1,6 @@
 package in.reeltime.hls.playlist.util
 
-class PlaylistSlurperUtils {
+class PlaylistParserUtils {
 
     static void ensureExtendedM3U(Reader reader) {
         if(!isExtendedM3U(reader))

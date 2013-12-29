@@ -2,14 +2,14 @@ package in.reeltime.hls.playlist.util
 
 import spock.lang.Specification
 
-class PlaylistSlurperUtilsSpec extends Specification {
+class PlaylistParserUtilsSpec extends Specification {
 
     void "first line must be #EXTM3U"() {
         given:
         def reader = new StringReader('')
 
         when:
-        PlaylistSlurperUtils.ensureExtendedM3U(reader)
+        PlaylistParserUtils.ensureExtendedM3U(reader)
 
         then:
         def e = thrown(IllegalArgumentException)
@@ -21,7 +21,7 @@ class PlaylistSlurperUtilsSpec extends Specification {
         def reader = new StringReader('#EXTM3U')
 
         when:
-        PlaylistSlurperUtils.ensureExtendedM3U(reader)
+        PlaylistParserUtils.ensureExtendedM3U(reader)
 
         then:
         notThrown(Exception)
@@ -29,7 +29,7 @@ class PlaylistSlurperUtilsSpec extends Specification {
 
     void "check tag returns [#truth] when checking for tag [tag] on line [#line]"() {
         expect:
-        PlaylistSlurperUtils.checkTag(line, tag) == truth
+        PlaylistParserUtils.checkTag(line, tag) == truth
 
         where:
         truth       |   tag         |   line
