@@ -9,11 +9,11 @@ import spock.lang.Unroll
 @Build([Segment, Playlist])
 class SegmentSpec extends Specification {
 
-    private static final String IGNORE_LOCATION = 'ignored'
+    private static final String IGNORE_URI = 'ignored'
     private static final String IGNORE_DURATION = '1.0'
     private static final Playlist IGNORE_PLAYLIST = new Playlist()
 
-    private Map args = [location: IGNORE_LOCATION, duration: IGNORE_DURATION, playlist: IGNORE_PLAYLIST]
+    private Map args = [uri: IGNORE_URI, duration: IGNORE_DURATION, playlist: IGNORE_PLAYLIST]
 
     void "playlist cannot be null"() {
         given:
@@ -65,9 +65,9 @@ class SegmentSpec extends Specification {
     }
 
     @Unroll
-    void "location [#path] is [#valid]"() {
+    void "uri [#path] is [#valid]"() {
         given:
-        args << [location: path]
+        args << [uri: path]
 
         when:
         def segment = new Segment(args)
