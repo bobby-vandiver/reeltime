@@ -15,7 +15,7 @@ class VideoSpec extends Specification {
         def playlist = new Playlist()
 
         when:
-        def video = new Video(user: user, videoId: 3, title: 'foo', playlist: playlist)
+        def video = new Video(user: user, videoId: 3, title: 'foo', playlists: [playlist])
 
         then:
         video.validate()
@@ -24,7 +24,7 @@ class VideoSpec extends Specification {
         video.user == user
         video.videoId == 3
         video.title == 'foo'
-        video.playlist == playlist
+        video.playlists == [playlist] as Set
         video.status == Video.ConversionStatus.SUBMITTED
     }
 

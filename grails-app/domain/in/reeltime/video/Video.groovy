@@ -12,7 +12,7 @@ class Video {
     ConversionStatus status = ConversionStatus.SUBMITTED
 
     static belongsTo = [user: User]
-    static hasOne = [playlist: Playlist]
+    static hasMany = [playlists: Playlist]
 
     static constraints = {
         title blank: false
