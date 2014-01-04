@@ -1,32 +1,67 @@
 package in.reeltime.video.transcoder
 
+import static in.reeltime.video.transcoder.aws.sns.MessageType.MESSAGE_TYPE_HEADER
+import static in.reeltime.video.transcoder.aws.sns.MessageType.SUBSCRIPTION_CONFIRMATION
+import static in.reeltime.video.transcoder.aws.sns.MessageType.NOTIFICATION
+
 class NotificationController {
 
-    private static final VALID_TYPES = ['SubscriptionConfirmation', 'Notification']
+    def notificationService
 
     // TODO: Implement functional tests to verify this because unit/integration tests can't test this
     // http://jira.grails.org/browse/GRAILS-8426
     static allowedMethods = [completed: 'POST', progressing: 'POST', warning: 'POST', error: 'POST']
 
     def completed() {
-        render status: hasAmzSnsMessageTypeHeader() ? 200 : 400
+        handleRequest { render status: 200 }
     }
 
     def progressing() {
-        render status: hasAmzSnsMessageTypeHeader() ? 200 : 400
+        handleRequest {}
     }
 
     def warning() {
-        render status: hasAmzSnsMessageTypeHeader() ? 200 : 400
+        handleRequest {}
     }
 
     def error() {
-        render status: hasAmzSnsMessageTypeHeader() ? 200 : 400
+        handleRequest {}
     }
 
-    private boolean hasAmzSnsMessageTypeHeader() {
-        def messageType = request.getHeader('x-amz-sns-message-type')
-        log.debug "x-amz-sns-message-type :: $messageType"
-        return VALID_TYPES.contains(messageType)
+    private void handleRequest(Closure notificationHandler) {
+
+        if(subscriptionConfirmation) {
+            confirmSubscription()
+        }
+        else if(notification) {
+            notificationHandler()
+        }
+        else {
+            render status: 400
+        }
+    }
+
+    private boolean isSubscriptionConfirmation() {
+        request.getHeader(MESSAGE_TYPE_HEADER) == SUBSCRIPTION_CONFIRMATION
+    }
+
+    private boolean isNotification() {
+        request.getHeader(MESSAGE_TYPE_HEADER) == NOTIFICATION
+    }
+
+    private void confirmSubscription() {
+        def url = subscriptionConfirmationUrl
+
+        if (url) {
+            notificationService.confirmSubscription(url)
+            render status: 200
+        }
+        else {
+            render status: 400
+        }
+    }
+
+    private String getSubscriptionConfirmationUrl() {
+        request.JSON.SubscribeURL
     }
 }
