@@ -2,9 +2,9 @@ class UrlMappings {
 
 	static mappings = {
 
-		"/"(view:"/index")
+        "/"(view:"/index")
         "500"(view:'/error')
 
-        "/transcoder/notification" (controller: 'notification', action: 'jobStatusChange')
+        "/transcoder/notification/$action" (controller: 'notification')
     }
 }

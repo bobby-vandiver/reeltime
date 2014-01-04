@@ -10,6 +10,6 @@ class UrlMappingsSpec extends Specification {
 
     void "test notification endpoint mapping"() {
         expect:
-        assertForwardUrlMapping('/transcoder/notification', controller: 'notification', action: 'jobStatusChange')
+        assertForwardUrlMapping('/transcoder/notification/jobStatusChange', controller: 'notification', action: 'jobStatusChange')
     }
 }
