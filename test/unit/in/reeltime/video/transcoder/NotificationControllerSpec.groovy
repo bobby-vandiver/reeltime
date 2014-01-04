@@ -42,10 +42,7 @@ class NotificationControllerSpec extends Specification {
     @Unroll
     void "return 400 if SubscriptionConfirmation message does not contain SubscribeURL for action [#action]"() {
         given:
-        def mockNotificationService = Mock(NotificationService)
-        0 * mockNotificationService.confirmSubscription(_)
-
-        controller.notificationService = mockNotificationService
+        controller.notificationService = Mock(NotificationService)
 
         and:
         request.addHeader('x-amz-sns-message-type', 'SubscriptionConfirmation')
@@ -57,6 +54,9 @@ class NotificationControllerSpec extends Specification {
         then:
         response.status == 400
 
+        and:
+        0 * controller.notificationService.confirmSubscription(_)
+
         where:
         action << ['completed', 'progressing', 'warning', 'error']
     }
@@ -64,13 +64,11 @@ class NotificationControllerSpec extends Specification {
     @Unroll
     void "return 200 after confirming subscription for action [#action]"() {
         given:
+        controller.notificationService = Mock(NotificationService)
+
+        and:
         def url = 'https://sns.us-east-1.amazonaws.com/?Action=ConfirmSubscription'
         def message = /{"SubscribeURL": "${url}"}/
-
-        def mockNotificationService = Mock(NotificationService)
-        1 * mockNotificationService.confirmSubscription(url)
-
-        controller.notificationService = mockNotificationService
 
         and:
         request.addHeader('x-amz-sns-message-type', 'SubscriptionConfirmation')
@@ -81,6 +79,9 @@ class NotificationControllerSpec extends Specification {
 
         then:
         response.status == 200
+
+        and:
+        1 * controller.notificationService.confirmSubscription(url)
 
         where:
         action << ['completed', 'progressing', 'warning', 'error']
