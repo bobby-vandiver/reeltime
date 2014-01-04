@@ -5,8 +5,6 @@ class UrlMappings {
 		"/"(view:"/index")
         "500"(view:'/error')
 
-        "/transcoder/notification" (controller: 'notification') {
-            action = [POST: 'jobStatusChange']
-        }
+        "/transcoder/notification" (controller: 'notification', action: 'jobStatusChange')
     }
 }

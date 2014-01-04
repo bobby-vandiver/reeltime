@@ -4,6 +4,9 @@ class NotificationController {
 
     private static final VALID_TYPES = ['SubscriptionConfirmation', 'Notification']
 
+    // TODO: Implement functional tests to verify this because unit/integration tests can't test this
+    static allowedMethods = [jobStatusChange: 'POST']
+
     def jobStatusChange() {
 
         def messageType = request.getHeader('x-amz-sns-message-type')

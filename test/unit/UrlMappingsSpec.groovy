@@ -8,15 +8,8 @@ import in.reeltime.video.transcoder.NotificationController
 @Mock([NotificationController])
 class UrlMappingsSpec extends Specification {
 
-    // TODO: Figure out why this doesn't work in IntelliJ but does work from the command line
-    void "notification endpoint must allow POST"() {
-        given:
-        webRequest.currentRequest.method = 'POST'
-
-        when:
+    void "test notification endpoint mapping"() {
+        expect:
         assertForwardUrlMapping('/transcoder/notification', controller: 'notification', action: 'jobStatusChange')
-
-        then:
-        notThrown(IllegalArgumentException)
     }
 }
