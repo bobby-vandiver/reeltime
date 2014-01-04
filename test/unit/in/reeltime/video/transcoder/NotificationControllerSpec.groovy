@@ -7,24 +7,25 @@ import spock.lang.Unroll
 @TestFor(NotificationController)
 class NotificationControllerSpec extends Specification {
 
-    void "return 400 if AWS SNS message type header is not in request"() {
+    @Unroll
+    void "return 400 if AWS SNS message type header is not in request for [#action]"() {
         when:
-        controller.jobStatusChange()
+        controller."$action"()
 
         then:
-        controller.response.status == 400
+        response.status == 400
+
+        where:
+        action << ['completed', 'progressing', 'warning', 'error']
     }
 
     @Unroll
     void "return [#statusCode] for message type [#type]"() {
-        given:
-        controller.request.addHeader('x-amz-sns-message-type', type)
-
-        when:
-        controller.jobStatusChange()
-
-        then:
-        controller.response.status == statusCode
+        expect:
+        assertActionReturnsStatusCodeForMessageType('completed', statusCode, type)
+        assertActionReturnsStatusCodeForMessageType('progressing', statusCode, type)
+        assertActionReturnsStatusCodeForMessageType('warning', statusCode, type)
+        assertActionReturnsStatusCodeForMessageType('error', statusCode, type)
 
         where:
         statusCode      |   type
@@ -34,5 +35,13 @@ class NotificationControllerSpec extends Specification {
         400             |   'BadConfirmation'
         400             |   'Notifications'
         400             |   ''
+    }
+
+    private void assertActionReturnsStatusCodeForMessageType(action, statusCode, messageType) {
+        response.reset()
+        request.addHeader('x-amz-sns-message-type', messageType)
+
+        controller."$action"()
+        assert response.status == statusCode
     }
 }
