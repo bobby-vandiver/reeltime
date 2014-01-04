@@ -5,6 +5,7 @@ class NotificationController {
     private static final VALID_TYPES = ['SubscriptionConfirmation', 'Notification']
 
     // TODO: Implement functional tests to verify this because unit/integration tests can't test this
+    // http://jira.grails.org/browse/GRAILS-8426
     static allowedMethods = [jobStatusChange: 'POST']
 
     def jobStatusChange() {
