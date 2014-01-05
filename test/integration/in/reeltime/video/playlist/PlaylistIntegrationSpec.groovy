@@ -12,7 +12,7 @@ class PlaylistIntegrationSpec extends IntegrationSpec {
         def playlist = new Playlist(codecs: 'heh', resolution: 'hah')
         playlist.addToSegments(segment)
 
-        def video = new Video(title: 'ignore')
+        def video = new Video(title: 'ignore', masterPath: 'ignore')
         video.addToPlaylists(playlist)
         video.save()
 

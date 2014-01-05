@@ -9,7 +9,7 @@ class VideoIntegrationSpec extends IntegrationSpec {
         given:
         def playlist = new Playlist(codecs: 'buzz', resolution: 'bazz')
 
-        def video = new Video(title: 'bar')
+        def video = new Video(title: 'bar', masterPath: 'foo')
         video.addToPlaylists(playlist)
         video.save()
 
