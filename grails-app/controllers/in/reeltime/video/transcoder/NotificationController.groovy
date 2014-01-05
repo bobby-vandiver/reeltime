@@ -9,40 +9,39 @@ import static in.reeltime.video.transcoder.aws.sns.MessageType.NOTIFICATION
 class NotificationController {
 
     def notificationService
+    def transcoderService
 
     // TODO: Implement functional tests to verify this because unit/integration tests can't test this
     // http://jira.grails.org/browse/GRAILS-8426
     static allowedMethods = [completed: 'POST', progressing: 'POST', warning: 'POST', error: 'POST']
 
     def completed() {
-        handleRequest { render status: 200 }
+        handleRequest {
+            log.info("Elastic Transcoder job [$jobId] is complete")
+            transcoderService.complete(jobId)
+        }
     }
 
     def progressing() {
         handleRequest {
-            def jobId = messageFromNotification.jobId
-
-            log.debug("ETS Job with id [$jobId] is Progressing")
-            render status: 200
+            log.debug("Elastic Transcoder job [$jobId] is progressing")
         }
     }
 
-    private def getMessageFromNotification() {
+    private String getJobId() {
         def message = request.JSON.Message
-        new JsonSlurper().parseText(message)
+        new JsonSlurper().parseText(message).jobId
     }
 
     def warning() {
         handleRequest {
             log.warn(request.inputStream.text)
-            render status: 200
         }
     }
 
     def error() {
         handleRequest {
             log.error(request.inputStream.text)
-            render status: 200
         }
     }
 
@@ -53,6 +52,7 @@ class NotificationController {
         }
         else if(notification) {
             notificationHandler()
+            render status: 200
         }
         else {
             render status: 400
