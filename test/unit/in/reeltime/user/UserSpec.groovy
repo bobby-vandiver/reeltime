@@ -1,4 +1,4 @@
-package in.reeltime.video
+package in.reeltime.user
 
 import grails.test.mixin.TestFor
 import spock.lang.Specification

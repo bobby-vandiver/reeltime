@@ -1,4 +1,4 @@
-package in.reeltime.video
+package in.reeltime.user
 
 class User {
 

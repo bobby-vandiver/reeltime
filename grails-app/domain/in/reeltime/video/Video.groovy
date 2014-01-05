@@ -1,5 +1,6 @@
 package in.reeltime.video
 
+import in.reeltime.user.User
 import in.reeltime.video.playlist.Playlist
 
 class Video {

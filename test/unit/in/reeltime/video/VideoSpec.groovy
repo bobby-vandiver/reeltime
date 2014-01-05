@@ -1,6 +1,7 @@
 package in.reeltime.video
 
 import grails.test.mixin.TestFor
+import in.reeltime.user.User
 import in.reeltime.video.playlist.Playlist
 import spock.lang.Specification
 
