@@ -4,8 +4,6 @@ import grails.test.mixin.TestFor
 import in.reeltime.video.playlist.Playlist
 import spock.lang.Specification
 
-import static in.reeltime.video.Video.ConversionStatus.SUBMITTED
-
 @TestFor(Video)
 class VideoSpec extends Specification {
 
@@ -27,7 +25,6 @@ class VideoSpec extends Specification {
         video.title == 'foo'
         video.description == 'bar'
         video.playlists == [playlist] as Set
-        video.status == SUBMITTED
     }
 
     void "creator can be null (when the user has been removed)"() {

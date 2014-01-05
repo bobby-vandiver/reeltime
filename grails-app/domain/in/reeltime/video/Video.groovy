@@ -4,9 +4,6 @@ import in.reeltime.video.playlist.Playlist
 
 class Video {
 
-    enum ConversionStatus { SUBMITTED }
-    ConversionStatus status = ConversionStatus.SUBMITTED
-
     User creator
 
     String title
