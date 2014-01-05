@@ -115,4 +115,29 @@ class NotificationControllerSpec extends Specification {
         'warning'   |   'warn'
         'error'     |   'error'
     }
+
+    void "log the elastic transcoder jobId when progressing notification occurs"() {
+        given:
+        controller.log = Mock(Log)
+
+        and:
+        def message = '''{
+                        |    "Message": "{\\n  \\"state\\" : \\"PROGRESSING\\",\\n  \\"version\\" : \\"2012-09-25\\",\\n  \\"jobId\\" : \\"1388444889472-t01s28\\",\\n  \\"pipelineId\\" : \\"1388441748515-gvt196\\",\\n  \\"input\\" : {\\n    \\"key\\" : \\"small.mp4\\",\\n    \\"frameRate\\" : \\"auto\\",\\n    \\"resolution\\" : \\"auto\\",\\n    \\"aspectRatio\\" : \\"auto\\",\\n    \\"interlaced\\" : \\"auto\\",\\n    \\"container\\" : \\"auto\\"\\n  },\\n  \\"outputKeyPrefix\\" : \\"hls-small/\\",\\n  \\"outputs\\" : [ {\\n    \\"id\\" : \\"1\\",\\n    \\"presetId\\" : \\"1351620000001-200050\\",\\n    \\"key\\" : \\"hls-small-400k\\",\\n    \\"thumbnailPattern\\" : \\"\\",\\n    \\"rotate\\" : \\"auto\\",\\n    \\"segmentDuration\\" : 10.0,\\n    \\"status\\" : \\"Progressing\\"\\n  } ],\\n  \\"playlists\\" : [ {\\n    \\"name\\" : \\"hls-small-master\\",\\n    \\"format\\" : \\"HLSv3\\",\\n    \\"outputKeys\\" : [ \\"hls-small-400k\\" ],\\n    \\"status\\" : \\"Progressing\\"\\n  } ]\\n}",
+                        |    "Subject": "Amazon Elastic Transcoder has scheduled job 1388444889472-t01s28 for transcoding.",
+                        |    "Type": "Notification"
+                        |}'''.stripMargin()
+
+        and:
+        request.addHeader('x-amz-sns-message-type', 'Notification')
+        request.content = message.bytes
+
+        when:
+        controller.progressing()
+
+        then:
+        1 * controller.log.debug("ETS Job with id [1388444889472-t01s28] is Progressing")
+
+        and:
+        response.status == 200
+    }
 }

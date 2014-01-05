@@ -1,5 +1,7 @@
 package in.reeltime.video.transcoder
 
+import groovy.json.JsonSlurper
+
 import static in.reeltime.video.transcoder.aws.sns.MessageType.MESSAGE_TYPE_HEADER
 import static in.reeltime.video.transcoder.aws.sns.MessageType.SUBSCRIPTION_CONFIRMATION
 import static in.reeltime.video.transcoder.aws.sns.MessageType.NOTIFICATION
@@ -17,7 +19,17 @@ class NotificationController {
     }
 
     def progressing() {
-        handleRequest {}
+        handleRequest {
+            def jobId = messageFromNotification.jobId
+
+            log.debug("ETS Job with id [$jobId] is Progressing")
+            render status: 200
+        }
+    }
+
+    private def getMessageFromNotification() {
+        def message = request.JSON.Message
+        new JsonSlurper().parseText(message)
     }
 
     def warning() {
