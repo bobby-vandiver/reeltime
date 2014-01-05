@@ -1,12 +1,10 @@
 package in.reeltime.video.playlist
 
-import grails.buildtestdata.mixin.Build
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(Segment)
-@Build([Segment, Playlist])
 class SegmentSpec extends Specification {
 
     private static final String IGNORE_URI = 'ignored'
@@ -31,7 +29,7 @@ class SegmentSpec extends Specification {
 
     void "segment must belong to a playlist"() {
         given:
-        def playlist = Playlist.build()
+        def playlist = new Playlist()
         args << [playlist: playlist]
 
         when:
