@@ -1,8 +1,6 @@
 package in.reeltime.reel
 
-import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import in.reeltime.user.User
 import spock.lang.Specification
 
 @TestFor(Reel)

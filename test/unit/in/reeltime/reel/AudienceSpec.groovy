@@ -1,12 +1,10 @@
 package in.reeltime.reel
 
-import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.user.User
 import spock.lang.Specification
 
 @TestFor(Audience)
-@Mock([User])
 class AudienceSpec extends Specification {
 
     private static final Reel IGNORE_REEL = new Reel()
@@ -32,7 +30,7 @@ class AudienceSpec extends Specification {
 
     void "audience contains one user"() {
         given:
-        def user = new User().save()
+        def user = new User(username: 'foo', password: 'bar')
         args << [users: [user]]
 
         when:
@@ -48,8 +46,8 @@ class AudienceSpec extends Specification {
 
     void "audience contains many users"() {
         given:
-        def user1 = new User().save()
-        def user2 = new User().save()
+        def user1 = new User(username: 'foo', password: 'bar')
+        def user2 = new User(username: 'buzz', password: 'bazz')
 
         args << [users: [user1, user2]]
 
