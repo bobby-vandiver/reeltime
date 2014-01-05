@@ -5,26 +5,26 @@ import in.reeltime.video.playlist.Playlist
 
 class VideoIntegrationSpec extends IntegrationSpec {
 
-    void "test deleting video deletes playlist"() {
+    void "deleting video deletes playlist"() {
         given:
-        def user = new User().save()
         def playlist = new Playlist(codecs: 'buzz', resolution: 'bazz')
 
-        and:
-        final def vid = 7
-        def video = new Video(videoId: vid, playlist: playlist, user: user, title: 'bar').save(flush: true)
+        def video = new Video(title: 'bar')
+        video.addToPlaylists(playlist)
+        video.save()
 
         and:
-        final def pid = playlist.id
+        def videoId = video.id
+        def playlistId = playlist.id
 
-        Video.findByVideoId(vid)
-        Playlist.findById(pid)
+        assert Video.findById(videoId)
+        assert Playlist.findById(playlistId)
 
         when:
         video.delete()
 
         then:
-        !Video.findByVideoId(vid)
-        !Playlist.findById(pid)
+        !Video.findById(videoId)
+        !Playlist.findById(playlistId)
     }
 }

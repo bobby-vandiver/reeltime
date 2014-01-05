@@ -4,6 +4,8 @@ import grails.test.mixin.TestFor
 import in.reeltime.video.playlist.Playlist
 import spock.lang.Specification
 
+import static in.reeltime.video.Video.ConversionStatus.SUBMITTED
+
 @TestFor(Video)
 class VideoSpec extends Specification {
 
@@ -15,17 +17,28 @@ class VideoSpec extends Specification {
         def playlist = new Playlist()
 
         when:
-        def video = new Video(user: user, videoId: 3, title: 'foo', playlists: [playlist])
+        def video = new Video(creator: user, title: 'foo', description: 'bar', playlists: [playlist])
 
         then:
         video.validate()
 
         and:
-        video.user == user
-        video.videoId == 3
+        video.creator == user
         video.title == 'foo'
+        video.description == 'bar'
         video.playlists == [playlist] as Set
-        video.status == Video.ConversionStatus.SUBMITTED
+        video.status == SUBMITTED
+    }
+
+    void "creator can be null (when the user has been removed)"() {
+        given:
+        mockForConstraintsTests(Video)
+
+        when:
+        def video = new Video(creator: null, title: 'ignore')
+
+        then:
+        video.validate()
     }
 
     void "title cannot be blank"() {
@@ -42,4 +55,14 @@ class VideoSpec extends Specification {
         video.errors['title'] == 'blank'
     }
 
+    void "description can be blank"() {
+        given:
+        mockForConstraintsTests(Video)
+
+        when:
+        def video = new Video(title: 'ignore', description: '')
+
+        then:
+        video.validate()
+    }
 }

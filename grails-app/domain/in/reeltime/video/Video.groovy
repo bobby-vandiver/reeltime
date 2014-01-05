@@ -5,16 +5,18 @@ import in.reeltime.video.playlist.Playlist
 class Video {
 
     enum ConversionStatus { SUBMITTED }
-
-    long videoId
-    String title
-
     ConversionStatus status = ConversionStatus.SUBMITTED
 
-    static belongsTo = [user: User]
+    User creator
+
+    String title
+    String description
+
     static hasMany = [playlists: Playlist]
 
     static constraints = {
+        creator nullable: true
         title blank: false
+        description blank: true, nullable: true
     }
 }
