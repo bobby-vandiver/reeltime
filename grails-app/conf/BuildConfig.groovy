@@ -44,7 +44,11 @@ grails.project.dependency.resolution = {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
 
         // runtime 'mysql:mysql-connector-java:5.1.22'
+
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+
+        test 'cglib:cglib-nodep:2.2.2'
+        test 'org.objenesis:objenesis:1.4'
     }
 
     plugins {
