@@ -1,6 +1,8 @@
 package in.reeltime.video.transcoder
 
+import grails.converters.JSON
 import grails.test.mixin.TestFor
+import org.apache.commons.logging.Log
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -85,5 +87,32 @@ class NotificationControllerSpec extends Specification {
 
         where:
         action << ['completed', 'progressing', 'warning', 'error']
+    }
+
+    @Unroll
+    void "log entire message when [#action] notification occurs"() {
+        given:
+        controller.log = Mock(Log)
+
+        and:
+        def message = '{foo: bar}'
+
+        and:
+        request.addHeader('x-amz-sns-message-type', 'Notification')
+        request.content = message.bytes
+
+        when:
+        controller."$action"()
+
+        then:
+        1 * controller.log."$method"(message)
+
+        and:
+        response.status == 200
+
+        where:
+        action      |   method
+        'warning'   |   'warn'
+        'error'     |   'error'
     }
 }

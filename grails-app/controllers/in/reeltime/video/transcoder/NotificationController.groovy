@@ -21,11 +21,17 @@ class NotificationController {
     }
 
     def warning() {
-        handleRequest {}
+        handleRequest {
+            log.warn(request.inputStream.text)
+            render status: 200
+        }
     }
 
     def error() {
-        handleRequest {}
+        handleRequest {
+            log.error(request.inputStream.text)
+            render status: 200
+        }
     }
 
     private void handleRequest(Closure notificationHandler) {
