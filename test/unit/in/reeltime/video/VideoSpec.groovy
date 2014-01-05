@@ -10,8 +10,6 @@ class VideoSpec extends Specification {
 
     void "valid video"() {
         given:
-        mockForConstraintsTests(Video)
-
         def user = new User()
         def playlist = new Playlist()
 
@@ -29,9 +27,6 @@ class VideoSpec extends Specification {
     }
 
     void "creator can be null (when the user has been removed)"() {
-        given:
-        mockForConstraintsTests(Video)
-
         when:
         def video = new Video(creator: null, title: 'ignore')
 
@@ -40,9 +35,6 @@ class VideoSpec extends Specification {
     }
 
     void "title cannot be blank"() {
-        given:
-        mockForConstraintsTests(Video)
-
         when:
         def video = new Video(title: '')
 
@@ -54,9 +46,6 @@ class VideoSpec extends Specification {
     }
 
     void "description can be blank"() {
-        given:
-        mockForConstraintsTests(Video)
-
         when:
         def video = new Video(title: 'ignore', description: '')
 
