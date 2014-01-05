@@ -9,9 +9,22 @@ import spock.lang.Specification
 @Mock([User])
 class AudienceSpec extends Specification {
 
+    private static final Reel IGNORE_REEL = new Reel()
+
+    private Map args = [reel: IGNORE_REEL]
+
+    void "audience belongs to a reel"() {
+        given:
+        def reel = new Reel()
+        def audience = new Audience(reel: reel)
+
+        expect:
+        audience.validate()
+    }
+
     void "audience can contain no members"() {
         when:
-        def audience = new Audience()
+        def audience = new Audience(args)
 
         then:
         audience.validate()
@@ -20,9 +33,10 @@ class AudienceSpec extends Specification {
     void "audience contains one user"() {
         given:
         def user = new User().save()
+        args << [users: [user]]
 
         when:
-        def audience = new Audience(users: [user])
+        def audience = new Audience(args)
 
         then:
         audience.validate()
@@ -37,8 +51,10 @@ class AudienceSpec extends Specification {
         def user1 = new User().save()
         def user2 = new User().save()
 
+        args << [users: [user1, user2]]
+
         when:
-        def audience = new Audience(users: [user1, user2])
+        def audience = new Audience(args)
 
         then:
         audience.validate()

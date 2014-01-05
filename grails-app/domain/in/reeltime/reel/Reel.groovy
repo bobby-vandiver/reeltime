@@ -2,11 +2,11 @@ package in.reeltime.reel
 
 import in.reeltime.user.User
 
-class Audience {
+class Reel {
 
-    static belongsTo = [reel: Reel]
-    static hasMany = [users: User]
+    static hasOne = [audience: Audience]
 
     static constraints = {
+        audience unique: true
     }
 }
