@@ -50,6 +50,28 @@ class PlaylistSpec extends Specification {
         playlist.targetDuration == 12
     }
 
+    void "resolution and codecs can be blank"() {
+        given:
+        args << [codecs: '', resolution: '']
+
+        when:
+        def playlist = new Playlist(args)
+
+        then:
+        playlist.validate()
+    }
+
+    void "resolution and codecs can be null"() {
+        given:
+        args << [codecs: null, resolution: null]
+
+        when:
+        def playlist = new Playlist(args)
+
+        then:
+        playlist.validate()
+    }
+
     @Unroll
     void "playlist contains [#count] ordered segments"() {
         given:
@@ -72,8 +94,8 @@ class PlaylistSpec extends Specification {
     void "unordered segments become ordered"() {
         given:
         def segments = [
-                Segment.build(segmentId: 1),
-                Segment.build(segmentId: 0)
+                new Segment(segmentId: 1, uri: 'first', duration: '1.0'),
+                new Segment(segmentId: 0, uri: 'zeroth', duration: '1.0')
         ]
         args << [segments: segments]
 
@@ -103,6 +125,6 @@ class PlaylistSpec extends Specification {
     }
 
     private static createOrderedSegments(count) {
-        (0..<count).collect { id -> Segment.build(segmentId: id) }
+        (0..<count).collect { id -> new Segment(segmentId: id, uri: "seg-$id", duration: '1.0') }
     }
 }

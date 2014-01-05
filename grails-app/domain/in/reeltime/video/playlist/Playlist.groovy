@@ -24,4 +24,9 @@ class Playlist {
     }
 
     static transients = ['length']
+
+    static constraints = {
+        codecs nullable: true
+        resolution nullable: true
+    }
 }
