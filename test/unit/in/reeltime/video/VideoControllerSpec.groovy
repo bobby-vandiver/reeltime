@@ -49,9 +49,9 @@ class VideoControllerSpec extends Specification {
         response.status == 201
     }
 
-    private void mockUserAuthenticationService(boolean truth) {
+    private void mockUserAuthenticationService(boolean isLoggedIn) {
         controller.userAuthenticationService = Mock(UserAuthenticationService) {
-            1 * isUserLoggedIn() >> truth
+            1 * isUserLoggedIn() >> isLoggedIn
         }
     }
 }
