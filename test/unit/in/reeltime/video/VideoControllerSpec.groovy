@@ -38,15 +38,23 @@ class VideoControllerSpec extends Specification {
         def video = new GrailsMockMultipartFile('video', 'foo'.bytes)
         request.addFile(video)
 
-        controller.videoSubmissionService = Mock(VideoSubmissionService) {
-            1 * submit({ input -> input.text == 'foo' })
-        }
+        and:
+        boolean submitCalled = false
+        controller.videoSubmissionService = [
+                submit: { input ->
+                    submitCalled = true
+                    assert input.bytes == video.inputStream.bytes
+                }
+        ] as VideoSubmissionService
 
         when:
         controller.upload()
 
         then:
         response.status == 201
+
+        and:
+        submitCalled
     }
 
     private void mockUserAuthenticationService(boolean isLoggedIn) {
