@@ -60,6 +60,10 @@ grails.exceptionresolver.params.exclude = ['password']
 grails.hibernate.cache.queries = false
 
 environments {
+    test {
+        // Force tests to fail fast and early
+        grails.gorm.failOnError = true
+    }
     development {
         grails.logging.jul.usebridge = true
     }
