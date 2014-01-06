@@ -1,5 +1,6 @@
 package in.reeltime.video
 
+import grails.converters.JSON
 import org.springframework.web.multipart.MultipartFile
 
 class VideoController {
@@ -11,6 +12,12 @@ class VideoController {
 
         if(!userAuthenticationService.isUserLoggedIn()) {
             render status: 401
+        }
+        else if(!params?.title) {
+
+            render(status: 400, contentType: 'application/json') {
+                [message: 'Title is required']
+            }
         }
         else if(params.video) {
             videoSubmissionService.submit(video, videoStream)

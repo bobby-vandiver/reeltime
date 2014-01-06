@@ -1,6 +1,7 @@
 package in.reeltime.video
 
 import grails.test.mixin.TestFor
+import groovy.json.JsonSlurper
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
 
@@ -29,6 +30,25 @@ class VideoControllerSpec extends Specification {
 
         then:
         response.status == 400
+    }
+
+    void "return 400 if title param is missing from request"() {
+        given:
+        mockUserAuthenticationService(true)
+
+        def videoParam = new GrailsMockMultipartFile('video', 'foo'.bytes)
+        request.addFile(videoParam)
+
+        when:
+        controller.upload()
+
+        then:
+        response.contentType.contains('application/json')
+        response.status == 400
+
+        and:
+        def json = new JsonSlurper().parseText(response.contentAsString)
+        json.message == 'Title is required'
     }
 
     void "return 201 after video has been uploaded with minimum params"() {
