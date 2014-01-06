@@ -39,22 +39,20 @@ class VideoControllerSpec extends Specification {
         request.addFile(video)
 
         and:
-        boolean submitCalled = false
-        controller.videoSubmissionService = [
-                submit: { input ->
-                    submitCalled = true
-                    assert input.bytes == video.inputStream.bytes
-                }
-        ] as VideoSubmissionService
+        controller.videoSubmissionService = Mock(VideoSubmissionService)
+
+        def validateArgs = { InputStream input ->
+            assert input.bytes == video.inputStream.bytes
+        }
 
         when:
         controller.upload()
 
         then:
-        response.status == 201
+        1 * controller.videoSubmissionService.submit(_) >> { args -> validateArgs(args) }
 
         and:
-        submitCalled
+        response.status == 201
     }
 
     private void mockUserAuthenticationService(boolean isLoggedIn) {
