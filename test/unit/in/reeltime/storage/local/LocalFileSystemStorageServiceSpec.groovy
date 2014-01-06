@@ -5,8 +5,8 @@ import in.reeltime.storage.StorageService
 import org.apache.commons.logging.Log
 import spock.lang.Specification
 
-@TestFor(LocalFilesystemStorageService)
-class LocalFilesystemStorageServiceSpec extends Specification {
+@TestFor(LocalFileSystemStorageService)
+class LocalFileSystemStorageServiceSpec extends Specification {
 
     void "LocalFilesystemStorageService must be an instance of StorageService"() {
         expect:

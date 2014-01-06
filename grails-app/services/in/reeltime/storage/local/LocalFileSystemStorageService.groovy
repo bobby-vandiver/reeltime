@@ -2,7 +2,7 @@ package in.reeltime.storage.local
 
 import in.reeltime.storage.StorageService
 
-class LocalFilesystemStorageService implements StorageService {
+class LocalFileSystemStorageService implements StorageService {
 
     @Override
     void store(InputStream inputStream, String basePath, String resourcePath) {
