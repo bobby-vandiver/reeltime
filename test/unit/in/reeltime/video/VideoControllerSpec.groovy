@@ -31,25 +31,29 @@ class VideoControllerSpec extends Specification {
         response.status == 400
     }
 
-    void "return 201 after video has been uploaded"() {
+    void "return 201 after video has been uploaded with minimum params"() {
         given:
         mockUserAuthenticationService(true)
 
-        def video = new GrailsMockMultipartFile('video', 'foo'.bytes)
-        request.addFile(video)
+        def videoParam = new GrailsMockMultipartFile('video', 'foo'.bytes)
+        request.addFile(videoParam)
+
+        def title = 'some title'
+        params.title = title
 
         and:
         controller.videoSubmissionService = Mock(VideoSubmissionService)
 
-        def validateArgs = { InputStream input ->
-            assert input.bytes == video.inputStream.bytes
+        def validateArgs = { Video video, InputStream input ->
+            assert video.title == title
+            assert input.bytes == videoParam.inputStream.bytes
         }
 
         when:
         controller.upload()
 
         then:
-        1 * controller.videoSubmissionService.submit(_) >> { args -> validateArgs(args) }
+        1 * controller.videoSubmissionService.submit(*_) >> { args -> validateArgs(args) }
 
         and:
         response.status == 201

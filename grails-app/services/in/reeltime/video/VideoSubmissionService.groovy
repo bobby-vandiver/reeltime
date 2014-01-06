@@ -2,7 +2,7 @@ package in.reeltime.video
 
 class VideoSubmissionService {
 
-    def submit(InputStream videoInputStream) {
+    def submit(Video video, InputStream videoStream) {
 
     }
 }

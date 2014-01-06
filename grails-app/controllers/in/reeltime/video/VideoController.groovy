@@ -13,12 +13,20 @@ class VideoController {
             render status: 401
         }
         else if(params.video) {
-            MultipartFile video = request.getFile('video')
-            videoSubmissionService.submit(video.inputStream)
+            videoSubmissionService.submit(video, videoStream)
             render status: 201
         }
         else {
             render status: 400
         }
+    }
+
+    private Video getVideo() {
+        new Video(title: params.title)
+    }
+
+    private InputStream getVideoStream() {
+        MultipartFile video = request.getFile('video')
+        return video.inputStream
     }
 }
