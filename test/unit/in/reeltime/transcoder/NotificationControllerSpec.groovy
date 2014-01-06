@@ -1,6 +1,5 @@
-package in.reeltime.video.transcoder
+package in.reeltime.transcoder
 
-import grails.converters.JSON
 import grails.test.mixin.TestFor
 import org.apache.commons.logging.Log
 import spock.lang.Specification

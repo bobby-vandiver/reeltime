@@ -1,4 +1,4 @@
-package in.reeltime.video.transcoder
+package in.reeltime.transcoder
 
 class TranscoderService {
 
