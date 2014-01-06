@@ -29,7 +29,13 @@ class VideoControllerSpec extends Specification {
         controller.upload()
 
         then:
+        then:
+        response.contentType.contains('application/json')
         response.status == 400
+
+        and:
+        def json = new JsonSlurper().parseText(response.contentAsString)
+        json.message == 'Video is required'
     }
 
     void "return 400 if title param is missing from request"() {

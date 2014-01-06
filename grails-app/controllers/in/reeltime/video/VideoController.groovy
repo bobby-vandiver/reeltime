@@ -10,22 +10,26 @@ class VideoController {
 
     def upload() {
 
-        if(!userAuthenticationService.isUserLoggedIn()) {
+        if(!userLoggedIn) {
             render status: 401
         }
-        else if(!params?.title) {
-
-            render(status: 400, contentType: 'application/json') {
-                [message: 'Title is required']
-            }
-        }
-        else if(params.video) {
+        else if(hasValidParams()) {
             videoSubmissionService.submit(video, videoStream)
             render status: 201
         }
         else {
-            render status: 400
+            render(status: 400, contentType: 'application/json') {
+                [message: errorMessage]
+            }
         }
+    }
+
+    private boolean isUserLoggedIn() {
+       return userAuthenticationService.isUserLoggedIn()
+    }
+
+    private boolean hasValidParams() {
+        (params?.video != null) && (params?.title != null)
     }
 
     private Video getVideo() {
@@ -35,5 +39,17 @@ class VideoController {
     private InputStream getVideoStream() {
         MultipartFile video = request.getFile('video')
         return video.inputStream
+    }
+
+    private String getErrorMessage() {
+        def message = ''
+
+        if(!params?.video) {
+            message = 'Video is required'
+        }
+        else if(!params?.title) {
+            message = 'Title is required'
+        }
+        return message
     }
 }
