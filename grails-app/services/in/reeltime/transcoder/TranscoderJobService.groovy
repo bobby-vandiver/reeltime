@@ -1,6 +1,6 @@
 package in.reeltime.transcoder
 
-class TranscoderService {
+class TranscoderJobService {
 
     def complete(String jobId) {
 

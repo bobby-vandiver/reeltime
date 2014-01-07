@@ -9,7 +9,7 @@ import static in.reeltime.transcoder.aws.sns.MessageType.NOTIFICATION
 class NotificationController {
 
     def notificationService
-    def transcoderService
+    def transcoderJobService
 
     // TODO: Implement functional tests to verify this because unit/integration tests can't test this
     // http://jira.grails.org/browse/GRAILS-8426
@@ -18,7 +18,7 @@ class NotificationController {
     def completed() {
         handleRequest {
             log.info("Elastic Transcoder job [$jobId] is complete")
-            transcoderService.complete(jobId)
+            transcoderJobService.complete(jobId)
         }
     }
 

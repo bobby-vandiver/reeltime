@@ -142,7 +142,7 @@ class NotificationControllerSpec extends Specification {
 
     void "log and pass the elastic transcoder jobId to service to complete transcoding process"() {
         given:
-        controller.transcoderService = Mock(TranscoderService)
+        controller.transcoderJobService = Mock(TranscoderJobService)
         controller.log = Mock(Log)
 
         and:
@@ -160,7 +160,7 @@ class NotificationControllerSpec extends Specification {
         controller.completed()
 
         then:
-        1 * controller.transcoderService.complete('1388444889472-t01s28')
+        1 * controller.transcoderJobService.complete('1388444889472-t01s28')
         1 * controller.log.info('Elastic Transcoder job [1388444889472-t01s28] is complete')
 
         and:
