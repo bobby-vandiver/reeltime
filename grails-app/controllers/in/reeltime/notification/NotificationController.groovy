@@ -1,10 +1,10 @@
-package in.reeltime.transcoder
+package in.reeltime.notification
 
 import groovy.json.JsonSlurper
 
-import static in.reeltime.transcoder.aws.sns.MessageType.MESSAGE_TYPE_HEADER
-import static in.reeltime.transcoder.aws.sns.MessageType.SUBSCRIPTION_CONFIRMATION
-import static in.reeltime.transcoder.aws.sns.MessageType.NOTIFICATION
+import static MessageType.MESSAGE_TYPE_HEADER
+import static MessageType.SUBSCRIPTION_CONFIRMATION
+import static MessageType.NOTIFICATION
 
 class NotificationController {
 

@@ -1,9 +1,10 @@
-package in.reeltime.transcoder
+package in.reeltime.notification
 
 import grails.test.mixin.TestFor
 import org.apache.commons.logging.Log
 import spock.lang.Specification
 import spock.lang.Unroll
+import in.reeltime.transcoder.TranscoderJobService
 
 @TestFor(NotificationController)
 class NotificationControllerSpec extends Specification {
@@ -89,7 +90,7 @@ class NotificationControllerSpec extends Specification {
     }
 
     @Unroll
-    void "log entire message when [#action] notification occurs"() {
+    void "log entire message when [#action] in.reeltime.notification occurs"() {
         given:
         controller.log = Mock(Log)
 
@@ -115,7 +116,7 @@ class NotificationControllerSpec extends Specification {
         'error'     |   'error'
     }
 
-    void "log the elastic transcoder jobId when progressing notification occurs"() {
+    void "log the elastic transcoder jobId when progressing in.reeltime.notification occurs"() {
         given:
         controller.log = Mock(Log)
 

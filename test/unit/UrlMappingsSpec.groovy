@@ -2,7 +2,7 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.UrlMappingsUnitTestMixin
 import spock.lang.Specification
-import in.reeltime.transcoder.NotificationController
+import in.reeltime.notification.NotificationController
 
 @TestMixin(UrlMappingsUnitTestMixin)
 @Mock([NotificationController])

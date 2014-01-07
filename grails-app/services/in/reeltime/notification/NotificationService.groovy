@@ -1,4 +1,4 @@
-package in.reeltime.transcoder
+package in.reeltime.notification
 
 class NotificationService {
 

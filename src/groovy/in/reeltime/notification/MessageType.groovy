@@ -1,4 +1,4 @@
-package in.reeltime.transcoder.aws.sns
+package in.reeltime.notification
 
 class MessageType {
 
