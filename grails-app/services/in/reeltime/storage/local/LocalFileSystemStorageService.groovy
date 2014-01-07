@@ -7,6 +7,11 @@ import static java.io.File.separator
 class LocalFileSystemStorageService implements StorageService {
 
     @Override
+    boolean available(String basePath, String resourcePath) {
+        return false
+    }
+
+    @Override
     void store(InputStream inputStream, String basePath, String resourcePath) {
 
         def directory = getDirectory(basePath, resourcePath)

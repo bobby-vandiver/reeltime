@@ -6,6 +6,11 @@ import in.reeltime.storage.StorageService
 class S3StorageService implements StorageService {
 
     @Override
+    boolean available(String basePath, String resourcePath) {
+        return false
+    }
+
+    @Override
     void store(InputStream inputStream, String basePath, String resourcePath) {
 
         def transferManager = TransferManagerFactory.create()
