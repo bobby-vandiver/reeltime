@@ -1,5 +1,7 @@
 package in.reeltime.video
 
+import static javax.servlet.http.HttpServletResponse.*
+
 class VideoController {
 
     def userAuthenticationService
@@ -13,10 +15,10 @@ class VideoController {
             def videoStream = request.getFile('video').inputStream
 
             videoService.createAndUploadVideo(creator, title, videoStream)
-            render(status: 201)
+            render(status: SC_CREATED)
         }
         else {
-            render(status: 400, contentType: 'application/json') {
+            render(status: SC_BAD_REQUEST, contentType: 'application/json') {
                 [message: errorMessage]
             }
         }

@@ -6,6 +6,8 @@ import static MessageType.MESSAGE_TYPE_HEADER
 import static MessageType.SUBSCRIPTION_CONFIRMATION
 import static MessageType.NOTIFICATION
 
+import static javax.servlet.http.HttpServletResponse.*
+
 class NotificationController {
 
     def notificationService
@@ -52,10 +54,10 @@ class NotificationController {
         }
         else if(notification) {
             notificationHandler()
-            render status: 200
+            render status: SC_OK
         }
         else {
-            render status: 400
+            render status: SC_BAD_REQUEST
         }
     }
 
@@ -72,10 +74,10 @@ class NotificationController {
 
         if (url) {
             notificationService.confirmSubscription(url)
-            render status: 200
+            render status: SC_OK
         }
         else {
-            render status: 400
+            render status: SC_BAD_REQUEST
         }
     }
 
