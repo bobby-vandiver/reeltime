@@ -2,6 +2,7 @@ package in.reeltime.video
 
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
+import in.reeltime.user.User
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
 
@@ -42,6 +43,11 @@ class VideoControllerSpec extends Specification {
 
     void "return 201 after video has been uploaded with minimum params"() {
         given:
+        def loggedInUser = new User(username: 'bob')
+        controller.userAuthenticationService = Stub(UserAuthenticationService) {
+            getLoggedInUser() >> loggedInUser
+        }
+
         def videoParam = new GrailsMockMultipartFile('video', 'foo'.bytes)
         request.addFile(videoParam)
 
@@ -49,10 +55,11 @@ class VideoControllerSpec extends Specification {
         params.title = title
 
         and:
-        controller.videoSubmissionService = Mock(VideoSubmissionService)
+        controller.videoService = Mock(VideoService)
 
-        def validateArgs = { Video video, InputStream input ->
-            assert video.title == title
+        def validateArgs = { User u, String t, InputStream input ->
+            assert u == loggedInUser
+            assert t == title
             assert input.bytes == videoParam.inputStream.bytes
         }
 
@@ -60,7 +67,7 @@ class VideoControllerSpec extends Specification {
         controller.upload()
 
         then:
-        1 * controller.videoSubmissionService.submit(*_) >> { args -> validateArgs(args) }
+        1 * controller.videoService.createAndUploadVideo(_, _, _) >> { args -> validateArgs(args) }
 
         and:
         response.status == 201

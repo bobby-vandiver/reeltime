@@ -5,4 +5,8 @@ class UserAuthenticationService {
     def isUserLoggedIn() {
 
     }
+
+    def getLoggedInUser() {
+
+    }
 }

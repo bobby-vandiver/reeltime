@@ -1,15 +1,18 @@
 package in.reeltime.video
 
-import org.springframework.web.multipart.MultipartFile
-
 class VideoController {
 
-    def videoSubmissionService
+    def userAuthenticationService
+    def videoService
 
     def upload() {
 
         if(hasValidParams()) {
-            videoSubmissionService.submit(video, videoStream)
+            def creator = userAuthenticationService.loggedInUser
+            def title = params.title
+            def videoStream = request.getFile('video').inputStream
+
+            videoService.createAndUploadVideo(creator, title, videoStream)
             render(status: 201)
         }
         else {
@@ -21,15 +24,6 @@ class VideoController {
 
     private boolean hasValidParams() {
         params?.video && params?.title
-    }
-
-    private Video getVideo() {
-        new Video(title: params.title)
-    }
-
-    private InputStream getVideoStream() {
-        MultipartFile video = request.getFile('video')
-        return video.inputStream
     }
 
     private String getErrorMessage() {
