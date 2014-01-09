@@ -67,7 +67,7 @@ class VideoControllerSpec extends Specification {
         controller.upload()
 
         then:
-        1 * controller.videoService.createAndUploadVideo(_, _, _) >> { args -> validateArgs(args) }
+        1 * controller.videoService.createVideo(_, _, _) >> { args -> validateArgs(args) }
 
         and:
         response.status == 201

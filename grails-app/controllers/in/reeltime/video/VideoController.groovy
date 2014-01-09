@@ -14,7 +14,7 @@ class VideoController {
             def title = params.title
             def videoStream = request.getFile('video').inputStream
 
-            videoService.createAndUploadVideo(creator, title, videoStream)
+            videoService.createVideo(creator, title, videoStream)
             render(status: SC_CREATED)
         }
         else {
