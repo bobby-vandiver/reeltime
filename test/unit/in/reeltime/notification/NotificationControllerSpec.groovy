@@ -90,7 +90,7 @@ class NotificationControllerSpec extends Specification {
     }
 
     @Unroll
-    void "log entire message when [#action] in.reeltime.notification occurs"() {
+    void "log entire message when [#action] notification occurs"() {
         given:
         controller.log = Mock(Log)
 
@@ -116,7 +116,7 @@ class NotificationControllerSpec extends Specification {
         'error'     |   'error'
     }
 
-    void "log the elastic transcoder jobId when progressing in.reeltime.notification occurs"() {
+    void "log the elastic transcoder jobId when progressing notification occurs"() {
         given:
         controller.log = Mock(Log)
 
