@@ -8,22 +8,12 @@ import spock.lang.Unroll
 @TestFor(Playlist)
 class PlaylistSpec extends Specification {
 
-    private static final IGNORE_VIDEO = new Video()
-
-    private static final IGNORE_CODECS = 'ignoreCodecs'
-    private static final IGNORE_RESOLUTION = 'ignoreResolution'
-
-    private Map args = [ video: IGNORE_VIDEO, codecs: IGNORE_CODECS, resolution: IGNORE_RESOLUTION ]
-
     void "playlist requires HLS stream information"() {
-        given:
-        args << [programId: 1, resolution: '400x170', codecs: 'avc1.42001e,mp4a.40.2', bandwidth: 474000]
-
         when:
-        def playlist = new Playlist(args)
+        def playlist = new Playlist(programId: 1, resolution: '400x170', codecs: 'avc1.42001e,mp4a.40.2', bandwidth: 474000)
 
         then:
-        playlist.validate()
+        playlist.validate(['programId', 'resolution', 'codecs', 'bandwidth'])
 
         and:
         playlist.programId == 1
@@ -33,14 +23,11 @@ class PlaylistSpec extends Specification {
     }
 
     void "playlist includes HLS playback metadata"() {
-        given:
-        args << [hlsVersion: 3, mediaSequence: 0, targetDuration: 12]
-
         when:
-        def playlist = new Playlist(args)
+        def playlist = new Playlist(hlsVersion: 3, mediaSequence: 0, targetDuration: 12)
 
         then:
-        playlist.validate()
+        playlist.validate(['hlsVersion', 'mediaSequence', 'targetDuration'])
 
         and:
         playlist.hlsVersion == 3
@@ -49,41 +36,34 @@ class PlaylistSpec extends Specification {
     }
 
     void "resolution and codecs can be blank"() {
-        given:
-        args << [codecs: '', resolution: '']
-
         when:
-        def playlist = new Playlist(args)
+        def playlist = new Playlist(codecs: '', resolution: '')
 
         then:
-        playlist.validate()
+        playlist.validate(['codecs', 'resolution'])
     }
 
     void "resolution and codecs can be null"() {
-        given:
-        args << [codecs: null, resolution: null]
-
         when:
-        def playlist = new Playlist(args)
+        def playlist = new Playlist(codecs: null, resolution: null)
 
         then:
-        playlist.validate()
+        playlist.validate(['codecs', 'resolution'])
     }
 
     @Unroll
     void "playlist contains [#count] ordered segments"() {
         given:
         def segments = createOrderedSegments(count)
-        args << [segments: segments]
 
         when:
-        def playlist = new Playlist(args)
+        def playlist = new Playlist(segments: segments)
 
         then:
         playlist.segments.size() == count
 
         and:
-        playlist.validate()
+        playlist.validate(['segments'])
 
         where:
         count << [0, 1, 4]
@@ -95,16 +75,15 @@ class PlaylistSpec extends Specification {
                 new Segment(segmentId: 1, uri: 'first', duration: '1.0'),
                 new Segment(segmentId: 0, uri: 'zeroth', duration: '1.0')
         ]
-        args << [segments: segments]
 
         when:
-        def playlist = new Playlist(args)
+        def playlist = new Playlist(segments: segments)
 
         then:
         playlist.segments*.segmentId == [0, 1]
 
         and:
-        playlist.validate()
+        playlist.validate(['segments'])
     }
 
     @Unroll

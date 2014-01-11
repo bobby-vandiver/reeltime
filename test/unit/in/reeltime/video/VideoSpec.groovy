@@ -9,11 +9,6 @@ import spock.lang.Unroll
 @TestFor(Video)
 class VideoSpec extends Specification {
 
-    private static final IGNORE_TITLE = 'ignoreTitle'
-    private static final IGNORE_MASTER_PATH = 'ignoreMasterPath'
-
-    private Map args = [title: IGNORE_TITLE, masterPath: IGNORE_MASTER_PATH]
-
     void "valid video"() {
         given:
         def user = new User()
@@ -40,52 +35,40 @@ class VideoSpec extends Specification {
     }
 
     void "creator can be null (when the user has been removed)"() {
-        given:
-        args << [creator: null]
-
         when:
-        def video = new Video(args)
+        def video = new Video(creator: null)
 
         then:
-        video.validate()
+        video.validate(['creator'])
     }
 
     @Unroll
     void "title cannot be [#title]"() {
-        given:
-        args << [title: title]
-
         when:
-        def video = new Video(args)
+        def video = new Video(title: title)
 
         then:
-        !video.validate()
+        !video.validate(['title'])
 
         where:
         title << ['', null]
     }
 
     void "description can be blank"() {
-        given:
-        args << [description: '']
-
         when:
-        def video = new Video(args)
+        def video = new Video(description: '')
 
         then:
-        video.validate()
+        video.validate(['description'])
     }
 
     @Unroll
     void "masterPath cannot be [#path]"() {
-        given:
-        args << [masterPath: path]
-
         when:
-        def video = new Video(args)
+        def video = new Video(masterPath: path)
 
         then:
-        !video.validate()
+        !video.validate(['masterPath'])
 
         where:
         path << ['', null]

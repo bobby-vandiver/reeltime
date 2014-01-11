@@ -7,10 +7,6 @@ import spock.lang.Specification
 @TestFor(Audience)
 class AudienceSpec extends Specification {
 
-    private static final Reel IGNORE_REEL = new Reel()
-
-    private Map args = [reel: IGNORE_REEL]
-
     void "audience belongs to a reel"() {
         given:
         def reel = new Reel()
@@ -22,22 +18,21 @@ class AudienceSpec extends Specification {
 
     void "audience can contain no members"() {
         when:
-        def audience = new Audience(args)
+        def audience = new Audience()
 
         then:
-        audience.validate()
+        audience.validate(['users'])
     }
 
     void "audience contains one user"() {
         given:
         def user = new User(username: 'foo', password: 'bar')
-        args << [users: [user]]
 
         when:
-        def audience = new Audience(args)
+        def audience = new Audience(users: [user])
 
         then:
-        audience.validate()
+        audience.validate(['users'])
 
         and:
         audience.users.size() == 1
@@ -49,13 +44,11 @@ class AudienceSpec extends Specification {
         def user1 = new User(username: 'foo', password: 'bar')
         def user2 = new User(username: 'buzz', password: 'bazz')
 
-        args << [users: [user1, user2]]
-
         when:
-        def audience = new Audience(args)
+        def audience = new Audience(users: [user1, user2])
 
         then:
-        audience.validate()
+        audience.validate(['users'])
 
         and:
         audience.users.size()  == 2

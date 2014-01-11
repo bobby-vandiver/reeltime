@@ -7,36 +7,23 @@ import spock.lang.Unroll
 @TestFor(Segment)
 class SegmentSpec extends Specification {
 
-    private static final String IGNORE_URI = 'ignored'
-    private static final String IGNORE_DURATION = '1.0'
-    private static final Playlist IGNORE_PLAYLIST = new Playlist()
-
-    private Map args = [uri: IGNORE_URI, duration: IGNORE_DURATION, playlist: IGNORE_PLAYLIST]
-
     void "playlist cannot be null"() {
-        given:
-        args.playlist = null
-
         when:
-        def segment = new Segment(args)
+        def segment = new Segment(playlist: null)
 
         then:
-        !segment.validate()
-
-        and:
-        segment.errors['playlist'].code == 'nullable'
+        !segment.validate(['playlist'])
     }
 
     void "segment must belong to a playlist"() {
         given:
         def playlist = new Playlist()
-        args << [playlist: playlist]
 
         when:
-        def segment = new Segment(args)
+        def segment = new Segment(playlist: playlist)
 
         then:
-        segment.validate()
+        segment.validate(['playlist'])
 
         and:
         segment.playlist == playlist
@@ -44,14 +31,11 @@ class SegmentSpec extends Specification {
 
     @Unroll
     void "segmentId [#value] is [#valid]"() {
-        given:
-        args << [segmentId: value]
-
         when:
-        def segment = new Segment(args)
+        def segment = new Segment(segmentId: value)
 
         then:
-        segment.validate() == valid
+        segment.validate(['segmentId']) == valid
 
         where:
         value       |   valid
@@ -64,14 +48,11 @@ class SegmentSpec extends Specification {
 
     @Unroll
     void "uri [#path] is [#valid]"() {
-        given:
-        args << [uri: path]
-
         when:
-        def segment = new Segment(args)
+        def segment = new Segment(uri: path)
 
         then:
-        segment.validate() == valid
+        segment.validate(['uri']) == valid
 
         where:
         path                            |   valid
@@ -83,15 +64,11 @@ class SegmentSpec extends Specification {
 
     @Unroll
     void "duration [#length] is [#valid]"() {
-        given:
-        println length
-        args << [duration: length]
-
         when:
-        def segment = new Segment(args)
+        def segment = new Segment(duration: length)
 
         then:
-        segment.validate() == valid
+        segment.validate(['duration']) == valid
 
         where:
         length      |   valid
@@ -113,13 +90,9 @@ class SegmentSpec extends Specification {
 
     @Unroll
     void "compare [#leftId] to [#rightId] returns [#result]"() {
-        given:
-        def leftArgs = args.clone() << [segmentId: leftId]
-        def rightArgs = args.clone() << [segmentId: rightId]
-
         when:
-        def leftSegment = new Segment(leftArgs).save()
-        def rightSegment = new Segment(rightArgs).save()
+        def leftSegment = new Segment(segmentId: leftId).save(validate: false)
+        def rightSegment = new Segment(segmentId: rightId).save(validate: false)
 
         then:
         leftSegment.compareTo(rightSegment) == result
