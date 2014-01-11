@@ -19,6 +19,8 @@ import spock.lang.Specification
 @TestFor(ElasticTranscoderService)
 class ElasticTranscoderServiceSpec extends Specification {
 
+    private static final UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+
     void "must be an instance of TranscoderService"() {
         expect:
         service instanceof TranscoderService
@@ -70,15 +72,18 @@ class ElasticTranscoderServiceSpec extends Specification {
         1 * mockEts.createJob(_) >> { CreateJobRequest request ->
 
             assert request.pipelineId == pipeline.id
-            assert request.outputKeyPrefix.endsWith('/')
 
-            assert request.outputs.size() == 1
+            def outputKeyPrefix = request.outputKeyPrefix
+            assert outputKeyPrefix.endsWith('/')
+            assert outputKeyPrefix[0..-2].matches(UUID_REGEX)
+
+            def outputs = request.outputs
+            assert outputs.size() == 1
             validateJobOutput(request.outputs[0])
 
-            assert request.playlists.size() == 1
-
-            def playlist = request.playlists[0]
-            validatePlaylist(playlist)
+            def playlists = request.playlists
+            assert playlists.size() == 1
+            validatePlaylist(playlists[0])
 
             validateJobInput(request.input, video.masterPath)
 
@@ -92,14 +97,14 @@ class ElasticTranscoderServiceSpec extends Specification {
 
     private void validatePlaylist(CreateJobPlaylist playlist) {
         assert playlist.format == 'HLSv3'
-        assert playlist.name.endsWith('-variant')
+        assert playlist.name.matches(UUID_REGEX)
 
         assert playlist.outputKeys.size() == 1
-        assert playlist.outputKeys[0].endsWith('-400k')
+        assert playlist.outputKeys[0].matches(UUID_REGEX)
     }
 
     private void validateJobOutput(CreateJobOutput output) {
-        assert output.key.endsWith('-400k')
+        assert output.key.matches(UUID_REGEX)
         assert output.presetId == '1351620000001-200050'
         assert output.segmentDuration == '10'
     }

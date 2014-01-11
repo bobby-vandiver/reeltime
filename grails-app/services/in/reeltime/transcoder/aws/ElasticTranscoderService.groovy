@@ -5,7 +5,6 @@ import com.amazonaws.services.elastictranscoder.model.CreateJobOutput
 import com.amazonaws.services.elastictranscoder.model.CreateJobPlaylist
 import com.amazonaws.services.elastictranscoder.model.CreateJobRequest
 import com.amazonaws.services.elastictranscoder.model.JobInput
-import com.amazonaws.services.elastictranscoder.model.Pipeline
 import in.reeltime.transcoder.TranscoderService
 import in.reeltime.video.Video
 
@@ -25,19 +24,16 @@ class ElasticTranscoderService implements TranscoderService {
         def input = createJobInput(video.masterPath)
 
         def formats = grailsApplication.config.transcoder.output.presets
-        def outputKeyBase = UUID.randomUUID()
-
-        def outputs = formats.collect { suffix, presetId ->
-            createJobOutput(outputKeyBase, suffix, presetId)
-        }
+        def outputs = formats.collect { name, presetId -> createJobOutput(presetId) }
 
         def outputKeys = outputs.collect { it.key }
-        def playlist = createJobPlaylist(outputKeyBase, outputKeys)
+        def playlist = createJobPlaylist(outputKeys)
 
+        def outputKeyPrefix = randomUUIDString() + '/'
         def request = new CreateJobRequest(
                 pipelineId: pipeline.id,
                 input: input,
-                outputKeyPrefix: "$outputKeyBase/" as String,
+                outputKeyPrefix: outputKeyPrefix,
                 outputs: outputs,
                 playlists: [playlist]
         )
@@ -58,15 +54,19 @@ class ElasticTranscoderService implements TranscoderService {
         new JobInput(settings)
     }
 
-    private def createJobOutput(UUID outputKeyBase, String suffix, String presetId) {
-        def key = "${outputKeyBase}-${suffix}" as String
+    private def createJobOutput(String presetId) {
+        def key = randomUUIDString()
         def duration = grailsApplication.config.transcoder.output.segmentDuration
         new CreateJobOutput(key: key, presetId: presetId, segmentDuration: duration)
     }
 
-    private def createJobPlaylist(UUID outputKeyBase, Collection<String> outputKeys) {
-        def name = "${outputKeyBase}-variant" as String
+    private def createJobPlaylist(Collection<String> outputKeys) {
+        def name = randomUUIDString()
         def format = grailsApplication.config.transcoder.output.format
         new CreateJobPlaylist(format: format, name: name, outputKeys: outputKeys)
+    }
+
+    private static String randomUUIDString() {
+        UUID.randomUUID() as String
     }
 }
