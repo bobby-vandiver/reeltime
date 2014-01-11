@@ -16,7 +16,7 @@ class ElasticTranscoderService implements TranscoderService {
     def grailsApplication
 
     @Override
-    void transcode(Video video){
+    void transcode(Video video, String output){
 
         def ets = awsService.createClient(AmazonElasticTranscoder) as AmazonElasticTranscoder
 
@@ -29,7 +29,7 @@ class ElasticTranscoderService implements TranscoderService {
         def outputKeys = outputs.collect { it.key }
         def playlist = createJobPlaylist(outputKeys)
 
-        def outputKeyPrefix = randomUUIDString() + '/'
+        def outputKeyPrefix = output + '/'
         def request = new CreateJobRequest(
                 pipelineId: pipeline.id,
                 input: input,

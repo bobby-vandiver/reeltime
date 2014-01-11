@@ -60,10 +60,13 @@ class ElasticTranscoderServiceSpec extends Specification {
 
         and:
         def video = new Video(masterPath: 'bar')
+        def outputPath = UUID.randomUUID().toString()
+
+        and:
         def jobId = '123413212351'
 
         when:
-        service.transcode(video)
+        service.transcode(video, outputPath)
 
         then:
         1 * service.awsService.createClient(AmazonElasticTranscoder) >> mockElasticTranscoder
@@ -73,6 +76,7 @@ class ElasticTranscoderServiceSpec extends Specification {
 
             def expectations = [
                     pipelineId: pipeline.id,
+                    outputKeyPrefix: outputPath + '/',
                     mediaPlaylistCount: count,
                     presetIds: presets.collect { name, presetId -> presetId},
                     segmentDuration: '10',
@@ -106,7 +110,7 @@ class ElasticTranscoderServiceSpec extends Specification {
 
         void validate(Map expectations) {
             pipeline(expectations.pipelineId)
-            outputKeyPrefix()
+            outputKeyPrefix(expectations.outputKeyPrefix)
             variantPlaylist()
             mediaPlaylists(expectations.mediaPlaylistCount, expectations.presetIds, expectations.segmentDuration)
             jobInput(expectations.inputKey)
@@ -116,10 +120,11 @@ class ElasticTranscoderServiceSpec extends Specification {
             assert request.pipelineId == pipelineId
         }
 
-        private void outputKeyPrefix() {
+        private void outputKeyPrefix(path) {
             def outputKeyPrefix = request.outputKeyPrefix
             assert outputKeyPrefix.endsWith('/')
             assert outputKeyPrefix[0..-2].matches(UUID_REGEX)
+            assert outputKeyPrefix == path
         }
 
         private void variantPlaylist() {
