@@ -1,11 +1,9 @@
 package in.reeltime.transcoder.aws
 
 import com.amazonaws.services.elastictranscoder.AmazonElasticTranscoder
-import com.amazonaws.services.elastictranscoder.model.CreateJobOutput
 import com.amazonaws.services.elastictranscoder.model.CreateJobRequest
 import com.amazonaws.services.elastictranscoder.model.CreateJobResult
 import com.amazonaws.services.elastictranscoder.model.Job
-import com.amazonaws.services.elastictranscoder.model.JobInput
 import com.amazonaws.services.elastictranscoder.model.ListPipelinesResult
 import com.amazonaws.services.elastictranscoder.model.Pipeline
 import grails.test.mixin.TestFor
@@ -14,6 +12,7 @@ import in.reeltime.transcoder.TranscoderService
 import in.reeltime.aws.AwsService
 import in.reeltime.video.Video
 import spock.lang.Specification
+import spock.lang.Unroll
 
 @TestFor(ElasticTranscoderService)
 class ElasticTranscoderServiceSpec extends Specification {
@@ -42,7 +41,6 @@ class ElasticTranscoderServiceSpec extends Specification {
 
         grailsApplication.config.transcoder.output.segmentDuration = '10'
         grailsApplication.config.transcoder.output.format = 'HLSv3'
-        grailsApplication.config.transcoder.output.presets = ['400k': '1351620000001-200050']
 
         service.grailsApplication = grailsApplication
 
@@ -55,8 +53,12 @@ class ElasticTranscoderServiceSpec extends Specification {
         service instanceof TranscoderService
     }
 
-    void "submit video to configured pipeline"() {
+    @Unroll
+    void "submit video to configured pipeline with [#count] media playlists"() {
         given:
+        grailsApplication.config.transcoder.output.presets = presets
+
+        and:
         def video = new Video(masterPath: 'bar')
         def jobId = '123413212351'
 
@@ -69,8 +71,16 @@ class ElasticTranscoderServiceSpec extends Specification {
         and:
         1 * mockElasticTranscoder.createJob(_) >> { CreateJobRequest request ->
 
+            def expectations = [
+                    pipelineId: pipeline.id,
+                    mediaPlaylistCount: count,
+                    presetIds: presets.collect { name, presetId -> presetId},
+                    segmentDuration: '10',
+                    inputKey: video.masterPath
+            ]
+
             def validator = new CreateJobRequestValidator(request)
-            validator.validate([pipelineId: pipeline.id, mediaPlaylistCount: 1, inputKey: video.masterPath])
+            validator.validate(expectations)
 
             def job = Stub(Job) { getId() >> jobId }
             return Stub(CreateJobResult) { getJob() >> job }
@@ -78,6 +88,12 @@ class ElasticTranscoderServiceSpec extends Specification {
 
         and:
         1 * service.transcoderJobService.createJob(video, jobId)
+
+        where:
+        count    |   presets
+        1        |   [HLS_400K: '1351620000001-200050']
+        2        |   [HLS_400K: '1351620000001-200050', HLS_600K: '1351620000001-200040']
+        3        |   [HLS_400K: '1351620000001-200050', HLS_600K: '1351620000001-200040', HLS_1M: '1351620000001-200030']
     }
 
     private static class CreateJobRequestValidator {
@@ -92,7 +108,7 @@ class ElasticTranscoderServiceSpec extends Specification {
             pipeline(expectations.pipelineId)
             outputKeyPrefix()
             variantPlaylist()
-            mediaPlaylists(expectations.mediaPlaylistCount)
+            mediaPlaylists(expectations.mediaPlaylistCount, expectations.presetIds, expectations.segmentDuration)
             jobInput(expectations.inputKey)
         }
 
@@ -114,7 +130,7 @@ class ElasticTranscoderServiceSpec extends Specification {
             assert variantPlaylist.name.matches(UUID_REGEX)
         }
 
-        private void mediaPlaylists(int mediaPlaylistCount) {
+        private void mediaPlaylists(int mediaPlaylistCount, List presetIds, String segmentDuration) {
 
             def outputKeys = request.playlists[0].outputKeys
             assert outputKeys.size() == mediaPlaylistCount
@@ -122,9 +138,12 @@ class ElasticTranscoderServiceSpec extends Specification {
 
             request.outputs.each { output ->
                 assert outputKeys.contains(output.key)
-                assert output.presetId == '1351620000001-200050'
-                assert output.segmentDuration == '10'
+                assert presetIds.contains(output.presetId)
+                assert output.segmentDuration == segmentDuration
+                presetIds.remove(output.presetId)
             }
+
+            assert presetIds.isEmpty()
         }
 
         private void jobInput(String expectedKey) {
