@@ -6,12 +6,12 @@ class PathGenerationService {
     def grailsApplication
 
     String getUniqueInputPath() {
-        def inputBase = grailsApplication.config.storage.input
+        def inputBase = grailsApplication.config.reeltime.storage.input
         generateRandomUniquePath(inputBase)
     }
 
     String getUniqueOutputPath() {
-        def outputBase = grailsApplication.config.storage.output
+        def outputBase = grailsApplication.config.reeltime.storage.output
         generateRandomUniquePath(outputBase)
     }
 

@@ -12,7 +12,7 @@ class PathGenerationServiceSpec extends Specification {
     @Unroll
     void "unique file generated the first time for [#configName]"() {
         given:
-        grailsApplication.config.storage[configName] = base
+        grailsApplication.config.reeltime.storage[configName] = base
 
         and:
         service.grailsApplication = grailsApplication
@@ -36,7 +36,7 @@ class PathGenerationServiceSpec extends Specification {
     @Unroll
     void "unique file generated after the second time for [#configName]"() {
         given:
-        grailsApplication.config.storage[configName] = base
+        grailsApplication.config.reeltime.storage[configName] = base
 
         and:
         service.grailsApplication = grailsApplication

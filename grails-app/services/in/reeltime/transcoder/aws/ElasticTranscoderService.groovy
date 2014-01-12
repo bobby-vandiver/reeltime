@@ -23,7 +23,7 @@ class ElasticTranscoderService implements TranscoderService {
         def pipeline = getPipeline(ets)
         def input = createJobInput(video.masterPath)
 
-        def presets = grailsApplication.config.transcoder.output.presets
+        def presets = grailsApplication.config.reeltime.transcoder.output.presets
         def outputs = presets.collect { name, presetId -> createJobOutput(presetId) }
 
         def outputKeys = outputs.collect { it.key }
@@ -45,24 +45,24 @@ class ElasticTranscoderService implements TranscoderService {
     }
 
     private def getPipeline(AmazonElasticTranscoder ets) {
-        def name = grailsApplication.config.transcoder.pipeline
+        def name = grailsApplication.config.reeltime.transcoder.pipeline
         ets.listPipelines().pipelines.find { it.name == name}
     }
 
     private def createJobInput(String path) {
-        def settings = grailsApplication.config.transcoder.input + [key: path]
+        def settings = grailsApplication.config.reeltime.transcoder.input + [key: path]
         new JobInput(settings)
     }
 
     private def createJobOutput(String presetId) {
         def key = randomUUIDString()
-        def duration = grailsApplication.config.transcoder.output.segmentDuration
+        def duration = grailsApplication.config.reeltime.transcoder.output.segmentDuration
         new CreateJobOutput(key: key, presetId: presetId, segmentDuration: duration)
     }
 
     private def createJobPlaylist(Collection<String> outputKeys) {
         def name = randomUUIDString()
-        def format = grailsApplication.config.transcoder.output.format
+        def format = grailsApplication.config.reeltime.transcoder.output.format
         new CreateJobPlaylist(format: format, name: name, outputKeys: outputKeys)
     }
 
