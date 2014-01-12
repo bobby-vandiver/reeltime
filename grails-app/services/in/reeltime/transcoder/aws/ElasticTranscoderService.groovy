@@ -23,8 +23,8 @@ class ElasticTranscoderService implements TranscoderService {
         def pipeline = getPipeline(ets)
         def input = createJobInput(video.masterPath)
 
-        def formats = grailsApplication.config.transcoder.output.presets
-        def outputs = formats.collect { name, presetId -> createJobOutput(presetId) }
+        def presets = grailsApplication.config.transcoder.output.presets
+        def outputs = presets.collect { name, presetId -> createJobOutput(presetId) }
 
         def outputKeys = outputs.collect { it.key }
         def playlist = createJobPlaylist(outputKeys)
