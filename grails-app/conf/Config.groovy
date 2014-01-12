@@ -77,7 +77,7 @@ log4j = {
 
     root { info() }
 
-    info   'in.reeltime'
+    debug   'in.reeltime'
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
            'org.codehaus.groovy.grails.web.pages',          // GSP
