@@ -73,17 +73,9 @@ environments {
     }
 }
 
-// log4j configuration
 log4j = {
-    // Example of changing the log pattern for the default console appender:
-    //
-    //appenders {
-    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-    //}
 
-    root {
-        info()
-    }
+    root { info() }
 
     info   'in.reeltime'
 
