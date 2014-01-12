@@ -75,9 +75,8 @@ environments {
 
 log4j = {
 
-    root { info() }
-
-    debug   'in.reeltime'
+    debug  'in.reeltime',
+           'grails.app'
 
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
            'org.codehaus.groovy.grails.web.pages',          // GSP
