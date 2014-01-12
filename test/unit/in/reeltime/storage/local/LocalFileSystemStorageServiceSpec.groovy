@@ -11,6 +11,19 @@ import static java.io.File.separator
 @TestFor(LocalFileSystemStorageService)
 class LocalFileSystemStorageServiceSpec extends Specification {
 
+    private String directory
+    private String filename
+
+    private String contents
+    private InputStream inputStream
+
+    void setup() {
+        directory = System.getProperty('java.io.tmpdir') + separator + UUID.randomUUID()
+        filename = 'test.txt'
+        contents = 'THIS IS A TEST'
+        inputStream = new ByteArrayInputStream(contents.bytes)
+    }
+
     void "LocalFilesystemStorageService must be an instance of StorageService"() {
         expect:
         service instanceof StorageService
@@ -19,15 +32,11 @@ class LocalFileSystemStorageServiceSpec extends Specification {
     @Unroll
     void "file at [#path] exists"() {
         given:
-        def directory = randomTempDirectory()
-        def filename = path + 'test.txt'
-
-        and:
-        def inputStream = new ByteArrayInputStream('TEST'.bytes)
-        service.store(inputStream, directory, filename)
+        def filePath = path + 'test.txt'
+        service.store(inputStream, directory, filePath)
 
         expect:
-        service.exists(directory, filename)
+        service.exists(directory, filePath)
 
         where:
         path << ['', 'foo' + separator + 'bar' + separator]
@@ -36,24 +45,16 @@ class LocalFileSystemStorageServiceSpec extends Specification {
     @Unroll
     void "file at [#path] does not exist"() {
         given:
-        def directory = randomTempDirectory()
-        def filename = path + 'test.txt'
+        def filePath = path + 'test.txt'
 
         expect:
-        !service.exists(directory, filename)
+        !service.exists(directory, filePath)
 
         where:
         path << ['', 'foo' + separator + 'bar' + separator]
     }
 
     void "base is the directory and relative is the filename"() {
-        given:
-        def directory = randomTempDirectory()
-        def filename = 'test.txt'
-
-        def contents = 'THIS IS A TEST'
-        def inputStream = new ByteArrayInputStream(contents.bytes)
-
         when:
         service.store(inputStream, directory, filename)
 
@@ -63,17 +64,11 @@ class LocalFileSystemStorageServiceSpec extends Specification {
 
     void "relative specifies a nested file"() {
         given:
-        def directory = randomTempDirectory()
-        def filename = 'test.txt'
-
         def relativePath = 'foo' + separator + 'bar' + separator
         def filePath = relativePath + filename
 
-        def absolutePath = directory + separator + relativePath
-
         and:
-        def contents = 'THIS IS A TEST'
-        def inputStream = new ByteArrayInputStream(contents.bytes)
+        def absolutePath = directory + separator + relativePath
 
         when:
         service.store(inputStream, directory, filePath)
@@ -83,10 +78,6 @@ class LocalFileSystemStorageServiceSpec extends Specification {
     }
 
     private static void assertFileContents(String contents, String directory, String filename) {
-
-        println "***directory: $directory"
-        println "***filename: $filename"
-
         new File(directory, filename).withInputStream { assert it.bytes == contents.bytes }
     }
 
@@ -94,22 +85,11 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         given:
         service.log = Mock(Log)
 
-        and:
-        def directory = randomTempDirectory()
-        def filename = 'test.txt'
-
-        def contents = 'THIS IS A TEST'
-        def inputStream = new ByteArrayInputStream(contents.bytes)
-
         when:
         service.store(inputStream, directory, filename)
 
         then:
         1 * service.log.debug("Creating directory [$directory]")
         1 * service.log.debug("Creating file [$filename]")
-    }
-
-    private static String randomTempDirectory() {
-        System.getProperty('java.io.tmpdir') + separator + UUID.randomUUID()
     }
 }
