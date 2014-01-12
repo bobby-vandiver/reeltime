@@ -9,7 +9,7 @@ class VideoStorageServiceSpec extends Specification {
     void "load storage input base path from config and store stream"() {
         given:
         def inputBase = 'master-videos'
-        grailsApplication.config.storage.input.masterVideos = inputBase
+        grailsApplication.config.storage.input = inputBase
 
         and:
         service.grailsApplication = grailsApplication
