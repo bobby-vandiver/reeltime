@@ -5,6 +5,8 @@ import in.reeltime.storage.StorageService
 
 class S3StorageService implements StorageService {
 
+    def awsService
+
     @Override
     boolean available(String basePath, String resourcePath) {
         return false
@@ -13,7 +15,7 @@ class S3StorageService implements StorageService {
     @Override
     void store(InputStream inputStream, String basePath, String resourcePath) {
 
-        def transferManager = TransferManagerFactory.create()
+        def transferManager = awsService.createTransferManager()
 
         def data = inputStream.bytes
         def metadata = new ObjectMetadata(contentLength: data.size())

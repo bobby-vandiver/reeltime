@@ -12,6 +12,7 @@ class AwsService implements InitializingBean {
 
     @Override
     void afterPropertiesSet() {
+        // TODO: Use AmazonS3EncryptionClient
         interfaceSimpleNamesToAwsClientClasses = [
                 AmazonElasticTranscoder: AmazonElasticTranscoderClient,
                 AmazonS3: AmazonS3Client

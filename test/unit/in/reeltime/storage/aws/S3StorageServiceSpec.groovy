@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.transfer.TransferManager
 import com.amazonaws.services.s3.transfer.Upload
 import grails.test.mixin.TestFor
 import in.reeltime.storage.StorageService
+import in.reeltime.aws.AwsService
 import spock.lang.Specification
 
 @TestFor(S3StorageService)
@@ -27,8 +28,9 @@ class S3StorageServiceSpec extends Specification {
         def mockUpload = Mock(Upload)
         def mockTransferManager = Mock(TransferManager)
 
-        GroovyStub(TransferManagerFactory, global: true)
-        TransferManagerFactory.create() >> mockTransferManager
+        service.awsService = Stub(AwsService) {
+            createTransferManager() >> mockTransferManager
+        }
 
         and:
         def validateArgs = { String b, String k, InputStream input, ObjectMetadata metadata ->
