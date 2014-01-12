@@ -1,0 +1,54 @@
+package in.reeltime.video
+
+import grails.test.mixin.Mock
+import grails.test.mixin.TestFor
+import spock.lang.Specification
+import in.reeltime.storage.StorageNameService
+import in.reeltime.user.User
+import in.reeltime.storage.VideoStorageService
+import in.reeltime.transcoder.TranscoderService
+
+@TestFor(VideoService)
+@Mock([Video])
+class VideoServiceSpec extends Specification {
+
+    void setup() {
+        service.videoStorageService = Mock(VideoStorageService)
+        service.storageNameService = Mock(StorageNameService)
+        service.transcoderService = Mock(TranscoderService)
+    }
+
+    void "store video stream, save the video object and then transcode it"() {
+        given:
+        def creator = new User(username: 'bob')
+        def title = 'fun times'
+        def videoStream = new ByteArrayInputStream('yay'.bytes)
+
+        and:
+        def masterPath = 'foo'
+        def outputPath = 'bar'
+
+        and:
+        def validateTranscodeVideoArgs = { Video v ->
+            assert v.creator == creator
+            assert v.title == title
+            assert v.masterPath == masterPath
+        }
+
+        when:
+        def video = service.createVideo(creator, title, videoStream)
+
+        then:
+        1 * service.storageNameService.getUniqueInputPath() >> masterPath
+        1 * service.videoStorageService.storeVideoStream(videoStream, masterPath)
+
+        and:
+        1 * service.storageNameService.getUniqueOutputPath() >> outputPath
+        1 * service.transcoderService.transcode(_ as Video, outputPath) >> { args -> validateTranscodeVideoArgs(args[0])}
+
+        and:
+        video.creator == creator
+        video.title == title
+        video.masterPath == masterPath
+    }
+}
