@@ -2,7 +2,7 @@ package in.reeltime.storage
 
 interface StorageService {
 
-    boolean available(String basePath, String resourcePath)
+    boolean available(String base, String relative)
 
-    void store(InputStream inputStream, String basePath, String resourcePath)
+    void store(InputStream inputStream, String base, String relative)
 }

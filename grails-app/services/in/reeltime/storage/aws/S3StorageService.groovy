@@ -10,10 +10,10 @@ class S3StorageService implements StorageService {
     def awsService
 
     @Override
-    boolean available(String basePath, String resourcePath) {
+    boolean available(String bucket, String key) {
         try {
             def s3 = awsService.createClient(AmazonS3) as AmazonS3
-            s3.getObjectMetadata(basePath, resourcePath)
+            s3.getObjectMetadata(bucket, key)
             return false
         }
         catch (AmazonServiceException ase) {
@@ -27,7 +27,7 @@ class S3StorageService implements StorageService {
     }
 
     @Override
-    void store(InputStream inputStream, String basePath, String resourcePath) {
+    void store(InputStream inputStream, String bucket, String key) {
 
         def transferManager = awsService.createTransferManager()
 
@@ -36,7 +36,7 @@ class S3StorageService implements StorageService {
 
         def binaryStream = new ByteArrayInputStream(data)
 
-        def upload = transferManager.upload(basePath, resourcePath, binaryStream, metadata)
+        def upload = transferManager.upload(bucket, key, binaryStream, metadata)
         upload.waitForUploadResult()
     }
 }
