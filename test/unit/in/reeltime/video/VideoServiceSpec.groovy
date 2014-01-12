@@ -3,7 +3,7 @@ package in.reeltime.video
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
-import in.reeltime.storage.StorageNameService
+import in.reeltime.storage.PathGenerationService
 import in.reeltime.user.User
 import in.reeltime.storage.VideoStorageService
 import in.reeltime.transcoder.TranscoderService
@@ -14,7 +14,7 @@ class VideoServiceSpec extends Specification {
 
     void setup() {
         service.videoStorageService = Mock(VideoStorageService)
-        service.storageNameService = Mock(StorageNameService)
+        service.pathGenerationService = Mock(PathGenerationService)
         service.transcoderService = Mock(TranscoderService)
     }
 
@@ -39,11 +39,11 @@ class VideoServiceSpec extends Specification {
         def video = service.createVideo(creator, title, videoStream)
 
         then:
-        1 * service.storageNameService.getUniqueInputPath() >> masterPath
+        1 * service.pathGenerationService.getUniqueInputPath() >> masterPath
         1 * service.videoStorageService.storeVideoStream(videoStream, masterPath)
 
         and:
-        1 * service.storageNameService.getUniqueOutputPath() >> outputPath
+        1 * service.pathGenerationService.getUniqueOutputPath() >> outputPath
         1 * service.transcoderService.transcode(_ as Video, outputPath) >> { args -> validateTranscodeVideoArgs(args[0])}
 
         and:

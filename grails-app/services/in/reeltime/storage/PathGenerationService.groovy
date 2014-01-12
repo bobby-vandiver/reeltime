@@ -1,6 +1,6 @@
 package in.reeltime.storage
 
-class StorageNameService {
+class PathGenerationService {
 
     def storageService
     def grailsApplication

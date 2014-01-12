@@ -4,8 +4,8 @@ import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
 
-@TestFor(StorageNameService)
-class StorageNameServiceSpec extends Specification {
+@TestFor(PathGenerationService)
+class PathGenerationServiceSpec extends Specification {
 
     private static final UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
 

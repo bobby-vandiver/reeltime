@@ -4,7 +4,7 @@ import in.reeltime.user.User
 
 class VideoService {
 
-    def storageNameService
+    def pathGenerationService
     def videoStorageService
     def transcoderService
 
@@ -12,12 +12,12 @@ class VideoService {
 
     def createVideo(User creator, String title, InputStream videoStream) {
 
-        def masterPath = storageNameService.uniqueInputPath
+        def masterPath = pathGenerationService.uniqueInputPath
         videoStorageService.storeVideoStream(videoStream, masterPath)
 
         def video = new Video(creator: creator, title: title, masterPath: masterPath).save()
 
-        def outputPath = storageNameService.uniqueOutputPath
+        def outputPath = pathGenerationService.uniqueOutputPath
         transcoderService.transcode(video, outputPath)
 
         return video
