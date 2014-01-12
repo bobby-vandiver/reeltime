@@ -107,3 +107,47 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/favicon.ico':                ['permitAll']
 ]
 
+// The following ReelTime settings must NOT be exposed in an external configuration:
+reeltime {
+
+    // S3 configuration
+    storage {
+        // The S3 bucket name where the master video files are stored
+        input = 'master-videos-test'
+
+        // The S3 bucket name where the video segments and playlist are stored
+        output = 'playlist-and-segments-test'
+    }
+
+    // Elastic Transcoder configuration
+    transcoder {
+        // The name of the Elastic Transcoder pipeline to use for transcoding.
+        pipeline = 'http-live-streaming-test'
+
+        // The default job input settings to use for all transcoding jobs
+        input {
+            aspectRatio = 'auto'
+            frameRate   = 'auto'
+            resolution  = 'auto'
+            interlaced  = 'auto'
+            container   = 'auto'
+        }
+
+        // The settings for transcoding job outputs (segments and playlist)
+        output {
+            // The length of each video segment in seconds
+            segmentDuration = '10'
+
+            // The playlist format -- only HLS version 3 is supported
+            format = 'HLSv3'
+
+            // Elastic Transcoder preset Ids:
+            // http://docs.aws.amazon.com/elastictranscoder/latest/developerguide/system-presets.html
+            presets {
+                HLS_400K = '1351620000001-200050'
+                HLS_600K = '1351620000001-200040'
+                HLS_1M   = '1351620000001-200030'
+            }
+        }
+    }
+}
