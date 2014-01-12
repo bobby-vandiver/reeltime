@@ -4,6 +4,7 @@ import grails.test.mixin.TestFor
 import in.reeltime.storage.StorageService
 import org.apache.commons.logging.Log
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static java.io.File.separator
 
@@ -15,9 +16,39 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         service instanceof StorageService
     }
 
-    void "basePath is the directory and resourcePath is the filename"() {
+    @Unroll
+    void "file at [#path] exists"() {
         given:
-        def directory = System.getProperty('java.io.tmpdir') + separator + UUID.randomUUID()
+        def directory = randomTempDirectory()
+        def filename = path + 'test.txt'
+
+        and:
+        def inputStream = new ByteArrayInputStream('TEST'.bytes)
+        service.store(inputStream, directory, filename)
+
+        expect:
+        service.exists(directory, filename)
+
+        where:
+        path << ['', 'foo' + separator + 'bar' + separator]
+    }
+
+    @Unroll
+    void "file at [#path] does not exist"() {
+        given:
+        def directory = randomTempDirectory()
+        def filename = path + 'test.txt'
+
+        expect:
+        !service.exists(directory, filename)
+
+        where:
+        path << ['', 'foo' + separator + 'bar' + separator]
+    }
+
+    void "base is the directory and relative is the filename"() {
+        given:
+        def directory = randomTempDirectory()
         def filename = 'test.txt'
 
         def contents = 'THIS IS A TEST'
@@ -30,9 +61,9 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         assertFileContents(contents, directory, filename)
     }
 
-    void "resourcePath specifies a nested file"() {
+    void "relative specifies a nested file"() {
         given:
-        def directory = System.getProperty('java.io.tmpdir') + separator + UUID.randomUUID()
+        def directory = randomTempDirectory()
         def filename = 'test.txt'
 
         def relativePath = 'foo' + separator + 'bar' + separator
@@ -64,7 +95,7 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         service.log = Mock(Log)
 
         and:
-        def directory = System.getProperty('java.io.tmpdir') + File.separator + UUID.randomUUID()
+        def directory = randomTempDirectory()
         def filename = 'test.txt'
 
         def contents = 'THIS IS A TEST'
@@ -76,5 +107,9 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         then:
         1 * service.log.debug("Creating directory [$directory]")
         1 * service.log.debug("Creating file [$filename]")
+    }
+
+    private static String randomTempDirectory() {
+        System.getProperty('java.io.tmpdir') + separator + UUID.randomUUID()
     }
 }

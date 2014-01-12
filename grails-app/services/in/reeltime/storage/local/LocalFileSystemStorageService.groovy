@@ -8,7 +8,7 @@ class LocalFileSystemStorageService implements StorageService {
 
     @Override
     boolean exists(String parent, String child) {
-        return false
+        new File(parent, child).exists()
     }
 
     @Override
