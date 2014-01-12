@@ -32,10 +32,10 @@ class S3StorageServiceSpec extends Specification {
 
     void "if the object metadata can be retrieved then the object exists and the path isn't available"() {
         when:
-        def available = service.available(BUCKET_NAME, KEY)
+        def available = service.exists(BUCKET_NAME, KEY)
 
         then:
-        !available
+        available
 
         and:
         1 * mockS3.getObjectMetadata(BUCKET_NAME, KEY)
@@ -43,10 +43,10 @@ class S3StorageServiceSpec extends Specification {
 
     void "getObjectMetadata will throw NoSuchKey error if the requested object doesn't exist"() {
         when:
-        def available = service.available(BUCKET_NAME, KEY)
+        def available = service.exists(BUCKET_NAME, KEY)
 
         then:
-        available
+        !available
 
         and:
         1 * mockS3.getObjectMetadata(BUCKET_NAME, KEY) >> {
@@ -58,7 +58,7 @@ class S3StorageServiceSpec extends Specification {
 
     void "rethrow exception if NoSuchKey error is not the cause"() {
         when:
-        service.available(BUCKET_NAME, KEY)
+        service.exists(BUCKET_NAME, KEY)
 
         then:
         def e = thrown(AmazonServiceException)

@@ -10,15 +10,15 @@ class S3StorageService implements StorageService {
     def awsService
 
     @Override
-    boolean available(String bucket, String key) {
+    boolean exists(String bucket, String key) {
         try {
             def s3 = awsService.createClient(AmazonS3) as AmazonS3
             s3.getObjectMetadata(bucket, key)
-            return false
+            return true
         }
         catch (AmazonServiceException ase) {
             if(ase.errorCode == 'NoSuchKey') {
-                return true
+                return false
             }
             else {
                 throw ase

@@ -25,7 +25,7 @@ class PathGenerationServiceSpec extends Specification {
         name.matches(UUID_REGEX)
 
         and:
-        1 * service.storageService.available(base, _) >> true
+        1 * service.storageService.exists(base, _) >> false
 
         where:
         configName      |   base        |   methodName
@@ -49,7 +49,7 @@ class PathGenerationServiceSpec extends Specification {
         name.matches(UUID_REGEX)
 
         and:
-        2 * service.storageService.available(base, _) >>> [false, true]
+        2 * service.storageService.exists(base, _) >>> [true, false]
 
         where:
         configName      |   base        |   methodName

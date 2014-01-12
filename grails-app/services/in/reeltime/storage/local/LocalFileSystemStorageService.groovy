@@ -7,7 +7,7 @@ import static java.io.File.separator
 class LocalFileSystemStorageService implements StorageService {
 
     @Override
-    boolean available(String parent, String child) {
+    boolean exists(String parent, String child) {
         return false
     }
 

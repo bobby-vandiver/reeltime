@@ -17,7 +17,7 @@ class PathGenerationService {
 
     private String generateRandomUniquePath(base) {
         def path = randomUUIDString()
-        while (!storageService.available(base, path)) {
+        while (storageService.exists(base, path)) {
             path = randomUUIDString()
         }
         return path
