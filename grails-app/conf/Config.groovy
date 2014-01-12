@@ -98,6 +98,9 @@ grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'in.reeltime.us
 grails.plugin.springsecurity.authority.className = 'in.reeltime.user.Role'
 
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+    // TODO: Temporarily allow access to all endpoints for development
+    '/**':                            ['permitAll'],
+
 	'/':                              ['permitAll'],
 	'/index':                         ['permitAll'],
 	'/index.gsp':                     ['permitAll'],
