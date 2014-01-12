@@ -16,6 +16,7 @@ class VideoService {
         videoStorageService.storeVideoStream(videoStream, masterPath)
 
         def video = new Video(creator: creator, title: title, masterPath: masterPath).save()
+        log.info("Created video with id [${video.id}] for user [${creator.username}]")
 
         def outputPath = pathGenerationService.uniqueOutputPath
         transcoderService.transcode(video, outputPath)

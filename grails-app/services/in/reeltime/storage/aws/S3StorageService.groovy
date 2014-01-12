@@ -11,6 +11,7 @@ class S3StorageService implements StorageService {
 
     @Override
     boolean exists(String bucket, String key) {
+        log.debug("Checking bucket [$bucket] for existence of key [$key]")
         try {
             def s3 = awsService.createClient(AmazonS3) as AmazonS3
             s3.getObjectMetadata(bucket, key)
@@ -29,6 +30,7 @@ class S3StorageService implements StorageService {
     @Override
     void store(InputStream inputStream, String bucket, String key) {
 
+        log.debug("Storing input stream to bucket [$bucket] with key [$key]")
         def transferManager = awsService.createTransferManager()
 
         def data = inputStream.bytes

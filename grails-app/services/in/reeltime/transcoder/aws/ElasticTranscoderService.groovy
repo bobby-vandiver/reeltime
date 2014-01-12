@@ -38,6 +38,7 @@ class ElasticTranscoderService implements TranscoderService {
                 playlists: [playlist]
         )
 
+        log.info("Submitting job to Elastic Transcoder for video [${video.id}] to be output to bucket [$output]")
         def result = ets.createJob(request)
         def jobId = result.job.id
 
@@ -46,23 +47,27 @@ class ElasticTranscoderService implements TranscoderService {
 
     private def getPipeline(AmazonElasticTranscoder ets) {
         def name = grailsApplication.config.reeltime.transcoder.pipeline
+        log.debug("Searching for pipeline [$name]")
         ets.listPipelines().pipelines.find { it.name == name}
     }
 
     private def createJobInput(String path) {
         def settings = grailsApplication.config.reeltime.transcoder.input + [key: path]
+        log.debug("Job input settings: [$settings]")
         new JobInput(settings)
     }
 
     private def createJobOutput(String presetId) {
         def key = randomUUIDString()
         def duration = grailsApplication.config.reeltime.transcoder.output.segmentDuration
+        log.debug("Job output settings -- key [$key] -- presetId [$presetId] -- duration [$duration]")
         new CreateJobOutput(key: key, presetId: presetId, segmentDuration: duration)
     }
 
     private def createJobPlaylist(Collection<String> outputKeys) {
         def name = randomUUIDString()
         def format = grailsApplication.config.reeltime.transcoder.output.format
+        log.debug("Job playlist settings -- name [$name] -- format [$format] -- outputKeys [$outputKeys]")
         new CreateJobPlaylist(format: format, name: name, outputKeys: outputKeys)
     }
 
