@@ -1,5 +1,7 @@
 package in.reeltime.storage.aws
 
+import com.amazonaws.AmazonServiceException
+import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
 import in.reeltime.storage.StorageService
 
@@ -9,7 +11,19 @@ class S3StorageService implements StorageService {
 
     @Override
     boolean available(String basePath, String resourcePath) {
-        return false
+        try {
+            def s3 = awsService.createClient(AmazonS3) as AmazonS3
+            s3.getObjectMetadata(basePath, resourcePath)
+            return false
+        }
+        catch (AmazonServiceException ase) {
+            if(ase.errorCode == 'NoSuchKey') {
+                return true
+            }
+            else {
+                throw ase
+            }
+        }
     }
 
     @Override

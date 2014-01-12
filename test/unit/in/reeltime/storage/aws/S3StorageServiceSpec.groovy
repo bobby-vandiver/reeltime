@@ -1,5 +1,7 @@
 package in.reeltime.storage.aws
 
+import com.amazonaws.AmazonServiceException
+import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.transfer.TransferManager
 import com.amazonaws.services.s3.transfer.Upload
@@ -11,16 +13,67 @@ import spock.lang.Specification
 @TestFor(S3StorageService)
 class S3StorageServiceSpec extends Specification {
 
+    private static final String BUCKET_NAME = 'testBucket'
+    private static final String KEY = 'testKey'
+
+    private AmazonS3 mockS3
+
+    void setup() {
+        mockS3 = Mock(AmazonS3)
+        service.awsService = Stub(AwsService) {
+            createClient(AmazonS3) >> mockS3
+        }
+    }
+
     void "S3StorageService must be an instance of StorageService"() {
         expect:
         service instanceof StorageService
     }
 
+    void "if the object metadata can be retrieved then the object exists and the path isn't available"() {
+        when:
+        def available = service.available(BUCKET_NAME, KEY)
+
+        then:
+        !available
+
+        and:
+        1 * mockS3.getObjectMetadata(BUCKET_NAME, KEY)
+    }
+
+    void "getObjectMetadata will throw NoSuchKey error if the requested object doesn't exist"() {
+        when:
+        def available = service.available(BUCKET_NAME, KEY)
+
+        then:
+        available
+
+        and:
+        1 * mockS3.getObjectMetadata(BUCKET_NAME, KEY) >> {
+            def ase = new AmazonServiceException('TEST')
+            ase.errorCode = 'NoSuchKey'
+            throw ase
+        }
+    }
+
+    void "rethrow exception if NoSuchKey error is not the cause"() {
+        when:
+        service.available(BUCKET_NAME, KEY)
+
+        then:
+        def e = thrown(AmazonServiceException)
+        e.errorCode == 'MethodNotAllowed'
+
+        and:
+        1 * mockS3.getObjectMetadata(BUCKET_NAME, KEY) >> {
+            def ase = new AmazonServiceException('TEST')
+            ase.errorCode = 'MethodNotAllowed'
+            throw ase
+        }
+    }
+
     void "basePath is the bucketName and resourcePath is the key for AWS S3"() {
         given:
-        def bucketName = 'testBucket'
-        def key = 'testKey'
-
         def contents = 'AWS S3 TEST'
         def inputStream = new ByteArrayInputStream(contents.bytes)
 
@@ -34,8 +87,8 @@ class S3StorageServiceSpec extends Specification {
 
         and:
         def validateArgs = { String b, String k, InputStream input, ObjectMetadata metadata ->
-            assert b == bucketName
-            assert k == key
+            assert b == BUCKET_NAME
+            assert k == KEY
             assert input.bytes == contents.bytes
             assert metadata.contentLength == contents.bytes.size()
 
@@ -43,7 +96,7 @@ class S3StorageServiceSpec extends Specification {
         }
 
         when:
-        service.store(inputStream, bucketName, key)
+        service.store(inputStream, BUCKET_NAME, KEY)
 
         then:
         1 * mockTransferManager.upload(*_) >> { args -> validateArgs(args) }
