@@ -21,7 +21,7 @@ class VideoControllerSpec extends Specification {
 
         and:
         def json = new JsonSlurper().parseText(response.contentAsString)
-        json.message == 'Video is required'
+        json.message == '[video] is required'
     }
 
     void "return 400 if title param is missing from request"() {
@@ -38,7 +38,7 @@ class VideoControllerSpec extends Specification {
 
         and:
         def json = new JsonSlurper().parseText(response.contentAsString)
-        json.message == 'Title is required'
+        json.message == '[title] is required'
     }
 
     void "return 201 after video has been uploaded with minimum params"() {

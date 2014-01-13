@@ -34,10 +34,10 @@ class VideoController {
         def message = ''
 
         if(!params?.video) {
-            message = 'Video is required'
+            message = '[video] is required'
         }
         else if(!params?.title) {
-            message = 'Title is required'
+            message = '[title] is required'
         }
         return message
     }
