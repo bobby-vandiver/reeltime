@@ -49,27 +49,7 @@ class S3StorageServiceSpec extends Specification {
         !available
 
         and:
-        1 * mockS3.getObjectMetadata(BUCKET_NAME, KEY) >> {
-            def ase = new AmazonServiceException('TEST')
-            ase.errorCode = 'NoSuchKey'
-            throw ase
-        }
-    }
-
-    void "rethrow exception if NoSuchKey error is not the cause"() {
-        when:
-        service.exists(BUCKET_NAME, KEY)
-
-        then:
-        def e = thrown(AmazonServiceException)
-        e.errorCode == 'MethodNotAllowed'
-
-        and:
-        1 * mockS3.getObjectMetadata(BUCKET_NAME, KEY) >> {
-            def ase = new AmazonServiceException('TEST')
-            ase.errorCode = 'MethodNotAllowed'
-            throw ase
-        }
+        1 * mockS3.getObjectMetadata(BUCKET_NAME, KEY) >> { throw new AmazonServiceException('TEST') }
     }
 
     void "basePath is the bucketName and resourcePath is the key for AWS S3"() {

@@ -18,12 +18,9 @@ class S3StorageService implements StorageService {
             return true
         }
         catch (AmazonServiceException ase) {
-            if(ase.errorCode == 'NoSuchKey') {
-                return false
-            }
-            else {
-                throw ase
-            }
+            // S3 does not expose an API to check for the existence of an object,
+            // instead an AmazonServiceException will be thrown if the object does not exist.
+            return false
         }
     }
 
