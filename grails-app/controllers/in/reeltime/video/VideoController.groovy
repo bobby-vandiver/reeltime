@@ -7,6 +7,8 @@ class VideoController {
     def userAuthenticationService
     def videoService
 
+    static allowedMethods = [upload: 'POST']
+
     def upload() {
 
         if(hasValidParams()) {
