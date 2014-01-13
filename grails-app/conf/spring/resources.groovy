@@ -2,14 +2,16 @@ import grails.util.Environment
 
 beans = {
 
-    // Use local file system and ffmpeg unless in production on AWS
-    springConfig.addAlias 'storageService', 'localFileSystemStorageService'
-    springConfig.addAlias 'transcoderService', 'ffmpegTranscoderService'
+    // Use AWS backed services by default
+    springConfig.addAlias 'storageService', 's3StorageService'
+    springConfig.addAlias 'transcoderService', 'elasticTranscoderService'
 
     Environment.executeForCurrentEnvironment {
-        production {
-            springConfig.addAlias 'storageService', 's3StorageService'
-            springConfig.addAlias 'transcoderService', 'elasticTranscoderService'
+
+        // Use local file system and ffmpeg for local development
+        development {
+            springConfig.addAlias 'storageService', 'localFileSystemStorageService'
+            springConfig.addAlias 'transcoderService', 'ffmpegTranscoderService'
         }
     }
 }
