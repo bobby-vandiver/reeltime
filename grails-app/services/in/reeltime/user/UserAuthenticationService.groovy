@@ -7,6 +7,6 @@ class UserAuthenticationService {
     }
 
     def getLoggedInUser() {
-
+        User.findByUsername('bob')
     }
 }
