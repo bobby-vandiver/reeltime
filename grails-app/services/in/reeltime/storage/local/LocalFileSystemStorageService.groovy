@@ -7,6 +7,11 @@ import static java.io.File.separator
 class LocalFileSystemStorageService implements StorageService {
 
     @Override
+    InputStream load(String parent, String child) {
+        return null
+    }
+
+    @Override
     boolean exists(String parent, String child) {
         log.debug("Checking existence of file with parent [$parent] and child [$child]")
         new File(parent, child).exists()

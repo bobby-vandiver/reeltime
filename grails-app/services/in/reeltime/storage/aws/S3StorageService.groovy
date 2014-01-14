@@ -10,6 +10,11 @@ class S3StorageService implements StorageService {
     def awsService
 
     @Override
+    InputStream load(String bucket, String key) {
+        return null
+    }
+
+    @Override
     boolean exists(String bucket, String key) {
         log.debug("Checking bucket [$bucket] for existence of key [$key]")
         try {
