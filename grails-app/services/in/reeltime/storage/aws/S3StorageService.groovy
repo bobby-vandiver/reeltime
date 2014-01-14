@@ -11,7 +11,11 @@ class S3StorageService implements StorageService {
 
     @Override
     InputStream load(String bucket, String key) {
-        return null
+        log.debug("Loading input stream from S3 object in bucket [$bucket] with key [$key]")
+        def s3 = awsService.createClient(AmazonS3) as AmazonS3
+
+        def object = s3.getObject(bucket, key)
+        object.objectContent
     }
 
     @Override

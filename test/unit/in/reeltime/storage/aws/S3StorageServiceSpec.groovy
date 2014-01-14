@@ -3,6 +3,8 @@ package in.reeltime.storage.aws
 import com.amazonaws.AmazonServiceException
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
+import com.amazonaws.services.s3.model.S3Object
+import com.amazonaws.services.s3.model.S3ObjectInputStream
 import com.amazonaws.services.s3.transfer.TransferManager
 import com.amazonaws.services.s3.transfer.Upload
 import grails.test.mixin.TestFor
@@ -28,6 +30,23 @@ class S3StorageServiceSpec extends Specification {
     void "S3StorageService must be an instance of StorageService"() {
         expect:
         service instanceof StorageService
+    }
+
+    void "load input stream for S3 object"() {
+        given:
+        def stubS3ObjectInputStream = Stub(S3ObjectInputStream)
+        def stubS3Object = Stub(S3Object) {
+            getObjectContent() >> stubS3ObjectInputStream
+        }
+
+        when:
+        def stream = service.load(BUCKET_NAME, KEY)
+
+        then:
+        1 * mockS3.getObject(BUCKET_NAME, KEY) >> stubS3Object
+
+        and:
+        stream == stubS3ObjectInputStream
     }
 
     void "if the object metadata can be retrieved then the object exists and the path isn't available"() {
