@@ -52,7 +52,7 @@ class S3StorageServiceSpec extends Specification {
         1 * mockS3.getObjectMetadata(BUCKET_NAME, KEY) >> { throw new AmazonServiceException('TEST') }
     }
 
-    void "basePath is the bucketName and resourcePath is the key for AWS S3"() {
+    void "store input stream as object specified by the key to an S3 bucket"() {
         given:
         def contents = 'AWS S3 TEST'
         def inputStream = new ByteArrayInputStream(contents.bytes)

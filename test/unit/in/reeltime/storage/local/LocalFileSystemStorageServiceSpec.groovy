@@ -80,7 +80,7 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         path << ['', 'foo' + separator + 'bar' + separator]
     }
 
-    void "base is the directory and relative is the filename"() {
+    void "store input stream to a file"() {
         when:
         service.store(inputStream, directory, filename)
 
@@ -88,7 +88,7 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         assertFileContents(contents, directory, filename)
     }
 
-    void "relative specifies a nested file"() {
+    void "store input stream to a file specified by a nested path"() {
         given:
         def relativePath = 'foo' + separator + 'bar' + separator
         def filePath = relativePath + filename
@@ -105,17 +105,5 @@ class LocalFileSystemStorageServiceSpec extends Specification {
 
     private static void assertFileContents(String contents, String directory, String filename) {
         new File(directory, filename).withInputStream { assert it.bytes == contents.bytes }
-    }
-
-    void "log directory and filename"() {
-        given:
-        service.log = Mock(Log)
-
-        when:
-        service.store(inputStream, directory, filename)
-
-        then:
-        1 * service.log.debug("Creating directory [$directory]")
-        1 * service.log.debug("Creating file [$filename]")
     }
 }
