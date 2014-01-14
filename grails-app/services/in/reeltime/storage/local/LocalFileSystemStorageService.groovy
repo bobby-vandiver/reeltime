@@ -8,7 +8,8 @@ class LocalFileSystemStorageService implements StorageService {
 
     @Override
     InputStream load(String parent, String child) {
-        return null
+        log.debug("Loading input stream from parent [$parent] with child [$child]")
+        new File(parent, child).newInputStream()
     }
 
     @Override

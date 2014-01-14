@@ -29,6 +29,32 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         service instanceof StorageService
     }
 
+    void "load from temp directory"() {
+        given:
+        service.store(inputStream, directory, filename)
+
+        when:
+        def stream = service.load(directory, filename)
+
+        then:
+        stream.text == contents
+    }
+
+    void "load file specified by a nested path"() {
+        given:
+        def relativePath = 'foo' + separator + 'bar' + separator
+        def filePath = relativePath + filename
+
+        and:
+        service.store(inputStream, directory, filePath)
+
+        when:
+        def stream = service.load(directory, filePath)
+
+        then:
+        stream.text == contents
+    }
+
     @Unroll
     void "file at [#path] exists"() {
         given:
