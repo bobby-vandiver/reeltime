@@ -171,7 +171,7 @@ class NotificationControllerSpec extends Specification {
 
         then:
         1 * controller.transcoderJobService.complete(transcoderJob)
-        1 * controller.playlistService.addPlaylists(video, 'hls-small-master')
+        1 * controller.playlistService.addPlaylists(video, 'hls-small/', 'hls-small-master')
 
         and:
         response.status == 200

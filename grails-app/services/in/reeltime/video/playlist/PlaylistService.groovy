@@ -8,13 +8,15 @@ class PlaylistService {
 
     def playlistParsingService
 
-    def addPlaylists(Video video, String variantPlaylistKey) {
+    def addPlaylists(Video video, String keyPrefix, String variantPlaylistKey) {
 
-        def variantPlaylist = playlistParsingService.parseVariantPlaylist(variantPlaylistKey) as VariantPlaylist
+        def variantPath = keyPrefix + variantPlaylistKey
+        def variantPlaylist = playlistParsingService.parseVariantPlaylist(variantPath) as VariantPlaylist
 
         variantPlaylist.streams.each { stream ->
 
-            def mediaPlaylist = playlistParsingService.parseMediaPlaylist(stream.uri) as MediaPlaylist
+            def mediaPath = keyPrefix + stream.uri
+            def mediaPlaylist = playlistParsingService.parseMediaPlaylist(mediaPath) as MediaPlaylist
 
             def playlist = new Playlist(
                     codecs: stream.codecs,

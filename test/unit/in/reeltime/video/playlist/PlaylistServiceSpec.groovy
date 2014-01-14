@@ -34,12 +34,15 @@ class PlaylistServiceSpec extends Specification {
         def mediaPlaylist = new MediaPlaylist(targetDuration: 10, mediaSequence: 20,
                 version: 3, allowCache: true, segments: segments)
 
+        and:
+        def keyPrefix = 'base/'
+
         when:
-        service.addPlaylists(video, variantPlaylistKey)
+        service.addPlaylists(video, keyPrefix, variantPlaylistKey)
 
         then:
-        1 * service.playlistParsingService.parseVariantPlaylist(variantPlaylistKey) >> variantPlaylist
-        1 * service.playlistParsingService.parseMediaPlaylist(stream.uri) >> mediaPlaylist
+        1 * service.playlistParsingService.parseVariantPlaylist(keyPrefix + variantPlaylistKey) >> variantPlaylist
+        1 * service.playlistParsingService.parseMediaPlaylist(keyPrefix + stream.uri) >> mediaPlaylist
 
         and:
         video.playlists.size() == 1
@@ -95,15 +98,18 @@ class PlaylistServiceSpec extends Specification {
         def media1 = new MediaPlaylist(targetDuration: 11, mediaSequence: 21, version: 3, allowCache: true)
         def media2 = new MediaPlaylist(targetDuration: 12, mediaSequence: 22, version: 4, allowCache: false)
 
+        and:
+        def keyPrefix = 'base/'
+
         when:
-        service.addPlaylists(video, variantPlaylistKey)
+        service.addPlaylists(video, keyPrefix, variantPlaylistKey)
 
         then:
-        1 * service.playlistParsingService.parseVariantPlaylist(variantPlaylistKey) >> variantPlaylist
+        1 * service.playlistParsingService.parseVariantPlaylist(keyPrefix + variantPlaylistKey) >> variantPlaylist
 
         and:
-        1 * service.playlistParsingService.parseMediaPlaylist(stream1.uri) >> media1
-        1 * service.playlistParsingService.parseMediaPlaylist(stream2.uri) >> media2
+        1 * service.playlistParsingService.parseMediaPlaylist(keyPrefix + stream1.uri) >> media1
+        1 * service.playlistParsingService.parseMediaPlaylist(keyPrefix + stream2.uri) >> media2
 
         and:
         video.playlists.size() == 2
