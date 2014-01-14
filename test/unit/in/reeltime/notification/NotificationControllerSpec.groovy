@@ -3,10 +3,12 @@ package in.reeltime.notification
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.transcoder.TranscoderJob
+import in.reeltime.video.Video
 import org.apache.commons.logging.Log
 import spock.lang.Specification
 import spock.lang.Unroll
 import in.reeltime.transcoder.TranscoderJobService
+import in.reeltime.video.playlist.PlaylistService
 
 @TestFor(NotificationController)
 @Mock([TranscoderJob])
@@ -144,9 +146,10 @@ class NotificationControllerSpec extends Specification {
         response.status == 200
     }
 
-    void "load the elastic transcoder job and delegate to service to complete transcoding process"() {
+    void "load the elastic transcoder job and delegate to services to complete transcoding process"() {
         given:
         controller.transcoderJobService = Mock(TranscoderJobService)
+        controller.playlistService = Mock(PlaylistService)
 
         and:
         def message = '''{
@@ -160,13 +163,15 @@ class NotificationControllerSpec extends Specification {
         request.content = message.bytes
 
         and:
-        def transcoderJob = new TranscoderJob(jobId: '1388444889472-t01s28').save(validate: false)
+        def video = new Video()
+        def transcoderJob = new TranscoderJob(video: video, jobId: '1388444889472-t01s28').save(validate: false)
 
         when:
         controller.completed()
 
         then:
         1 * controller.transcoderJobService.complete(transcoderJob)
+        1 * controller.playlistService.addPlaylists(video, 'hls-small-master', ['hls-small-400k'])
 
         and:
         response.status == 200

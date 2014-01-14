@@ -13,6 +13,7 @@ class NotificationController {
 
     def notificationService
     def transcoderJobService
+    def playlistService
 
     // TODO: Implement functional tests to verify this because unit/integration tests can't test this
     // http://jira.grails.org/browse/GRAILS-8426
@@ -20,20 +21,28 @@ class NotificationController {
 
     def completed() {
         handleRequest {
-            def transcoderJob = TranscoderJob.findByJobId(jobId)
+            def message = messagesAsJson
+            def transcoderJob = TranscoderJob.findByJobId(message.jobId)
             transcoderJobService.complete(transcoderJob)
+
+            def variantPlaylistKey = message.playlists[0].name
+            def mediaPlaylistKeys = message.playlists[0].outputKeys
+
+            def video = transcoderJob.video
+            playlistService.addPlaylists(video, variantPlaylistKey, mediaPlaylistKeys)
         }
     }
 
     def progressing() {
         handleRequest {
-            log.debug("Elastic Transcoder job [$jobId] is progressing")
+            def message = messagesAsJson
+            log.debug("Elastic Transcoder job [${message.jobId}] is progressing")
         }
     }
 
-    private String getJobId() {
+    private def getMessagesAsJson() {
         def message = request.JSON.Message
-        new JsonSlurper().parseText(message).jobId
+        new JsonSlurper().parseText(message)
     }
 
     def warning() {
