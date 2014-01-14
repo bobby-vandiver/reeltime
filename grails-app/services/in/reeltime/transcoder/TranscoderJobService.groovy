@@ -1,6 +1,7 @@
 package in.reeltime.transcoder
 
 import in.reeltime.video.Video
+import static in.reeltime.transcoder.TranscoderJobStatus.*
 
 class TranscoderJobService {
 
@@ -10,6 +11,8 @@ class TranscoderJobService {
     }
 
     def complete(String jobId) {
-
+        def job = TranscoderJob.findByJobId(jobId)
+        job.status = Complete
+        job.save()
     }
 }
