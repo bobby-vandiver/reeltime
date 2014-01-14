@@ -12,6 +12,7 @@ class ElasticTranscoderService implements TranscoderService {
 
     def awsService
     def transcoderJobService
+    def pathGenerationService
 
     def grailsApplication
 
@@ -59,20 +60,16 @@ class ElasticTranscoderService implements TranscoderService {
     }
 
     private def createJobOutput(String presetId) {
-        def key = randomUUIDString()
+        def key = pathGenerationService.uniqueOutputPath
         def duration = grailsApplication.config.reeltime.transcoder.output.segmentDuration
         log.debug("Job output settings -- key [$key] -- presetId [$presetId] -- duration [$duration]")
         new CreateJobOutput(key: key, presetId: presetId, segmentDuration: duration)
     }
 
     private def createJobPlaylist(Collection<String> outputKeys) {
-        def name = randomUUIDString()
+        def name = pathGenerationService.uniqueOutputPath
         def format = grailsApplication.config.reeltime.transcoder.output.format
         log.debug("Job playlist settings -- name [$name] -- format [$format] -- outputKeys [$outputKeys]")
         new CreateJobPlaylist(format: format, name: name, outputKeys: outputKeys)
-    }
-
-    private static String randomUUIDString() {
-        UUID.randomUUID() as String
     }
 }

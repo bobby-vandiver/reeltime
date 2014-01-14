@@ -11,6 +11,7 @@ import in.reeltime.transcoder.TranscoderJobService
 import in.reeltime.transcoder.TranscoderService
 import in.reeltime.aws.AwsService
 import in.reeltime.video.Video
+import in.reeltime.storage.PathGenerationService
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -46,6 +47,10 @@ class ElasticTranscoderServiceSpec extends Specification {
 
         service.transcoderJobService = Mock(TranscoderJobService)
         service.awsService = Mock(AwsService)
+
+        service.pathGenerationService = Stub(PathGenerationService) {
+            getUniqueOutputPath() >> UUID.randomUUID()
+        }
     }
 
     void "must be an instance of TranscoderService"() {
