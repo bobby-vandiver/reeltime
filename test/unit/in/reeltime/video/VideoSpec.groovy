@@ -27,6 +27,7 @@ class VideoSpec extends Specification {
         video.validate()
 
         and:
+        !video.available
         video.creator == user
         video.title == 'foo'
         video.description == 'bar'

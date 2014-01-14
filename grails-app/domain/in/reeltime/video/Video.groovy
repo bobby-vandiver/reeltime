@@ -11,6 +11,7 @@ class Video {
     String description
 
     String masterPath
+    boolean available
 
     static hasMany = [playlists: Playlist]
 
