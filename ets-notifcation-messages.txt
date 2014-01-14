@@ -41,6 +41,39 @@ x-amz-sns-message-type :: Notification
     "UnsubscribeURL": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:166209233708:ets-listener:58128c0f-7148-4c3f-a26a-2bc386df9314"
 }
 
+Pretty print message:
+
+"{
+  "state" : "PROGRESSING",
+  "version" : "2012-09-25",
+  "jobId" : "1388444889472-t01s28",
+  "pipelineId" : "1388441748515-gvt196",
+  "input" : {
+    "key" : "small.mp4",
+    "frameRate" : "auto",
+    "resolution" : "auto",
+    "aspectRatio" : "auto",
+    "interlaced" : "auto",
+    "container" : "auto"
+  },
+  "outputKeyPrefix" : "hls-small/",
+  "outputs" : [ {
+    "id" : "1",
+    "presetId" : "1351620000001-200050",
+    "key" : "hls-small-400k",
+    "thumbnailPattern" : "",
+    "rotate" : "auto",
+    "segmentDuration" : 10.0,
+    "status" : "Progressing"
+  } ],
+  "playlists" : [ {
+    "name" : "hls-small-master",
+    "format" : "HLSv3",
+    "outputKeys" : [ "hls-small-400k" ],
+    "status" : "Progressing"
+  } ]
+}"
+
 
 ========================
 Transcoder Job Completed
@@ -61,3 +94,38 @@ x-amz-sns-message-type :: Notification
     "UnsubscribeURL": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:166209233708:ets-listener:58128c0f-7148-4c3f-a26a-2bc386df9314"
 }
 
+Pretty print message:
+
+"{
+  "state" : "COMPLETED",
+  "version" : "2012-09-25",
+  "jobId" : "1388444889472-t01s28",
+  "pipelineId" : "1388441748515-gvt196",
+  "input" : {
+    "key" : "small.mp4",
+    "frameRate" : "auto",
+    "resolution" : "auto",
+    "aspectRatio" : "auto",
+    "interlaced" : "auto",
+    "container" : "auto"
+  },
+  "outputKeyPrefix" : "hls-small/",
+  "outputs" : [ {
+    "id" : "1",
+    "presetId" : "1351620000001-200050",
+    "key" : "hls-small-400k",
+    "thumbnailPattern" : "",
+    "rotate" : "auto",
+    "segmentDuration" : 10.0,
+    "status" : "Complete",
+    "duration" : 6,
+    "width" : 400,
+    "height" : 228
+  } ],
+  "playlists" : [ {
+    "name" : "hls-small-master",
+    "format" : "HLSv3",
+    "outputKeys" : [ "hls-small-400k" ],
+    "status" : "Complete"
+  } ]
+}"
