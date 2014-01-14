@@ -25,11 +25,10 @@ class NotificationController {
             def transcoderJob = TranscoderJob.findByJobId(message.jobId)
             transcoderJobService.complete(transcoderJob)
 
-            def variantPlaylistKey = message.playlists[0].name
-            def mediaPlaylistKeys = message.playlists[0].outputKeys
-
             def video = transcoderJob.video
-            playlistService.addPlaylists(video, variantPlaylistKey, mediaPlaylistKeys)
+            def variantPlaylistKey = message.playlists[0].name
+
+            playlistService.addPlaylists(video, variantPlaylistKey)
         }
     }
 
