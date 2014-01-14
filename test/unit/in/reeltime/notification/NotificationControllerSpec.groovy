@@ -1,12 +1,15 @@
 package in.reeltime.notification
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import in.reeltime.transcoder.TranscoderJob
 import org.apache.commons.logging.Log
 import spock.lang.Specification
 import spock.lang.Unroll
 import in.reeltime.transcoder.TranscoderJobService
 
 @TestFor(NotificationController)
+@Mock([TranscoderJob])
 class NotificationControllerSpec extends Specification {
 
     @Unroll
@@ -141,10 +144,9 @@ class NotificationControllerSpec extends Specification {
         response.status == 200
     }
 
-    void "log and pass the elastic transcoder jobId to service to complete transcoding process"() {
+    void "load the elastic transcoder job and delegate to service to complete transcoding process"() {
         given:
         controller.transcoderJobService = Mock(TranscoderJobService)
-        controller.log = Mock(Log)
 
         and:
         def message = '''{
@@ -157,12 +159,14 @@ class NotificationControllerSpec extends Specification {
         request.addHeader('x-amz-sns-message-type', 'Notification')
         request.content = message.bytes
 
+        and:
+        def transcoderJob = new TranscoderJob(jobId: '1388444889472-t01s28').save(validate: false)
+
         when:
         controller.completed()
 
         then:
-        1 * controller.transcoderJobService.complete('1388444889472-t01s28')
-        1 * controller.log.info('Elastic Transcoder job [1388444889472-t01s28] is complete')
+        1 * controller.transcoderJobService.complete(transcoderJob)
 
         and:
         response.status == 200

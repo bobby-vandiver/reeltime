@@ -10,8 +10,8 @@ class TranscoderJobService {
         log.info("Created TranscoderJob [${job.id} with jobId [$jobId] for video [${video.id}")
     }
 
-    def complete(String jobId) {
-        def job = TranscoderJob.findByJobId(jobId)
+    def complete(TranscoderJob job) {
+        log.info("Transcoder job [${job.jobId}] is complete")
         job.status = Complete
         job.save()
     }

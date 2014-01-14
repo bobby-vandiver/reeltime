@@ -33,14 +33,14 @@ class TranscoderJobServiceSpec extends Specification {
         def jobId = '1234567890123-ABCDEF'
 
         and:
-        new TranscoderJob(video: video, jobId: jobId).save()
+        def job = new TranscoderJob(video: video, jobId: jobId).save()
 
         when:
-        service.complete(jobId)
+        service.complete(job)
 
         then:
-        def job = TranscoderJob.findByJobId(jobId)
-        job.status == Complete
+        def completedJob = TranscoderJob.findByJobId(jobId)
+        completedJob.status == Complete
     }
 
 }

@@ -1,6 +1,7 @@
 package in.reeltime.notification
 
 import groovy.json.JsonSlurper
+import in.reeltime.transcoder.TranscoderJob
 
 import static MessageType.MESSAGE_TYPE_HEADER
 import static MessageType.SUBSCRIPTION_CONFIRMATION
@@ -19,8 +20,8 @@ class NotificationController {
 
     def completed() {
         handleRequest {
-            log.info("Elastic Transcoder job [$jobId] is complete")
-            transcoderJobService.complete(jobId)
+            def transcoderJob = TranscoderJob.findByJobId(jobId)
+            transcoderJobService.complete(transcoderJob)
         }
     }
 
