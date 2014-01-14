@@ -5,7 +5,7 @@ import in.reeltime.user.User
 class VideoService {
 
     def pathGenerationService
-    def videoStorageService
+    def inputStorageService
     def transcoderService
 
     def grailsApplication
@@ -13,7 +13,7 @@ class VideoService {
     def createVideo(User creator, String title, InputStream videoStream) {
 
         def masterPath = pathGenerationService.uniqueInputPath
-        videoStorageService.storeVideoStream(videoStream, masterPath)
+        inputStorageService.store(videoStream, masterPath)
 
         def video = new Video(creator: creator, title: title, masterPath: masterPath).save()
         log.info("Created video with id [${video.id}] for user [${creator.username}]")

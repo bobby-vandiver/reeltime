@@ -1,12 +1,12 @@
 package in.reeltime.storage
 
-class VideoStorageService {
+class InputStorageService {
 
     def storageService
     def grailsApplication
 
-    def storeVideoStream(InputStream videoStream, String path) {
+    def store(InputStream inputStream, String path) {
         def inputBase = grailsApplication.config.reeltime.storage.input
-        storageService.store(videoStream, inputBase, path)
+        storageService.store(inputStream, inputBase, path)
     }
 }
