@@ -33,7 +33,8 @@ class PlaylistService {
             }
 
             video.addToPlaylists(playlist)
-            video.save()
         }
+
+        video.save()
     }
 }
