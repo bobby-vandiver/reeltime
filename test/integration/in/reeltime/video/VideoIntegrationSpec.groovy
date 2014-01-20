@@ -1,7 +1,7 @@
 package in.reeltime.video
 
 import grails.plugin.spock.IntegrationSpec
-import in.reeltime.video.playlist.Playlist
+import in.reeltime.playlist.Playlist
 
 class VideoIntegrationSpec extends IntegrationSpec {
 

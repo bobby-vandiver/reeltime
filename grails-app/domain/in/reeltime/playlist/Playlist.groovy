@@ -1,4 +1,4 @@
-package in.reeltime.video.playlist
+package in.reeltime.playlist
 
 import in.reeltime.video.Video
 

@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log
 import spock.lang.Specification
 import spock.lang.Unroll
 import in.reeltime.transcoder.TranscoderJobService
-import in.reeltime.video.playlist.PlaylistService
+import in.reeltime.playlist.PlaylistService
 
 @TestFor(NotificationController)
 @Mock([TranscoderJob])
