@@ -10,6 +10,8 @@ class PlaylistService {
 
     def addPlaylists(Video video, String keyPrefix, String variantPlaylistKey) {
 
+        log.debug("Adding playlists to video [${video.id}] with keyPrefix [$keyPrefix] and variantPlaylistKey [$variantPlaylistKey]")
+
         def variantPath = keyPrefix + variantPlaylistKey
         def variantPlaylist = playlistParsingService.parseVariantPlaylist(variantPath) as VariantPlaylist
 
@@ -28,10 +30,12 @@ class PlaylistService {
                     mediaSequence: mediaPlaylist.mediaSequence
             )
 
+            log.info("Adding segments to playlist for video [${video.id}]")
             mediaPlaylist.segments.eachWithIndex { seg, idx ->
                 playlist.addToSegments(segmentId: idx, uri: seg.uri, duration: seg.duration)
             }
 
+            log.info("Adding playlist to video [${video.id}]")
             video.addToPlaylists(playlist)
         }
 

@@ -16,6 +16,7 @@ class PlaylistParsingService {
     }
 
     private def parse(String path, Closure parser) {
+        log.debug("Parsing playlist at path [$path]")
         def playlistStream = outputStorageService.load(path) as InputStream
         playlistStream.withReader { reader -> parser(reader) }
     }
