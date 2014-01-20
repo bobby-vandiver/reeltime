@@ -6,8 +6,8 @@ import in.reeltime.hls.playlist.VariantPlaylist
 import spock.lang.Specification
 import in.reeltime.storage.OutputStorageService
 
-@TestFor(PlaylistParsingService)
-class PlaylistParsingServiceSpec extends Specification {
+@TestFor(PlaylistParserService)
+class PlaylistParserServiceSpec extends Specification {
 
     void "load variant playlist from storage and parse it"() {
         given:

@@ -6,19 +6,19 @@ import in.reeltime.video.Video
 
 class PlaylistService {
 
-    def playlistParsingService
+    def playlistParserService
 
     def addPlaylists(Video video, String keyPrefix, String variantPlaylistKey) {
 
         log.debug("Adding playlists to video [${video.id}] with keyPrefix [$keyPrefix] and variantPlaylistKey [$variantPlaylistKey]")
 
         def variantPath = keyPrefix + variantPlaylistKey
-        def variantPlaylist = playlistParsingService.parseVariantPlaylist(variantPath) as VariantPlaylist
+        def variantPlaylist = playlistParserService.parseVariantPlaylist(variantPath) as VariantPlaylist
 
         variantPlaylist.streams.each { stream ->
 
             def mediaPath = keyPrefix + stream.uri
-            def mediaPlaylist = playlistParsingService.parseMediaPlaylist(mediaPath) as MediaPlaylist
+            def mediaPlaylist = playlistParserService.parseMediaPlaylist(mediaPath) as MediaPlaylist
 
             def playlist = new Playlist(
                     codecs: stream.codecs,

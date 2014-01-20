@@ -15,7 +15,7 @@ class PlaylistServiceSpec extends Specification {
 
     void "combine metadata in variant playlist and one media playlist into model for a single stream"() {
         given:
-        service.playlistParsingService = Mock(PlaylistParsingService)
+        service.playlistParserService = Mock(PlaylistParserService)
 
         and:
         def video = new Video(title: 'awesome', masterPath: 'pathToVideo').save()
@@ -41,8 +41,8 @@ class PlaylistServiceSpec extends Specification {
         service.addPlaylists(video, keyPrefix, variantPlaylistKey)
 
         then:
-        1 * service.playlistParsingService.parseVariantPlaylist(keyPrefix + variantPlaylistKey) >> variantPlaylist
-        1 * service.playlistParsingService.parseMediaPlaylist(keyPrefix + stream.uri) >> mediaPlaylist
+        1 * service.playlistParserService.parseVariantPlaylist(keyPrefix + variantPlaylistKey) >> variantPlaylist
+        1 * service.playlistParserService.parseMediaPlaylist(keyPrefix + stream.uri) >> mediaPlaylist
 
         and:
         video.playlists.size() == 1
@@ -81,7 +81,7 @@ class PlaylistServiceSpec extends Specification {
 
     void "playlist has more than one stream variant"() {
         given:
-        service.playlistParsingService = Mock(PlaylistParsingService)
+        service.playlistParserService = Mock(PlaylistParserService)
 
         and:
         def video = new Video(title: 'awesome', masterPath: 'pathToVideo').save()
@@ -105,11 +105,11 @@ class PlaylistServiceSpec extends Specification {
         service.addPlaylists(video, keyPrefix, variantPlaylistKey)
 
         then:
-        1 * service.playlistParsingService.parseVariantPlaylist(keyPrefix + variantPlaylistKey) >> variantPlaylist
+        1 * service.playlistParserService.parseVariantPlaylist(keyPrefix + variantPlaylistKey) >> variantPlaylist
 
         and:
-        1 * service.playlistParsingService.parseMediaPlaylist(keyPrefix + stream1.uri) >> media1
-        1 * service.playlistParsingService.parseMediaPlaylist(keyPrefix + stream2.uri) >> media2
+        1 * service.playlistParserService.parseMediaPlaylist(keyPrefix + stream1.uri) >> media1
+        1 * service.playlistParserService.parseMediaPlaylist(keyPrefix + stream2.uri) >> media2
 
         and:
         video.playlists.size() == 2
