@@ -3,7 +3,7 @@ package in.reeltime.playlist
 import in.reeltime.video.Video
 import static javax.servlet.http.HttpServletResponse.*
 
-class VariantPlaylistController {
+class PlaylistController {
 
     def playlistService
 

@@ -5,9 +5,9 @@ import grails.test.mixin.TestFor
 import spock.lang.Specification
 import in.reeltime.video.Video
 
-@TestFor(VariantPlaylistController)
+@TestFor(PlaylistController)
 @Mock([Video])
-class VariantPlaylistControllerSpec extends Specification {
+class PlaylistControllerSpec extends Specification {
 
     void "return a 404 if the video does not exist"() {
         given:
