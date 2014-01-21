@@ -14,7 +14,7 @@ class Playlist {
     int mediaSequence
     int targetDuration
 
-    SortedSet segments
+    SortedSet<Segment> segments
 
     static belongsTo = [video: Video]
     static hasMany = [segments: Segment]
