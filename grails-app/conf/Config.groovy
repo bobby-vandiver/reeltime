@@ -155,3 +155,22 @@ reeltime {
         }
     }
 }
+environments {
+    test {
+        reeltime {
+
+            storage {
+                input = System.getProperty('java.io.tmpdir') + File.separator + 'master-videos'
+                output = System.getProperty('java.io.tmpdir') + File.separator + 'playlist-and-segments'
+            }
+
+            transcoder {
+
+                ffmpeg {
+                    path = System.getProperty('ffmpeg') ?: System.getenv('FFMPEG_HOME')
+                    segmentFormat = '%s-%%05d.ts'
+                }
+            }
+        }
+    }
+}

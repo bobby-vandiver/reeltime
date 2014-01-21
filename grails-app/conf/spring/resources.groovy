@@ -13,5 +13,10 @@ beans = {
             springConfig.addAlias 'storageService', 'localFileSystemStorageService'
             springConfig.addAlias 'transcoderService', 'ffmpegTranscoderService'
         }
+
+        test {
+            springConfig.addAlias 'storageService', 'localFileSystemStorageService'
+            springConfig.addAlias 'transcoderService', 'ffmpegTranscoderService'
+        }
     }
 }

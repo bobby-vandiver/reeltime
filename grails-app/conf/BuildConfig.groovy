@@ -52,6 +52,9 @@ grails.project.dependency.resolution = {
 
         test 'cglib:cglib-nodep:2.2.2'
         test 'org.objenesis:objenesis:1.4'
+
+        // FileUtils for test cleanup
+        test 'commons-io:commons-io:2.4'
     }
 
     plugins {
