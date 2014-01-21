@@ -20,4 +20,19 @@ class PlaylistController {
             response.status = SC_NOT_FOUND
         }
     }
+
+    def getMediaPlaylist() {
+
+        def video = Video.findById(params.videoId)
+        def playlist = Playlist.findByIdAndVideo(params.playlistId, video)
+
+        if(playlist) {
+            response.status = SC_OK
+            response.contentType = 'application/x-mpegURL'
+            response.outputStream << playlistService.generateMediaPlaylist(playlist, true)
+        }
+        else {
+            response.status = SC_NOT_FOUND
+        }
+    }
 }
