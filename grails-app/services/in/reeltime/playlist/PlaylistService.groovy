@@ -36,7 +36,7 @@ class PlaylistService {
 
             log.info("Adding segments to playlist for video [${video.id}]")
             mediaPlaylist.segments.eachWithIndex { seg, idx ->
-                playlist.addToSegments(segmentId: idx, uri: seg.uri, duration: seg.duration)
+                playlist.addToSegments(segmentId: idx, uri: keyPrefix + seg.uri, duration: seg.duration)
             }
 
             log.info("Adding playlist to video [${video.id}]")

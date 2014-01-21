@@ -69,13 +69,13 @@ class PlaylistServiceSpec extends Specification {
         and:
         def segment1 = (playlist.segments as List)[0] as Segment
         segment1.segmentId == 0
-        segment1.uri == segments[0].uri
+        segment1.uri == keyPrefix + segments[0].uri
         segment1.duration == segments[0].duration
 
         and:
         def segment2 = (playlist.segments as List)[1] as Segment
         segment2.segmentId == 1
-        segment2.uri == segments[1].uri
+        segment2.uri == keyPrefix + segments[1].uri
         segment2.duration == segments[1].duration
     }
 
