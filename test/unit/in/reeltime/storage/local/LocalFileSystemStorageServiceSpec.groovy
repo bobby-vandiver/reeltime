@@ -22,6 +22,10 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         filename = 'test.txt'
         contents = 'THIS IS A TEST'
         inputStream = new ByteArrayInputStream(contents.bytes)
+
+        defineBeans {
+            localFileSystemService(LocalFileSystemService)
+        }
     }
 
     void "LocalFilesystemStorageService must be an instance of StorageService"() {
