@@ -5,7 +5,7 @@ import static javax.servlet.http.HttpServletResponse.*
 
 class VariantPlaylistController {
 
-    def variantPlaylistService
+    def playlistService
 
     def getVariantPlaylist() {
 
@@ -14,7 +14,7 @@ class VariantPlaylistController {
         if(video) {
             response.status = SC_OK
             response.contentType = 'application/x-mpegURL'
-            response.outputStream << variantPlaylistService.generateVariantPlaylist(video)
+            response.outputStream << playlistService.generateVariantPlaylist(video)
         }
         else {
             response.status = SC_NOT_FOUND

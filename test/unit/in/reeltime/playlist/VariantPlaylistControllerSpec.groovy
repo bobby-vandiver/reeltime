@@ -27,13 +27,13 @@ class VariantPlaylistControllerSpec extends Specification {
         assert video.id
 
         and:
-        controller.variantPlaylistService = Mock(VariantPlaylistService)
+        controller.playlistService = Mock(PlaylistService)
 
         when:
         controller.getVariantPlaylist()
 
         then:
-        1 * controller.variantPlaylistService.generateVariantPlaylist(video) >> 'some playlist'
+        1 * controller.playlistService.generateVariantPlaylist(video) >> 'some playlist'
 
         and:
         response.status == 200

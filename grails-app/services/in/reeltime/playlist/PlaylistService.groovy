@@ -1,8 +1,12 @@
 package in.reeltime.playlist
 
 import in.reeltime.hls.playlist.MediaPlaylist
+import in.reeltime.hls.playlist.MediaSegment
+import in.reeltime.hls.playlist.StreamAttributes
 import in.reeltime.hls.playlist.VariantPlaylist
 import in.reeltime.video.Video
+import in.reeltime.hls.playlist.composer.MediaPlaylistComposer
+import in.reeltime.hls.playlist.composer.VariantPlaylistComposer
 
 class PlaylistService {
 
@@ -40,5 +44,39 @@ class PlaylistService {
         }
 
         video.save()
+    }
+
+    def generateVariantPlaylist(Video video) {
+
+        def writer = new StringWriter()
+        def streams = video.playlists.collect { p ->
+
+            new StreamAttributes(
+                    uri: p.id,
+                    bandwidth: p.bandwidth,
+                    programId: p.programId,
+                    codecs: p.codecs,
+                    resolution: p.resolution
+            )
+        }
+        VariantPlaylistComposer.compose(streams, writer)
+        writer.toString()
+    }
+
+    def generateMediaPlaylist(Playlist playlist, boolean allowCache) {
+
+        def writer = new StringWriter()
+        def segments = playlist.segments.sort()
+
+        def mediaPlaylist = new MediaPlaylist(
+                targetDuration: playlist.targetDuration,
+                mediaSequence: playlist.mediaSequence,
+                version: playlist.hlsVersion,
+                allowCache: allowCache,
+                segments: segments.collect { s -> new MediaSegment(uri: s.id, duration: s.duration)}
+        )
+
+        MediaPlaylistComposer.compose(mediaPlaylist, writer)
+        writer.toString()
     }
 }
