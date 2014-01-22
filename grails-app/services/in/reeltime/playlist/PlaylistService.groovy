@@ -51,8 +51,9 @@ class PlaylistService {
         def writer = new StringWriter()
         def streams = video.playlists.collect { p ->
 
+            def uri = video.id + '/' + p.id
             new StreamAttributes(
-                    uri: p.id,
+                    uri: uri,
                     bandwidth: p.bandwidth,
                     programId: p.programId,
                     codecs: p.codecs,
@@ -73,7 +74,7 @@ class PlaylistService {
                 mediaSequence: playlist.mediaSequence,
                 version: playlist.hlsVersion,
                 allowCache: allowCache,
-                segments: segments.collect { s -> new MediaSegment(uri: s.segmentId, duration: s.duration)}
+                segments: segments.collect { s -> new MediaSegment(uri: playlist.id + '/' + s.segmentId, duration: s.duration)}
         )
 
         MediaPlaylistComposer.compose(mediaPlaylist, writer)

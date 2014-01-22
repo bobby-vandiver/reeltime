@@ -33,7 +33,7 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
         then:
         output == """#EXTM3U
                     |#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=400x170,CODECS="avc1.42001e,mp4a.40.2",BANDWIDTH=474000
-                    |${playlist.id}
+                    |${video.id}/${playlist.id}
                     |""".stripMargin()
     }
 
@@ -65,10 +65,10 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def stream1 = """#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=400x170,CODECS="avc1.42001e,mp4a.40.2",BANDWIDTH=474000
-                        |${playlist1.id}""".stripMargin()
+                        |${video.id}/${playlist1.id}""".stripMargin()
 
         def stream2 = """#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=440x200,CODECS="avc1.42001e,mp4a.40.2",BANDWIDTH=663000
-                        |${playlist2.id}""".stripMargin()
+                        |${video.id}/${playlist2.id}""".stripMargin()
 
         when:
         def output = service.generateVariantPlaylist(video)
@@ -96,8 +96,8 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
         video.save()
 
         and:
-        segment1.id != null
-        segment2.id != null
+        assert segment1.id != null
+        assert segment2.id != null
 
         and:
         def header = """#EXTM3U
@@ -107,10 +107,10 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
                        |#EXT-X-TARGETDURATION:12""".stripMargin()
 
         def media1 = """#EXTINF:11.308056,
-                       |${segment1.segmentId}""".stripMargin()
+                       |${playlist.id}/${segment1.segmentId}""".stripMargin()
 
         def media2 = """#EXTINF:11.262022,
-                       |${segment2.segmentId}""".stripMargin()
+                       |${playlist.id}/${segment2.segmentId}""".stripMargin()
 
         when:
         def output = service.generateMediaPlaylist(playlist, allowCacheTruth)
