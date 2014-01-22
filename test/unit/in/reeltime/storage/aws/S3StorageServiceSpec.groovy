@@ -46,7 +46,11 @@ class S3StorageServiceSpec extends Specification {
         1 * mockS3.getObject(BUCKET_NAME, KEY) >> stubS3Object
 
         and:
-        stream == stubS3ObjectInputStream
+        stream instanceof S3ObjectInputStreamWrapper
+
+        and:
+        stream.in == stubS3ObjectInputStream
+        stream.client == mockS3
     }
 
     void "if the object metadata can be retrieved then the object exists and the path isn't available"() {

@@ -15,7 +15,9 @@ class S3StorageService implements StorageService {
         def s3 = awsService.createClient(AmazonS3) as AmazonS3
 
         def object = s3.getObject(bucket, key)
-        object.objectContent
+        def content = object.objectContent
+
+        new S3ObjectInputStreamWrapper(content, s3)
     }
 
     @Override
