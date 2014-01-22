@@ -9,5 +9,11 @@ class UrlMappings {
         "/transcoder/notification/$action" (controller: 'notification')
 
         "/video" (controller: 'video', action: 'upload')
+
+        "/video/$videoId" (controller: 'playlist', action: 'getVariantPlaylist')
+
+        "/video/$videoId/$playlistId" (controller: 'playlist', action: 'getMediaPlaylist')
+
+        "/video/$videoId/$playlistId/$segmentId" (controller: 'segment', action: 'getSegment')
     }
 }
