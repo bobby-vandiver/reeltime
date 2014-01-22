@@ -35,6 +35,8 @@ class MediaPlaylistComposer {
         }
 
         builder.append("#EXT-X-ENDLIST")
+               .append(LINE_SEPARATOR)
+
         writer << builder.toString()
     }
 }

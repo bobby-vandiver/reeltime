@@ -33,7 +33,8 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
         then:
         output == """#EXTM3U
                     |#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=400x170,CODECS="avc1.42001e,mp4a.40.2",BANDWIDTH=474000
-                    |${playlist.id}""".stripMargin()
+                    |${playlist.id}
+                    |""".stripMargin()
     }
 
     void "generate variant playlist for video with multiple streams"() {
@@ -64,10 +65,10 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def stream1 = """#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=400x170,CODECS="avc1.42001e,mp4a.40.2",BANDWIDTH=474000
-                                |${playlist1.id}""".stripMargin()
+                        |${playlist1.id}""".stripMargin()
 
         def stream2 = """#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=440x200,CODECS="avc1.42001e,mp4a.40.2",BANDWIDTH=663000
-                                |${playlist2.id}""".stripMargin()
+                        |${playlist2.id}""".stripMargin()
 
         when:
         def output = service.generateVariantPlaylist(video)

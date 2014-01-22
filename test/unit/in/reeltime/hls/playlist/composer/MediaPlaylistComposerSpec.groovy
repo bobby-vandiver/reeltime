@@ -28,7 +28,8 @@ class MediaPlaylistComposerSpec extends Specification {
                                |#EXT-X-MEDIA-SEQUENCE:0
                                |#EXT-X-ALLOW-CACHE:YES
                                |#EXT-X-TARGETDURATION:12
-                               |#EXT-X-ENDLIST""".stripMargin()
+                               |#EXT-X-ENDLIST
+                               |""".stripMargin()
     }
 
     @Unroll
@@ -63,7 +64,8 @@ class MediaPlaylistComposerSpec extends Specification {
                                |hls-bats-400k00000.ts
                                |#EXTINF:11.262044,
                                |hls-bats-400k00001.ts
-                               |#EXT-X-ENDLIST""".stripMargin()
+                               |#EXT-X-ENDLIST
+                               |""".stripMargin()
 
         where:
         allowCacheTruth     |   allowCacheText

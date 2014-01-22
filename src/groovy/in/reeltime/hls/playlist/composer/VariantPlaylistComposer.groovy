@@ -8,17 +8,19 @@ class VariantPlaylistComposer {
 
     static void compose(Collection<StreamAttributes> streams, Writer writer) {
 
-        def builder = new StringBuilder().append("#EXTM3U")
+        def builder = new StringBuilder()
+                   .append("#EXTM3U")
+                   .append(LINE_SEPARATOR)
 
         streams.each { stream ->
-            builder.append(LINE_SEPARATOR)
-                   .append("#EXT-X-STREAM-INF:")
+            builder.append("#EXT-X-STREAM-INF:")
                    .append("PROGRAM-ID=${stream.programId},")
                    .append("RESOLUTION=${stream.resolution},")
                    .append("CODECS=\"${stream.codecs}\",")
                    .append("BANDWIDTH=${stream.bandwidth}")
                    .append(LINE_SEPARATOR)
                    .append(stream.uri)
+                   .append(LINE_SEPARATOR)
         }
 
         writer << builder.toString()

@@ -13,7 +13,8 @@ class VariantPlaylistComposerSpec extends Specification {
         VariantPlaylistComposer.compose([], writer)
 
         then:
-        writer.toString() == '#EXTM3U'
+        writer.toString() == '''#EXTM3U
+                                |'''.stripMargin()
     }
 
     void "single stream variant"() {
@@ -34,7 +35,8 @@ class VariantPlaylistComposerSpec extends Specification {
         then:
         writer.toString() == '''#EXTM3U
                                |#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=400x226,CODECS="avc1.42001e,mp4a.40.2",BANDWIDTH=455000
-                               |hls-bats-400k.m3u8'''.stripMargin()
+                               |hls-bats-400k.m3u8
+                               |'''.stripMargin()
     }
 
     void "multiple stream variants"() {
@@ -65,6 +67,7 @@ class VariantPlaylistComposerSpec extends Specification {
                                |#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=400x226,CODECS="avc1.42001e,mp4a.40.2",BANDWIDTH=455000
                                |hls-bats-400k.m3u8
                                |#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=480x270,CODECS="avc1.42001e,mp4a.40.2",BANDWIDTH=663000
-                               |hls-bats-600k.m3u8'''.stripMargin()
+                               |hls-bats-600k.m3u8
+                               |'''.stripMargin()
     }
 }
