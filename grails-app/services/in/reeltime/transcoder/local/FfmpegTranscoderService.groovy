@@ -33,7 +33,7 @@ class FfmpegTranscoderService implements TranscoderService {
         def process = command.execute(null, directory)
         process.waitFor()
 
-        log.info("Completed ffmpeg transcoding")
+        log.info("Completed ffmpeg transcoding for video [${video.id}")
         log.debug(process.err.text)
     }
 
