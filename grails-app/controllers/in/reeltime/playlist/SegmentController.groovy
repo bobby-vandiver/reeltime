@@ -21,10 +21,7 @@ class SegmentController {
         if(segment) {
             response.status = SC_OK
             response.contentType = 'video/MP2T'
-
-            def segmentStream = outputStorageService.load(segment.uri) as InputStream
-            response.outputStream << segmentStream.bytes
-            response.outputStream.flush()
+            response.outputStream << outputStorageService.load(segment.uri)
         }
         else {
             response.status = SC_NOT_FOUND
