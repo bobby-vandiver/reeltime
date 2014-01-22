@@ -60,6 +60,8 @@ class NotificationController {
 
     private void handleRequest(Closure notificationHandler) {
 
+        log.debug(request.JSON)
+
         if(subscriptionConfirmation) {
             confirmSubscription()
         }
