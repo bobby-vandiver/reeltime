@@ -7,6 +7,8 @@ class PlaylistController {
 
     def playlistService
 
+    static allowedMethods = [getVariantPlaylist: 'GET', getMediaPlaylist: 'GET']
+
     def getVariantPlaylist() {
 
         def video = Video.findById(params.videoId)

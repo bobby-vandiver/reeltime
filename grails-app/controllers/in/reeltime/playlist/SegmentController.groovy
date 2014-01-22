@@ -7,6 +7,8 @@ class SegmentController {
 
     def outputStorageService
 
+    static allowedMethods = [getSegment: 'GET']
+
     def getSegment() {
 
         def video = Video.findById(params.videoId)
