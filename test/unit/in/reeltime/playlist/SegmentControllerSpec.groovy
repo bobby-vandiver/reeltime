@@ -124,7 +124,8 @@ class SegmentControllerSpec extends Specification {
         params.segmentId = segment1.segmentId
 
         and:
-        def segmentStream = new ByteArrayInputStream('media segment'.bytes)
+        def data = new File('test/files/sample.ts')
+        def segmentStream = data.newInputStream()
 
         and:
         controller.outputStorageService = Mock(OutputStorageService)
@@ -138,6 +139,7 @@ class SegmentControllerSpec extends Specification {
         and:
         response.status == 200
         response.contentType == 'video/MP2T'
-        response.contentAsString == 'media segment'
+        response.contentAsByteArray == data.bytes
+        response.contentLength == data.bytes.size()
     }
 }

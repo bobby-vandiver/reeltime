@@ -19,9 +19,13 @@ class SegmentController {
         def segment = Segment.findBySegmentIdAndPlaylist(params.segmentId, playlist)
 
         if(segment) {
+            def stream = outputStorageService.load(segment.uri) as InputStream
+            def content = stream.bytes
+
             response.status = SC_OK
             response.contentType = 'video/MP2T'
-            response.outputStream << outputStorageService.load(segment.uri)
+            response.contentLength = content.size()
+            response.outputStream << content
         }
         else {
             response.status = SC_NOT_FOUND
