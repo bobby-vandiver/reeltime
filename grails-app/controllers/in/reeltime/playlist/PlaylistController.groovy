@@ -11,6 +11,7 @@ class PlaylistController {
 
     def getVariantPlaylist() {
 
+        log.debug("Requested variant playlist for video [${params.videoId}")
         def video = Video.findById(params.videoId)
 
         if(video) {
@@ -24,6 +25,8 @@ class PlaylistController {
     }
 
     def getMediaPlaylist() {
+
+        log.debug("Requested media playlist [${params.playlistId}] for video [${params.videoId}")
 
         def video = Video.findById(params.videoId)
         def playlist = Playlist.findByIdAndVideo(params.playlistId, video)
