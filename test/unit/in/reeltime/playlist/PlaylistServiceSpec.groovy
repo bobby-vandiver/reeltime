@@ -41,7 +41,7 @@ class PlaylistServiceSpec extends Specification {
         service.addPlaylists(video, keyPrefix, variantPlaylistKey)
 
         then:
-        1 * service.playlistParserService.parseVariantPlaylist(keyPrefix + variantPlaylistKey) >> variantPlaylist
+        1 * service.playlistParserService.parseVariantPlaylist(keyPrefix + variantPlaylistKey + '.m3u8') >> variantPlaylist
         1 * service.playlistParserService.parseMediaPlaylist(keyPrefix + stream.uri) >> mediaPlaylist
 
         and:
@@ -105,7 +105,7 @@ class PlaylistServiceSpec extends Specification {
         service.addPlaylists(video, keyPrefix, variantPlaylistKey)
 
         then:
-        1 * service.playlistParserService.parseVariantPlaylist(keyPrefix + variantPlaylistKey) >> variantPlaylist
+        1 * service.playlistParserService.parseVariantPlaylist(keyPrefix + variantPlaylistKey + '.m3u8') >> variantPlaylist
 
         and:
         1 * service.playlistParserService.parseMediaPlaylist(keyPrefix + stream1.uri) >> media1

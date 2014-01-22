@@ -16,7 +16,7 @@ class PlaylistService {
 
         log.debug("Adding playlists to video [${video.id}] with keyPrefix [$keyPrefix] and variantPlaylistKey [$variantPlaylistKey]")
 
-        def variantPath = keyPrefix + variantPlaylistKey
+        def variantPath = keyPrefix + variantPlaylistKey + '.m3u8'
         def variantPlaylist = playlistParserService.parseVariantPlaylist(variantPath) as VariantPlaylist
 
         variantPlaylist.streams.each { stream ->
