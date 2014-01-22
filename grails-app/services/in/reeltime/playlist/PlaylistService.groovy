@@ -73,7 +73,7 @@ class PlaylistService {
                 mediaSequence: playlist.mediaSequence,
                 version: playlist.hlsVersion,
                 allowCache: allowCache,
-                segments: segments.collect { s -> new MediaSegment(uri: s.id, duration: s.duration)}
+                segments: segments.collect { s -> new MediaSegment(uri: s.segmentId, duration: s.duration)}
         )
 
         MediaPlaylistComposer.compose(mediaPlaylist, writer)

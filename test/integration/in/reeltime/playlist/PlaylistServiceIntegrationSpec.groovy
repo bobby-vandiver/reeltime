@@ -106,10 +106,10 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
                        |#EXT-X-TARGETDURATION:12""".stripMargin()
 
         def media1 = """#EXTINF:11.308056,
-                       |${segment1.id}""".stripMargin()
+                       |${segment1.segmentId}""".stripMargin()
 
         def media2 = """#EXTINF:11.262022,
-                       |${segment2.id}""".stripMargin()
+                       |${segment2.segmentId}""".stripMargin()
 
         when:
         def output = service.generateMediaPlaylist(playlist, allowCacheTruth)
