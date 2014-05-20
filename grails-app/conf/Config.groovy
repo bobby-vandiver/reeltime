@@ -167,7 +167,7 @@ environments {
             transcoder {
 
                 ffmpeg {
-                    path = System.getProperty('ffmpeg') ?: System.getenv('FFMPEG_HOME')
+                    path = System.getProperty('ffmpeg') ?: System.getenv('FFMPEG')
                     segmentFormat = '%s-%%05d.ts'
                 }
             }
@@ -185,7 +185,7 @@ environments {
             transcoder {
 
                 ffmpeg {
-                    path = System.getProperty('ffmpeg') ?: System.getenv('FFMPEG_HOME')
+                    path = System.getProperty('ffmpeg') ?: System.getenv('FFMPEG')
                     segmentFormat = '%s-%%05d.ts'
                 }
             }

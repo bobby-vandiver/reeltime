@@ -4,6 +4,7 @@ import grails.plugin.spock.IntegrationSpec
 import in.reeltime.transcoder.local.FfmpegTranscoderService
 import in.reeltime.video.Video
 import org.apache.commons.io.FileUtils
+import spock.lang.IgnoreIf
 
 class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
 
@@ -21,6 +22,7 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
         service.localFileSystemService = localFileSystemService
     }
 
+    @IgnoreIf({!System.getProperty('ffmpeg') && !System.getenv('FFMPEG')})
     void "transcode video file using ffmpeg"() {
         given:
         def masterPath = pathGenerationService.uniqueInputPath
