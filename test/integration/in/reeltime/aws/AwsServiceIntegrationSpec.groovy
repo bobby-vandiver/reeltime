@@ -5,6 +5,8 @@ import com.amazonaws.services.elastictranscoder.AmazonElasticTranscoderClient
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.transfer.TransferManager
+import com.amazonaws.services.sns.AmazonSNS
+import com.amazonaws.services.sns.AmazonSNSClient
 import grails.test.spock.IntegrationSpec
 import org.springframework.beans.factory.InitializingBean
 import spock.lang.Unroll
@@ -27,6 +29,7 @@ class AwsServiceIntegrationSpec extends IntegrationSpec {
         interfaceClass              |   clientClass
         AmazonElasticTranscoder     |   AmazonElasticTranscoderClient
         AmazonS3                    |   AmazonS3Client
+        AmazonSNS                   |   AmazonSNSClient
     }
 
     void "createTransferManager is backed by an AmazonS3Client"() {

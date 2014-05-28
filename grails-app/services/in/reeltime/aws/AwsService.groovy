@@ -4,6 +4,7 @@ import com.amazonaws.services.elastictranscoder.AmazonElasticTranscoderClient
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.transfer.TransferManager
+import com.amazonaws.services.sns.AmazonSNSClient
 import org.springframework.beans.factory.InitializingBean
 
 class AwsService implements InitializingBean {
@@ -15,7 +16,8 @@ class AwsService implements InitializingBean {
         // TODO: Use AmazonS3EncryptionClient
         interfaceSimpleNamesToAwsClientClasses = [
                 AmazonElasticTranscoder: AmazonElasticTranscoderClient,
-                AmazonS3: AmazonS3Client
+                AmazonS3: AmazonS3Client,
+                AmazonSNS: AmazonSNSClient
         ]
     }
 

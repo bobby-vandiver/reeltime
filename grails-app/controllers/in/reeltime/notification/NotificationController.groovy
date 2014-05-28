@@ -83,10 +83,11 @@ class NotificationController {
     }
 
     private void confirmSubscription() {
-        def url = subscriptionConfirmationUrl
+        def topicArn = topicArn
+        def token = token
 
-        if (url) {
-            notificationService.confirmSubscription(url)
+        if (topicArn && token) {
+            notificationService.confirmSubscription(topicArn, token)
             render status: SC_OK
         }
         else {
@@ -94,7 +95,11 @@ class NotificationController {
         }
     }
 
-    private String getSubscriptionConfirmationUrl() {
-        request.JSON.SubscribeURL
+    private String getTopicArn() {
+        request.JSON.TopicArn
+    }
+
+    private String getToken() {
+        request.JSON.Token
     }
 }

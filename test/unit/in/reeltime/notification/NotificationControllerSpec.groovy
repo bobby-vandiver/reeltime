@@ -47,7 +47,7 @@ class NotificationControllerSpec extends Specification {
     }
 
     @Unroll
-    void "return 400 if SubscriptionConfirmation message does not contain SubscribeURL for action [#action]"() {
+    void "return 400 if SubscriptionConfirmation message is empty for action [#action]"() {
         given:
         controller.notificationService = Mock(NotificationService)
 
@@ -74,8 +74,9 @@ class NotificationControllerSpec extends Specification {
         controller.notificationService = Mock(NotificationService)
 
         and:
-        def url = 'https://sns.us-east-1.amazonaws.com/?Action=ConfirmSubscription'
-        def message = /{"SubscribeURL": "${url}"}/
+        def token = '2336412f37fb687f5d51e6e241d164b051479845a45fd1e10f1287fbc675dba8bb330f79de4343d9bc6e25954e0b9b47c04d6f9d46d7f52460b8f253675f7909d0d801fa1fb7af7aac2400e9491e815b2b506921d04a2a918d70a75f5768b654b6ad6da9bce8c4c98eb6f16857123e51'
+        def topicArn = 'arn:aws:sns:us-east-1:166209233708:ets-listener'
+        def message = /{"Token": "${token}", "TopicArn": "${topicArn}"}/
 
         and:
         request.addHeader('x-amz-sns-message-type', 'SubscriptionConfirmation')
@@ -88,7 +89,7 @@ class NotificationControllerSpec extends Specification {
         response.status == 200
 
         and:
-        1 * controller.notificationService.confirmSubscription(url)
+        1 * controller.notificationService.confirmSubscription(topicArn, token)
 
         where:
         action << ['completed', 'progressing', 'warning', 'error']
