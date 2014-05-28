@@ -46,7 +46,7 @@ grails.project.dependency.resolution = {
         // runtime 'mysql:mysql-connector-java:5.1.22'
 
         compile 'commons-codec:commons-codec:1.9'
-        compile 'com.amazonaws:aws-java-sdk:1.6.11'
+        compile 'com.amazonaws:aws-java-sdk:1.7.+'
 
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
 
