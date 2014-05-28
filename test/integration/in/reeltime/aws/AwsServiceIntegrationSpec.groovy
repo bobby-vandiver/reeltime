@@ -5,7 +5,7 @@ import com.amazonaws.services.elastictranscoder.AmazonElasticTranscoderClient
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.transfer.TransferManager
-import grails.plugin.spock.IntegrationSpec
+import grails.test.spock.IntegrationSpec
 import org.springframework.beans.factory.InitializingBean
 import spock.lang.Unroll
 

@@ -1,6 +1,6 @@
 package in.reeltime.transcoder
 
-import grails.plugin.spock.IntegrationSpec
+import grails.test.spock.IntegrationSpec
 import in.reeltime.transcoder.local.FfmpegTranscoderService
 import in.reeltime.video.Video
 import org.apache.commons.io.FileUtils
