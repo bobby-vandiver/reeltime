@@ -24,7 +24,7 @@ class NotificationService {
             def publicKey = certificate.publicKey
 
             def checker = new SignatureChecker()
-            return checker.verifyMessageSignature(parsedMessage, publicKey)
+            return checker.verifySignature(parsedMessage, publicKey)
         }
         catch(Exception e) {
             log.warn("Problem occurred while verifying message [$parsedMessage] -- assuming it is invalid", e)
