@@ -54,7 +54,7 @@ grails.spring.bean.packages = []
 grails.web.disable.multipart=false
 
 // request parameters to mask when logging exceptions
-grails.exceptionresolver.params.exclude = ['password']
+grails.exceptionresolver.params.exclude = ['password', 'client_secret']
 
 // configure auto-caching of queries by default (if false you can cache individual queries with 'cache: true')
 grails.hibernate.cache.queries = false
@@ -99,9 +99,8 @@ grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'in.reeltime.us
 grails.plugin.springsecurity.authority.className = 'in.reeltime.user.Role'
 
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-    // TODO: Temporarily allow access to all endpoints for development
-    '/**':                            ['permitAll'],
-
+    '/oauth/authorize.dispatch':      ["isFullyAuthenticated() and (request.getMethod().equals('GET') or request.getMethod().equals('POST'))"],
+    '/oauth/token.dispatch':          ["isFullyAuthenticated() and request.getMethod().equals('POST')"],
 	'/':                              ['permitAll'],
 	'/index':                         ['permitAll'],
 	'/index.gsp':                     ['permitAll'],
@@ -109,6 +108,19 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/css/**':                     ['permitAll'],
 	'/**/images/**':                  ['permitAll'],
 	'/**/favicon.ico':                ['permitAll']
+]
+
+// Added by the Spring Security OAuth2 Provider plugin:
+grails.plugin.springsecurity.oauthProvider.clientLookup.className = 'in.reeltime.oauth2.Client'
+grails.plugin.springsecurity.oauthProvider.authorizationCodeLookup.className = 'in.reeltime.oauth2.AuthorizationCode'
+grails.plugin.springsecurity.oauthProvider.accessTokenLookup.className = 'in.reeltime.oauth2.AccessToken'
+grails.plugin.springsecurity.oauthProvider.refreshTokenLookup.className = 'in.reeltime.oauth2.RefreshToken'
+
+grails.plugin.springsecurity.providerNames = [
+        'clientCredentialsAuthenticationProvider',
+        'daoAuthenticationProvider',
+        'anonymousAuthenticationProvider',
+        'rememberMeAuthenticationProvider'
 ]
 
 // The following ReelTime settings must NOT be exposed in an external configuration:
