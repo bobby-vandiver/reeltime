@@ -17,23 +17,36 @@ class NotificationService {
 
     def verifyMessage(Map<String, String> parsedMessage) {
         log.debug("Verifying parsedMessage [$parsedMessage]")
+        try {
+            def signingCertUrl = parsedMessage.SigningCertURL
 
-        def signingCertUrl = parsedMessage.SigningCertURL
+            def certificate = retrieveCertificate(signingCertUrl)
+            def publicKey = certificate.publicKey
 
-        def certificate = retrieveCertificate(signingCertUrl)
-        def publicKey = certificate.publicKey
-
-        def checker = new SignatureChecker()
-        checker.verifyMessageSignature(parsedMessage, publicKey)
+            def checker = new SignatureChecker()
+            return checker.verifyMessageSignature(parsedMessage, publicKey)
+        }
+        catch(Exception e) {
+            log.warn("Problem occurred while verifying message [$parsedMessage] -- assuming it is invalid", e)
+            return false
+        }
     }
 
     private X509Certificate retrieveCertificate(String signingCertUrl) {
-        def url = new URL(signingCertUrl)
-        def inputStream = url.openStream()
-        def certificateFactory = CertificateFactory.getInstance('X.509')
-        def certificate = certificateFactory.generateCertificate(inputStream) as X509Certificate
-        inputStream.close()
-        return certificate
+        log.debug("Retrieving certificate from [$signingCertUrl]")
+        def inputStream = null
+        try {
+            def url = new URL(signingCertUrl)
+            inputStream = url.openStream()
+
+            def certificateFactory = CertificateFactory.getInstance('X.509')
+            return certificateFactory.generateCertificate(inputStream) as X509Certificate
+        }
+        finally {
+            if(inputStream) {
+                inputStream.close()
+            }
+        }
     }
 
     def confirmSubscription(String topicArn, String token) {
