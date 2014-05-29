@@ -82,16 +82,21 @@ class NotificationController {
             render status: SC_OK
         }
         else {
+            log.warn("Received an invalid message type: $messageTypeHeader")
             render status: SC_BAD_REQUEST
         }
     }
 
     private boolean isSubscriptionConfirmation() {
-        request.getHeader(MESSAGE_TYPE_HEADER) == SUBSCRIPTION_CONFIRMATION
+        messageTypeHeader == SUBSCRIPTION_CONFIRMATION
     }
 
     private boolean isNotification() {
-        request.getHeader(MESSAGE_TYPE_HEADER) == NOTIFICATION
+        messageTypeHeader == NOTIFICATION
+    }
+
+    private String getMessageTypeHeader() {
+        request.getHeader(MESSAGE_TYPE_HEADER)
     }
 
     private void confirmSubscription() {
