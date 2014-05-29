@@ -19,6 +19,18 @@ class NotificationController {
     // http://jira.grails.org/browse/GRAILS-8426
     static allowedMethods = [completed: 'POST', progressing: 'POST', warning: 'POST', error: 'POST']
 
+    def beforeInterceptor = {
+        if(messageIsNotAuthentic()) {
+            render status: SC_BAD_REQUEST
+            return false
+        }
+    }
+
+    private boolean messageIsNotAuthentic() {
+        def message = request.JSON as Map
+        !notificationService.verifyMessage(message)
+    }
+
     def completed() {
         handleRequest {
             def message = messagesAsJson

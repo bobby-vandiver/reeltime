@@ -15,6 +15,38 @@ import in.reeltime.playlist.PlaylistService
 class NotificationControllerSpec extends Specification {
 
     @Unroll
+    void "message is authentic [#authentic]"() {
+        given:
+        controller.notificationService = Mock(NotificationService)
+
+        def signingCertUrl = 'https://sns.us-east-1.amazonaws.com/SimpleNotificationService-e372f8ca30337fdb084e8ac449342c77.pem'
+
+        def message = /{"SigningCertURL": "${signingCertUrl}"}/
+        def parsedMessage = [SigningCertURL: signingCertUrl]
+
+        and:
+        request.content = message.bytes
+
+        when:
+        def result = controller.beforeInterceptor()
+
+        then:
+        result.is(null) == resultIsNull
+        result.is(false) == resultIsFalse
+
+        and:
+        (response.status == 400) == statusIs400
+
+        and:
+        1 * controller.notificationService.verifyMessage(parsedMessage) >> authentic
+
+        where:
+        authentic   |   resultIsNull    |   resultIsFalse   |   statusIs400
+        true        |   true            |   false           |   false
+        false       |   false           |   true            |   true
+    }
+
+    @Unroll
     void "return 400 if AWS SNS message type header is not in request for [#action]"() {
         when:
         controller."$action"()
