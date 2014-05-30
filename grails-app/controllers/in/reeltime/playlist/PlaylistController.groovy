@@ -1,5 +1,6 @@
 package in.reeltime.playlist
 
+import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.video.Video
 import static javax.servlet.http.HttpServletResponse.*
 
@@ -9,6 +10,7 @@ class PlaylistController {
 
     static allowedMethods = [getVariantPlaylist: 'GET', getMediaPlaylist: 'GET']
 
+    @Secured(["#oauth2.hasScope('view')"])
     def getVariantPlaylist() {
 
         log.debug("Requested variant playlist for video [${params.videoId}]")
@@ -20,10 +22,11 @@ class PlaylistController {
             response.outputStream << playlistService.generateVariantPlaylist(video)
         }
         else {
-            response.status = SC_NOT_FOUND
+            render status: SC_NOT_FOUND
         }
     }
 
+    @Secured(["#oauth2.hasScope('view')"])
     def getMediaPlaylist() {
 
         log.debug("Requested media playlist [${params.playlistId}] for video [${params.videoId}]")
@@ -37,7 +40,7 @@ class PlaylistController {
             response.outputStream << playlistService.generateMediaPlaylist(playlist, true)
         }
         else {
-            response.status = SC_NOT_FOUND
+            render status: SC_NOT_FOUND
         }
     }
 }

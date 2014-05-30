@@ -1,6 +1,10 @@
 import grails.util.Environment
+import org.springframework.security.web.context.SecurityContextPersistenceFilter
 
 beans = {
+
+    // Ensure all requests are stateless -- nullContextRepository bean is defined by the OAuth2 provider plugin
+    securityContextPersistenceFilter(SecurityContextPersistenceFilter, ref('nullContextRepository'))
 
     // Use AWS backed services by default
     springConfig.addAlias 'storageService', 's3StorageService'

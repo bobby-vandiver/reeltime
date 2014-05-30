@@ -1,5 +1,6 @@
 package in.reeltime.notification
 
+import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonSlurper
 import in.reeltime.transcoder.TranscoderJob
 
@@ -9,6 +10,7 @@ import static MessageType.NOTIFICATION
 
 import static javax.servlet.http.HttpServletResponse.*
 
+@Secured(["permitAll"])
 class NotificationController {
 
     def notificationService

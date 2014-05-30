@@ -1,5 +1,6 @@
 package in.reeltime.playlist
 
+import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.video.Video
 import static javax.servlet.http.HttpServletResponse.*
 
@@ -9,6 +10,7 @@ class SegmentController {
 
     static allowedMethods = [getSegment: 'GET']
 
+    @Secured(["#oauth2.hasScope('view')"])
     def getSegment() {
 
         log.debug("Requested segment [${params.segmentId}] for playlist [${params.playlistId}] belonging to video [${params.videoId}]")
@@ -28,7 +30,7 @@ class SegmentController {
             response.outputStream << content
         }
         else {
-            response.status = SC_NOT_FOUND
+            render status: SC_NOT_FOUND
         }
     }
 }

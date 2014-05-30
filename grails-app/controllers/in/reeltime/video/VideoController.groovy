@@ -1,5 +1,7 @@
 package in.reeltime.video
 
+import grails.plugin.springsecurity.annotation.Secured
+
 import static javax.servlet.http.HttpServletResponse.*
 
 class VideoController {
@@ -9,6 +11,7 @@ class VideoController {
 
     static allowedMethods = [upload: 'POST']
 
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('upload')"])
     def upload() {
 
         if(hasValidParams()) {
