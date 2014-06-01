@@ -38,6 +38,8 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.jboss.com/maven2/"
 
         mavenRepo "http://repo.spring.io/milestone/"
+
+        mavenRepo "http://ec2-54-85-10-255.compute-1.amazonaws.com/artifactory"
     }
 
     dependencies {
