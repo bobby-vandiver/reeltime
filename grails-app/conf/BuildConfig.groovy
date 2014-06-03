@@ -39,7 +39,19 @@ grails.project.dependency.resolution = {
 
         mavenRepo "http://repo.spring.io/milestone/"
 
-        mavenRepo "http://ec2-54-85-10-255.compute-1.amazonaws.com/artifactory"
+        mavenRepo "http://ec2-54-85-10-255.compute-1.amazonaws.com/artifactory/repo"
+    }
+
+    // Load credentials from a properties file
+    // This is a work around for IntelliJ
+    // Jenkins will provide credentials via system properties
+    Properties artifactoryProperties = loadArtifactoryProperties()
+
+    credentials {
+        realm = "Artifactory Realm"
+        host = "ec2-54-85-10-255.compute-1.amazonaws.com"
+        username = System.getProperty('artifactoryUsername') ?: artifactoryProperties.get('username')
+        password = System.getProperty('artifactoryPassword') ?: artifactoryProperties.get('password')
     }
 
     dependencies {
@@ -80,4 +92,15 @@ grails.project.dependency.resolution = {
 
         test ":code-coverage:1.2.7"
     }
+}
+
+private Properties loadArtifactoryProperties() {
+    Properties artifactoryProperties = new Properties()
+    String path = System.getProperty('user.home') + '/.grails/artifactory.properties'
+
+    File file = new File(path)
+    if(file.exists()) {
+        artifactoryProperties.load(new FileInputStream(path))
+    }
+    return artifactoryProperties
 }
