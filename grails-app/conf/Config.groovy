@@ -166,7 +166,20 @@ reeltime {
             }
         }
     }
+
+    // Video metadata configuration
+    metadata {
+        // Use ffprobe to extract video metadata
+        ffprobe = System.getProperty('ffprobe') ?: System.getenv('FFPROBE')
+
+        // Only allow h264 encoded videos
+        codecsAllowed = ['h264']
+
+        // Max video duration is 3 minutes
+        maxDurationInSeconds = 3 * 60
+    }
 }
+
 environments {
     test {
         reeltime {
