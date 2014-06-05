@@ -55,7 +55,7 @@ class VideoControllerSpec extends Specification {
         params.title = title
 
         and:
-        controller.videoService = Mock(VideoService)
+        controller.videoCreationService = Mock(VideoCreationService)
 
         def validateArgs = { User u, String t, InputStream input ->
             assert u == loggedInUser
@@ -67,7 +67,7 @@ class VideoControllerSpec extends Specification {
         controller.upload()
 
         then:
-        1 * controller.videoService.createVideo(_, _, _) >> { args -> validateArgs(args) }
+        1 * controller.videoCreationService.createVideo(_, _, _) >> { args -> validateArgs(args) }
 
         and:
         response.status == 201

@@ -7,7 +7,7 @@ import static javax.servlet.http.HttpServletResponse.*
 class VideoController {
 
     def userAuthenticationService
-    def videoService
+    def videoCreationService
 
     static allowedMethods = [upload: 'POST']
 
@@ -19,7 +19,7 @@ class VideoController {
             def title = params.title
             def videoStream = request.getFile('video').inputStream
 
-            videoService.createVideo(creator, title, videoStream)
+            videoCreationService.createVideo(creator, title, videoStream)
             render(status: SC_CREATED)
         }
         else {
