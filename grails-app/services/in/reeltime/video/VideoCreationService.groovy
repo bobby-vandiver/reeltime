@@ -11,46 +11,21 @@ class VideoCreationService {
     def transcoderService
     def streamMetadataService
 
-    def grailsApplication
-
-    private static final DURATION_FORMAT = /(\d+)\.(\d+)/
-
-    boolean canCreate(VideoCreationCommand command) {
+    boolean allowCreation(VideoCreationCommand command) {
 
         def temp = writeVideoStreamToTempFile(command)
         def streams = streamMetadataService.extractStreams(temp)
-        return !containsInvalidStream(streams)
+        // TODO: Reload input stream from temp file
+        return validateStreams(streams)
     }
 
-    private File writeVideoStreamToTempFile(VideoCreationCommand command) {
+    private static File writeVideoStreamToTempFile(VideoCreationCommand command) {
         def temp = File.createTempFile('can-create-video', '.tmp')
         return temp
     }
 
-    private boolean containsInvalidStream(List<StreamMetadata> streams) {
-        streams.each { stream ->
-            if(invalidDuration(stream)) {
-                return false
-            }
-        }
-        return true
-    }
-
-    private boolean invalidDuration(StreamMetadata stream) {
-        def duration = stream.duration
-        invalidDurationFormat(duration) || exceedsMaxDuration(duration)
-    }
-
-    private boolean invalidDurationFormat(String duration) {
-        !(duration ==~ DURATION_FORMAT)
-    }
-
-    private boolean exceedsMaxDuration(String duration) {
-        def maxDuration = grailsApplication.config.reeltime.metadata.maxDurationInSeconds
-        def matcher = (duration =~ DURATION_FORMAT)
-
-        def seconds = matcher[0][1] as int
-        return seconds >= maxDuration
+    private static boolean validateStreams(List<StreamMetadata> streams) {
+        streams.find { !it.validate() } == null
     }
 
     def createVideo(User creator, String title, InputStream videoStream) {

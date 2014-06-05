@@ -3,7 +3,6 @@ package in.reeltime.video
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.metadata.StreamMetadata
-import org.springframework.web.multipart.MultipartFile
 import spock.lang.Specification
 import in.reeltime.storage.PathGenerationService
 import in.reeltime.user.User
@@ -67,7 +66,7 @@ class VideoCreationServiceSpec extends Specification {
         def command = new VideoCreationCommand()
 
         when:
-        def allowed = service.canCreate(command)
+        def allowed = service.allowCreation(command)
 
         then:
         !allowed
@@ -93,7 +92,7 @@ class VideoCreationServiceSpec extends Specification {
         def command = new VideoCreationCommand()
 
         when:
-        def allowed = service.canCreate(command)
+        def allowed = service.allowCreation(command)
 
         then:
         !allowed
