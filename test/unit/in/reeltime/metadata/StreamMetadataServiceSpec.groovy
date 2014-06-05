@@ -20,10 +20,19 @@ class StreamMetadataServiceSpec extends Specification {
         def streams = service.extractStreams(videoFile)
 
         then:
+        streams instanceof List
+
+        and:
         streams.empty
 
         and:
-        1 * ffprobeService.probeVideo(videoFile) >> [streams: []]
+        1 * ffprobeService.probeVideo(videoFile) >> ffprobeResult
+
+        where:
+        _   |   ffprobeResult
+        _   |   null
+        _   |   [:]
+        _   |   [streams: []]
     }
 
     void "one stream in video container"() {
