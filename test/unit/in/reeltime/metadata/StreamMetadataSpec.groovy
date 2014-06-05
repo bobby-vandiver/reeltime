@@ -11,7 +11,7 @@ class StreamMetadataSpec extends Specification {
     @Unroll
     void "duration [#duration] is valid [#valid]"() {
         given:
-        grailsApplication.config.reeltime.metadata.maxDurationInSeconds = 9000
+        grailsApplication.config.reeltime.metadata.maxDurationInSeconds = '9000'
 
         and:
         def stream = new StreamMetadata(duration: duration)

@@ -24,7 +24,7 @@ class StreamMetadata {
     }
 
     private static boolean exceedsMaxDuration(String duration) {
-        def maxDuration = Holders.config.reeltime.metadata.maxDurationInSeconds
+        def maxDuration = Holders.config.reeltime.metadata.maxDurationInSeconds as int
         def matcher = (duration =~ DURATION_FORMAT)
 
         def seconds = matcher[0][1] as int
