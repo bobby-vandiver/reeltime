@@ -145,4 +145,19 @@ class VideoCreationServiceSpec extends Specification {
         expect:
         service.allowCreation(command)
     }
+
+    void "reload the video stream after writing it to the temp file"() {
+        given:
+        def data = 'TEST'.bytes
+        def stream = new ByteArrayInputStream(data)
+
+        and:
+        def command = new VideoCreationCommand(videoStream: stream)
+
+        when:
+        service.allowCreation(command)
+
+        then:
+        command.videoStream.bytes == data
+    }
 }

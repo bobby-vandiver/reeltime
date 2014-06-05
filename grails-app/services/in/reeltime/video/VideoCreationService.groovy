@@ -18,13 +18,12 @@ class VideoCreationService {
     boolean allowCreation(VideoCreationCommand command) {
 
         def temp = writeVideoStreamToTempFile(command)
-        if(!temp) {
-            return false
+        if(temp) {
+            def streams = streamMetadataService.extractStreams(temp)
+            reloadVideoStreamFromTempFile(command, temp)
+            return validateStreams(streams)
         }
-
-        def streams = streamMetadataService.extractStreams(temp)
-        // TODO: Reload input stream from temp file
-        return validateStreams(streams)
+        return false
     }
 
     private File writeVideoStreamToTempFile(VideoCreationCommand command) {
@@ -53,7 +52,7 @@ class VideoCreationService {
                 }
 
                 log.debug("Writing $bytesRead bytes to the buffer")
-                outputStream.write(buffer)
+                outputStream.write(buffer, 0, bytesRead)
             }
             return temp
         }
@@ -67,6 +66,10 @@ class VideoCreationService {
                 outputStream.close()
             }
         }
+    }
+
+    private static void reloadVideoStreamFromTempFile(VideoCreationCommand command, File temp) {
+        command.videoStream = new FileInputStream(temp)
     }
 
     private static boolean validateStreams(List<StreamMetadata> streams) {
