@@ -65,6 +65,14 @@ class VideoCreationServiceSpec extends Specification {
         video.masterPath == masterPath
     }
 
+    void "video stream is required"() {
+        given:
+        def command = new VideoCreationCommand(videoStream: null)
+
+        expect:
+        !service.allowCreation(command)
+    }
+
     @Unroll
     void "video stream with data [#data] and max allowed size [#max] is allowed [#allowed]"() {
         given:

@@ -31,13 +31,18 @@ class VideoCreationService {
         def maxSize = grailsApplication.config.reeltime.metadata.maxVideoStreamSizeInBytes as int
         OutputStream outputStream = null
         try {
+            def videoStream = command.videoStream
+            if(!videoStream) {
+                log.warn("Video stream not available")
+                return null
+            }
+
             log.debug("Creating temp file for video stream")
             def temp = File.createTempFile('can-create-video', '.tmp')
 
             def fos = new FileOutputStream(temp)
             outputStream = new BufferedOutputStream(fos)
 
-            def videoStream = command.videoStream
             byte[] buffer = new byte[BUFFER_SIZE]
 
             int totalBytesRead = 0
