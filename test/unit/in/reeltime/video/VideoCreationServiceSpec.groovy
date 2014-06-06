@@ -10,6 +10,7 @@ import in.reeltime.storage.InputStorageService
 import in.reeltime.transcoder.TranscoderService
 import in.reeltime.metadata.StreamMetadataService
 import spock.lang.Unroll
+import test.helper.StreamMetadataListFactory
 
 @TestFor(VideoCreationService)
 @Mock([Video])
@@ -18,13 +19,15 @@ class VideoCreationServiceSpec extends Specification {
     StreamMetadataService streamMetadataService
 
     void setup() {
-        streamMetadataService = Mock(StreamMetadataService)
-
+        streamMetadataService = Mock(StreamMetadataService) {
+            extractStreams(_) >> StreamMetadataListFactory.createRequiredStreams()
+        }
         service.inputStorageService = Mock(InputStorageService)
         service.pathGenerationService = Mock(PathGenerationService)
         service.transcoderService = Mock(TranscoderService)
         service.streamMetadataService = streamMetadataService
 
+        grailsApplication.config.reeltime.metadata.maxDurationInSeconds = '300'
         grailsApplication.config.reeltime.metadata.maxVideoStreamSizeInBytes = '1000'
     }
 
@@ -63,36 +66,6 @@ class VideoCreationServiceSpec extends Specification {
     }
 
     @Unroll
-    void "do not allow videos that contains [#count] invalid streams"() {
-        given:
-        def stream = new ByteArrayInputStream(''.bytes)
-        def command = new VideoCreationCommand(videoStream: stream)
-
-        when:
-        def allowed = service.allowCreation(command)
-
-        then:
-        !allowed
-
-        and:
-        1 * streamMetadataService.extractStreams(_) >> createListOfInvalidStreams(count)
-
-        where:
-        _   |   count
-        _   |   0
-        _   |   1
-        _   |   2
-    }
-
-    private static List<StreamMetadata> createListOfInvalidStreams(int count) {
-        def list = []
-        for(int i = 0; i < count; i++) {
-            new StreamMetadata(duration: 'invalid')
-        }
-        return list
-    }
-
-    @Unroll
     void "video stream with data [#data] and max allowed size [#max] is allowed [#allowed]"() {
         given:
         grailsApplication.config.reeltime.metadata.maxVideoStreamSizeInBytes = max
@@ -118,10 +91,7 @@ class VideoCreationServiceSpec extends Specification {
 
         and:
         def data = 'a' * (3 * service.BUFFER_SIZE)
-        def stream = new ByteArrayInputStream(data.bytes)
-
-        and:
-        def command = new VideoCreationCommand(videoStream: stream)
+        def command = createCommandWithVideoStream(data.bytes)
 
         expect:
         service.allowCreation(command)
@@ -130,15 +100,17 @@ class VideoCreationServiceSpec extends Specification {
     void "reload the video stream after writing it to the temp file"() {
         given:
         def data = 'TEST'.bytes
-        def stream = new ByteArrayInputStream(data)
-
-        and:
-        def command = new VideoCreationCommand(videoStream: stream)
+        def command = createCommandWithVideoStream(data)
 
         when:
         service.allowCreation(command)
 
         then:
         command.videoStream.bytes == data
+    }
+
+    private static VideoCreationCommand createCommandWithVideoStream(byte[] data) {
+        def videoStream = new ByteArrayInputStream(data)
+        new VideoCreationCommand(videoStream: videoStream)
     }
 }

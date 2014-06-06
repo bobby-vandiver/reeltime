@@ -1,6 +1,5 @@
 package in.reeltime.video
 
-import in.reeltime.metadata.StreamMetadata
 import in.reeltime.user.User
 
 class VideoCreationService {
@@ -17,13 +16,15 @@ class VideoCreationService {
 
     boolean allowCreation(VideoCreationCommand command) {
 
+        boolean allowed = false
         def temp = writeVideoStreamToTempFile(command)
+
         if(temp) {
-            def streams = streamMetadataService.extractStreams(temp)
+            extractStreamsFromVideo(command, temp)
             reloadVideoStreamFromTempFile(command, temp)
-            return validateStreams(streams)
+            allowed = command.validate()
         }
-        return false
+        return allowed
     }
 
     private File writeVideoStreamToTempFile(VideoCreationCommand command) {
@@ -68,12 +69,12 @@ class VideoCreationService {
         }
     }
 
-    private static void reloadVideoStreamFromTempFile(VideoCreationCommand command, File temp) {
-        command.videoStream = new FileInputStream(temp)
+    private void extractStreamsFromVideo(VideoCreationCommand command, File temp) {
+        command.streams = streamMetadataService.extractStreams(temp)
     }
 
-    private static boolean validateStreams(List<StreamMetadata> streams) {
-        !streams.empty && streams.find { !it.validate() } == null
+    private static void reloadVideoStreamFromTempFile(VideoCreationCommand command, File temp) {
+        command.videoStream = new FileInputStream(temp)
     }
 
     def createVideo(User creator, String title, InputStream videoStream) {
