@@ -17,6 +17,14 @@ class VideoCreationCommandSpec extends Specification {
         grailsApplication.config.reeltime.metadata.maxDurationInSeconds = MAX_DURATION_IN_SECONDS
     }
 
+    void "video stream cannot be null"() {
+        given:
+        def command = new VideoCreationCommand(videoStream: null)
+
+        expect:
+        !command.validate(['videoStream'])
+    }
+
     @Unroll
     void "do not allow videos that contains [#count] invalid streams"() {
         given:

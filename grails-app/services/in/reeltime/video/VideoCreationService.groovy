@@ -16,15 +16,12 @@ class VideoCreationService {
 
     boolean allowCreation(VideoCreationCommand command) {
 
-        boolean allowed = false
         def temp = writeVideoStreamToTempFile(command)
-
         if(temp) {
             extractStreamsFromVideo(command, temp)
             reloadVideoStreamFromTempFile(command, temp)
-            allowed = command.validate()
         }
-        return allowed
+        return command.validate()
     }
 
     private File writeVideoStreamToTempFile(VideoCreationCommand command) {
