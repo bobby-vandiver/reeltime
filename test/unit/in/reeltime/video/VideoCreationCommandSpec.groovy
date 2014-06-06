@@ -10,11 +10,11 @@ import test.helper.StreamMetadataListFactory
 @TestMixin(GrailsUnitTestMixin)
 class VideoCreationCommandSpec extends Specification {
 
-    private static final MAX_DURATION_IN_SECONDS = '300'
+    private static final MAX_DURATION_IN_SECONDS = 300
     private static final VALID_DURATION = '123.456'
 
     void setup() {
-        grailsApplication.config.reeltime.metadata.maxDurationInSeconds = MAX_DURATION_IN_SECONDS
+        StreamMetadata.maxDuration = MAX_DURATION_IN_SECONDS
     }
 
     void "video stream cannot be null"() {
