@@ -10,7 +10,7 @@ class FfprobeServiceSpec extends Specification {
     @Unroll
     void "throw if ffprobe cannot be found at path [#path]"() {
         given:
-        grailsApplication.config.reeltime.metadata.ffprobe = path
+        service.ffprobe = path
 
         and:
         def file = File.createTempFile('ffprobe-not-found-test', '.mp4')

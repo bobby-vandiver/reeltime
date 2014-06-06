@@ -1,6 +1,5 @@
 package in.reeltime.metadata
 
-import grails.util.Holders
 import grails.validation.Validateable
 
 @Validateable
@@ -10,6 +9,8 @@ class StreamMetadata {
 
     String codecName
     String duration
+
+    static maxDuration
 
     static constraints = {
         duration validator: durationValidator
@@ -24,7 +25,6 @@ class StreamMetadata {
     }
 
     private static boolean exceedsMaxDuration(String duration) {
-        def maxDuration = Holders.config.reeltime.metadata.maxDurationInSeconds as int
         def matcher = (duration =~ DURATION_FORMAT)
 
         def seconds = matcher[0][1] as int

@@ -1,9 +1,14 @@
+import in.reeltime.injection.ConfigInjector
 import in.reeltime.user.User
 import in.reeltime.oauth2.Client
 
 class BootStrap {
 
+    def grailsApplication
+
     def init = { servletContext ->
+
+        ConfigInjector.injectConfigurableProperties(grailsApplication.config, grailsApplication.mainContext)
 
         if(!User.findByUsername('bob')) {
             User user = new User(

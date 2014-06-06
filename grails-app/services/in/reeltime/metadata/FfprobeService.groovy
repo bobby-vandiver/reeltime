@@ -5,11 +5,10 @@ import groovy.json.JsonSlurper
 class FfprobeService {
 
     def grailsApplication
+    def ffprobe
 
     Map probeVideo(File video) {
         log.debug("Entering ${this.class.simpleName} probeVideo for video [${video.absolutePath}]")
-
-        def ffprobe = grailsApplication.config.reeltime.metadata.ffprobe
         ensurePathToFfprobeIsDefined(ffprobe)
 
         def command = "${ffprobe} -v quiet -print_format json -show_streams ${video.absolutePath}"

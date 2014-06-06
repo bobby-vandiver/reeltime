@@ -27,8 +27,8 @@ class VideoCreationServiceSpec extends Specification {
         service.transcoderService = Mock(TranscoderService)
         service.streamMetadataService = streamMetadataService
 
-        grailsApplication.config.reeltime.metadata.maxDurationInSeconds = '300'
-        grailsApplication.config.reeltime.metadata.maxVideoStreamSizeInBytes = '1000'
+        StreamMetadata.maxDuration = 300
+        service.maxVideoStreamSizeInBytes = 1000
     }
 
     void "store video stream, save the video object and then transcode it"() {
@@ -76,7 +76,7 @@ class VideoCreationServiceSpec extends Specification {
     @Unroll
     void "video stream with data [#data] and max allowed size [#max] is allowed [#allowed]"() {
         given:
-        grailsApplication.config.reeltime.metadata.maxVideoStreamSizeInBytes = max
+        service.maxVideoStreamSizeInBytes = max
 
         and:
         def stream = new ByteArrayInputStream(data)
@@ -87,15 +87,15 @@ class VideoCreationServiceSpec extends Specification {
 
         where:
         max     |   data        |   allowed
-        '0'     |   'a'.bytes   |   false
-        '1'     |   'a'.bytes   |   true
-        '1'     |   'ab'.bytes  |   false
-        '2'     |   'a'.bytes   |   true
+        0       |   'a'.bytes   |   false
+        1       |   'a'.bytes   |   true
+        1       |   'ab'.bytes  |   false
+        2       |   'a'.bytes   |   true
     }
 
     void "video stream is larger than buffer but less than max size allowed"() {
         given:
-        grailsApplication.config.reeltime.metadata.maxVideoStreamSizeInBytes = "${4 * service.BUFFER_SIZE}"
+        service.maxVideoStreamSizeInBytes = 4 * service.BUFFER_SIZE
 
         and:
         def data = 'a' * (3 * service.BUFFER_SIZE)

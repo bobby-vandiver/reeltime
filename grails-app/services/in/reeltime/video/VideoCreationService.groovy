@@ -11,6 +11,7 @@ class VideoCreationService {
     def streamMetadataService
 
     def grailsApplication
+    def maxVideoStreamSizeInBytes
 
     private static final int BUFFER_SIZE = 8 * 1024
 
@@ -25,7 +26,6 @@ class VideoCreationService {
     }
 
     private File writeVideoStreamToTempFile(VideoCreationCommand command) {
-        def maxSize = grailsApplication.config.reeltime.metadata.maxVideoStreamSizeInBytes as int
         OutputStream outputStream = null
         try {
             def videoStream = command.videoStream
@@ -49,7 +49,7 @@ class VideoCreationService {
             while((bytesRead = videoStream.read(buffer)) >= 0) {
                 totalBytesRead += bytesRead
 
-                if(totalBytesRead > maxSize) {
+                if(totalBytesRead > maxVideoStreamSizeInBytes) {
                     log.warn("Video stream exceeds max allowed size")
                     return null
                 }
