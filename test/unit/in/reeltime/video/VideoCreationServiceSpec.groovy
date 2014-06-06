@@ -63,7 +63,7 @@ class VideoCreationServiceSpec extends Specification {
     }
 
     @Unroll
-    void "do not allow videos that contain a stream with an invalid duration [#duration]"() {
+    void "do not allow videos that contains [#count] invalid streams"() {
         given:
         def stream = new ByteArrayInputStream(''.bytes)
         def command = new VideoCreationCommand(videoStream: stream)
@@ -75,40 +75,21 @@ class VideoCreationServiceSpec extends Specification {
         !allowed
 
         and:
-        1 * streamMetadataService.extractStreams(_) >> [new StreamMetadata(duration: duration)]
+        1 * streamMetadataService.extractStreams(_) >> createListOfInvalidStreams(count)
 
         where:
-        _   |   duration
-        _   |   ''
-        _   |   '.0124'
-        _   |   '124.'
-        _   |   '9000.asf'
-        _   |   '1234#1441'
+        _   |   count
+        _   |   0
+        _   |   1
+        _   |   2
     }
 
-    @Unroll
-    void "do not allow videos that contain a stream that exceeds max duration [#duration]"() {
-        given:
-        grailsApplication.config.reeltime.metadata.maxDurationInSeconds = max
-
-        and:
-        def stream = new ByteArrayInputStream(''.bytes)
-        def command = new VideoCreationCommand(videoStream: stream)
-
-        when:
-        def allowed = service.allowCreation(command)
-
-        then:
-        !allowed
-
-        and:
-        1 * streamMetadataService.extractStreams(_) >> [new StreamMetadata(duration: duration)]
-
-        where:
-        max     |   duration
-        '9000'  |   '9000.000000'
-        '9000'  |   '9000.000001'
-        '9000'  |   '9000.123456'
+    private static List<StreamMetadata> createListOfInvalidStreams(int count) {
+        def list = []
+        for(int i = 0; i < count; i++) {
+            new StreamMetadata(duration: 'invalid')
+        }
+        return list
     }
 
     @Unroll

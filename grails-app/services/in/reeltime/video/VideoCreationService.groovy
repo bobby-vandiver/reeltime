@@ -73,7 +73,7 @@ class VideoCreationService {
     }
 
     private static boolean validateStreams(List<StreamMetadata> streams) {
-        streams.find { !it.validate() } == null
+        !streams.empty && streams.find { !it.validate() } == null
     }
 
     def createVideo(User creator, String title, InputStream videoStream) {
