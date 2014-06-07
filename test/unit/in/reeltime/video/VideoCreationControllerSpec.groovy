@@ -8,8 +8,8 @@ import spock.lang.Specification
 
 import in.reeltime.user.UserAuthenticationService
 
-@TestFor(VideoController)
-class VideoControllerSpec extends Specification {
+@TestFor(VideoCreationController)
+class VideoCreationControllerSpec extends Specification {
 
     void "return 400 if video param is missing from request"() {
         when:

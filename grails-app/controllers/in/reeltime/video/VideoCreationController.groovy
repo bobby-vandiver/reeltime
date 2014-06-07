@@ -4,7 +4,7 @@ import grails.plugin.springsecurity.annotation.Secured
 
 import static javax.servlet.http.HttpServletResponse.*
 
-class VideoController {
+class VideoCreationController {
 
     def userAuthenticationService
     def videoCreationService

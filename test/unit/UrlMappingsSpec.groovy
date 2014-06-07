@@ -3,12 +3,12 @@ import grails.test.mixin.TestMixin
 import grails.test.mixin.web.UrlMappingsUnitTestMixin
 import spock.lang.Specification
 import in.reeltime.notification.NotificationController
-import in.reeltime.video.VideoController
+import in.reeltime.video.VideoCreationController
 import in.reeltime.playlist.PlaylistController
 import in.reeltime.playlist.SegmentController
 
 @TestMixin(UrlMappingsUnitTestMixin)
-@Mock([NotificationController, VideoController, PlaylistController, SegmentController])
+@Mock([NotificationController, VideoCreationController, PlaylistController, SegmentController])
 class UrlMappingsSpec extends Specification {
 
     void "test notification endpoint mapping"() {
@@ -21,7 +21,7 @@ class UrlMappingsSpec extends Specification {
 
     void "test video endpoint mapping"() {
         expect:
-        assertForwardUrlMapping('/video', controller: 'video', action: 'upload')
+        assertForwardUrlMapping('/video', controller: 'videoCreation', action: 'upload')
     }
 
     void "test variant playlist streaming endpoint mapping"() {
