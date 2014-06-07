@@ -10,7 +10,6 @@ class VideoCreationService {
     def transcoderService
     def streamMetadataService
 
-    def grailsApplication
     def maxVideoStreamSizeInBytes
 
     private static final int BUFFER_SIZE = 8 * 1024

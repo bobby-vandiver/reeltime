@@ -3,15 +3,15 @@ package in.reeltime.storage
 class PathGenerationService {
 
     def storageService
-    def grailsApplication
+
+    def inputBase
+    def outputBase
 
     String getUniqueInputPath() {
-        def inputBase = grailsApplication.config.reeltime.storage.input
         generateRandomUniquePath(inputBase)
     }
 
     String getUniqueOutputPath() {
-        def outputBase = grailsApplication.config.reeltime.storage.output
         generateRandomUniquePath(outputBase)
     }
 

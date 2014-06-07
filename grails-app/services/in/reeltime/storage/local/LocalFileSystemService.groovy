@@ -1,12 +1,11 @@
 package in.reeltime.storage.local
 
-import in.reeltime.video.Video
-
 import static java.io.File.separator
 
 class LocalFileSystemService {
 
-    def grailsApplication
+    def inputBasePath
+    def outputBasePath
 
     String getDirectory(String parent, String child) {
         def path = parent + separator + child
@@ -36,13 +35,11 @@ class LocalFileSystemService {
     }
 
     String getAbsolutePathToInputFile(String path) {
-        def input = grailsApplication.config.reeltime.storage.input
-        "${input}${separator}${path}"
+        "${inputBasePath}${separator}${path}"
     }
 
     String getAbsolutePathToOutputFile(String path) {
-        def output = grailsApplication.config.reeltime.storage.output
-        "${output}${separator}${path}"
+        "${outputBasePath}${separator}${path}"
     }
 
 }

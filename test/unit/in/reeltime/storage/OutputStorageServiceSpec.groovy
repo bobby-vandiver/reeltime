@@ -9,10 +9,9 @@ class OutputStorageServiceSpec extends Specification {
     void "load storage output base path from config and load stream"() {
         given:
         def outputBase = 'playlist-and-segments'
-        grailsApplication.config.reeltime.storage.output = outputBase
+        service.outputBase = outputBase
 
         and:
-        service.grailsApplication = grailsApplication
         service.storageService = Mock(StorageService)
 
         and:

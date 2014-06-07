@@ -21,7 +21,7 @@ class ConfigInjector {
         ctx.ffmpegTranscoderService.with {
             ffmpeg = config.reeltime.transcoder.ffmpeg.path
             segmentDuration = config.reeltime.transcoder.output.segmentDuration
-            segmentFormat = config.reeltime.transcoder.ffmpeg.segmentFormat as String
+            segmentFormat = config.reeltime.transcoder.ffmpeg.segmentFormat
         }
 
         ctx.elasticTranscoderService.with {
@@ -30,6 +30,24 @@ class ConfigInjector {
             inputSettings = config.reeltime.transcoder.input
             segmentDuration = config.reeltime.transcoder.output.segmentDuration
             playlistFormat = config.reeltime.transcoder.output.format
+        }
+
+        ctx.localFileSystemService.with {
+            inputBasePath = config.reeltime.storage.input
+            outputBasePath = config.reeltime.storage.output
+        }
+
+        ctx.inputStorageService.with {
+            inputBase = config.reeltime.storage.input
+        }
+
+        ctx.outputStorageService.with {
+            outputBase = config.reeltime.storage.output
+        }
+
+        ctx.pathGenerationService.with {
+            inputBase = config.reeltime.storage.input
+            outputBase = config.reeltime.storage.output
         }
     }
 

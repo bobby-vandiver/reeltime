@@ -4,7 +4,6 @@ import groovy.json.JsonSlurper
 
 class FfprobeService {
 
-    def grailsApplication
     def ffprobe
 
     Map probeVideo(File video) {

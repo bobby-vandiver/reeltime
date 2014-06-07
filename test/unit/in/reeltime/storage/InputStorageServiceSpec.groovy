@@ -9,10 +9,9 @@ class InputStorageServiceSpec extends Specification {
     void "load storage input base path from config and store stream"() {
         given:
         def inputBase = 'master-videos'
-        grailsApplication.config.reeltime.storage.input = inputBase
+        service.inputBase = inputBase
 
         and:
-        service.grailsApplication = grailsApplication
         service.storageService = Mock(StorageService)
 
         and:
