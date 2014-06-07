@@ -16,7 +16,7 @@ class FfmpegTranscoderServiceSpec extends Specification {
 
     void "throw if ffmpeg cannot be found"() {
         given:
-        grailsApplication.config.reeltime.transcoder.ffmpeg.path = null
+        service.ffmpeg = null
 
         and:
         def video = new Video(masterPath: 'bar')

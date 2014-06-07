@@ -8,19 +8,12 @@ import spock.lang.IgnoreIf
 
 class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
 
-    FfmpegTranscoderService service
+    def ffmpegTranscoderService
 
-    def localFileSystemService
     def grailsApplication
 
     def pathGenerationService
     def inputStorageService
-
-    void setup() {
-        service = new FfmpegTranscoderService()
-        service.grailsApplication = grailsApplication
-        service.localFileSystemService = localFileSystemService
-    }
 
     @IgnoreIf({!System.getProperty('ffmpeg') && !System.getenv('FFMPEG')})
     void "transcode video file using ffmpeg"() {
@@ -36,7 +29,7 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
         def outputPath = pathGenerationService.uniqueOutputPath
 
         when:
-        service.transcode(video, outputPath)
+        ffmpegTranscoderService.transcode(video, outputPath)
 
         then:
         assertDirectoryContainsPlaylistAndSegments(outputPath)

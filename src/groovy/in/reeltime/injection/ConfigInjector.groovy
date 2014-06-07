@@ -17,6 +17,12 @@ class ConfigInjector {
         ctx.ffprobeService.with {
             ffprobe = config.reeltime.metadata.ffprobe
         }
+
+        ctx.ffmpegTranscoderService.with {
+            ffmpeg = config.reeltime.transcoder.ffmpeg.path
+            segmentDuration = config.reeltime.transcoder.output.segmentDuration
+            segmentFormat = config.reeltime.transcoder.ffmpeg.segmentFormat as String
+        }
     }
 
     private static void enforceReadOnlyStaticField(Class clazz, String property) {
