@@ -12,10 +12,9 @@ class PathGenerationServiceSpec extends Specification {
     @Unroll
     void "unique file generated the first time for [#configName]"() {
         given:
-        grailsApplication.config.reeltime.storage[configName] = base
+        service."${propertyName}" = base
 
         and:
-        service.grailsApplication = grailsApplication
         service.storageService = Mock(StorageService)
 
         when:
@@ -28,18 +27,17 @@ class PathGenerationServiceSpec extends Specification {
         1 * service.storageService.exists(base, _) >> false
 
         where:
-        configName      |   base        |   methodName
-        'input'         |   'inbox'     |   'getUniqueInputPath'
-        'output'        |   'outbox'    |   'getUniqueOutputPath'
+        propertyName    |   base        |   methodName
+        'inputBase'     |   'inbox'     |   'getUniqueInputPath'
+        'outputBase'    |   'outbox'    |   'getUniqueOutputPath'
     }
 
     @Unroll
     void "unique file generated after the second time for [#configName]"() {
         given:
-        grailsApplication.config.reeltime.storage[configName] = base
+        service."${propertyName}" = base
 
         and:
-        service.grailsApplication = grailsApplication
         service.storageService = Mock(StorageService)
 
         when:
@@ -52,8 +50,8 @@ class PathGenerationServiceSpec extends Specification {
         2 * service.storageService.exists(base, _) >>> [true, false]
 
         where:
-        configName      |   base        |   methodName
-        'input'         |   'inbox'     |   'getUniqueInputPath'
-        'output'        |   'outbox'    |   'getUniqueOutputPath'
+        propertyName    |   base        |   methodName
+        'inputBase'     |   'inbox'     |   'getUniqueInputPath'
+        'outputBase'    |   'outbox'    |   'getUniqueOutputPath'
     }
 }
