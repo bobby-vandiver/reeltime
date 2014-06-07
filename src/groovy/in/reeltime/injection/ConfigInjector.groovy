@@ -23,6 +23,14 @@ class ConfigInjector {
             segmentDuration = config.reeltime.transcoder.output.segmentDuration
             segmentFormat = config.reeltime.transcoder.ffmpeg.segmentFormat as String
         }
+
+        ctx.elasticTranscoderService.with {
+            presetIds = config.reeltime.transcoder.output.presets
+            pipelineName = config.reeltime.transcoder.pipeline
+            inputSettings = config.reeltime.transcoder.input
+            segmentDuration = config.reeltime.transcoder.output.segmentDuration
+            playlistFormat = config.reeltime.transcoder.output.format
+        }
     }
 
     private static void enforceReadOnlyStaticField(Class clazz, String property) {

@@ -14,7 +14,13 @@ class ElasticTranscoderService implements TranscoderService {
     def transcoderJobService
     def pathGenerationService
 
-    def grailsApplication
+    def pipelineName
+
+    def inputSettings
+    def presetIds
+
+    def segmentDuration
+    def playlistFormat
 
     @Override
     void transcode(Video video, String output){
@@ -23,10 +29,9 @@ class ElasticTranscoderService implements TranscoderService {
         def ets = awsService.createClient(AmazonElasticTranscoder) as AmazonElasticTranscoder
 
         def pipeline = getPipeline(ets)
-        def input = createJobInput(video.masterPath)
 
-        def presets = grailsApplication.config.reeltime.transcoder.output.presets
-        def outputs = presets.collect { name, presetId -> createJobOutput(presetId) }
+        def input = createJobInput(video.masterPath)
+        def outputs = presetIds.collect { name, presetId -> createJobOutput(presetId) }
 
         def outputKeys = outputs.collect { it.key }
         def playlist = createJobPlaylist(outputKeys)
@@ -48,28 +53,25 @@ class ElasticTranscoderService implements TranscoderService {
     }
 
     private def getPipeline(AmazonElasticTranscoder ets) {
-        def name = grailsApplication.config.reeltime.transcoder.pipeline
-        log.debug("Searching for pipeline [$name]")
-        ets.listPipelines().pipelines.find { it.name == name}
+        log.debug("Searching for pipeline [$pipelineName]")
+        ets.listPipelines().pipelines.find { it.name == pipelineName}
     }
 
     private def createJobInput(String path) {
-        def settings = grailsApplication.config.reeltime.transcoder.input + [key: path]
+        def settings = inputSettings + [key: path]
         log.debug("Job input settings: [$settings]")
         new JobInput(settings)
     }
 
     private def createJobOutput(String presetId) {
         def key = pathGenerationService.uniqueOutputPath
-        def duration = grailsApplication.config.reeltime.transcoder.output.segmentDuration
-        log.debug("Job output settings -- key [$key] -- presetId [$presetId] -- duration [$duration]")
-        new CreateJobOutput(key: key, presetId: presetId, segmentDuration: duration)
+        log.debug("Job output settings -- key [$key] -- presetId [$presetId] -- duration [$segmentDuration]")
+        new CreateJobOutput(key: key, presetId: presetId, segmentDuration: segmentDuration)
     }
 
     private def createJobPlaylist(Collection<String> outputKeys) {
         def name = pathGenerationService.uniqueOutputPath
-        def format = grailsApplication.config.reeltime.transcoder.output.format
-        log.debug("Job playlist settings -- name [$name] -- format [$format] -- outputKeys [$outputKeys]")
-        new CreateJobPlaylist(format: format, name: name, outputKeys: outputKeys)
+        log.debug("Job playlist settings -- name [$name] -- format [$playlistFormat] -- outputKeys [$outputKeys]")
+        new CreateJobPlaylist(format: playlistFormat, name: name, outputKeys: outputKeys)
     }
 }

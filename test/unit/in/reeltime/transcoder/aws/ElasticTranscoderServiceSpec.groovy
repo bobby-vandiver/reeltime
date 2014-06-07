@@ -32,18 +32,13 @@ class ElasticTranscoderServiceSpec extends Specification {
             }
         }
 
-        grailsApplication.config.reeltime.transcoder.pipeline = pipeline.name
+        service.pipelineName = pipeline.name
 
-        grailsApplication.config.reeltime.transcoder.input.aspectRatio = 'auto'
-        grailsApplication.config.reeltime.transcoder.input.frameRate = 'auto'
-        grailsApplication.config.reeltime.transcoder.input.resolution = 'auto'
-        grailsApplication.config.reeltime.transcoder.input.interlaced = 'auto'
-        grailsApplication.config.reeltime.transcoder.input.container = 'auto'
+        service.inputSettings = [aspectRatio: 'auto', frameRate: 'auto', resolution: 'auto',
+                                 interlaced: 'auto', container: 'auto']
 
-        grailsApplication.config.reeltime.transcoder.output.segmentDuration = '10'
-        grailsApplication.config.reeltime.transcoder.output.format = 'HLSv3'
-
-        service.grailsApplication = grailsApplication
+        service.segmentDuration = '10'
+        service.playlistFormat = 'HLSv3'
 
         service.transcoderJobService = Mock(TranscoderJobService)
         service.awsService = Mock(AwsService)
@@ -61,7 +56,7 @@ class ElasticTranscoderServiceSpec extends Specification {
     @Unroll
     void "submit video to configured pipeline with [#count] media playlists"() {
         given:
-        grailsApplication.config.reeltime.transcoder.output.presets = presets
+        service.presetIds = presets
 
         and:
         def video = new Video(masterPath: 'bar')
