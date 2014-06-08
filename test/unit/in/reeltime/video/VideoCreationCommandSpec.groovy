@@ -47,8 +47,8 @@ class VideoCreationCommandSpec extends Specification {
 
         where:
         validSize   |   valid   |   code
-        null        |   false   |   'exceedsMaxSize'
-        false       |   false   |   'exceedsMaxSize'
+        null        |   false   |   'exceedsMax'
+        false       |   false   |   'exceedsMax'
         true        |   true    |   null
     }
 
@@ -79,7 +79,7 @@ class VideoCreationCommandSpec extends Specification {
         duration                    |   valid   |   code
         MAX_DURATION_IN_SECONDS - 1 |   true    |   null
         MAX_DURATION_IN_SECONDS     |   true    |   null
-        MAX_DURATION_IN_SECONDS + 1 |   false   |   'exceedsMaxDuration'
+        MAX_DURATION_IN_SECONDS + 1 |   false   |   'exceedsMax'
     }
 
     @Unroll
@@ -96,11 +96,11 @@ class VideoCreationCommandSpec extends Specification {
         command.errors.getFieldError('aacStreamIsPresent')?.code == aacCode
 
         where:
-        h264    |   aac     |   valid   |   h264Code            |   aacCode
-        true    |   true    |   true    |   null                |   null
-        false   |   true    |   false   |   'h264IsMissing'     |   null
-        true    |   false   |   false   |   null                |   'aacIsMissing'
-        false   |   false   |   false   |   'h264IsMissing'     |   'aacIsMissing'
+        h264    |   aac     |   valid   |   h264Code    |   aacCode
+        true    |   true    |   true    |   null        |   null
+        false   |   true    |   false   |   'missing'   |   null
+        true    |   false   |   false   |   null        |   'missing'
+        false   |   false   |   false   |   'missing'   |   'missing'
     }
 
     @Unroll
@@ -116,10 +116,10 @@ class VideoCreationCommandSpec extends Specification {
 
         where:
         propertyName            |   value   |   code
-        'durationInSeconds'     |   1       |   'durationIsInvalid'
-        'h264StreamIsPresent'   |   true    |   'h264IsInvalid'
-        'aacStreamIsPresent'    |   true    |   'aacIsInvalid'
-        'videoStreamSizeIsValid'|   true    |   'videoStreamSizeIsInvalid'
+        'durationInSeconds'     |   1       |   'invalid'
+        'h264StreamIsPresent'   |   true    |   'invalid'
+        'aacStreamIsPresent'    |   true    |   'invalid'
+        'videoStreamSizeIsValid'|   true    |   'invalid'
     }
 
     void "stream metadata can be null when video stream is null to avoid errors revealing internal structure"() {

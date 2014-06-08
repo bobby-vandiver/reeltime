@@ -33,24 +33,22 @@ class VideoCreationCommand {
 
     private static Closure videoStreamSizeIsValidValidator = { val, obj ->
         videoStreamDependentValidator(val, obj) { videoStreamIsNull ->
-
             if(!val) {
-                return 'exceedsMaxSize'
+                return 'exceedsMax'
             }
             else if(videoStreamIsNull) {
-                return 'videoStreamSizeIsInvalid'
+                return 'invalid'
             }
         }
     }
 
     private static Closure durationInSecondsValidator = { val, obj ->
         videoStreamDependentValidator(val, obj) { videoStreamIsNull ->
-
             if(exceedsMaxDuration(val)) {
-                return 'exceedsMaxDuration'
+                return 'exceedsMax'
             }
             else if(videoStreamIsNull) {
-                return 'durationIsInvalid'
+                return 'invalid'
             }
         }
     }
@@ -62,10 +60,10 @@ class VideoCreationCommand {
     private static Closure h264StreamValidator = { val, obj ->
         videoStreamDependentValidator(val, obj) { videoStreamIsNull ->
             if(!val) {
-                return 'h264IsMissing'
+                return 'missing'
             }
             else if(videoStreamIsNull) {
-                return 'h264IsInvalid'
+                return 'invalid'
             }
         }
     }
@@ -73,10 +71,10 @@ class VideoCreationCommand {
     private static Closure aacStreamValidator = { val, obj ->
         videoStreamDependentValidator(val, obj) { videoStreamIsNull ->
             if(!val) {
-                return 'aacIsMissing'
+                return 'missing'
             }
             else if(videoStreamIsNull) {
-                return 'aacIsInvalid'
+                return 'invalid'
             }
         }
     }
