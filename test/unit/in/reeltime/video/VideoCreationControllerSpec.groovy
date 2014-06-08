@@ -24,7 +24,7 @@ class VideoCreationControllerSpec extends Specification {
         controller.videoCreationService = videoCreationService
     }
 
-    void "return 201 after video has been uploaded with minimum params"() {
+    void "return 202 after video has been uploaded with minimum params"() {
         given:
         def videoData = 'foo'.bytes
         def videoParam = new GrailsMockMultipartFile('video', videoData)
@@ -54,6 +54,6 @@ class VideoCreationControllerSpec extends Specification {
         1 * videoCreationService.createVideo(_) >> { command -> validateCommand(command) }
 
         and:
-        response.status == 201
+        response.status == 202
     }
 }

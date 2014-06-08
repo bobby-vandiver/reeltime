@@ -19,7 +19,7 @@ class VideoCreationController {
 
         if(videoCreationService.allowCreation(command)) {
             videoCreationService.createVideo(command)
-            render(status: SC_CREATED)
+            render(status: SC_ACCEPTED)
         }
         else {
             render(status: SC_BAD_REQUEST, contentType: 'application/json') {
