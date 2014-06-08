@@ -21,7 +21,14 @@ class VideoCreationCommand {
     }
 
     private static Closure streamsValidator = { val, obj ->
+        if(videoStreamAndStreamsAreNull(val, obj)) {
+            return true
+        }
         containsOnlyValidStreams(val) && containsRequiredStreams(val)
+    }
+
+    private static boolean videoStreamAndStreamsAreNull(val, obj) {
+        !val && !obj.videoStream
     }
 
     private static boolean containsOnlyValidStreams(val) {

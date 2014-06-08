@@ -45,10 +45,19 @@ class VideoCreationCommandSpec extends Specification {
         command.errors.getFieldError('videoStream').code == 'nullable'
     }
 
+    void "streams can be null when video stream is null to avoid errors revealing internal structure"() {
+        given:
+        def command = new VideoCreationCommand(videoStream: null)
+
+        expect:
+        command.validate(['streams'])
+    }
+
     @Unroll
     void "do not allow videos that contains [#count] invalid streams"() {
         given:
-        def command = new VideoCreationCommand(streams: createListOfInvalidStreams(count))
+        def videoStream = new ByteArrayInputStream('TEST'.bytes)
+        def command = new VideoCreationCommand(videoStream: videoStream, streams: createListOfInvalidStreams(count))
 
         expect:
         !command.validate(['streams'])
