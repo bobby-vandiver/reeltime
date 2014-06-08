@@ -15,8 +15,9 @@ class VideoCreationCommand {
     List<StreamMetadata> streams
 
     static constraints = {
+        title nullable: false, blank: false
         videoStream nullable: false
-        streams validator: streamsValidator, minSize: 2
+        streams validator: streamsValidator
     }
 
     private static Closure streamsValidator = { val, obj ->

@@ -17,12 +17,32 @@ class VideoCreationCommandSpec extends Specification {
         StreamMetadata.maxDuration = MAX_DURATION_IN_SECONDS
     }
 
+    @Unroll
+    void "title cannot be [#title]"() {
+        given:
+        def command = new VideoCreationCommand(title: title)
+
+        expect:
+        !command.validate(['title'])
+
+        and:
+        command.errors.getFieldError('title').code == code
+
+        where:
+        title   |   code
+        null    |   'nullable'
+        ''      |   'blank'
+    }
+
     void "video stream cannot be null"() {
         given:
         def command = new VideoCreationCommand(videoStream: null)
 
         expect:
         !command.validate(['videoStream'])
+
+        and:
+        command.errors.getFieldError('videoStream').code == 'nullable'
     }
 
     @Unroll
@@ -32,6 +52,9 @@ class VideoCreationCommandSpec extends Specification {
 
         expect:
         !command.validate(['streams'])
+
+        and:
+        command.errors.getFieldError('streams').code == 'validator.invalid'
 
         where:
         _   |   count
@@ -81,6 +104,9 @@ class VideoCreationCommandSpec extends Specification {
 
         expect:
         !command.validate(['streams'])
+
+        and:
+        command.errors.getFieldError('streams').code == 'validator.invalid'
 
         where:
         [codec, invalidCount] << [['h264', 'aac'], [0, 1, 2, 3, 4]].combinations()

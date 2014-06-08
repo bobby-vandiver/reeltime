@@ -82,8 +82,7 @@ class VideoCreationServiceSpec extends Specification {
         service.maxVideoStreamSizeInBytes = max
 
         and:
-        def stream = new ByteArrayInputStream(data)
-        def command = new VideoCreationCommand(videoStream: stream)
+        def command = createCommandWithVideoStream(data)
 
         expect:
         service.allowCreation(command) == allowed
@@ -122,6 +121,6 @@ class VideoCreationServiceSpec extends Specification {
 
     private static VideoCreationCommand createCommandWithVideoStream(byte[] data) {
         def videoStream = new ByteArrayInputStream(data)
-        new VideoCreationCommand(videoStream: videoStream)
+        new VideoCreationCommand(videoStream: videoStream, title: 'test-title')
     }
 }
