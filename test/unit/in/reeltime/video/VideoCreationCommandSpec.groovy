@@ -33,6 +33,25 @@ class VideoCreationCommandSpec extends Specification {
         ''      |   'blank'
     }
 
+    @Unroll
+    void "video stream size flag [#validSize] is valid [#valid]"() {
+        given:
+        def videoStream = new ByteArrayInputStream('TEST'.bytes)
+        def command = new VideoCreationCommand(videoStreamSizeIsValid: validSize, videoStream: videoStream)
+
+        expect:
+        command.validate(['videoStreamSizeIsValid']) == valid
+
+        and:
+        command.errors.getFieldError('videoStreamSizeIsValid')?.code == code
+
+        where:
+        validSize   |   valid   |   code
+        null        |   false   |   'exceedsMaxSize'
+        false       |   false   |   'exceedsMaxSize'
+        true        |   true    |   null
+    }
+
     void "video stream cannot be null"() {
         given:
         def command = new VideoCreationCommand(videoStream: null)
@@ -100,6 +119,7 @@ class VideoCreationCommandSpec extends Specification {
         'durationInSeconds'     |   1       |   'durationIsInvalid'
         'h264StreamIsPresent'   |   true    |   'h264IsInvalid'
         'aacStreamIsPresent'    |   true    |   'aacIsInvalid'
+        'videoStreamSizeIsValid'|   true    |   'videoStreamSizeIsInvalid'
     }
 
     void "stream metadata can be null when video stream is null to avoid errors revealing internal structure"() {

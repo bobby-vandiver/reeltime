@@ -11,6 +11,8 @@ class VideoCreationCommand {
     String description
 
     InputStream videoStream
+
+    Boolean videoStreamSizeIsValid
     Integer durationInSeconds
 
     Boolean h264StreamIsPresent
@@ -21,10 +23,24 @@ class VideoCreationCommand {
     static constraints = {
         title nullable: false, blank: false
         videoStream nullable: false
+
+        videoStreamSizeIsValid nullable: true, validator: videoStreamSizeIsValidValidator
         durationInSeconds nullable: true, validator: durationInSecondsValidator
 
         h264StreamIsPresent nullable: true, validator: h264StreamValidator
         aacStreamIsPresent nullable: true, validator: aacStreamValidator
+    }
+
+    private static Closure videoStreamSizeIsValidValidator = { val, obj ->
+        videoStreamDependentValidator(val, obj) { videoStreamIsNull ->
+
+            if(!val) {
+                return 'exceedsMaxSize'
+            }
+            else if(videoStreamIsNull) {
+                return 'videoStreamSizeIsInvalid'
+            }
+        }
     }
 
     private static Closure durationInSecondsValidator = { val, obj ->

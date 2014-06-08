@@ -17,6 +17,8 @@ class VideoCreationService {
     boolean allowCreation(VideoCreationCommand command) {
 
         def temp = writeVideoStreamToTempFile(command)
+        command.videoStreamSizeIsValid = temp ? true : false
+
         if(temp) {
             extractStreamsFromVideo(command, temp)
             reloadVideoStreamFromTempFile(command, temp)

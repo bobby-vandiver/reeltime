@@ -170,7 +170,7 @@ class VideoCreationServiceSpec extends Specification {
         def command = createCommandWithVideoStream('TEST'.bytes)
 
         when:
-        def allowed =service.allowCreation(command)
+        def allowed = service.allowCreation(command)
 
         then:
         !allowed

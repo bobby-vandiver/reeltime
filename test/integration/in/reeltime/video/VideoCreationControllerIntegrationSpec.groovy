@@ -14,6 +14,7 @@ class VideoCreationControllerIntegrationSpec extends IntegrationSpec {
     def videoCreationService
 
     def messageSource
+    def grailsApplication
 
     void setup() {
         controller = new VideoCreationController()
@@ -62,6 +63,21 @@ class VideoCreationControllerIntegrationSpec extends IntegrationSpec {
         'test/files/long_video_3_min_45_sec_17_MB.mp4'  |   ['[video] exceeds max length of 2 minutes']
     }
 
+    void "submit video that exceeds max size"() {
+        given:
+        def maxSizePlusOne = grailsApplication.config.reeltime.metadata.maxVideoStreamSizeInBytes as int
+        maxSizePlusOne++
+
+        setupForCreationRequest()
+        createFileWithGivenSizeAsVideo(maxSizePlusOne)
+
+        when:
+        controller.upload()
+
+        then:
+        assertErrorResponseContainsMessage('[video] exceeds max size')
+    }
+
     private void setupForCreationRequest() {
         controller.request.method = 'POST'
         controller.params.put('title', 'test-title')
@@ -76,6 +92,17 @@ class VideoCreationControllerIntegrationSpec extends IntegrationSpec {
         def stream = new FileInputStream(path)
         def video = new GrailsMockMultipartFile('video', stream)
         controller.request.addFile(video)
+    }
+
+    private void createFileWithGivenSizeAsVideo(int sizeInBytes) {
+        def tempFile = File.createTempFile('video-creation-integration-test', '.tmp')
+        tempFile.deleteOnExit()
+
+        def randomAccessFile = new RandomAccessFile(tempFile, 'rw')
+        randomAccessFile.length = sizeInBytes
+        randomAccessFile.close()
+
+        addFileAsVideo(tempFile.path)
     }
 
     private void assertErrorResponseContainsMessage(String message) {
