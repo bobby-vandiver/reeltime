@@ -20,6 +20,7 @@ class VideoCreationService {
         if(temp) {
             extractStreamsFromVideo(command, temp)
             reloadVideoStreamFromTempFile(command, temp)
+            temp.deleteOnExit()
         }
         return command.validate()
     }
