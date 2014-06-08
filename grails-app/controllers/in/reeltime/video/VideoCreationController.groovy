@@ -12,14 +12,11 @@ class VideoCreationController {
     static allowedMethods = [upload: 'POST']
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('upload')"])
-    def upload() {
+    def upload(VideoCreationCommand command) {
+        bindAdditionalData(command)
 
-        if(hasValidParams()) {
-            def creator = userAuthenticationService.loggedInUser
-            def title = params.title
-            def videoStream = request.getFile('video').inputStream
-
-            videoCreationService.createVideo(creator, title, videoStream)
+        if(videoCreationService.allowCreation(command)) {
+            videoCreationService.createVideo(command)
             render(status: SC_CREATED)
         }
         else {
@@ -29,8 +26,9 @@ class VideoCreationController {
         }
     }
 
-    private boolean hasValidParams() {
-        params?.video && params?.title
+    private void bindAdditionalData(VideoCreationCommand command) {
+        command.creator = userAuthenticationService.loggedInUser
+        command.videoStream = request.getFile('video')?.inputStream
     }
 
     private String getErrorMessage() {

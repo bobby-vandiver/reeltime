@@ -11,6 +11,19 @@ import in.reeltime.user.UserAuthenticationService
 @TestFor(VideoCreationController)
 class VideoCreationControllerSpec extends Specification {
 
+    User loggedInUser
+    VideoCreationService videoCreationService
+
+    void setup() {
+        loggedInUser = new User(username: 'bob')
+        controller.userAuthenticationService = Stub(UserAuthenticationService) {
+            getLoggedInUser() >> loggedInUser
+        }
+
+        videoCreationService = Mock(VideoCreationService)
+        controller.videoCreationService = videoCreationService
+    }
+
     void "return 400 if video param is missing from request"() {
         when:
         controller.upload()
@@ -43,31 +56,32 @@ class VideoCreationControllerSpec extends Specification {
 
     void "return 201 after video has been uploaded with minimum params"() {
         given:
-        def loggedInUser = new User(username: 'bob')
-        controller.userAuthenticationService = Stub(UserAuthenticationService) {
-            getLoggedInUser() >> loggedInUser
-        }
-
-        def videoParam = new GrailsMockMultipartFile('video', 'foo'.bytes)
+        def videoData = 'foo'.bytes
+        def videoParam = new GrailsMockMultipartFile('video', videoData)
         request.addFile(videoParam)
 
         def title = 'some title'
         params.title = title
 
         and:
-        controller.videoCreationService = Mock(VideoCreationService)
+        def validateCommand = { VideoCreationCommand command ->
+            assert command.creator == loggedInUser
+            assert command.title == title
+            assert command.videoStream.bytes == videoData
+        }
 
-        def validateArgs = { User u, String t, InputStream input ->
-            assert u == loggedInUser
-            assert t == title
-            assert input.bytes == videoParam.inputStream.bytes
+        def allowCommand = { VideoCreationCommand command ->
+            validateCommand(command)
+            command.videoStream = new ByteArrayInputStream(videoData)
+            return true
         }
 
         when:
         controller.upload()
 
         then:
-        1 * controller.videoCreationService.createVideo(_, _, _) >> { args -> validateArgs(args) }
+        1 * videoCreationService.allowCreation(_) >> { command -> allowCommand(command) }
+        1 * videoCreationService.createVideo(_) >> { command -> validateCommand(command) }
 
         and:
         response.status == 201

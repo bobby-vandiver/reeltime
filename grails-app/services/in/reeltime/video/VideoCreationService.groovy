@@ -78,7 +78,11 @@ class VideoCreationService {
         command.videoStream = new FileInputStream(temp)
     }
 
-    def createVideo(User creator, String title, InputStream videoStream) {
+    def createVideo(VideoCreationCommand command) {
+
+        def creator = command.creator
+        def title = command.title
+        def videoStream = command.videoStream
 
         def masterPath = pathGenerationService.uniqueInputPath
         inputStorageService.store(videoStream, masterPath)

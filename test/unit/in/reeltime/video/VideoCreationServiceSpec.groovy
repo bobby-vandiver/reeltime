@@ -38,6 +38,9 @@ class VideoCreationServiceSpec extends Specification {
         def videoStream = new ByteArrayInputStream('yay'.bytes)
 
         and:
+        def command = new VideoCreationCommand(creator: creator, title: title, videoStream: videoStream)
+
+        and:
         def masterPath = 'foo'
         def outputPath = 'bar'
 
@@ -49,7 +52,7 @@ class VideoCreationServiceSpec extends Specification {
         }
 
         when:
-        def video = service.createVideo(creator, title, videoStream)
+        def video = service.createVideo(command)
 
         then:
         1 * service.pathGenerationService.getUniqueInputPath() >> masterPath
