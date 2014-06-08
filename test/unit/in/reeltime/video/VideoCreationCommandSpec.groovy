@@ -11,10 +11,9 @@ import test.helper.StreamMetadataListFactory
 class VideoCreationCommandSpec extends Specification {
 
     private static final MAX_DURATION_IN_SECONDS = 300
-    private static final VALID_DURATION = '123.456'
 
     void setup() {
-        StreamMetadata.maxDuration = MAX_DURATION_IN_SECONDS
+        VideoCreationCommand.maxDuration = MAX_DURATION_IN_SECONDS
     }
 
     @Unroll
@@ -45,90 +44,69 @@ class VideoCreationCommandSpec extends Specification {
         command.errors.getFieldError('videoStream').code == 'nullable'
     }
 
-    void "streams can be null when video stream is null to avoid errors revealing internal structure"() {
+    @Unroll
+    void "duration [#duration] must not exceed max duration"() {
+        given:
+        def videoStream = new ByteArrayInputStream('TEST'.bytes)
+        def command = new VideoCreationCommand(durationInSeconds: duration, videoStream: videoStream)
+
+        expect:
+        command.validate(['durationInSeconds']) == valid
+
+        and:
+        command.errors.getFieldError('durationInSeconds')?.code == code
+
+        where:
+        duration                    |   valid   |   code
+        MAX_DURATION_IN_SECONDS - 1 |   true    |   null
+        MAX_DURATION_IN_SECONDS     |   true    |   null
+        MAX_DURATION_IN_SECONDS + 1 |   false   |   'exceedsMaxDuration'
+    }
+
+    @Unroll
+    void "video stream contains h264 stream [#h264] and aac streams [#aac] is valid [#valid]"() {
+        given:
+        def videoStream = new ByteArrayInputStream('TEST'.bytes)
+        def command = new VideoCreationCommand(h264StreamIsPresent: h264, aacStreamIsPresent: aac, videoStream: videoStream)
+
+        expect:
+        command.validate(['h264StreamIsPresent', 'aacStreamIsPresent']) == valid
+
+        and:
+        command.errors.getFieldError('h264StreamIsPresent')?.code == h264Code
+        command.errors.getFieldError('aacStreamIsPresent')?.code == aacCode
+
+        where:
+        h264    |   aac     |   valid   |   h264Code            |   aacCode
+        true    |   true    |   true    |   null                |   null
+        false   |   true    |   false   |   'h264IsMissing'     |   null
+        true    |   false   |   false   |   null                |   'aacIsMissing'
+        false   |   false   |   false   |   'h264IsMissing'     |   'aacIsMissing'
+    }
+
+    @Unroll
+    void "stream metadata [#propertyName] cannot be known if video stream is null"() {
+        given:
+        def command = new VideoCreationCommand(("$propertyName"): value, videoStream: null)
+
+        expect:
+        !command.validate([propertyName])
+
+        and:
+        command.errors.getFieldError(propertyName)?.code == code
+
+        where:
+        propertyName            |   value   |   code
+        'durationInSeconds'     |   1       |   'durationIsInvalid'
+        'h264StreamIsPresent'   |   true    |   'h264IsInvalid'
+        'aacStreamIsPresent'    |   true    |   'aacIsInvalid'
+    }
+
+    void "stream metadata can be null when video stream is null to avoid errors revealing internal structure"() {
         given:
         def command = new VideoCreationCommand(videoStream: null)
 
         expect:
-        command.validate(['streams'])
-    }
-
-    @Unroll
-    void "do not allow videos that contains [#count] invalid streams"() {
-        given:
-        def videoStream = new ByteArrayInputStream('TEST'.bytes)
-        def command = new VideoCreationCommand(videoStream: videoStream, streams: createListOfInvalidStreams(count))
-
-        expect:
-        !command.validate(['streams'])
-
-        and:
-        command.errors.getFieldError('streams').code == 'validator.invalid'
-
-        where:
-        _   |   count
-        _   |   0
-        _   |   1
-        _   |   2
-    }
-
-    @Unroll
-    void "video stream must contain h264 and aac streams"() {
-        given:
-        def command = new VideoCreationCommand(streams: StreamMetadataListFactory.createRequiredStreams())
-
-        expect:
-        command.validate(['streams'])
-    }
-
-    @Unroll
-    void "ignore [#count] invalid streams if h264 and aac streams are present"() {
-        given:
-        def requiredStreams = StreamMetadataListFactory.createRequiredStreams()
-        def invalidStreams = createListOfInvalidStreams(count, [duration: VALID_DURATION])
-
-        and:
-        def command = new VideoCreationCommand(streams: requiredStreams + invalidStreams)
-
-        expect:
-        command.validate(['streams'])
-
-        where:
-        _   |   count
-        _   |   0
-        _   |   1
-        _   |   2
-        _   |   3
-    }
-
-    @Unroll
-    void "include only one required codec stream [#codec] and [#invalidCount] invalid codec streams"() {
-        given:
-        def required = new StreamMetadata(codecName: codec, duration: VALID_DURATION)
-        def invalid = createListOfInvalidStreams(invalidCount, [duration: VALID_DURATION])
-
-        and:
-        def streams = [required] + invalid
-        def command = new VideoCreationCommand(streams: streams)
-
-        expect:
-        !command.validate(['streams'])
-
-        and:
-        command.errors.getFieldError('streams').code == 'validator.invalid'
-
-        where:
-        [codec, invalidCount] << [['h264', 'aac'], [0, 1, 2, 3, 4]].combinations()
-    }
-
-    private static List<StreamMetadata> createListOfInvalidStreams(int count, Map overrides = [:]) {
-        def codecName = overrides?.codecName ?: 'invalidCodec'
-        def duration = overrides?.duration ?: 'invalidDuration'
-
-        def list = []
-        for(int i = 0; i < count; i++) {
-            new StreamMetadata(codecName: codecName, duration: duration)
-        }
-        return list
+        command.validate(['durationInSeconds', 'h264StreamIsPresent', 'aacStreamIsPresent'])
     }
 }

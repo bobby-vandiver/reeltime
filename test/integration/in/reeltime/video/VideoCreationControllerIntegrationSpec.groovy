@@ -54,11 +54,11 @@ class VideoCreationControllerIntegrationSpec extends IntegrationSpec {
         controller.upload()
 
         then:
-        assertErrorResponseContainsMessage(message)
+        assertErrorResponseContainsMessages(messages)
 
         where:
-        path                |   message
-        'test/files/empty'  |   '[video] does not contain an h264 video and/or an aac audio streams'
+        path                |   messages
+        'test/files/empty'  |   ['[video] must contain an h264 video stream', '[video] must contain an aac audio stream']
     }
 
     private void setupForCreationRequest() {
@@ -78,10 +78,24 @@ class VideoCreationControllerIntegrationSpec extends IntegrationSpec {
     }
 
     private void assertErrorResponseContainsMessage(String message) {
+        assertErrorResponse()
+        assert errorMessages.contains(message)
+    }
+
+    private void assertErrorResponseContainsMessages(Collection<String> messages) {
+        assertErrorResponse()
+
+        def errorMessages = errorMessages
+        messages.each { assert errorMessages.contains(it) }
+    }
+
+    private void assertErrorResponse() {
         assert controller.response.contentType.contains('application/json')
         assert controller.response.status == 400
+    }
 
+    private List getErrorMessages() {
         def json = new JsonSlurper().parseText(controller.response.contentAsString)
-        assert json.errors.contains(message)
+        return json.errors
     }
 }

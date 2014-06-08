@@ -1,5 +1,7 @@
 package in.reeltime.video
 
+import in.reeltime.metadata.StreamMetadata
+
 class VideoCreationService {
 
     def pathGenerationService
@@ -69,7 +71,19 @@ class VideoCreationService {
     }
 
     private void extractStreamsFromVideo(VideoCreationCommand command, File temp) {
-        command.streams = streamMetadataService.extractStreams(temp)
+        def streams = streamMetadataService.extractStreams(temp)
+        command.h264StreamIsPresent = streamIsPresent(streams, 'h264')
+        command.aacStreamIsPresent = streamIsPresent(streams, 'aac')
+        command.durationInSeconds = getLongestStreamDuration(streams)
+    }
+
+    private static boolean streamIsPresent(List<StreamMetadata> streams, String codec) {
+        streams.find { it.codecName == codec } != null
+    }
+
+    private static Integer getLongestStreamDuration(List<StreamMetadata> streams) {
+        def longestStream = streams.max { it.durationInSeconds }
+        longestStream?.durationInSeconds
     }
 
     private static void reloadVideoStreamFromTempFile(VideoCreationCommand command, File temp) {

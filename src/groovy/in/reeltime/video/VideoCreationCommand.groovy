@@ -1,7 +1,6 @@
 package in.reeltime.video
 
 import grails.validation.Validateable
-import in.reeltime.metadata.StreamMetadata
 import in.reeltime.user.User
 
 @Validateable
@@ -12,30 +11,67 @@ class VideoCreationCommand {
     String description
 
     InputStream videoStream
-    List<StreamMetadata> streams
+    Integer durationInSeconds
+
+    Boolean h264StreamIsPresent
+    Boolean aacStreamIsPresent
+
+    static maxDuration
 
     static constraints = {
         title nullable: false, blank: false
         videoStream nullable: false
-        streams validator: streamsValidator
+        durationInSeconds nullable: true, validator: durationInSecondsValidator
+
+        h264StreamIsPresent nullable: true, validator: h264StreamValidator
+        aacStreamIsPresent nullable: true, validator: aacStreamValidator
     }
 
-    private static Closure streamsValidator = { val, obj ->
-        if(videoStreamAndStreamsAreNull(val, obj)) {
+    private static Closure durationInSecondsValidator = { val, obj ->
+        videoStreamDependentValidator(val, obj) { videoStreamIsNull ->
+
+            if(exceedsMaxDuration(val)) {
+                return 'exceedsMaxDuration'
+            }
+            else if(videoStreamIsNull) {
+                return 'durationIsInvalid'
+            }
+        }
+    }
+
+    private static boolean exceedsMaxDuration(val) {
+        val >  maxDuration
+    }
+
+    private static Closure h264StreamValidator = { val, obj ->
+        videoStreamDependentValidator(val, obj) { videoStreamIsNull ->
+            if(!val) {
+                return 'h264IsMissing'
+            }
+            else if(videoStreamIsNull) {
+                return 'h264IsInvalid'
+            }
+        }
+    }
+
+    private static Closure aacStreamValidator = { val, obj ->
+        videoStreamDependentValidator(val, obj) { videoStreamIsNull ->
+            if(!val) {
+                return 'aacIsMissing'
+            }
+            else if(videoStreamIsNull) {
+                return 'aacIsInvalid'
+            }
+        }
+    }
+
+    private static videoStreamDependentValidator(val, obj, Closure additionalValidation) {
+        boolean videoStreamIsNull = obj.videoStream.is(null)
+        boolean valueIsNull = val.is(null)
+
+        if(valueIsNull && videoStreamIsNull) {
             return true
         }
-        containsOnlyValidStreams(val) && containsRequiredStreams(val)
-    }
-
-    private static boolean videoStreamAndStreamsAreNull(val, obj) {
-        !val && !obj.videoStream
-    }
-
-    private static boolean containsOnlyValidStreams(val) {
-        val.find { !it.validate() } == null
-    }
-
-    private static boolean containsRequiredStreams(val) {
-        val.find { it.codecName == 'h264' } && val.find { it.codecName == 'aac' }
+        additionalValidation(videoStreamIsNull)
     }
 }

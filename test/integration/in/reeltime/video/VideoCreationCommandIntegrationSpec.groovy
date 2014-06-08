@@ -1,12 +1,12 @@
-package in.reeltime.metadata
+package in.reeltime.video
 
 import grails.test.spock.IntegrationSpec
 
-class StreamMetadataIntegrationSpec extends IntegrationSpec {
+class VideoCreationCommandIntegrationSpec extends IntegrationSpec {
 
     void "cannot set readonly static maxDuration"() {
         when:
-        StreamMetadata.maxDuration = 1234
+        VideoCreationCommand.maxDuration = 1234
 
         then:
         thrown(ReadOnlyPropertyException)

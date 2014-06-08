@@ -1,14 +1,14 @@
 package in.reeltime.injection
 
 import org.springframework.context.ApplicationContext
-import in.reeltime.metadata.StreamMetadata
+import in.reeltime.video.VideoCreationCommand
 
 class ConfigInjector {
 
     static void injectConfigurableProperties(ConfigObject config, ApplicationContext ctx) {
 
-        StreamMetadata.maxDuration = config.reeltime.metadata.maxDurationInSeconds as int
-        enforceReadOnlyStaticField(StreamMetadata, 'maxDuration')
+        VideoCreationCommand.maxDuration = config.reeltime.metadata.maxDurationInSeconds as int
+        enforceReadOnlyStaticField(VideoCreationCommand, 'maxDuration')
 
         ctx.videoCreationService.with {
             maxVideoStreamSizeInBytes = config.reeltime.metadata.maxVideoStreamSizeInBytes as int

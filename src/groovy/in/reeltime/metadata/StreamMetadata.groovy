@@ -10,25 +10,22 @@ class StreamMetadata {
     String codecName
     String duration
 
-    static maxDuration
-
-    static constraints = {
-        duration validator: durationValidator
-    }
-
-    private static Closure durationValidator = { val, obj ->
-        !invalidDurationFormat(val) && !exceedsMaxDuration(val)
-    }
-
-    private static boolean invalidDurationFormat(String duration) {
-        !(duration ==~ DURATION_FORMAT)
-    }
-
-    private static boolean exceedsMaxDuration(String duration) {
+    Integer getDurationInSeconds() {
         def matcher = (duration =~ DURATION_FORMAT)
+        if(!matcher.matches()) {
+            return null
+        }
 
         def seconds = matcher[0][1] as int
-        return seconds >= maxDuration
+        def subSeconds = matcher[0][2] as int
+
+        if(subSeconds > 0) {
+            seconds++
+        }
+        return seconds
     }
 
+    static constraints = {
+        duration nullable: false, blank: false, matches: DURATION_FORMAT
+    }
 }

@@ -18,6 +18,9 @@ class VideoCreationServiceSpec extends Specification {
 
     StreamMetadataService streamMetadataService
 
+    private static final MAX_DURATION = 300
+    private static final MAX_VIDEO_STREAM_SIZE = 1000
+
     void setup() {
         streamMetadataService = Mock(StreamMetadataService) {
             extractStreams(_) >> StreamMetadataListFactory.createRequiredStreams()
@@ -27,8 +30,8 @@ class VideoCreationServiceSpec extends Specification {
         service.transcoderService = Mock(TranscoderService)
         service.streamMetadataService = streamMetadataService
 
-        StreamMetadata.maxDuration = 300
-        service.maxVideoStreamSizeInBytes = 1000
+        VideoCreationCommand.maxDuration = MAX_DURATION
+        service.maxVideoStreamSizeInBytes = MAX_VIDEO_STREAM_SIZE
     }
 
     void "store video stream, save the video object and then transcode it"() {
@@ -117,6 +120,68 @@ class VideoCreationServiceSpec extends Specification {
 
         then:
         command.videoStream.bytes == data
+    }
+
+    void "extract max duration of streams in video"() {
+        given:
+        def streams = [
+                new StreamMetadata(duration: '1234.000000'),
+                new StreamMetadata(duration: '678.000000'),
+                new StreamMetadata(duration: '9000.999999'),
+                new StreamMetadata(duration: '421.000000'),
+                new StreamMetadata(duration: '9000.00000')
+        ]
+
+        and:
+        def command = createCommandWithVideoStream('TEST'.bytes)
+
+        when:
+        service.allowCreation(command)
+
+        then:
+        command.durationInSeconds == 9001
+
+        and:
+        1 * streamMetadataService.extractStreams(_) >> streams
+    }
+
+    void "duration should be null if no streams were found"() {
+        given:
+        def command = createCommandWithVideoStream('TEST'.bytes)
+
+        when:
+        service.allowCreation(command)
+
+        then:
+        command.durationInSeconds == null
+
+        and:
+        1 * streamMetadataService.extractStreams(_) >> []
+    }
+
+    @Unroll
+    void "invalid when stream for required codec [#codec] is not present"() {
+        given:
+        def streams = StreamMetadataListFactory.createRequiredStreams()
+        def streamToRemove = streams.find { it.codecName == codec }
+        streams.remove(streamToRemove)
+
+        and:
+        def command = createCommandWithVideoStream('TEST'.bytes)
+
+        when:
+        def allowed =service.allowCreation(command)
+
+        then:
+        !allowed
+
+        and:
+        1 * streamMetadataService.extractStreams(_) >> streams
+
+        where:
+        _   |   codec
+        _   |   'h264'
+        _   |   'aac'
     }
 
     private static VideoCreationCommand createCommandWithVideoStream(byte[] data) {
