@@ -172,12 +172,12 @@ reeltime {
         // Use ffprobe to extract video metadata
         ffprobe = System.getProperty('ffprobe') ?: System.getenv('FFPROBE')
 
-        // Max video duration is 3 minutes
-        maxDurationInSeconds = 3 * 60
+        // Max video duration is 2 minutes
+        maxDurationInSeconds = 2 * 60
 
         // Max size in bytes of the submitted video stream
-        // TODO: Determine average size of 3 minute MP4 video
-        maxVideoStreamSizeInBytes = 30 * 1024
+        // TODO: Determine average size of 2 minute MP4 video
+        maxVideoStreamSizeInBytes = 30 * 1024 * 1024
     }
 }
 

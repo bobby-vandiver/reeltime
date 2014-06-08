@@ -57,8 +57,9 @@ class VideoCreationControllerIntegrationSpec extends IntegrationSpec {
         assertErrorResponseContainsMessages(messages)
 
         where:
-        path                |   messages
-        'test/files/empty'  |   ['[video] must contain an h264 video stream', '[video] must contain an aac audio stream']
+        path                                            |   messages
+        'test/files/empty'                              |   ['[video] must contain an h264 video stream', '[video] must contain an aac audio stream']
+        'test/files/long_video_3_min_45_sec_17_MB.mp4'  |   ['[video] exceeds max length of 2 minutes']
     }
 
     private void setupForCreationRequest() {

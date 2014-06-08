@@ -54,7 +54,7 @@ class VideoCreationService {
                     return null
                 }
 
-                log.debug("Writing $bytesRead bytes to the buffer")
+                log.trace("Writing $bytesRead bytes to the buffer")
                 outputStream.write(buffer, 0, bytesRead)
             }
             return temp
