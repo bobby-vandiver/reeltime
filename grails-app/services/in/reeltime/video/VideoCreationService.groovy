@@ -1,7 +1,5 @@
 package in.reeltime.video
 
-import in.reeltime.user.User
-
 class VideoCreationService {
 
     def pathGenerationService
