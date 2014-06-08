@@ -9,6 +9,8 @@ class VideoCreationController {
     def userAuthenticationService
     def videoCreationService
 
+    def messageSource
+
     static allowedMethods = [upload: 'POST']
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('upload')"])
@@ -21,7 +23,7 @@ class VideoCreationController {
         }
         else {
             render(status: SC_BAD_REQUEST, contentType: 'application/json') {
-                [message: errorMessage]
+                [errors: getErrorMessages(command)]
             }
         }
     }
@@ -31,15 +33,10 @@ class VideoCreationController {
         command.videoStream = request.getFile('video')?.inputStream
     }
 
-    private String getErrorMessage() {
-        def message = ''
-
-        if(!params?.video) {
-            message = '[video] is required'
+    private List<String> getErrorMessages(VideoCreationCommand command) {
+        def locale = Locale.default
+        command.errors.allErrors.collect { error ->
+            messageSource.getMessage(error, locale)
         }
-        else if(!params?.title) {
-            message = '[title] is required'
-        }
-        return message
     }
 }

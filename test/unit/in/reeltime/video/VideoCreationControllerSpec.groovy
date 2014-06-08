@@ -24,36 +24,6 @@ class VideoCreationControllerSpec extends Specification {
         controller.videoCreationService = videoCreationService
     }
 
-    void "return 400 if video param is missing from request"() {
-        when:
-        controller.upload()
-
-        then:
-        response.contentType.contains('application/json')
-        response.status == 400
-
-        and:
-        def json = new JsonSlurper().parseText(response.contentAsString)
-        json.message == '[video] is required'
-    }
-
-    void "return 400 if title param is missing from request"() {
-        given:
-        def videoParam = new GrailsMockMultipartFile('video', 'foo'.bytes)
-        request.addFile(videoParam)
-
-        when:
-        controller.upload()
-
-        then:
-        response.contentType.contains('application/json')
-        response.status == 400
-
-        and:
-        def json = new JsonSlurper().parseText(response.contentAsString)
-        json.message == '[title] is required'
-    }
-
     void "return 201 after video has been uploaded with minimum params"() {
         given:
         def videoData = 'foo'.bytes
