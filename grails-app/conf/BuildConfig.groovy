@@ -92,7 +92,7 @@ grails.project.dependency.resolution = {
 
 private Properties loadArtifactoryProperties() {
     Properties artifactoryProperties = new Properties()
-    String path = System.getProperty('user.home') + '/.grails/artifactory.properties'
+    String path = System.getProperty('user.home') + File.separator + '.grails' + File.separator + 'artifactory.properties'
 
     File file = new File(path)
     if(file.exists()) {
