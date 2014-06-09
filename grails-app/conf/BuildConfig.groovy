@@ -86,10 +86,6 @@ grails.project.dependency.resolution = {
         compile ":spring-security-oauth2-provider:1.0.5-SNAPSHOT"
         compile ":spring-security-core:2.0-RC2"
 
-        test(":spock:0.7") {
-            exclude "spock-grails-support"
-        }
-
         test ":code-coverage:1.2.7"
     }
 }
