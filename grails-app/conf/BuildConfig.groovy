@@ -69,6 +69,10 @@ grails.project.dependency.resolution = {
 
         // FileUtils for test cleanup
         test 'commons-io:commons-io:2.4'
+
+        test 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.+', {
+            excludes "commons-logging", "xml-apis", "groovy"
+        }
     }
 
     plugins {
@@ -87,6 +91,7 @@ grails.project.dependency.resolution = {
         compile ":spring-security-core:2.0-RC2"
 
         test ":code-coverage:1.2.7"
+        test ":functional-spock:0.7"
     }
 }
 
