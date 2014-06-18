@@ -15,18 +15,17 @@ class VideoCreationFunctionalSpec extends FunctionalSpec {
         response.status == 401
     }
 
-    @Ignore("Need to configure Spring Security plugin for unauthorized scope response")
     void "unauthorized video upload: token does not have upload scope"() {
         given:
-        def token = getAccessTokenWithScope('upload')
+        def token = getAccessTokenWithScope('view')
         def headers = [Authorization: "Bearer $token"]
 
         when:
         def response = restClient.post(path: 'video', headers: headers) as HttpResponseDecorator
 
         then:
-        response.status == 401
-        response.data.error == 'unauthorized'
+        response.status == 403
+        response.data.error == 'Insufficient scope for this resource'
     }
 
     void "unauthorized video upload: invalid token"() {
