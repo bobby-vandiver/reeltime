@@ -14,7 +14,7 @@ class JsonAccessDeniedHandlerSpec extends Specification {
         jsonAccessDeniedHandler = new JsonAccessDeniedHandler()
     }
 
-    void "access denied handler returns 403 and no content"() {
+    void "access denied handler returns 403 and error"() {
         given:
         def request = new GrailsMockHttpServletRequest()
         def response = new GrailsMockHttpServletResponse()
