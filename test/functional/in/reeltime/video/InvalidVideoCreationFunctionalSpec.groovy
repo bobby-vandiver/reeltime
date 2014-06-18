@@ -3,9 +3,9 @@ package in.reeltime.video
 import groovyx.net.http.HttpResponseDecorator
 import in.reeltime.FunctionalSpec
 
-class VideoCreationFunctionalSpec extends FunctionalSpec {
+class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
-    void "unauthorized video upload: no token present"() {
+    void "no token present"() {
         when:
         def response = restClient.post(path: 'video') as HttpResponseDecorator
 
@@ -15,7 +15,7 @@ class VideoCreationFunctionalSpec extends FunctionalSpec {
         response.data.error_description == 'Full authentication is required to access this resource'
     }
 
-    void "unauthorized video upload: token does not have upload scope"() {
+    void "token does not have upload scope"() {
         given:
         def token = getAccessTokenWithScope('view')
         def headers = [Authorization: "Bearer $token"]
@@ -30,7 +30,7 @@ class VideoCreationFunctionalSpec extends FunctionalSpec {
         response.data.error_description == 'Insufficient scope for this resource'
     }
 
-    void "unauthorized video upload: invalid token"() {
+    void "invalid token"() {
         given:
         def token = 'bad-mojo'
         def headers = [Authorization: "Bearer $token"]
