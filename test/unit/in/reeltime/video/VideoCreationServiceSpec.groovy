@@ -79,6 +79,17 @@ class VideoCreationServiceSpec extends Specification {
         !service.allowCreation(command)
     }
 
+    void "video stream size is valid flag should be null if video stream is not available"() {
+        given:
+        def command = new VideoCreationCommand(videoStream: null)
+
+        when:
+        service.allowCreation(command)
+
+        then:
+        command.videoStreamSizeIsValid == null
+    }
+
     @Unroll
     void "video stream with data [#data] and max allowed size [#max] is allowed [#allowed]"() {
         given:

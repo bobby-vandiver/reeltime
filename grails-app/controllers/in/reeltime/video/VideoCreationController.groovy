@@ -1,6 +1,7 @@
 package in.reeltime.video
 
 import grails.plugin.springsecurity.annotation.Secured
+import org.springframework.web.multipart.MultipartRequest
 
 import static javax.servlet.http.HttpServletResponse.*
 
@@ -30,7 +31,16 @@ class VideoCreationController {
 
     private void bindAdditionalData(VideoCreationCommand command) {
         command.creator = userAuthenticationService.loggedInUser
-        command.videoStream = request.getFile('video')?.inputStream
+        command.videoStream = getVideoStreamFromRequest()
+    }
+
+    private InputStream getVideoStreamFromRequest() {
+        if(request instanceof MultipartRequest) {
+            return request.getFile('video')?.inputStream
+        }
+        else {
+            return null
+        }
     }
 
     private List<String> getErrorMessages(VideoCreationCommand command) {

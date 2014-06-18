@@ -17,7 +17,7 @@ class VideoCreationService {
     boolean allowCreation(VideoCreationCommand command) {
 
         def temp = writeVideoStreamToTempFile(command)
-        command.videoStreamSizeIsValid = temp ? true : false
+        setVideoStreamSizeIsValid(command, temp)
 
         if(temp) {
             extractStreamsFromVideo(command, temp)
@@ -71,6 +71,20 @@ class VideoCreationService {
                 outputStream.close()
             }
         }
+    }
+
+    private static void setVideoStreamSizeIsValid(VideoCreationCommand command, File temp) {
+        Boolean valid
+        if(!command.videoStream) {
+            valid = null
+        }
+        else if(temp) {
+            valid = true
+        }
+        else {
+            valid = false
+        }
+        command.videoStreamSizeIsValid = valid
     }
 
     private void extractStreamsFromVideo(VideoCreationCommand command, File temp) {
