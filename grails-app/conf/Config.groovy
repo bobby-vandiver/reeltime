@@ -118,9 +118,7 @@ grails.plugin.springsecurity.oauthProvider.refreshTokenLookup.className = 'in.re
 
 grails.plugin.springsecurity.providerNames = [
         'clientCredentialsAuthenticationProvider',
-        'daoAuthenticationProvider',
-        'anonymousAuthenticationProvider',
-        'rememberMeAuthenticationProvider'
+        'daoAuthenticationProvider'
 ]
 
 // The following ReelTime settings must NOT be exposed in an external configuration:
