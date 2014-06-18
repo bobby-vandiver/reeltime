@@ -2,17 +2,17 @@ package in.reeltime.video
 
 import groovyx.net.http.HttpResponseDecorator
 import in.reeltime.FunctionalSpec
-import spock.lang.Ignore
 
 class VideoCreationFunctionalSpec extends FunctionalSpec {
 
-    @Ignore("Need to configure Spring Security plugin for unauthorized response")
     void "unauthorized video upload: no token present"() {
         when:
         def response = restClient.post(path: 'video') as HttpResponseDecorator
 
         then:
         response.status == 401
+        response.data.error == 'unauthorized'
+        response.data.error_description == 'Full authentication is required to access this resource'
     }
 
     void "unauthorized video upload: token does not have upload scope"() {
@@ -25,12 +25,14 @@ class VideoCreationFunctionalSpec extends FunctionalSpec {
 
         then:
         response.status == 403
-        response.data.error == 'Insufficient scope for this resource'
+        response.data.scope == 'upload'
+        response.data.error == 'insufficient_scope'
+        response.data.error_description == 'Insufficient scope for this resource'
     }
 
     void "unauthorized video upload: invalid token"() {
         given:
-        def token = 'invalid-token'
+        def token = 'bad-mojo'
         def headers = [Authorization: "Bearer $token"]
 
         when:
@@ -39,5 +41,6 @@ class VideoCreationFunctionalSpec extends FunctionalSpec {
         then:
         response.status == 401
         response.data.error == 'invalid_token'
+        response.data.error_description == 'Invalid access token: bad-mojo'
     }
 }

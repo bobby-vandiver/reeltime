@@ -1,11 +1,13 @@
 import grails.util.Environment
+import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler
+import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint
 import org.springframework.security.web.context.SecurityContextPersistenceFilter
-import in.reeltime.security.JsonAccessDeniedHandler
 
 beans = {
 
-    // Returns a 403 status code and JSON response containing the error
-    accessDeniedHandler(JsonAccessDeniedHandler)
+    // Entire application is secured by OAuth2
+    authenticationEntryPoint(OAuth2AuthenticationEntryPoint)
+    accessDeniedHandler(OAuth2AccessDeniedHandler)
 
     // Ensure all requests are stateless -- nullContextRepository bean is defined by the OAuth2 provider plugin
     securityContextPersistenceFilter(SecurityContextPersistenceFilter, ref('nullContextRepository'))
