@@ -110,6 +110,10 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/favicon.ico':                ['permitAll']
 ]
 
+// Do not create a session
+grails.plugin.springsecurity.apf.allowSessionCreation = false
+grails.plugin.springsecurity.requestCache.createSession = false
+
 // Added by the Spring Security OAuth2 Provider plugin:
 grails.plugin.springsecurity.oauthProvider.clientLookup.className = 'in.reeltime.oauth2.Client'
 grails.plugin.springsecurity.oauthProvider.authorizationCodeLookup.className = 'in.reeltime.oauth2.AuthorizationCode'
