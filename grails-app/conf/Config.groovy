@@ -110,8 +110,14 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	'/**/favicon.ico':                ['permitAll']
 ]
 
+// Remove the form login filter
+grails.plugin.springsecurity.filterChain.chainMap = [
+    '/**': 'JOINED_FILTERS,-authenticationProcessingFilter'
+]
+
 // Do not create a session
 grails.plugin.springsecurity.apf.allowSessionCreation = false
+grails.plugin.springsecurity.scr.allowSessionCreation = false
 grails.plugin.springsecurity.requestCache.createSession = false
 
 // Added by the Spring Security OAuth2 Provider plugin:
