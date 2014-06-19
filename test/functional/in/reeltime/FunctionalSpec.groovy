@@ -1,5 +1,6 @@
 package in.reeltime
 
+import grails.plugins.rest.client.RestBuilder
 import grails.util.BuildSettings
 import helper.oauth2.AccessTokenRequester
 import helper.oauth2.RESTClientWrapper

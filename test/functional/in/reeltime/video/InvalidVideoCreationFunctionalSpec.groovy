@@ -1,5 +1,6 @@
 package in.reeltime.video
 
+import grails.plugins.rest.client.RestBuilder
 import groovyx.net.http.HttpResponseDecorator
 import in.reeltime.FunctionalSpec
 
@@ -42,5 +43,23 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         response.status == 401
         response.data.error == 'invalid_token'
         response.data.error_description == 'Invalid access token: bad-mojo'
+    }
+
+    void "title param is missing"() {
+        given:
+        def token = getAccessTokenWithScope('upload')
+        def rest = new RestBuilder()
+
+        when:
+        def response = rest.post(BASE_URL + '/video') {
+            header 'Authorization', "Bearer $token"
+            contentType "multipart/form-data"
+            video = new File('test/files/small.mp4')
+        }
+
+        then:
+        response.statusCode.value() == 400
+        response.json.errors.size() == 1
+        response.json.errors.contains('[title] is required')
     }
 }
