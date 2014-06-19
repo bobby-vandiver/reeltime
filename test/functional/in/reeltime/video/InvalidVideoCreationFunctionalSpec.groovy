@@ -1,30 +1,46 @@
 package in.reeltime.video
 
+import grails.plugins.rest.client.RestResponse
 import in.reeltime.FunctionalSpec
 
 class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
+
+    String invalidToken
+    String insufficientScopeToken
+    String uploadToken
 
     @Override
     protected String getResource() {
         return 'video'
     }
 
+    void setup() {
+        invalidToken = 'bad-mojo'
+        insufficientScopeToken = getAccessTokenWithScope('view')
+        uploadToken = getAccessTokenWithScope('upload')
+    }
+
+    private static void assertErrorResponse(RestResponse response, Collection<String> expectedErrors) {
+        assertStatusCode(response, 400)
+        assertContentType(response, APPLICATION_JSON)
+
+        assert response.json.errors.size() == expectedErrors.size()
+        expectedErrors.each {
+            assert response.json.errors.contains(it)
+        }
+    }
+
     void "no token present"() {
         when:
-        def response = restClient.post(endpoint)
+        def response = post()
 
         then:
         assertAuthError(response, 401, 'unauthorized', 'Full authentication is required to access this resource')
     }
 
     void "token does not have upload scope"() {
-        given:
-        def token = getAccessTokenWithScope('view')
-
         when:
-        def response = restClient.post(endpoint) {
-            header AUTHORIZATION, "Bearer $token"
-        }
+        def response = post(insufficientScopeToken)
 
         then:
         response.status == 403
@@ -34,123 +50,74 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
     }
 
     void "invalid token"() {
-        given:
-        def token = 'bad-mojo'
-
         when:
-        def response = restClient.post(endpoint) {
-            header AUTHORIZATION, "Bearer $token"
-        }
+        def response = post(invalidToken)
 
         then:
-        assertAuthError(response, 401, 'invalid_token', 'Invalid access token: bad-mojo')
+        assertAuthError(response, 401, 'invalid_token', "Invalid access token: $invalidToken")
     }
 
     void "all params are missing"() {
-        given:
-        def token = getAccessTokenWithScope('upload')
-
         when:
-        def response = restClient.post(endpoint) {
-            header AUTHORIZATION, "Bearer $token"
-        }
+        def response = post(uploadToken)
 
         then:
-        response.status == 400
-        response.json.errors.size() == 2
-        response.json.errors.contains('[video] is required')
-        response.json.errors.contains('[title] is required')
+        assertErrorResponse(response, ['[video] is required', '[title] is required'])
     }
 
     void "video param is missing"() {
-        given:
-        def token = getAccessTokenWithScope('upload')
-
         when:
-        def response = restClient.post(endpoint) {
-            header AUTHORIZATION, "Bearer $token"
-            contentType MULTI_PART_FORM_DATA
+        def response = postFormData(uploadToken) {
             title = 'no-video'
         }
 
         then:
-        response.status == 400
-        response.json.errors.size() == 1
-        response.json.errors.contains('[video] is required')
+        assertErrorResponse(response, ['[video] is required'])
     }
 
     void "title param is missing"() {
-        given:
-        def token = getAccessTokenWithScope('upload')
-
         when:
-        def response = restClient.post(endpoint) {
-            header AUTHORIZATION, "Bearer $token"
-            contentType MULTI_PART_FORM_DATA
+        def response = postFormData(uploadToken) {
             video = new File('test/files/small.mp4')
         }
 
         then:
-        response.status == 400
-        response.json.errors.size() == 1
-        response.json.errors.contains('[title] is required')
+        assertErrorResponse(response, ['[title] is required'])
     }
 
     void "submitted video contains only aac stream"() {
-        given:
-        def token = getAccessTokenWithScope('upload')
-
         when:
-        def response = restClient.post(endpoint) {
-            header AUTHORIZATION, "Bearer $token"
-            contentType MULTI_PART_FORM_DATA
-
+        def response = postFormData(uploadToken) {
             title = 'video-is-only-aac'
             video = new File('test/files/sample_mpeg4.mp4')
         }
 
         then:
-        response.status == 400
-        response.json.errors.size() == 1
-        response.json.errors.contains('[video] must contain an h264 video stream')
+        assertErrorResponse(response, ['[video] must contain an h264 video stream'])
     }
 
     void "submitted video does not contain either h264 or aac streams"() {
         given:
-        def token = getAccessTokenWithScope('upload')
+        def expected = ['[video] must contain an h264 video stream', '[video] must contain an aac audio stream']
 
         when:
-        def response = restClient.post(endpoint) {
-            header AUTHORIZATION, "Bearer $token"
-            contentType MULTI_PART_FORM_DATA
-
+        def response = postFormData(uploadToken) {
             title = 'video-has-no-valid-streams'
             video = new File('test/files/empty')
         }
 
         then:
-        response.status == 400
-        response.json.errors.size() == 2
-        response.json.errors.contains('[video] must contain an h264 video stream')
-        response.json.errors.contains('[video] must contain an aac audio stream')
+        assertErrorResponse(response, expected)
     }
 
     void "submitted video exceeds max length"() {
-        given:
-        def token = getAccessTokenWithScope('upload')
-
         when:
-        def response = restClient.post(endpoint) {
-            header AUTHORIZATION, "Bearer $token"
-            contentType MULTI_PART_FORM_DATA
-
+        def response = postFormData(uploadToken) {
             title = 'video-exceeds-max-length'
             video = new File('test/files/spidey.mp4')
         }
 
         then:
-        response.status == 400
-        response.json.errors.size() == 1
-        response.json.errors.contains('[video] exceeds max length of 2 minutes')
+        assertErrorResponse(response, ['[video] exceeds max length of 2 minutes'])
     }
 }
