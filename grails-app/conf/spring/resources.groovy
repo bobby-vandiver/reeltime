@@ -5,7 +5,9 @@ import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEn
 beans = {
 
     // Entire application is secured by OAuth2
-    authenticationEntryPoint(OAuth2AuthenticationEntryPoint)
+    authenticationEntryPoint(OAuth2AuthenticationEntryPoint) {
+        realmName = 'ReelTime'
+    }
     accessDeniedHandler(OAuth2AccessDeniedHandler)
 
     // Use AWS backed services by default
