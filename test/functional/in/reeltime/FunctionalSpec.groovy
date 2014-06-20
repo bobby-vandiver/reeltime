@@ -41,6 +41,42 @@ abstract class FunctionalSpec extends Specification {
         AccessTokenRequester.getAccessToken(params)
     }
 
+    protected RestResponse get(String token) {
+        doGet(token, null)
+    }
+
+    private RestResponse doGet(String token, Closure customizer) {
+        doRequest('get', token, customizer)
+    }
+
+    protected RestResponse put(String token) {
+        doPut(token, null)
+    }
+
+    private RestResponse doPut(String token, Closure customizer) {
+        doRequest('put', token, customizer)
+    }
+
+    protected RestResponse delete(String token) {
+        doDelete(token, null)
+    }
+
+    private RestResponse doDelete(String token, Closure customizer) {
+        doRequest('delete', token, customizer)
+    }
+
+    private RestResponse doRequest(String method, String token, Closure customizer) {
+        restClient."$method"(endpoint) {
+            if(token) {
+                header AUTHORIZATION, "Bearer $token"
+            }
+            if(customizer) {
+                customizer.delegate = delegate
+                customizer()
+            }
+        }
+    }
+
     protected RestResponse post() {
         post(null)
     }

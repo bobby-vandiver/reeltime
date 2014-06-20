@@ -2,6 +2,7 @@ package in.reeltime.video
 
 import grails.plugins.rest.client.RestResponse
 import in.reeltime.FunctionalSpec
+import spock.lang.Unroll
 
 class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
@@ -55,6 +56,22 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
         then:
         assertAuthError(response, 401, 'invalid_token', "Invalid access token: $invalidToken")
+    }
+
+    @Unroll
+    void "invalid http method [#method]"() {
+        when:
+        def response = "$method"(uploadToken)
+
+        then:
+        response.status == 405
+        !response.json
+
+        where:
+        _   |   method
+        _   |   'get'
+        _   |   'put'
+        _   |   'delete'
     }
 
     void "all params are missing"() {
