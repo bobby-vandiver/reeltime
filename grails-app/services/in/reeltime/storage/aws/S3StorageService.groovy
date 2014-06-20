@@ -37,16 +37,14 @@ class S3StorageService implements StorageService {
 
     @Override
     void store(InputStream inputStream, String bucket, String key) {
-
         log.debug("Storing input stream to bucket [$bucket] with key [$key]")
-        def transferManager = awsService.createTransferManager()
 
         def data = inputStream.bytes
         def metadata = new ObjectMetadata(contentLength: data.size())
 
         def binaryStream = new ByteArrayInputStream(data)
 
-        def upload = transferManager.upload(bucket, key, binaryStream, metadata)
-        upload.waitForUploadResult()
+        def s3 = awsService.createClient(AmazonS3) as AmazonS3
+        s3.putObject(bucket, key, binaryStream, metadata)
     }
 }

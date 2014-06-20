@@ -24,9 +24,4 @@ class AwsService implements InitializingBean {
     def createClient(Class clazz) {
         interfaceSimpleNamesToAwsClientClasses[clazz.simpleName].newInstance()
     }
-
-    def createTransferManager() {
-        def s3 = createClient(AmazonS3)
-        new TransferManager(s3)
-    }
 }

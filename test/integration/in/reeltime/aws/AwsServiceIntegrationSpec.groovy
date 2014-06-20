@@ -31,13 +31,4 @@ class AwsServiceIntegrationSpec extends IntegrationSpec {
         AmazonS3                    |   AmazonS3Client
         AmazonSNS                   |   AmazonSNSClient
     }
-
-    void "createTransferManager is backed by an AmazonS3Client"() {
-        when:
-        def transferManger = awsService.createTransferManager()
-
-        then:
-        transferManger instanceof TransferManager
-        transferManger.amazonS3Client instanceof AmazonS3Client
-    }
 }

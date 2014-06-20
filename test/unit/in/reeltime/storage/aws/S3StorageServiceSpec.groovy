@@ -81,28 +81,17 @@ class S3StorageServiceSpec extends Specification {
         def inputStream = new ByteArrayInputStream(contents.bytes)
 
         and:
-        def mockUpload = Mock(Upload)
-        def mockTransferManager = Mock(TransferManager)
-
-        service.awsService = Stub(AwsService) {
-            createTransferManager() >> mockTransferManager
-        }
-
-        and:
         def validateArgs = { String b, String k, InputStream input, ObjectMetadata metadata ->
             assert b == BUCKET_NAME
             assert k == KEY
             assert input.bytes == contents.bytes
             assert metadata.contentLength == contents.bytes.size()
-
-            return mockUpload
         }
 
         when:
         service.store(inputStream, BUCKET_NAME, KEY)
 
         then:
-        1 * mockTransferManager.upload(*_) >> { args -> validateArgs(args) }
-        1 * mockUpload.waitForUploadResult()
+        1 * mockS3.putObject(*_) >> { args -> validateArgs(args) }
     }
 }
