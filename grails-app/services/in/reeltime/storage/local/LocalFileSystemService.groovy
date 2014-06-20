@@ -23,7 +23,8 @@ class LocalFileSystemService {
         log.debug("Creating directory [$path]")
         def directory = new File(path)
         directory.deleteOnExit()
-        directory.mkdirs()
+        boolean created = directory.mkdirs()
+        log.debug("Created flag: $created")
         return directory
     }
 
