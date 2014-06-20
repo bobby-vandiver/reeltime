@@ -4,7 +4,7 @@ import grails.plugins.rest.client.RestBuilder
 import grails.plugins.rest.client.RestResponse
 import grails.util.BuildSettings
 import helper.oauth2.AccessTokenRequester
-import spock.lang.Shared
+import helper.oauth2.PatchedRestBuilder
 import spock.lang.Specification
 
 abstract class FunctionalSpec extends Specification {
@@ -20,11 +20,10 @@ abstract class FunctionalSpec extends Specification {
 
     private static final BASE_URL = System.getProperty(BuildSettings.FUNCTIONAL_BASE_URL_PROPERTY)
 
-    @Shared
-    RestBuilder restClient = new RestBuilder()
+    protected static RestBuilder restClient = new PatchedRestBuilder()
 
     protected String getEndpoint() {
-        return BASE_URL + '/' + resource
+        return BASE_URL + resource
     }
 
     abstract protected String getResource()

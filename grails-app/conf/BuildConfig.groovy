@@ -92,7 +92,7 @@ grails.project.dependency.resolution = {
 
         test ":code-coverage:1.2.7"
         test ":functional-spock:0.7"
-        test ":rest-client-builder:2.0.1"
+        test ":rest-client-builder:2.0.+"
     }
 }
 
