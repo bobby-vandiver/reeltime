@@ -27,6 +27,8 @@ class FfmpegTranscoderService implements TranscoderService {
                          |baseline -flags -global_header -map 0:0 -map 0:1 -f segment -segment_time ${segmentDuration}
                          |-segment_list ${playlist} -segment_format mpegts ${segment}""".stripMargin()
 
+        log.debug("Excecuting command: $command")
+
         def process = command.execute(null, directory)
         process.waitFor()
 

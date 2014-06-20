@@ -11,6 +11,8 @@ class FfprobeService {
         ensurePathToFfprobeIsDefined(ffprobe)
 
         def command = "${ffprobe} -v quiet -print_format json -show_streams ${video.absolutePath}"
+        log.debug("Executing command: $command")
+
         def process = command.execute()
         process.waitFor()
 
