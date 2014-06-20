@@ -1,9 +1,7 @@
 package in.reeltime.transcoder
 
 import grails.test.spock.IntegrationSpec
-import in.reeltime.transcoder.local.FfmpegTranscoderService
 import in.reeltime.video.Video
-import org.apache.commons.io.FileUtils
 import spock.lang.IgnoreIf
 
 class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
@@ -36,7 +34,7 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
 
         cleanup:
         def outputDirectoryPath = grailsApplication.config.reeltime.storage.output as String
-        FileUtils.deleteDirectory(new File(outputDirectoryPath))
+        new File(outputDirectoryPath).deleteOnExit()
     }
 
     private void storeTestVideo(String storagePath, String filePath) {
