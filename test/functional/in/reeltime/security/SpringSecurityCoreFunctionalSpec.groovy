@@ -11,19 +11,17 @@ class SpringSecurityCoreFunctionalSpec extends FunctionalSpec {
     }
 
     @Unroll
-    void "cannot access the form login regardless of params [#params]"() {
+    void "cannot access the form login regardless of params"() {
         when:
-        def response = restClient.post(endpoint) {
-            params
-        }
+        def response = restClient.post(endpoint, params)
 
         then:
         assertAuthError(response, 401, 'unauthorized', 'Full authentication is required to access this resource')
 
         where:
         _   |   params
-        _   |   [:]
-        _   |   [j_username: 'bob', j_password: 'pass']
+        _   |   {}
+        _   |   {j_username = 'bob'; j_password = 'pass'}
     }
 
     void "including a token makes no difference"() {
@@ -31,9 +29,7 @@ class SpringSecurityCoreFunctionalSpec extends FunctionalSpec {
         def token = getAccessTokenWithScope('view upload')
 
         when:
-        def response = restClient.post(endpoint) {
-            header AUTHORIZATION, "Bearer $token"
-        }
+        def response = post(token)
 
         then:
         response.status == 403
