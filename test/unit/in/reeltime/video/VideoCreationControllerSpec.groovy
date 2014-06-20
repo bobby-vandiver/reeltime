@@ -1,5 +1,6 @@
 package in.reeltime.video
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
 import in.reeltime.user.User
@@ -9,6 +10,7 @@ import spock.lang.Specification
 import in.reeltime.user.UserAuthenticationService
 
 @TestFor(VideoCreationController)
+@Mock([Video])
 class VideoCreationControllerSpec extends Specification {
 
     User loggedInUser
@@ -24,7 +26,7 @@ class VideoCreationControllerSpec extends Specification {
         controller.videoCreationService = videoCreationService
     }
 
-    void "return 202 after video has been uploaded with minimum params"() {
+    void "return 202 and video id after video has been uploaded with minimum params"() {
         given:
         def videoData = 'foo'.bytes
         def videoParam = new GrailsMockMultipartFile('video', videoData)
@@ -38,6 +40,7 @@ class VideoCreationControllerSpec extends Specification {
             assert command.creator == loggedInUser
             assert command.title == title
             assert command.videoStream.bytes == videoData
+            return new Video().save(validate: false)
         }
 
         def allowCommand = { VideoCreationCommand command ->
@@ -55,5 +58,10 @@ class VideoCreationControllerSpec extends Specification {
 
         and:
         response.status == 202
+        response.contentType.startsWith('application/json')
+
+        and:
+        def json = new JsonSlurper().parseText(response.contentAsString)
+        json.videoId > 0
     }
 }

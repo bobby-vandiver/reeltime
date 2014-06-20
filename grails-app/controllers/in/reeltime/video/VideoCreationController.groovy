@@ -19,8 +19,10 @@ class VideoCreationController {
         bindAdditionalData(command)
 
         if(videoCreationService.allowCreation(command)) {
-            videoCreationService.createVideo(command)
-            render(status: SC_ACCEPTED)
+            def video = videoCreationService.createVideo(command)
+            render(status: SC_ACCEPTED, contentType: 'application/json') {
+                [videoId: video.id]
+            }
         }
         else {
             render(status: SC_BAD_REQUEST, contentType: 'application/json') {
