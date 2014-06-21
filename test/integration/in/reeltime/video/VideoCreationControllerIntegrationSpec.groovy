@@ -10,7 +10,7 @@ class VideoCreationControllerIntegrationSpec extends IntegrationSpec {
 
     VideoCreationController controller
 
-    def userAuthenticationService
+    def springSecurityService
     def videoCreationService
 
     def messageSource
@@ -18,7 +18,7 @@ class VideoCreationControllerIntegrationSpec extends IntegrationSpec {
 
     void setup() {
         controller = new VideoCreationController()
-        controller.userAuthenticationService = userAuthenticationService
+        controller.springSecurityService = springSecurityService
         controller.videoCreationService = videoCreationService
         controller.messageSource = messageSource
     }

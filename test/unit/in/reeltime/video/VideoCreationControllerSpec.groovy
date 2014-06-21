@@ -1,5 +1,6 @@
 package in.reeltime.video
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
@@ -7,19 +8,17 @@ import in.reeltime.user.User
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
 
-import in.reeltime.user.UserAuthenticationService
-
 @TestFor(VideoCreationController)
 @Mock([Video])
 class VideoCreationControllerSpec extends Specification {
 
-    User loggedInUser
+    User currentUser
     VideoCreationService videoCreationService
 
     void setup() {
-        loggedInUser = new User(username: 'bob')
-        controller.userAuthenticationService = Stub(UserAuthenticationService) {
-            getLoggedInUser() >> loggedInUser
+        currentUser = new User(username: 'bob')
+        controller.springSecurityService = Stub(SpringSecurityService) {
+            getCurrentUser() >> currentUser
         }
 
         videoCreationService = Mock(VideoCreationService)
@@ -37,7 +36,7 @@ class VideoCreationControllerSpec extends Specification {
 
         and:
         def validateCommand = { VideoCreationCommand command ->
-            assert command.creator == loggedInUser
+            assert command.creator == currentUser
             assert command.title == title
             assert command.videoStream.bytes == videoData
             return new Video().save(validate: false)
