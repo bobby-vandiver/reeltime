@@ -1,12 +1,13 @@
 package in.reeltime.user
 
+import grails.plugin.springsecurity.userdetails.GrailsUser
+
 class UserAuthenticationService {
 
-    def isUserLoggedIn() {
+    def springSecurityService
 
-    }
-
-    def getLoggedInUser() {
-        User.findByUsername('bob')
+    User getLoggedInUser() {
+        def principal = springSecurityService.authentication?.principal as GrailsUser
+        principal ? User.findByUsername(principal.username) : null
     }
 }

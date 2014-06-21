@@ -21,6 +21,8 @@ class VideoCreationCommand {
     static maxDuration
 
     static constraints = {
+        creator nullable: false
+
         title nullable: false, blank: false
         videoStream nullable: false
 

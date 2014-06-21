@@ -16,6 +16,14 @@ class VideoCreationCommandSpec extends Specification {
         VideoCreationCommand.maxDuration = MAX_DURATION_IN_SECONDS
     }
 
+    void "creator cannot be null"() {
+        given:
+        def command = new VideoCreationCommand(creator: null)
+
+        expect:
+        !command.validate(['creator'])
+    }
+
     @Unroll
     void "title cannot be [#title]"() {
         given:

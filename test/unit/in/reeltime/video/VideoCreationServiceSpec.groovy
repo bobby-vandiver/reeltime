@@ -1,5 +1,6 @@
 package in.reeltime.video
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.metadata.StreamMetadata
@@ -196,7 +197,8 @@ class VideoCreationServiceSpec extends Specification {
     }
 
     private static VideoCreationCommand createCommandWithVideoStream(byte[] data) {
+        def creator = new User(username: 'videoCreationTestUser')
         def videoStream = new ByteArrayInputStream(data)
-        new VideoCreationCommand(videoStream: videoStream, title: 'test-title')
+        new VideoCreationCommand(creator: creator, videoStream: videoStream, title: 'test-title')
     }
 }
