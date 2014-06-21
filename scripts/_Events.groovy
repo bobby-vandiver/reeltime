@@ -14,7 +14,12 @@ eventTestPhasesEnd = {
         def path = config.reeltime.storage.output
         def outputDirectory = new File(path)
 
-        println "Deleting storage output directory: $path"
-        FileUtils.forceDelete(outputDirectory)
+        try {
+            println "Deleting storage output directory: $path"
+            FileUtils.forceDelete(outputDirectory)
+        }
+        catch(IOException e) {
+            println "Could not delete output directory: ${e}"
+        }
     }
 }
