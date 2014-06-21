@@ -100,14 +100,7 @@ grails.plugin.springsecurity.authority.className = 'in.reeltime.user.Role'
 
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
     '/oauth/authorize.dispatch':      ["isFullyAuthenticated() and (request.getMethod().equals('GET') or request.getMethod().equals('POST'))"],
-    '/oauth/token.dispatch':          ["isFullyAuthenticated() and request.getMethod().equals('POST')"],
-	'/':                              ['permitAll'],
-	'/index':                         ['permitAll'],
-	'/index.gsp':                     ['permitAll'],
-	'/**/js/**':                      ['permitAll'],
-	'/**/css/**':                     ['permitAll'],
-	'/**/images/**':                  ['permitAll'],
-	'/**/favicon.ico':                ['permitAll']
+    '/oauth/token.dispatch':          ["isFullyAuthenticated() and request.getMethod().equals('POST')"]
 ]
 
 // Remove the form login filter
