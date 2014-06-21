@@ -26,6 +26,19 @@ class SegmentControllerSpec extends Specification {
         name << ['segmentId', 'playlistId', 'videoId']
     }
 
+    void "return a 404 if the video exists but is not available"() {
+        given:
+        def video = new Video(title: 'test', available: false).save(validate: false)
+        params.videoId = video.id
+        assert video.id
+
+        when:
+        controller.getSegment()
+
+        then:
+        response.status == 404
+    }
+
     void "return a 404 if the playlist does not belong to the video"() {
         given:
         def segment = new Segment(segmentId: 7819)
@@ -34,12 +47,12 @@ class SegmentControllerSpec extends Specification {
         playlist.addToSegments(segment)
 
         and:
-        def video1 = new Video(title: 'has playlist')
+        def video1 = new Video(title: 'has playlist', available: true)
         video1.addToPlaylists(playlist)
         video1.save(validate: false)
 
         and:
-        def video2 = new Video(title: 'no playlist').save(validate: false)
+        def video2 = new Video(title: 'no playlist', available: true).save(validate: false)
 
         and:
         assert segment.id
@@ -66,7 +79,7 @@ class SegmentControllerSpec extends Specification {
         playlist.addToSegments(segment)
 
         and:
-        def video = new Video(title: 'has playlist')
+        def video = new Video(title: 'has playlist', available: true)
         video.addToPlaylists(playlist)
         video.save(validate: false)
 
@@ -108,7 +121,7 @@ class SegmentControllerSpec extends Specification {
         playlist.addToSegments(segment2)
 
         and:
-        def video = new Video(title: 'has playlist')
+        def video = new Video(title: 'has playlist', available: true)
         video.addToPlaylists(playlist)
         video.save(validate: false)
 

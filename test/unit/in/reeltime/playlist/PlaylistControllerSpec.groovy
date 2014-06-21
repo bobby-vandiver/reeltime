@@ -23,7 +23,7 @@ class PlaylistControllerSpec extends Specification {
 
     void "return a 200 and the variant playlist for the requested video"() {
         given:
-        def video = new Video(title: 'test').save(validate: false)
+        def video = new Video(title: 'test', available: true).save(validate: false)
         params.videoId = video.id
         assert video.id
 
@@ -86,7 +86,7 @@ class PlaylistControllerSpec extends Specification {
     void "return a 200 and the media playlist for the requested video stream"() {
         given:
         def playlist = new Playlist()
-        def video = new Video(title: 'has playlist')
+        def video = new Video(title: 'has playlist', available: true)
 
         video.addToPlaylists(playlist)
         video.save(validate: false)
@@ -114,5 +114,24 @@ class PlaylistControllerSpec extends Specification {
         response.status == 200
         response.contentType == 'application/x-mpegURL'
         response.contentAsString == 'media playlist'
+    }
+
+    @Unroll
+    void "return a 404 if the video exists but is not available for [#method]"() {
+        given:
+        def video = new Video(title: 'test', available: false).save(validate: false)
+        params.videoId = video.id
+        assert video.id
+
+        when:
+        controller."$method"()
+
+        then:
+        response.status == 404
+
+        where:
+        _   |   method
+        _   |   'getVariantPlaylist'
+        _   |   'getMediaPlaylist'
     }
 }

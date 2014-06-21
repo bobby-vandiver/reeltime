@@ -14,7 +14,7 @@ class PlaylistController {
     def getVariantPlaylist(long videoId) {
 
         log.debug("Requested variant playlist for video [${videoId}]")
-        def video = Video.findById(videoId)
+        def video = Video.findByIdAndAvailable(videoId, true)
 
         if(video) {
             response.status = SC_OK
@@ -31,7 +31,7 @@ class PlaylistController {
 
         log.debug("Requested media playlist [${playlistId}] for video [${videoId}]")
 
-        def video = Video.findById(videoId)
+        def video = Video.findByIdAndAvailable(videoId, true)
         def playlist = Playlist.findByIdAndVideo(playlistId, video)
 
         if(playlist) {

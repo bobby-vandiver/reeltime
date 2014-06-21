@@ -15,7 +15,7 @@ class SegmentController {
 
         log.debug("Requested segment [${segmentId}] for playlist [${playlistId}] belonging to video [${videoId}]")
 
-        def video = Video.findById(videoId)
+        def video = Video.findByIdAndAvailable(videoId, true)
         def playlist = Playlist.findByIdAndVideo(playlistId, video)
 
         def segment = Segment.findBySegmentIdAndPlaylist(segmentId, playlist)
