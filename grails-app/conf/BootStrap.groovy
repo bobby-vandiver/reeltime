@@ -25,6 +25,7 @@ class BootStrap {
 
         if(!Client.findByClientId('test-client')) {
             Client client = new Client(
+                    clientName: 'test-client-name',
                     clientId: 'test-client',
                     clientSecret: 'test-secret',
                     authorizedGrantTypes: ['password'],
