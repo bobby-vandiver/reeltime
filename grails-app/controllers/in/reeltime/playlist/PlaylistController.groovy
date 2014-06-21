@@ -11,10 +11,10 @@ class PlaylistController {
     static allowedMethods = [getVariantPlaylist: 'GET', getMediaPlaylist: 'GET']
 
     @Secured(["#oauth2.hasScope('view')"])
-    def getVariantPlaylist() {
+    def getVariantPlaylist(long videoId) {
 
-        log.debug("Requested variant playlist for video [${params.videoId}]")
-        def video = Video.findById(params.videoId)
+        log.debug("Requested variant playlist for video [${videoId}]")
+        def video = Video.findById(videoId)
 
         if(video) {
             response.status = SC_OK
@@ -27,12 +27,12 @@ class PlaylistController {
     }
 
     @Secured(["#oauth2.hasScope('view')"])
-    def getMediaPlaylist() {
+    def getMediaPlaylist(long videoId, long playlistId) {
 
-        log.debug("Requested media playlist [${params.playlistId}] for video [${params.videoId}]")
+        log.debug("Requested media playlist [${playlistId}] for video [${videoId}]")
 
-        def video = Video.findById(params.videoId)
-        def playlist = Playlist.findByIdAndVideo(params.playlistId, video)
+        def video = Video.findById(videoId)
+        def playlist = Playlist.findByIdAndVideo(playlistId, video)
 
         if(playlist) {
             response.status = SC_OK

@@ -11,14 +11,14 @@ class SegmentController {
     static allowedMethods = [getSegment: 'GET']
 
     @Secured(["#oauth2.hasScope('view')"])
-    def getSegment() {
+    def getSegment(long videoId, long playlistId, int segmentId) {
 
-        log.debug("Requested segment [${params.segmentId}] for playlist [${params.playlistId}] belonging to video [${params.videoId}]")
+        log.debug("Requested segment [${segmentId}] for playlist [${playlistId}] belonging to video [${videoId}]")
 
-        def video = Video.findById(params.videoId)
-        def playlist = Playlist.findByIdAndVideo(params.playlistId, video)
+        def video = Video.findById(videoId)
+        def playlist = Playlist.findByIdAndVideo(playlistId, video)
 
-        def segment = Segment.findBySegmentIdAndPlaylist(params.segmentId, playlist)
+        def segment = Segment.findBySegmentIdAndPlaylist(segmentId, playlist)
 
         if(segment) {
             def stream = outputStorageService.load(segment.uri) as InputStream
