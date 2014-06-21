@@ -17,8 +17,6 @@ class NotificationController {
     def transcoderJobService
     def playlistService
 
-    // TODO: Implement functional tests to verify this because unit/integration tests can't test this
-    // http://jira.grails.org/browse/GRAILS-8426
     static allowedMethods = [completed: 'POST', progressing: 'POST', warning: 'POST', error: 'POST']
 
     def beforeInterceptor = {
