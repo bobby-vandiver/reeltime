@@ -2,11 +2,8 @@ class UrlMappings {
 
 	static mappings = {
 
-        // TODO: Add dedicated error controller to handle exceptions and don't throw back to user
-        "/"(view:"/index")
-        "500"(view:'/error')
-
         "405" (controller: 'errors', action: 'methodNotAllowed')
+        "500" (controller: 'errors', action: 'internalServerError')
 
         "/transcoder/notification/$action" (controller: 'notification')
 
