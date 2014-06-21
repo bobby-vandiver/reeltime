@@ -61,11 +61,11 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "invalid http method [#method]"() {
         when:
-        def response = "$method"(uploadToken)
+        def response = "$method"(uploadToken) as RestResponse
 
         then:
         response.status == 405
-        !response.json
+        response.body == ''
 
         where:
         _   |   method

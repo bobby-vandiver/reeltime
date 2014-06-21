@@ -22,7 +22,7 @@ class NotificationControllerFunctionalSpec extends FunctionalSpec {
 
         then:
         response.status == 405
-        !response.json
+        response.body == ''
 
         cleanup:
         action = null
