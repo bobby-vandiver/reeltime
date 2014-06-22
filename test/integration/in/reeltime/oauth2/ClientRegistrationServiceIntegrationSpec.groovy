@@ -6,22 +6,19 @@ class ClientRegistrationServiceIntegrationSpec extends IntegrationSpec {
 
     def clientRegistrationService
 
-    private static final TEST_CLIENT_NAME = 'test-name'
-
-    private static final TEST_CLIENT_ID = 'test-id'
-    private static final TEST_CLIENT_SECRET = 'test-secret'
+    private static final UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
 
     void "register new native client"() {
         when:
-        def client = clientRegistrationService.register(TEST_CLIENT_NAME, TEST_CLIENT_ID, TEST_CLIENT_SECRET)
+        def client = clientRegistrationService.register('native-client-name')
 
         then:
         client.id > 0
-        client.clientName == TEST_CLIENT_NAME
+        client.clientName == 'native-client-name'
 
         and:
-        client.clientId == TEST_CLIENT_ID
-        client.clientSecret != TEST_CLIENT_SECRET
+        client.clientId.matches(UUID_REGEX)
+        client.clientSecret.length() > 0
 
         and:
         client.authorities.size() == 1
