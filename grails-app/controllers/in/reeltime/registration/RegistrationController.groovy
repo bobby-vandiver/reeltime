@@ -7,7 +7,7 @@ import static javax.servlet.http.HttpServletResponse.*
 class RegistrationController {
 
     def userRegistrationService
-    def clientRegistrationService
+    def registrationService
 
     def messageSource
 
@@ -17,16 +17,12 @@ class RegistrationController {
             render(status: SC_BAD_REQUEST, contentType: 'application/json') {
                 [error: getMessage('registration.user.exists', [username])]
             }
-            return
         }
-
-        def clientId = clientRegistrationService.generateClientId()
-        def clientSecret = clientRegistrationService.generateClientSecret()
-        def client = clientRegistrationService.register(client_name, clientId, clientSecret)
-        userRegistrationService.register(username, password, client)
-
-        render(status: SC_CREATED, contentType: 'application/json') {
-            [client_id: clientId, client_secret: clientSecret]
+        else {
+            def result = registrationService.registerUserAndClient(username, password, client_name)
+            render(status: SC_CREATED, contentType: 'application/json') {
+                [client_id: result.clientId, client_secret: result.clientSecret]
+            }
         }
     }
 

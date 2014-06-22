@@ -4,7 +4,6 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
 import in.reeltime.exceptions.RegistrationException
-import in.reeltime.oauth2.Client
 import in.reeltime.user.User
 import org.springframework.context.MessageSource
 import spock.lang.Specification
@@ -14,17 +13,17 @@ import spock.lang.Specification
 class RegistrationControllerSpec extends Specification {
 
     UserRegistrationService userRegistrationService
-    ClientRegistrationService clientRegistrationService
+    RegistrationService registrationService
 
     MessageSource messageSource
 
     void setup() {
         userRegistrationService = Mock(UserRegistrationService)
-        clientRegistrationService = Mock(ClientRegistrationService)
+        registrationService = Mock(RegistrationService)
         messageSource = Mock(MessageSource)
 
         controller.userRegistrationService = userRegistrationService
-        controller.clientRegistrationService = clientRegistrationService
+        controller.registrationService = registrationService
         controller.messageSource = messageSource
     }
 
@@ -39,7 +38,7 @@ class RegistrationControllerSpec extends Specification {
         def clientSecret = 'bazz'
 
         and:
-        def client = new Client()
+        def registrationResult = new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
 
         and:
         params.username = username
@@ -62,12 +61,8 @@ class RegistrationControllerSpec extends Specification {
         json.client_secret == clientSecret
 
         and:
-        1 * clientRegistrationService.generateClientId() >> clientId
-        1 * clientRegistrationService.generateClientSecret() >> clientSecret
-        1 * clientRegistrationService.register(clientName, clientId, clientSecret) >> client
-
-        and:
-        1 * userRegistrationService.register(username, password, client)
+        1 * userRegistrationService.userExists(_) >> false
+        1 * registrationService.registerUserAndClient(username, password, clientName) >> registrationResult
     }
 
     void "registration exception is thrown"() {
@@ -90,7 +85,7 @@ class RegistrationControllerSpec extends Specification {
 
         and:
         1 * userRegistrationService.userExists(_) >> false
-        1 * clientRegistrationService.generateClientId() >> { throw new RegistrationException('TEST') }
+        1 * registrationService.registerUserAndClient(*_) >> { throw new RegistrationException('TEST') }
         1 * messageSource.getMessage('registration.internal.error', [], request.locale) >> message
     }
 
