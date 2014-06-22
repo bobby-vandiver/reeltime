@@ -13,18 +13,18 @@ class ClientRegistrationService {
 
     private static final MAX_ATTEMPTS = 5
 
-    Client register(String name) {
+    Client register(String clientName, String clientId, String clientSecret) {
         new Client(
-                clientName: name,
-                clientId: generateClientId(),
-                clientSecret: generateClientSecret(),
+                clientName: clientName,
+                clientId: clientId,
+                clientSecret: clientSecret,
                 authorities: ['ROLE_NATIVE_CLIENT'],
                 authorizedGrantTypes: ['password', 'refresh_token'],
                 scopes: ['view', 'upload']
         ).save()
     }
 
-    protected static String generateClientId() {
+    String generateClientId() {
         String generatedId = UUID.randomUUID()
         int attempt = 0
 
@@ -46,7 +46,7 @@ class ClientRegistrationService {
         }
     }
 
-    protected static String generateClientSecret() {
+    String generateClientSecret() {
         def secureRandom = new SecureRandom()
         def secret = new StringBuilder()
 

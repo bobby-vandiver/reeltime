@@ -9,7 +9,7 @@ import spock.lang.Unroll
 
 @TestFor(ClientRegistrationService)
 @Mock([Client])
-class ClientRegistrationSpec extends Specification {
+class ClientRegistrationServiceSpec extends Specification {
 
     void "generate random client id"() {
         expect:
