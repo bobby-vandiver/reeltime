@@ -6,6 +6,7 @@ import groovy.json.JsonSlurper
 import in.reeltime.exceptions.RegistrationException
 import in.reeltime.oauth2.Client
 import in.reeltime.user.User
+import org.springframework.context.MessageSource
 import spock.lang.Specification
 
 @TestFor(RegistrationController)
@@ -15,12 +16,16 @@ class RegistrationControllerSpec extends Specification {
     UserRegistrationService userRegistrationService
     ClientRegistrationService clientRegistrationService
 
+    MessageSource messageSource
+
     void setup() {
         userRegistrationService = Mock(UserRegistrationService)
         clientRegistrationService = Mock(ClientRegistrationService)
+        messageSource = Mock(MessageSource)
 
         controller.userRegistrationService = userRegistrationService
         controller.clientRegistrationService = clientRegistrationService
+        controller.messageSource = messageSource
     }
 
     void "response with client credentials upon successful registration"() {
@@ -66,6 +71,9 @@ class RegistrationControllerSpec extends Specification {
     }
 
     void "registration exception is thrown"() {
+        given:
+        def message = 'this is a test'
+
         when:
         controller.register()
 
@@ -78,16 +86,21 @@ class RegistrationControllerSpec extends Specification {
         json.size() == 1
 
         and:
-        json.error == 'Unable to register. Please try again.'
+        json.error == message
 
         and:
+        1 * userRegistrationService.userExists(_) >> false
         1 * clientRegistrationService.generateClientId() >> { throw new RegistrationException('TEST') }
+        1 * messageSource.getMessage('registration.internal.error', [], request.locale) >> message
     }
 
     void "user already exists"() {
         given:
         def username = 'foo'
         params.username = username
+
+        and:
+        def message = 'TEST'
 
         when:
         controller.register()
@@ -101,9 +114,10 @@ class RegistrationControllerSpec extends Specification {
         json.size() == 1
 
         and:
-        json.error == "Username [$username] is not available"
+        json.error == message
 
         and:
         1 * userRegistrationService.userExists(username) >> true
+        1 * messageSource.getMessage('registration.user.exists', [username] as Object[], request.locale) >> message
     }
 }

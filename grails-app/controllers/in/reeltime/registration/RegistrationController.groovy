@@ -9,11 +9,13 @@ class RegistrationController {
     def userRegistrationService
     def clientRegistrationService
 
+    def messageSource
+
     def register(String username, String password, String client_name) {
 
         if(userRegistrationService.userExists(username)) {
             render(status: SC_BAD_REQUEST, contentType: 'application/json') {
-                [error: "Username [$username] is not available"]
+                [error: getMessage('registration.user.exists', [username])]
             }
             return
         }
@@ -30,8 +32,13 @@ class RegistrationController {
 
     def handleRegistrationException(RegistrationException e) {
         log.warn("Handling RegistrationException: ", e)
+
         render(status: SC_SERVICE_UNAVAILABLE, contentType: 'application/json') {
-            [error: 'Unable to register. Please try again.']
+            [error: getMessage('registration.internal.error')]
         }
+    }
+
+    private String getMessage(code, args = []) {
+        messageSource.getMessage(code, args as Object[], request.locale)
     }
 }
