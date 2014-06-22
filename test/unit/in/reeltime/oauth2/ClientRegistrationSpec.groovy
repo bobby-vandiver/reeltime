@@ -4,6 +4,8 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+import in.reeltime.exceptions.RegistrationException
+import spock.lang.Unroll
 
 @TestFor(ClientRegistrationService)
 @Mock([Client])
@@ -14,14 +16,18 @@ class ClientRegistrationSpec extends Specification {
         service.generateClientId().length() > 0
     }
 
-    void "generated client id must be unique"() {
+    @Unroll
+    void "generated client id must be unique -- duplicate for first [#repeatCount] tries"() {
         given:
         def existingId = 'this-is-a-test'
         createAndSaveClient(existingId)
 
         and:
+        int count = 0
         UUID.metaClass.'static'.randomUUID = {
-            UUID.metaClass = null
+            if(++count >= repeatCount) {
+                UUID.metaClass = null
+            }
             return existingId
         }
 
@@ -31,6 +37,30 @@ class ClientRegistrationSpec extends Specification {
         then:
         generatedId.length() > 0
         generatedId != existingId
+
+        cleanup:
+        UUID.metaClass = null
+
+        where:
+        repeatCount << [1, 2, 3, 4, 5]
+    }
+
+    void "throw exception if unable to generate unique client id after 5 tries"() {
+        given:
+        def existingId = 'this-is-a-test'
+        createAndSaveClient(existingId)
+
+        and:
+        UUID.metaClass.'static'.randomUUID = {
+            return existingId
+        }
+
+        when:
+        service.generateClientId()
+
+        then:
+        def e = thrown(RegistrationException)
+        e.message == 'Cannot generate unique client id'
 
         cleanup:
         UUID.metaClass = null
