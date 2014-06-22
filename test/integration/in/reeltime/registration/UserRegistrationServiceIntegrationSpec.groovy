@@ -1,4 +1,4 @@
-package in.reeltime.user
+package in.reeltime.registration
 
 import grails.test.spock.IntegrationSpec
 import in.reeltime.oauth2.Client

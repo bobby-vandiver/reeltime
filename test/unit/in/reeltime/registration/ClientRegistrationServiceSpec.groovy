@@ -1,4 +1,4 @@
-package in.reeltime.oauth2
+package in.reeltime.registration
 
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
@@ -6,6 +6,7 @@ import grails.test.mixin.TestFor
 import spock.lang.Specification
 import in.reeltime.exceptions.RegistrationException
 import spock.lang.Unroll
+import in.reeltime.oauth2.Client
 
 @TestFor(ClientRegistrationService)
 @Mock([Client])

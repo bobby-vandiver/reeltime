@@ -1,6 +1,7 @@
-package in.reeltime.oauth2
+package in.reeltime.registration
 
 import in.reeltime.exceptions.RegistrationException
+import in.reeltime.oauth2.Client
 
 import java.security.SecureRandom
 

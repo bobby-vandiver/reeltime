@@ -1,6 +1,7 @@
-package in.reeltime.user
+package in.reeltime.registration
 
 import in.reeltime.oauth2.Client
+import in.reeltime.user.User
 
 class UserRegistrationService {
 

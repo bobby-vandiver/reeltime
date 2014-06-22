@@ -1,6 +1,7 @@
-package in.reeltime.oauth2
+package in.reeltime.registration
 
 import grails.test.spock.IntegrationSpec
+import in.reeltime.oauth2.Client
 
 class ClientRegistrationServiceIntegrationSpec extends IntegrationSpec {
 
