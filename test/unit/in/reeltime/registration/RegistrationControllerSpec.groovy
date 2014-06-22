@@ -1,12 +1,15 @@
 package in.reeltime.registration
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
 import in.reeltime.exceptions.RegistrationException
 import in.reeltime.oauth2.Client
+import in.reeltime.user.User
 import spock.lang.Specification
 
 @TestFor(RegistrationController)
+@Mock([User])
 class RegistrationControllerSpec extends Specification {
 
     UserRegistrationService userRegistrationService
@@ -79,5 +82,28 @@ class RegistrationControllerSpec extends Specification {
 
         and:
         1 * clientRegistrationService.generateClientId() >> { throw new RegistrationException('TEST') }
+    }
+
+    void "user already exists"() {
+        given:
+        def username = 'foo'
+        params.username = username
+
+        when:
+        controller.register()
+
+        then:
+        response.status == 400
+        response.contentType.startsWith('application/json')
+
+        and:
+        def json = new JsonSlurper().parseText(response.contentAsString) as Map
+        json.size() == 1
+
+        and:
+        json.error == "Username [$username] is not available"
+
+        and:
+        1 * userRegistrationService.userExists(username) >> true
     }
 }
