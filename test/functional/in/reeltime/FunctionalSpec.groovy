@@ -3,6 +3,7 @@ package in.reeltime
 import grails.plugins.rest.client.RestBuilder
 import grails.plugins.rest.client.RestResponse
 import grails.util.BuildSettings
+import helper.oauth2.AccessTokenRequest
 import helper.oauth2.AccessTokenRequester
 import helper.oauth2.PatchedRestBuilder
 import spock.lang.Specification
@@ -30,15 +31,19 @@ abstract class FunctionalSpec extends Specification {
 
     // TODO: Specify user once user registration is implemented
     protected static String getAccessTokenWithScope(String scope) {
-        def params = [
-                client_id: 'test-client',
-                client_secret: 'test-secret',
-                grant_type: 'password',
+        def request = new AccessTokenRequest(
+                clientId: 'test-client',
+                clientSecret: 'test-secret',
+                grantType: 'password',
                 username: 'bob',
                 password: 'pass',
-                scope: scope
-        ]
-        AccessTokenRequester.getAccessToken(params)
+                scope: [scope]
+        )
+        getAccessTokenWithScope(request)
+    }
+
+    protected static String getAccessTokenWithScope(AccessTokenRequest request) {
+        AccessTokenRequester.getAccessToken(request.params)
     }
 
     protected RestResponse get(String token) {
