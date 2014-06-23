@@ -5,6 +5,8 @@ class UrlMappings {
         "405" (controller: 'errors', action: 'methodNotAllowed')
         "500" (controller: 'errors', action: 'internalServerError')
 
+        "/register" (controller: 'registration', action: 'register')
+
         "/transcoder/notification/$action" (controller: 'notification')
 
         "/video" (controller: 'videoCreation', action: 'upload')
