@@ -1,4 +1,4 @@
-package in.reeltime.registration
+package in.reeltime.oauth2
 
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
@@ -8,9 +8,9 @@ import in.reeltime.exceptions.RegistrationException
 import spock.lang.Unroll
 import in.reeltime.oauth2.Client
 
-@TestFor(ClientRegistrationService)
+@TestFor(ClientService)
 @Mock([Client])
-class ClientRegistrationServiceSpec extends Specification {
+class ClientServiceSpec extends Specification {
 
     void "generate random client id"() {
         expect:

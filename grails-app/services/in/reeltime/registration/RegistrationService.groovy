@@ -2,15 +2,15 @@ package in.reeltime.registration
 
 class RegistrationService {
 
-    def userRegistrationService
-    def clientRegistrationService
+    def userService
+    def clientService
 
     RegistrationResult registerUserAndClient(String username, String password, String clientName) {
-        def clientId = clientRegistrationService.generateClientId()
-        def clientSecret = clientRegistrationService.generateClientSecret()
+        def clientId = clientService.generateClientId()
+        def clientSecret = clientService.generateClientSecret()
 
-        def client = clientRegistrationService.register(clientName, clientId, clientSecret)
-        userRegistrationService.register(username, password, client)
+        def client = clientService.createClient(clientName, clientId, clientSecret)
+        userService.createUser(username, password, client)
 
         new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
     }
