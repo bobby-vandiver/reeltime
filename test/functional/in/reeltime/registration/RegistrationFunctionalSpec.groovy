@@ -61,4 +61,57 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         then:
         token != null
     }
+
+    void "username is not available"() {
+        given:
+        def name = 'existingUser'
+        registerUser(name)
+
+        when:
+        def response = post() {
+            username = name
+            password = 'password'
+            client_name = 'client'
+        }
+
+        then:
+        response.status == 400
+        response.json.errors.size() == 1
+        response.json.errors[0] == '[username] is not available'
+    }
+
+    @Unroll
+    void "invalid params username [#user], password [#pass], client_name [#client]"() {
+        when:
+        def response = post() {
+            username = user
+            password = pass
+            client_name = client
+        }
+
+        then:
+        response.status == 400
+        response.json.errors.size() == 1
+        response.json.errors[0] == message
+
+        where:
+        user     | pass     | client     | message
+        'user'   | 'pass'   | ''         | '[client_name] is required'
+        'user'   | 'pass'   | null       | '[client_name] is required'
+
+        ''       | 'pass'   | 'client'   | '[username] is required'
+        null     | 'pass'   | 'client'   | '[username] is required'
+
+        'user'   | ''       | 'client'   | '[password] is required'
+        'user'   | null     | 'client'   | '[password] is required'
+    }
+
+    private void registerUser(String name) {
+        def response = post() {
+            username = name
+            password = 'password'
+            client_name = 'client'
+        }
+        assert response.status == 201
+    }
 }
