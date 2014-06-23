@@ -24,9 +24,6 @@ class RegistrationCommandSpec extends Specification {
         and:
         command.errors.getFieldError('username')?.code == code
 
-        and:
-
-
         where:
         username    |   valid   |   code
         'someone'   |   true    |   null
