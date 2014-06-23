@@ -86,6 +86,10 @@ abstract class FunctionalSpec extends Specification {
         post(null)
     }
 
+    protected RestResponse post(Closure customizer) {
+        doPost(null, false, customizer)
+    }
+
     protected RestResponse post(String token) {
         post(token, null)
     }
