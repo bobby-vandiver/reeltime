@@ -1,11 +1,10 @@
-package in.reeltime.registration
+package in.reeltime.oauth2
 
 import in.reeltime.exceptions.RegistrationException
-import in.reeltime.oauth2.Client
 
 import java.security.SecureRandom
 
-class ClientRegistrationService {
+class ClientService {
 
     // A length of 42 combined with the symbol set containing 70 choices above will give us a strength of 256-bits:
     // L = H / log(N) where L = 42, H = 256 and N= 70
@@ -14,7 +13,7 @@ class ClientRegistrationService {
 
     private static final MAX_ATTEMPTS = 5
 
-    Client register(String clientName, String clientId, String clientSecret) {
+    Client createClient(String clientName, String clientId, String clientSecret) {
         new Client(
                 clientName: clientName,
                 clientId: clientId,

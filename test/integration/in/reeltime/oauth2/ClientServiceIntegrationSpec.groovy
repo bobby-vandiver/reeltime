@@ -1,15 +1,14 @@
-package in.reeltime.registration
+package in.reeltime.oauth2
 
 import grails.test.spock.IntegrationSpec
-import in.reeltime.oauth2.Client
 
-class ClientRegistrationServiceIntegrationSpec extends IntegrationSpec {
+class ClientServiceIntegrationSpec extends IntegrationSpec {
 
-    def clientRegistrationService
+    def clientService
 
-    void "register new native client"() {
+    void "create new native client"() {
         when:
-        def client = clientRegistrationService.register('native-client-name', 'native-client-id', 'native-client-secret')
+        def client = clientService.createClient('native-client-name', 'native-client-id', 'native-client-secret')
 
         then:
         client.id > 0
