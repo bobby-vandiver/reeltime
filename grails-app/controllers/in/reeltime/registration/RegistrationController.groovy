@@ -36,9 +36,10 @@ class RegistrationController {
 
     def handleRegistrationException(RegistrationException e) {
         log.warn("Handling RegistrationException: ", e)
+        def message = getMessage('registration.internal.error')
 
         render(status: SC_SERVICE_UNAVAILABLE, contentType: 'application/json') {
-            [error: getMessage('registration.internal.error')]
+            [errors: [message]]
         }
     }
 

@@ -86,7 +86,7 @@ class RegistrationControllerSpec extends Specification {
         json.size() == 1
 
         and:
-        json.error == message
+        json.errors == [message]
 
         and:
         1 * registrationService.registerUserAndClient(*_) >> { throw new RegistrationException('TEST') }
