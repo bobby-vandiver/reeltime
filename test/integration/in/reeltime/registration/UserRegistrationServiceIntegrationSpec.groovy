@@ -31,19 +31,4 @@ class UserRegistrationServiceIntegrationSpec extends IntegrationSpec {
         user.clients.size() == 1
         user.clients[0] == client
     }
-
-    void "user exists"() {
-        given:
-        def existingUsername = 'foo'
-        def existingUser = new User(username: existingUsername, password: 'unknown').save(validate: false)
-        assert existingUser.id
-
-        expect:
-        userRegistrationService.userExists(existingUsername)
-    }
-
-    void "user does not exist"() {
-        expect:
-        !userRegistrationService.userExists('newUser')
-    }
 }

@@ -6,23 +6,31 @@ import static javax.servlet.http.HttpServletResponse.*
 
 class RegistrationController {
 
-    def userRegistrationService
     def registrationService
-
     def messageSource
 
-    def register(String username, String password, String client_name) {
+    static allowedMethods = [register: 'POST']
 
-        if(userRegistrationService.userExists(username)) {
+    def register(RegistrationCommand command) {
+
+        if(command.hasErrors()) {
             render(status: SC_BAD_REQUEST, contentType: 'application/json') {
-                [error: getMessage('registration.user.exists', [username])]
+                [errors: getErrorMessages(command)]
             }
         }
         else {
-            def result = registrationService.registerUserAndClient(username, password, client_name)
+            def result = registrationService.registerUserAndClient(command.username, command.password, command.client_name)
             render(status: SC_CREATED, contentType: 'application/json') {
                 [client_id: result.clientId, client_secret: result.clientSecret]
             }
+        }
+    }
+
+    // TODO: Put this in a service -- duplicated in VideoCreationController
+    private List<String> getErrorMessages(RegistrationCommand command) {
+        def locale = Locale.default
+        command.errors.allErrors.collect { error ->
+            messageSource.getMessage(error, locale)
         }
     }
 
