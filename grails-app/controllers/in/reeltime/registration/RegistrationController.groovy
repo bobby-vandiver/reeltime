@@ -1,5 +1,6 @@
 package in.reeltime.registration
 
+import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.exceptions.RegistrationException
 
 import static javax.servlet.http.HttpServletResponse.*
@@ -11,6 +12,7 @@ class RegistrationController {
 
     static allowedMethods = [register: 'POST']
 
+    @Secured(["permitAll"])
     def register(RegistrationCommand command) {
 
         if(command.hasErrors()) {
