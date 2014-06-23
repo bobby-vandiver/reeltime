@@ -106,6 +106,20 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         'user'   | null     | 'client'   | '[password] is required'
     }
 
+    void "missing all params"() {
+        when:
+        def response = post()
+
+        then:
+        response.status == 400
+        response.json.errors.size() == 3
+
+        and:
+        response.json.errors.contains('[client_name] is required')
+        response.json.errors.contains('[username] is required')
+        response.json.errors.contains('[password] is required')
+    }
+
     private void registerUser(String name) {
         def response = post() {
             username = name
