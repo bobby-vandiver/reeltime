@@ -32,7 +32,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         when:
         def response = post() {
             username = 'newUser'
-            password = 'newPassword'
+            password = 'n3wP4s$w0rd!'
             client_name = 'newClient'
         }
 
@@ -50,7 +50,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
                 clientId: clientId,
                 clientSecret: clientSecret,
                 username: 'newUser',
-                password: 'newPassword',
+                password: 'n3wP4s$w0rd!',
                 grantType: 'password',
                 scope: ['view']
         )
@@ -96,14 +96,19 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
         where:
         user     | pass     | client     | message
-        'user'   | 'pass'   | ''         | '[client_name] is required'
-        'user'   | 'pass'   | null       | '[client_name] is required'
+        'user'   | 'secret' | ''         | '[client_name] is required'
+        'user'   | 'secret' | null       | '[client_name] is required'
 
-        ''       | 'pass'   | 'client'   | '[username] is required'
-        null     | 'pass'   | 'client'   | '[username] is required'
+        ''       | 'secret' | 'client'   | '[username] is required'
+        null     | 'secret' | 'client'   | '[username] is required'
+
+        'a'      | 'secret' | 'client'   | '[username] must be 2-15 alphanumeric characters long'
+        '1234a!' | 'secret' | 'client'   | '[username] must be 2-15 alphanumeric characters long'
 
         'user'   | ''       | 'client'   | '[password] is required'
         'user'   | null     | 'client'   | '[password] is required'
+
+        'user'   | 'short'  | 'client'   | '[password] must be at least 6 characters long'
     }
 
     void "missing all params"() {

@@ -12,6 +12,31 @@ import spock.lang.Unroll
 class UserSpec extends Specification {
 
     @Unroll
+    void "username [#username] is valid [#valid]"() {
+        given:
+        def user = new User(username: username)
+
+        expect:
+        user.validate(['username']) == valid
+
+        where:
+        username        |   valid
+        null            |   false
+        ''              |   false
+        'a'             |   false
+        '!a'            |   false
+        '!ab'           |   false
+        'w' * 14 + '!'  |   false
+        'r' * 16        |   false
+
+        'xy'            |   true
+        'abcde'         |   true
+        'abcdef'        |   true
+        'Ab2C01faqWZ'   |   true
+        'r' * 15        |   true
+    }
+
+    @Unroll
     void "clients list cannot be null"() {
         given:
         def user = new User(clients: null)

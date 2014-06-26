@@ -31,7 +31,7 @@ class RegistrationControllerSpec extends Specification {
     void "response with client credentials upon successful registration"() {
         given:
         def username = 'foo'
-        def password = 'bar'
+        def password = 'secret'
         def clientName = 'something'
 
         and:
@@ -68,7 +68,7 @@ class RegistrationControllerSpec extends Specification {
     void "registration exception is thrown"() {
         given:
         params.username = 'foo'
-        params.password = 'bar'
+        params.password = 'secret'
         params.client_name = 'something'
 
         and:

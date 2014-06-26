@@ -13,7 +13,7 @@ import spock.lang.Unroll
 class RegistrationCommandSpec extends Specification {
 
     @Unroll
-    void "username [#username] is valid [#valid]"() {
+    void "username [#username] is valid [#valid] -- inherited from User domain class"() {
         given:
         def command = new RegistrationCommand(username: username)
         command.userService = mockUserService(username, false)
@@ -25,11 +25,20 @@ class RegistrationCommandSpec extends Specification {
         command.errors.getFieldError('username')?.code == code
 
         where:
-        username    |   valid   |   code
-        'someone'   |   true    |   null
-        'a'         |   true    |   null
-        ''          |   false   |   'blank'
-        null        |   false   |   'nullable'
+        username        |   valid   |   code
+        null            |   false   |   'nullable'
+        ''              |   false   |   'blank'
+        'a'             |   false   |   'matches.invalid'
+        '!a'            |   false   |   'matches.invalid'
+        '!ab'           |   false   |   'matches.invalid'
+        'w' * 14 + '!'  |   false   |   'matches.invalid'
+        'r' * 16        |   false   |   'matches.invalid'
+        'xy'            |   true    |   null
+        'abcde'         |   true    |   null
+        'abcdef'        |   true    |   null
+        'someone'       |   true    |   null
+        'Ab2C01faqWZ'   |   true    |   null
+        'r' * 15        |   true    |   null
     }
 
     void "username must be available"() {
@@ -49,7 +58,7 @@ class RegistrationCommandSpec extends Specification {
     }
 
     @Unroll
-    void "password [#password] is valid [#valid]"() {
+    void "password [#password] is valid [#valid] -- inherited from User domain class"() {
         given:
         def command = new RegistrationCommand(password: password)
 
@@ -60,11 +69,15 @@ class RegistrationCommandSpec extends Specification {
         command.errors.getFieldError('password')?.code == code
 
         where:
-        password    |   valid   |   code
-        'secret'    |   true    |   null
-        'a'         |   true    |   null
-        ''          |   false   |   'blank'
-        null        |   false   |   'nullable'
+        password                    |   valid   |   code
+        null                        |   false   |   'nullable'
+        ''                          |   false   |   'blank'
+        'a'                         |   false   |   'minSize.notmet'
+        'short'                     |   false   |   'minSize.notmet'
+        'abcdef'                    |   true    |   null
+        '!4ad#A'                    |   true    |   null
+        'ABCAf1304z'                |   true    |   null
+        '!#@$%^&*()-_=+][\\|<>/?'   |   true    |   null
     }
 
     @Unroll
