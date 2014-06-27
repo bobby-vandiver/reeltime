@@ -4,6 +4,7 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
 import in.reeltime.exceptions.RegistrationException
+import in.reeltime.message.LocalizedMessageService
 import in.reeltime.user.User
 import org.springframework.context.MessageSource
 import spock.lang.Specification
@@ -14,14 +15,14 @@ import in.reeltime.user.UserService
 class RegistrationControllerSpec extends Specification {
 
     RegistrationService registrationService
-    MessageSource messageSource
+    LocalizedMessageService localizedMessageService
 
     void setup() {
         registrationService = Mock(RegistrationService)
-        messageSource = Mock(MessageSource)
+        localizedMessageService = Mock(LocalizedMessageService)
 
         controller.registrationService = registrationService
-        controller.messageSource = messageSource
+        controller.localizedMessageService = localizedMessageService
 
         defineBeans {
             userService(UserService)
@@ -90,6 +91,6 @@ class RegistrationControllerSpec extends Specification {
 
         and:
         1 * registrationService.registerUserAndClient(*_) >> { throw new RegistrationException('TEST') }
-        1 * messageSource.getMessage('registration.internal.error', [], request.locale) >> message
+        1 * localizedMessageService.getMessage('registration.internal.error', request.locale) >> message
     }
 }

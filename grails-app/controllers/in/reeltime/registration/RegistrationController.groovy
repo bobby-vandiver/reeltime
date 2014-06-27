@@ -8,7 +8,7 @@ import static javax.servlet.http.HttpServletResponse.*
 class RegistrationController {
 
     def registrationService
-    def messageSource
+    def localizedMessageService
 
     static allowedMethods = [register: 'POST']
 
@@ -17,7 +17,7 @@ class RegistrationController {
 
         if(command.hasErrors()) {
             render(status: SC_BAD_REQUEST, contentType: 'application/json') {
-                [errors: getErrorMessages(command)]
+                [errors: localizedMessageService.getErrorMessages(command, request.locale)]
             }
         }
         else {
@@ -28,24 +28,12 @@ class RegistrationController {
         }
     }
 
-    // TODO: Put this in a service -- duplicated in VideoCreationController
-    private List<String> getErrorMessages(RegistrationCommand command) {
-        def locale = Locale.default
-        command.errors.allErrors.collect { error ->
-            messageSource.getMessage(error, locale)
-        }
-    }
-
     def handleRegistrationException(RegistrationException e) {
         log.warn("Handling RegistrationException: ", e)
-        def message = getMessage('registration.internal.error')
+        def message = localizedMessageService.getMessage('registration.internal.error', request.locale)
 
         render(status: SC_SERVICE_UNAVAILABLE, contentType: 'application/json') {
             [errors: [message]]
         }
-    }
-
-    private String getMessage(code, args = []) {
-        messageSource.getMessage(code, args as Object[], request.locale)
     }
 }

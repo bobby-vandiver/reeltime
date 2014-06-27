@@ -13,14 +13,14 @@ class VideoCreationControllerIntegrationSpec extends IntegrationSpec {
     def springSecurityService
     def videoCreationService
 
-    def messageSource
+    def localizedMessageService
     def grailsApplication
 
     void setup() {
         controller = new VideoCreationController()
         controller.springSecurityService = springSecurityService
         controller.videoCreationService = videoCreationService
-        controller.messageSource = messageSource
+        controller.localizedMessageService = localizedMessageService
     }
 
     @Unroll

@@ -11,7 +11,7 @@ class VideoCreationController {
     def springSecurityService
     def videoCreationService
 
-    def messageSource
+    def localizedMessageService
 
     static allowedMethods = [upload: 'POST']
 
@@ -27,7 +27,7 @@ class VideoCreationController {
         }
         else {
             render(status: SC_BAD_REQUEST, contentType: 'application/json') {
-                [errors: getErrorMessages(command)]
+                [errors: localizedMessageService.getErrorMessages(command, request.locale)]
             }
         }
     }
@@ -43,13 +43,6 @@ class VideoCreationController {
         }
         else {
             return null
-        }
-    }
-
-    private List<String> getErrorMessages(VideoCreationCommand command) {
-        def locale = Locale.default
-        command.errors.allErrors.collect { error ->
-            messageSource.getMessage(error, locale)
         }
     }
 }
