@@ -25,6 +25,11 @@ class UrlMappingsSpec extends Specification {
         assertForwardUrlMapping('/video', controller: 'videoCreation', action: 'upload')
     }
 
+    void "test video status endpoint mapping"() {
+        expect:
+        assertForwardUrlMapping('/video/1234/status', controller: 'videoCreation', action: 'status')
+    }
+
     void "test variant playlist streaming endpoint mapping"() {
         expect:
         assertForwardUrlMapping('/video/1234', controller: 'playlist', action: 'getVariantPlaylist') {

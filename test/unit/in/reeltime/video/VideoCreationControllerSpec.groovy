@@ -9,13 +9,17 @@ import in.reeltime.message.LocalizedMessageService
 import in.reeltime.user.User
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
+import spock.lang.Unroll
 
 @TestFor(VideoCreationController)
 @Mock([Video])
 class VideoCreationControllerSpec extends Specification {
 
     User currentUser
+
+    VideoService videoService
     VideoCreationService videoCreationService
+
     LocalizedMessageService localizedMessageService
 
     void setup() {
@@ -24,9 +28,11 @@ class VideoCreationControllerSpec extends Specification {
             getCurrentUser() >> currentUser
         }
 
+        videoService = Mock(VideoService)
         videoCreationService = Mock(VideoCreationService)
         localizedMessageService = Mock(LocalizedMessageService)
 
+        controller.videoService = videoService
         controller.videoCreationService = videoCreationService
         controller.localizedMessageService = localizedMessageService
     }
@@ -95,5 +101,30 @@ class VideoCreationControllerSpec extends Specification {
 
         and:
         1 * localizedMessageService.getMessage('videoCreation.transcoder.error', request.locale) >> message
+    }
+
+    @Unroll
+    void "status [#statusCode] for video that exists [#exists], current user is creator [#isCreator] and video is available [#available]"() {
+        given:
+        params.videoId = 1234
+
+        when:
+        controller.status()
+
+        then:
+        response.status == statusCode
+        response.contentLength == 0
+
+        and:
+        videoService.videoExists(1234) >> exists
+        videoService.currentUserIsVideoCreator(1234) >> isCreator
+        videoService.videoIsAvailable(1234) >> available
+
+        where:
+        statusCode  |   exists  |   isCreator   |   available
+        404         |   false   |   null        |   null
+        403         |   true    |   false       |   null
+        202         |   true    |   true        |   false
+        201         |   true    |   true        |   true
     }
 }

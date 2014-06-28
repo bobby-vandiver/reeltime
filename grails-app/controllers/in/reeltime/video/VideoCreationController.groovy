@@ -10,11 +10,11 @@ import static javax.servlet.http.HttpServletResponse.*
 class VideoCreationController {
 
     def springSecurityService
+    def videoService
     def videoCreationService
-
     def localizedMessageService
 
-    static allowedMethods = [upload: 'POST']
+    static allowedMethods = [upload: 'POST', status: 'GET']
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('upload')"])
     def upload(VideoCreationCommand command) {
@@ -54,5 +54,23 @@ class VideoCreationController {
         render(status: SC_SERVICE_UNAVAILABLE, contentType: 'application/json') {
             [errors: [message]]
         }
+    }
+
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('upload')"])
+    def status(Long videoId) {
+        int status
+        if(!videoService.videoExists(videoId)) {
+            status = SC_NOT_FOUND
+        }
+        else if(!videoService.currentUserIsVideoCreator(videoId)) {
+            status = SC_FORBIDDEN
+        }
+        else if(!videoService.videoIsAvailable(videoId)) {
+            status = SC_ACCEPTED
+        }
+        else {
+            status = SC_CREATED
+        }
+        render(status: status)
     }
 }

@@ -11,6 +11,8 @@ class UrlMappings {
 
         "/video" (controller: 'videoCreation', action: 'upload')
 
+        "/video/$videoId/status" (controller: 'videoCreation', action: 'status')
+
         "/video/$videoId" (controller: 'playlist', action: 'getVariantPlaylist')
 
         "/video/$videoId/$playlistId" (controller: 'playlist', action: 'getMediaPlaylist')
