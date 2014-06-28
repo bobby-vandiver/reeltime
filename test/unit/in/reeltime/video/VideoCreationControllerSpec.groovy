@@ -4,6 +4,8 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
+import in.reeltime.exceptions.TranscoderException
+import in.reeltime.message.LocalizedMessageService
 import in.reeltime.user.User
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
@@ -14,6 +16,7 @@ class VideoCreationControllerSpec extends Specification {
 
     User currentUser
     VideoCreationService videoCreationService
+    LocalizedMessageService localizedMessageService
 
     void setup() {
         currentUser = new User(username: 'bob')
@@ -22,7 +25,10 @@ class VideoCreationControllerSpec extends Specification {
         }
 
         videoCreationService = Mock(VideoCreationService)
+        localizedMessageService = Mock(LocalizedMessageService)
+
         controller.videoCreationService = videoCreationService
+        controller.localizedMessageService = localizedMessageService
     }
 
     void "return 202 and video id after video has been uploaded with minimum params"() {
@@ -62,5 +68,32 @@ class VideoCreationControllerSpec extends Specification {
         and:
         def json = new JsonSlurper().parseText(response.contentAsString)
         json.videoId > 0
+    }
+
+    void "transcoder exception is thrown"() {
+        given:
+        def message = 'TEST'
+        def cause = new Exception('Broke it')
+
+        when:
+        controller.upload()
+
+        then:
+        response.status == 503
+        response.contentType.startsWith('application/json')
+
+        and:
+        def json = new JsonSlurper().parseText(response.contentAsString) as Map
+        json.size() == 1
+
+        and:
+        json.errors == [message]
+
+        and:
+        1 * videoCreationService.allowCreation(_) >> true
+        1 * videoCreationService.createVideo(_) >> { throw new TranscoderException(message, cause) }
+
+        and:
+        1 * localizedMessageService.getMessage('videoCreation.transcoder.error', request.locale) >> message
     }
 }

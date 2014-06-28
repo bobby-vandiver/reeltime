@@ -1,6 +1,7 @@
 package in.reeltime.video
 
 import grails.plugin.springsecurity.annotation.Secured
+import in.reeltime.exceptions.TranscoderException
 import in.reeltime.user.User
 import org.springframework.web.multipart.MultipartRequest
 
@@ -43,6 +44,15 @@ class VideoCreationController {
         }
         else {
             return null
+        }
+    }
+
+    def handleTranscoderException(TranscoderException e) {
+        log.warn("Handling TranscoderException: ", e)
+        def message = localizedMessageService.getMessage('videoCreation.transcoder.error', request.locale)
+
+        render(status: SC_SERVICE_UNAVAILABLE, contentType: 'application/json') {
+            [errors: [message]]
         }
     }
 }
