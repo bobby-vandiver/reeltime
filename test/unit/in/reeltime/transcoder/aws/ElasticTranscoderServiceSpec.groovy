@@ -9,6 +9,7 @@ import com.amazonaws.services.elastictranscoder.model.Pipeline
 import grails.test.mixin.TestFor
 import in.reeltime.transcoder.TranscoderJobService
 import in.reeltime.transcoder.TranscoderService
+import in.reeltime.exceptions.TranscoderException
 import in.reeltime.aws.AwsService
 import in.reeltime.video.Video
 import in.reeltime.storage.PathGenerationService
@@ -51,6 +52,15 @@ class ElasticTranscoderServiceSpec extends Specification {
     void "must be an instance of TranscoderService"() {
         expect:
         service instanceof TranscoderService
+    }
+
+    void "wrap any thrown exceptions"() {
+        when:
+        service.transcode(null, null)
+
+        then:
+        def e = thrown(TranscoderException)
+        e.cause.class == NullPointerException
     }
 
     @Unroll

@@ -5,6 +5,7 @@ import com.amazonaws.services.elastictranscoder.model.CreateJobOutput
 import com.amazonaws.services.elastictranscoder.model.CreateJobPlaylist
 import com.amazonaws.services.elastictranscoder.model.CreateJobRequest
 import com.amazonaws.services.elastictranscoder.model.JobInput
+import in.reeltime.exceptions.TranscoderException
 import in.reeltime.transcoder.TranscoderService
 import in.reeltime.video.Video
 
@@ -23,33 +24,37 @@ class ElasticTranscoderService implements TranscoderService {
     def playlistFormat
 
     @Override
-    void transcode(Video video, String output){
+    void transcode(Video video, String output) {
+        try {
+            log.debug("Entering ${this.class.simpleName} transcode with video [${video.id}] and output [$output]")
+            def ets = awsService.createClient(AmazonElasticTranscoder) as AmazonElasticTranscoder
 
-        log.debug("Entering ${this.class.simpleName} transcode with video [${video.id}] and output [$output]")
-        def ets = awsService.createClient(AmazonElasticTranscoder) as AmazonElasticTranscoder
+            def pipeline = getPipeline(ets)
 
-        def pipeline = getPipeline(ets)
+            def input = createJobInput(video.masterPath)
+            def outputs = presetIds.collect { name, presetId -> createJobOutput(presetId) }
 
-        def input = createJobInput(video.masterPath)
-        def outputs = presetIds.collect { name, presetId -> createJobOutput(presetId) }
+            def outputKeys = outputs.collect { it.key }
+            def playlist = createJobPlaylist(outputKeys)
 
-        def outputKeys = outputs.collect { it.key }
-        def playlist = createJobPlaylist(outputKeys)
+            def outputKeyPrefix = output + '/'
+            def request = new CreateJobRequest(
+                    pipelineId: pipeline.id,
+                    input: input,
+                    outputKeyPrefix: outputKeyPrefix,
+                    outputs: outputs,
+                    playlists: [playlist]
+            )
 
-        def outputKeyPrefix = output + '/'
-        def request = new CreateJobRequest(
-                pipelineId: pipeline.id,
-                input: input,
-                outputKeyPrefix: outputKeyPrefix,
-                outputs: outputs,
-                playlists: [playlist]
-        )
+            log.info("Submitting job to Elastic Transcoder for video [${video.id}] to be output to bucket [$output]")
+            def result = ets.createJob(request)
+            def jobId = result.job.id
 
-        log.info("Submitting job to Elastic Transcoder for video [${video.id}] to be output to bucket [$output]")
-        def result = ets.createJob(request)
-        def jobId = result.job.id
-
-        transcoderJobService.createJob(video, jobId)
+            transcoderJobService.createJob(video, jobId)
+        }
+        catch(Exception e) {
+            throw new TranscoderException(e)
+        }
     }
 
     private def getPipeline(AmazonElasticTranscoder ets) {

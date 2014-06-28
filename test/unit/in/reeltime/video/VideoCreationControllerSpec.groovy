@@ -91,7 +91,7 @@ class VideoCreationControllerSpec extends Specification {
 
         and:
         1 * videoCreationService.allowCreation(_) >> true
-        1 * videoCreationService.createVideo(_) >> { throw new TranscoderException(message, cause) }
+        1 * videoCreationService.createVideo(_) >> { throw new TranscoderException(cause) }
 
         and:
         1 * localizedMessageService.getMessage('videoCreation.transcoder.error', request.locale) >> message

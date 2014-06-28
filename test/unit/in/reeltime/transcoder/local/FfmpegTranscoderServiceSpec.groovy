@@ -2,7 +2,7 @@ package in.reeltime.transcoder.local
 
 import grails.test.mixin.TestFor
 import in.reeltime.transcoder.TranscoderService
-import in.reeltime.storage.PathGenerationService
+import in.reeltime.exceptions.TranscoderException
 import in.reeltime.video.Video
 import spock.lang.Specification
 
@@ -26,7 +26,8 @@ class FfmpegTranscoderServiceSpec extends Specification {
         service.transcode(video, outputPath)
 
         then:
-        def e = thrown(IllegalStateException)
-        e.message == 'ffmpeg could not be found'
+        def e = thrown(TranscoderException)
+        e.cause.class == IllegalStateException
+        e.cause.message == 'ffmpeg could not be found'
     }
 }
