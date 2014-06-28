@@ -37,6 +37,26 @@ class UserSpec extends Specification {
     }
 
     @Unroll
+    void "email [#email] is valid [#valid]"() {
+        given:
+        def user = new User(email: email)
+
+        expect:
+        user.validate(['email']) == valid
+
+        where:
+        email               |   valid
+        null                |   false
+        ''                  |   false
+        'oops'              |   false
+        'foo@'              |   false
+        'foo@b'             |   false
+        '@coffee'           |   false
+        'foo@bar.com'       |   true
+        'foo@bar.baz.buzz'  |   true
+    }
+
+    @Unroll
     void "clients list cannot be null"() {
         given:
         def user = new User(clients: null)

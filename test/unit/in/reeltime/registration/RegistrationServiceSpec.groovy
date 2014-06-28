@@ -22,6 +22,7 @@ class RegistrationServiceSpec extends Specification {
 
     void "return client id and client secret in registration result"() {
         given:
+        def email = 'foo@test.com'
         def username = 'foo'
         def password = 'bar'
         def clientName = 'something'
@@ -33,8 +34,12 @@ class RegistrationServiceSpec extends Specification {
         and:
         def client = new Client()
 
+        and:
+        def command = new RegistrationCommand(username: username, password: password,
+                email: email, client_name: clientName)
+
         when:
-        def result = service.registerUserAndClient(username, password, clientName)
+        def result = service.registerUserAndClient(command)
 
         then:
         result.clientId == clientId
@@ -46,6 +51,6 @@ class RegistrationServiceSpec extends Specification {
         1 * clientService.createClient(clientName, clientId, clientSecret) >> client
 
         and:
-        1 * userService.createUser(username, password, client)
+        1 * userService.createUser(username, password, email, client)
     }
 }

@@ -6,6 +6,7 @@ class User {
 
 	transient springSecurityService
 
+	String email
 	String username
 	String password
 	boolean enabled = true
@@ -18,6 +19,7 @@ class User {
 	static transients = ['springSecurityService']
 
 	static constraints = {
+		email blank: false, nullable: false, email: true
 		username blank: false, nullable: false, matches: /^\w{2,15}$/, unique: true
 		password blank: false, nullable: false
         clients nullable: false, size: 1..1

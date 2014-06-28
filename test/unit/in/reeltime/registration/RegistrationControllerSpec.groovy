@@ -33,6 +33,8 @@ class RegistrationControllerSpec extends Specification {
         given:
         def username = 'foo'
         def password = 'secret'
+
+        def email = 'foo@test.com'
         def clientName = 'something'
 
         and:
@@ -45,7 +47,17 @@ class RegistrationControllerSpec extends Specification {
         and:
         params.username = username
         params.password = password
+        params.email = email
         params.client_name = clientName
+
+        and:
+        def registrationCommandValidator = { RegistrationCommand command ->
+            assert command.username == username
+            assert command.password == password
+            assert command.email == email
+            assert command.client_name == clientName
+            return registrationResult
+        }
 
         when:
         controller.register()
@@ -63,13 +75,14 @@ class RegistrationControllerSpec extends Specification {
         json.client_secret == clientSecret
 
         and:
-        1 * registrationService.registerUserAndClient(username, password, clientName) >> registrationResult
+        1 * registrationService.registerUserAndClient(_) >> { command -> registrationCommandValidator(command) }
     }
 
     void "registration exception is thrown"() {
         given:
         params.username = 'foo'
         params.password = 'secret'
+        params.email = 'foo@test.com'
         params.client_name = 'something'
 
         and:
@@ -90,7 +103,7 @@ class RegistrationControllerSpec extends Specification {
         json.errors == [message]
 
         and:
-        1 * registrationService.registerUserAndClient(*_) >> { throw new RegistrationException('TEST') }
+        1 * registrationService.registerUserAndClient(_) >> { throw new RegistrationException('TEST') }
         1 * localizedMessageService.getMessage('registration.internal.error', request.locale) >> message
     }
 }

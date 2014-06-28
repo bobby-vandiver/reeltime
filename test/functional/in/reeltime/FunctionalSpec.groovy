@@ -29,6 +29,7 @@ abstract class FunctionalSpec extends Specification {
     protected JSONElement registerUser(String name) {
         def url = getUrlForResource('register')
         def request = new RestRequest(url: url, customizer: {
+            email = name + '@test.com'
             username = name
             password = TEST_PASSWORD
             client_name = 'client'

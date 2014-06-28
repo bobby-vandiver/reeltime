@@ -21,7 +21,7 @@ class RegistrationController {
             }
         }
         else {
-            def result = registrationService.registerUserAndClient(command.username, command.password, command.client_name)
+            def result = registrationService.registerUserAndClient(command)
             render(status: SC_CREATED, contentType: 'application/json') {
                 [client_id: result.clientId, client_secret: result.clientSecret]
             }

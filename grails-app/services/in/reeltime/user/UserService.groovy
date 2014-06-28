@@ -8,7 +8,7 @@ class UserService {
         User.findByUsername(username) != null
     }
 
-    User createUser(String username, String password, Client client) {
-        new User(username: username, password: password, clients: [client]).save()
+    User createUser(String username, String password, String email, Client client) {
+        new User(username: username, password: password, email: email, clients: [client]).save()
     }
 }

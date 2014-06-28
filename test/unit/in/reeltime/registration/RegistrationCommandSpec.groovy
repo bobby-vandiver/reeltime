@@ -81,6 +81,29 @@ class RegistrationCommandSpec extends Specification {
     }
 
     @Unroll
+    void "email [#email] is valid [#valid]"() {
+        given:
+        def command = new RegistrationCommand(email: email)
+
+        expect:
+        command.validate(['email']) == valid
+
+        and:
+        command.errors.getFieldError('email')?.code == code
+
+        where:
+        email               |   valid   |   code
+        null                |   false   |   'nullable'
+        ''                  |   false   |   'blank'
+        'oops'              |   false   |   'email.invalid'
+        'foo@'              |   false   |   'email.invalid'
+        'foo@b'             |   false   |   'email.invalid'
+        '@coffee'           |   false   |   'email.invalid'
+        'foo@bar.com'       |   true    |   null
+        'foo@bar.baz.buzz'  |   true    |   null
+    }
+
+    @Unroll
     void "client_name [#clientName] is valid [#valid]"() {
         given:
         def command = new RegistrationCommand(client_name: clientName)

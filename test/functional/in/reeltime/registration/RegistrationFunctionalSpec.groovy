@@ -17,6 +17,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     void "register a new user"() {
         given:
         def request = createRequest {
+            email = 'someone@somewhere.com'
             username = 'newUser'
             password = 'n3wP4s$w0rd!'
             client_name = 'newClient'
@@ -58,6 +59,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
         and:
         def request = createRequest {
+            email = 'email@test.com'
             username = name
             password = 'password'
             client_name = 'client'
@@ -73,9 +75,10 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     }
 
     @Unroll
-    void "invalid params username [#user], password [#pass], client_name [#client]"() {
+    void "invalid params email [#emailAddress], username [#user], password [#pass], client_name [#client]"() {
         given:
         def request = createRequest {
+            email = emailAddress
             username = user
             password = pass
             client_name = client
@@ -90,20 +93,22 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         response.json.errors[0] == message
 
         where:
-        user     | pass     | client     | message
-        'user'   | 'secret' | ''         | '[client_name] is required'
-        'user'   | 'secret' | null       | '[client_name] is required'
+        emailAddress        |   user     | pass     | client     | message
+        ''                  |   'user'   | 'secret' | 'client'   | '[email] is required'
+        null                |   'user'   | 'secret' | 'client'   | '[email] is required'
+        'test@'             |   'user'   | 'secret' | 'client'   | '[email] is not a valid e-mail address'
 
-        ''       | 'secret' | 'client'   | '[username] is required'
-        null     | 'secret' | 'client'   | '[username] is required'
+        'test@reeltime.in'  |   'user'   | 'secret' | ''         | '[client_name] is required'
+        'test@reeltime.in'  |   'user'   | 'secret' | null       | '[client_name] is required'
 
-        'a'      | 'secret' | 'client'   | '[username] must be 2-15 alphanumeric characters long'
-        '1234a!' | 'secret' | 'client'   | '[username] must be 2-15 alphanumeric characters long'
+        'test@reeltime.in'  |   ''       | 'secret' | 'client'   | '[username] is required'
+        'test@reeltime.in'  |   null     | 'secret' | 'client'   | '[username] is required'
+        'test@reeltime.in'  |   'a'      | 'secret' | 'client'   | '[username] must be 2-15 alphanumeric characters long'
+        'test@reeltime.in'  |   '1234a!' | 'secret' | 'client'   | '[username] must be 2-15 alphanumeric characters long'
 
-        'user'   | ''       | 'client'   | '[password] is required'
-        'user'   | null     | 'client'   | '[password] is required'
-
-        'user'   | 'short'  | 'client'   | '[password] must be at least 6 characters long'
+        'test@reeltime.in'  |   'user'   | ''       | 'client'   | '[password] is required'
+        'test@reeltime.in'  |   'user'   | null     | 'client'   | '[password] is required'
+        'test@reeltime.in'  |   'user'   | 'short'  | 'client'   | '[password] must be at least 6 characters long'
     }
 
     void "missing all params"() {
@@ -115,12 +120,13 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
         then:
         response.status == 400
-        response.json.errors.size() == 3
+        response.json.errors.size() == 4
 
         and:
         response.json.errors.contains('[client_name] is required')
         response.json.errors.contains('[username] is required')
         response.json.errors.contains('[password] is required')
+        response.json.errors.contains('[email] is required')
     }
 
     private static getUrl() {

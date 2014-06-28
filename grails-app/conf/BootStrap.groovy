@@ -26,6 +26,7 @@ class BootStrap {
         if(!User.findByUsername('bob')) {
             Client client = Client.findByClientId('test-client')
             User user = new User(
+                    email: 'bob@test.com',
                     username: 'bob',
                     password: 'password',
                     clients: [client],

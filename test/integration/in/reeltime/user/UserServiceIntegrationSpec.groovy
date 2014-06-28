@@ -10,7 +10,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
     void "user exists"() {
         given:
         def existingUsername = 'foo'
-        def existingUser = new User(username: existingUsername, password: 'unknown').save(validate: false)
+        def existingUser = new User(username: existingUsername, password: 'unknown', email: "$existingUsername@test.com").save(validate: false)
         assert existingUser.id
 
         expect:
@@ -24,6 +24,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
     void "create new user"() {
         given:
+        def email = 'foo@test.com'
         def username = 'foo'
         def password = 'bar'
 
@@ -31,7 +32,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         def client = new Client(clientName: 'test-name', clientId: 'test-id').save()
 
         when:
-        def user = userService.createUser(username, password, client)
+        def user = userService.createUser(username, password, email, client)
 
         then:
         user.id > 0
