@@ -22,7 +22,7 @@ class VideoCreationService {
         if(temp) {
             extractStreamsFromVideo(command, temp)
             reloadVideoStreamFromTempFile(command, temp)
-            temp.deleteOnExit()
+            deleteTempFile(temp)
         }
         return command.validate()
     }
@@ -105,6 +105,12 @@ class VideoCreationService {
 
     private static void reloadVideoStreamFromTempFile(VideoCreationCommand command, File temp) {
         command.videoStream = new FileInputStream(temp)
+    }
+
+    private static void deleteTempFile(File temp) {
+        if(!temp.delete()) {
+            temp.deleteOnExit()
+        }
     }
 
     def createVideo(VideoCreationCommand command) {
