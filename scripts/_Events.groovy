@@ -11,15 +11,21 @@ eventTestPhasesEnd = {
         if(!binding.hasProperty('config')) {
             createConfig()
         }
-        def path = config.reeltime.storage.output
-        def outputDirectory = new File(path)
+        def inputPath = config.reeltime.storage.input
+        deleteDirectory(inputPath)
 
-        try {
-            println "Deleting storage output directory: $path"
-            FileUtils.forceDelete(outputDirectory)
-        }
-        catch(IOException e) {
-            println "Could not delete output directory: ${e}"
-        }
+        def outputPath = config.reeltime.storage.output
+        deleteDirectory(outputPath)
+    }
+}
+
+private deleteDirectory(String path) {
+    def directory = new File(path)
+    try {
+        println "Deleting storage directory: $path"
+        FileUtils.forceDelete(directory)
+    }
+    catch(IOException e) {
+        println "Could not delete directory: ${e}"
     }
 }
