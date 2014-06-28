@@ -6,6 +6,7 @@ import helper.oauth2.AccessTokenRequest
 import helper.oauth2.AccessTokenRequester
 import helper.rest.AuthorizationAwareRestClient
 import helper.rest.RestRequest
+import org.codehaus.groovy.grails.web.json.JSONElement
 import spock.lang.Specification
 
 import static helper.rest.HttpContentTypes.*
@@ -22,14 +23,55 @@ abstract class FunctionalSpec extends Specification {
         return BASE_URL + resource
     }
 
+    protected static final TEST_USER = 'bob'
+    protected static final TEST_PASSWORD = 'password'
+
+    protected JSONElement registerUser(String name) {
+        def url = getUrlForResource('register')
+        def request = new RestRequest(url: url, customizer: {
+            username = name
+            password = TEST_PASSWORD
+            client_name = 'client'
+        })
+        def response = post(request)
+        assert response.status == 201
+        return response.json
+    }
+
+    protected long uploadVideo(String token) {
+        def url = getUrlForResource('video')
+        def request = new RestRequest(url: url, token: token, isMultiPart: true, customizer: {
+            title = 'minimum-viable-video'
+            video = new File('test/files/small.mp4')
+        })
+        def response = post(request)
+        assert response.status == 202
+        return response.json.videoId
+    }
+
+    protected String getAccessTokenWithScopeForNonTestUser(String scope) {
+        def otherUsername = TEST_USER + 'a'
+        def registrationResult = registerUser(otherUsername)
+
+        def accessRequest = new AccessTokenRequest(
+                clientId: registrationResult.client_id,
+                clientSecret: registrationResult.client_secret,
+                grantType: 'password',
+                username: otherUsername,
+                password: TEST_PASSWORD,
+                scope: [scope]
+        )
+        getAccessTokenWithScope(accessRequest)
+    }
+
     // TODO: Specify user once user registration is implemented
     protected static String getAccessTokenWithScope(String scope) {
         def request = new AccessTokenRequest(
                 clientId: 'test-client',
                 clientSecret: 'test-secret',
                 grantType: 'password',
-                username: 'bob',
-                password: 'pass',
+                username: TEST_USER,
+                password: TEST_PASSWORD,
                 scope: [scope]
         )
         getAccessTokenWithScope(request)

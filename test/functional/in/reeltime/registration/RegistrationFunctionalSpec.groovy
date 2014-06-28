@@ -130,14 +130,4 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     private static RestRequest createRequest(Closure params = null) {
         new RestRequest(url: url, customizer: params)
     }
-
-    private void registerUser(String name) {
-        def request = createRequest {
-            username = name
-            password = 'password'
-            client_name = 'client'
-        }
-        def response = post(request)
-        assert response.status == 201
-    }
 }

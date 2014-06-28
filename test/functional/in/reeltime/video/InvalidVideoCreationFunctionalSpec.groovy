@@ -1,9 +1,9 @@
 package in.reeltime.video
 
 import grails.plugins.rest.client.RestResponse
+import helper.oauth2.AccessTokenRequest
 import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
-import spock.lang.Unroll
 
 import static helper.rest.HttpContentTypes.*
 
@@ -21,7 +21,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "no token present"() {
         given:
-        def request = createRequest()
+        def request = createUploadRequest()
 
         when:
         def response = post(request)
@@ -32,7 +32,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "token does not have upload scope"() {
         given:
-        def request = createRequest(insufficientScopeToken)
+        def request = createUploadRequest(insufficientScopeToken)
 
         when:
         def response = post(request)
@@ -46,7 +46,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "invalid token"() {
         given:
-        def request = createRequest(invalidToken)
+        def request = createUploadRequest(invalidToken)
 
         when:
         def response = post(request)
@@ -55,15 +55,14 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         assertAuthError(response, 401, 'invalid_token', "Invalid access token: $invalidToken")
     }
 
-    @Unroll
-    void "invalid http method [#method]"() {
+    void "invalid http method for upload"() {
         expect:
         assertInvalidHttpMethods(uploadUrl, ['get', 'put', 'delete'], uploadToken)
     }
 
     void "all params are missing"() {
         given:
-        def request = createRequest(uploadToken)
+        def request = createUploadRequest(uploadToken)
 
         when:
         def response = post(request)
@@ -74,7 +73,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "video param is missing"() {
         given:
-        def request = createRequest(uploadToken) {
+        def request = createUploadRequest(uploadToken) {
             title = 'no-video'
         }
 
@@ -87,7 +86,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "title param is missing"() {
         given:
-        def request = createRequest(uploadToken) {
+        def request = createUploadRequest(uploadToken) {
             video = new File('test/files/small.mp4')
         }
 
@@ -100,7 +99,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "submitted video contains only aac stream"() {
         given:
-        def request = createRequest(uploadToken) {
+        def request = createUploadRequest(uploadToken) {
             title = 'video-is-only-aac'
             video = new File('test/files/sample_mpeg4.mp4')
         }
@@ -117,7 +116,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def expected = ['[video] must contain an h264 video stream', '[video] must contain an aac audio stream']
 
         and:
-        def request = createRequest(uploadToken) {
+        def request = createUploadRequest(uploadToken) {
             title = 'video-has-no-valid-streams'
             video = new File('test/files/empty')
         }
@@ -131,7 +130,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "submitted video exceeds max length"() {
         given:
-        def request = createRequest(uploadToken) {
+        def request = createUploadRequest(uploadToken) {
             title = 'video-exceeds-max-length'
             video = new File('test/files/spidey.mp4')
         }
@@ -143,12 +142,55 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         assertErrorResponse(response, ['[video] exceeds max length of 2 minutes'])
     }
 
+    void "invalid http method for status"() {
+        given:
+        def videoId = uploadVideo(uploadToken)
+
+        expect:
+        assertInvalidHttpMethods(getStatusUrl(videoId), ['post', 'put', 'delete'], uploadToken)
+    }
+
+    void "cannot check status of unknown video"() {
+        given:
+        def request = createStatusRequest(1234, uploadToken)
+
+        when:
+        def response = get(request)
+
+        then:
+        response.status == 404
+    }
+
+    void "cannot check status if not the creator"() {
+        given:
+        def videoId = uploadVideo(uploadToken)
+        def differentUserToken = getAccessTokenWithScopeForNonTestUser('upload')
+
+        and:
+        def request = createStatusRequest(videoId, differentUserToken)
+
+        when:
+        def response = get(request)
+
+        then:
+        response.status == 403
+    }
+
     private static getUploadUrl() {
         getUrlForResource('video')
     }
 
-    private static RestRequest createRequest(String token = null, Closure params = null) {
+    private static getStatusUrl(Long videoId) {
+        getUrlForResource("video/$videoId/status")
+    }
+
+    private static RestRequest createUploadRequest(String token = null, Closure params = null) {
         new RestRequest(url: uploadUrl, token: token, isMultiPart: params != null, customizer: params)
+    }
+
+    private static RestRequest createStatusRequest(Long videoId, String token) {
+        def statusUrl = getStatusUrl(videoId)
+        new RestRequest(url: statusUrl, token: token)
     }
 
     private static void assertErrorResponse(RestResponse response, Collection<String> expectedErrors) {

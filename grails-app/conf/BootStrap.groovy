@@ -27,7 +27,7 @@ class BootStrap {
             Client client = Client.findByClientId('test-client')
             User user = new User(
                     username: 'bob',
-                    password: 'pass',
+                    password: 'password',
                     clients: [client],
                     enabled: true,
                     accountExpired: false,
