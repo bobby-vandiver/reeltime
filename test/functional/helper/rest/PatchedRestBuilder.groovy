@@ -1,4 +1,4 @@
-package helper.oauth2
+package helper.rest
 
 import grails.plugins.rest.client.RestBuilder
 import org.springframework.http.converter.HttpMessageConverter

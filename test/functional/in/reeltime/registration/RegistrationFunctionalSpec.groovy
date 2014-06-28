@@ -2,39 +2,28 @@ package in.reeltime.registration
 
 import grails.plugins.rest.client.RestResponse
 import helper.oauth2.AccessTokenRequest
+import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
 import spock.lang.Unroll
 
 class RegistrationFunctionalSpec extends FunctionalSpec {
 
-    @Override
-    protected String getResource() {
-        return '/register'
-    }
-
     @Unroll
-    void "invalid http method [#method]"() {
-        when:
-        def response = "$method"() as RestResponse
-
-        then:
-        response.status == 405
-        response.body == ''
-
-        where:
-        _   |   method
-        _   |   'get'
-        _   |   'put'
-        _   |   'delete'
+    void "invalid http methods"() {
+        expect:
+        assertInvalidHttpMethods(url, ['get', 'put', 'delete'])
     }
 
     void "register a new user"() {
-        when:
-        def response = post() {
+        given:
+        def request = createRequest {
             username = 'newUser'
             password = 'n3wP4s$w0rd!'
             client_name = 'newClient'
         }
+
+        when:
+        def response = post(request)
 
         then:
         response.status == 201
@@ -67,12 +56,15 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         def name = 'existingUser'
         registerUser(name)
 
-        when:
-        def response = post() {
+        and:
+        def request = createRequest {
             username = name
             password = 'password'
             client_name = 'client'
         }
+
+        when:
+        def response = post(request)
 
         then:
         response.status == 400
@@ -82,12 +74,15 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
     @Unroll
     void "invalid params username [#user], password [#pass], client_name [#client]"() {
-        when:
-        def response = post() {
+        given:
+        def request = createRequest {
             username = user
             password = pass
             client_name = client
         }
+
+        when:
+        def response = post(request)
 
         then:
         response.status == 400
@@ -112,8 +107,11 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     }
 
     void "missing all params"() {
+        given:
+        def request = createRequest()
+
         when:
-        def response = post()
+        def response = post(request)
 
         then:
         response.status == 400
@@ -125,12 +123,21 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         response.json.errors.contains('[password] is required')
     }
 
+    private static getUrl() {
+        getUrlForResource('register')
+    }
+
+    private static RestRequest createRequest(Closure params = null) {
+        new RestRequest(url: url, customizer: params)
+    }
+
     private void registerUser(String name) {
-        def response = post() {
+        def request = createRequest {
             username = name
             password = 'password'
             client_name = 'client'
         }
+        def response = post(request)
         assert response.status == 201
     }
 }

@@ -1,19 +1,20 @@
 package in.reeltime.security
 
+import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
 import spock.lang.Unroll
 
 class SpringSecurityCoreFunctionalSpec extends FunctionalSpec {
 
-    @Override
-    protected String getResource() {
-        return 'j_spring_security_check'
-    }
+    private String SPRING_SECURITY_CHECK_URL = getUrlForResource('j_spring_security_check')
 
     @Unroll
     void "cannot access the form login regardless of params"() {
+        given:
+        def request = new RestRequest(url: SPRING_SECURITY_CHECK_URL, customizer: params)
+
         when:
-        def response = restClient.post(endpoint, params)
+        def response = post(request)
 
         then:
         assertAuthError(response, 401, 'unauthorized', 'Full authentication is required to access this resource')
@@ -27,9 +28,10 @@ class SpringSecurityCoreFunctionalSpec extends FunctionalSpec {
     void "including a token makes no difference"() {
         given:
         def token = getAccessTokenWithScope('view upload')
+        def request = new RestRequest(url: SPRING_SECURITY_CHECK_URL, token: token)
 
         when:
-        def response = post(token)
+        def response = post(request)
 
         then:
         response.status == 403
