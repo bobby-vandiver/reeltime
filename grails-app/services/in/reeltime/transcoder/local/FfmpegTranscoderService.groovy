@@ -36,6 +36,10 @@ class FfmpegTranscoderService implements TranscoderService {
 
             log.info("Completed ffmpeg transcoding for video [${video.id}]")
             log.debug(process.err.text)
+
+            log.info("Making video [${video.id} available for streaming shortly")
+            sleep(4 * 1000)
+            video.available = true
         }
         catch(Exception e) {
             throw new TranscoderException(e)

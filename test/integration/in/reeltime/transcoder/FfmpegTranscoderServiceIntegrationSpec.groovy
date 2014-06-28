@@ -30,6 +30,9 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
         ffmpegTranscoderService.transcode(video, outputPath)
 
         then:
+        video.available
+
+        and:
         assertDirectoryContainsPlaylistAndSegments(outputPath)
 
         cleanup:
