@@ -1,8 +1,6 @@
 package in.reeltime.registration
 
 import in.reeltime.user.User
-import org.springframework.security.crypto.keygen.KeyGenerators
-
 import java.security.MessageDigest
 
 class RegistrationService {
@@ -10,7 +8,7 @@ class RegistrationService {
     def userService
     def clientService
 
-    def secretService
+    def securityService
     def springSecurityService
 
     def localizedMessageService
@@ -18,6 +16,7 @@ class RegistrationService {
 
     protected static final FROM_ADDRESS = 'registration@reeltime.in'
 
+    protected static final SALT_LENGTH = 8
     protected static final VERIFICATION_CODE_LENGTH = 8
     protected static final ALLOWED_CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -39,8 +38,8 @@ class RegistrationService {
 
     void sendVerificationEmail(String username, String email, Locale locale) {
 
-        def code = secretService.generateSecret(VERIFICATION_CODE_LENGTH, ALLOWED_CHARACTERS)
-        def salt = KeyGenerators.secureRandom().generateKey()
+        def code = securityService.generateSecret(VERIFICATION_CODE_LENGTH, ALLOWED_CHARACTERS)
+        def salt = securityService.generateSalt(SALT_LENGTH)
 
         def hashedCode = hashVerificationCode(code, salt)
         def user = User.findByUsernameAndEmail(username, email)

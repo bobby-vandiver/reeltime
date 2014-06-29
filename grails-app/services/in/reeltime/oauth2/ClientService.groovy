@@ -2,11 +2,9 @@ package in.reeltime.oauth2
 
 import in.reeltime.exceptions.RegistrationException
 
-import java.security.SecureRandom
-
 class ClientService {
 
-    def secretService
+    def securityService
 
     // A length of 42 combined with the symbol set containing 70 choices above will give us a strength of 256-bits:
     // L = H / log(N) where L = 42, H = 256 and N= 70
@@ -49,6 +47,6 @@ class ClientService {
     }
 
     String generateClientSecret() {
-        secretService.generateSecret(REQUIRED_SECRET_LENGTH, ALLOWED_CHARACTERS)
+        securityService.generateSecret(REQUIRED_SECRET_LENGTH, ALLOWED_CHARACTERS)
     }
 }
