@@ -1,5 +1,3 @@
-import static com.icegreen.greenmail.util.ServerSetupTest.SMTP
-
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
 // in the classpath in ConfigSlurper format
@@ -131,10 +129,12 @@ grails.plugin.springsecurity.providerNames = [
 // When running test-app, it is expected that an exception will be thrown between integration and functional
 // tests due to an issue in the Greenmail plugin not properly shutting down the SMTP server.
 //
+// The work around is to specify the port number in the eventTestPhaseStart callback. See _Events.groovy.
+//
 // http://grails.1312388.n4.nabble.com/greenmail-and-functional-testing-quot-Address-already-in-use-quot-td4651592.html
 environments {
     test {
-        def smtpPort = SMTP.port
+        def smtpPort = System.properties["grails.test.smtp.port"]
         grails.mail.port = smtpPort
         greenmail.ports.smtp = smtpPort
         grails.serverURL = "http://localhost:8080/${appName}"

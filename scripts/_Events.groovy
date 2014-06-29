@@ -3,8 +3,12 @@ import org.apache.commons.io.FileUtils
 
 includeTargets << grailsScript("_GrailsPackage")
 
-eventTestPhasesEnd = {
+eventTestPhaseStart = { name ->
+    // Set the smtp port to avoid address in use exception thrown by GreenMail plugin
+    System.properties["grails.test.smtp.port"] = (name == 'functional') ? 4025 : 3025
+}
 
+eventTestPhasesEnd = {
     // TODO: Remove this once we set Jenkins up on a remote server
     // This is only necessary while Jenkins and I share the same temporary directory
     if(Environment.current == Environment.TEST) {
