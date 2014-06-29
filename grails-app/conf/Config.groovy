@@ -127,6 +127,11 @@ grails.plugin.springsecurity.providerNames = [
 ]
 
 // Configuration for Greenmail
+//
+// When running test-app, it is expected that an exception will be thrown between integration and functional
+// tests due to an issue in the Greenmail plugin not properly shutting down the SMTP server.
+//
+// http://grails.1312388.n4.nabble.com/greenmail-and-functional-testing-quot-Address-already-in-use-quot-td4651592.html
 environments {
     test {
         def smtpPort = SMTP.port

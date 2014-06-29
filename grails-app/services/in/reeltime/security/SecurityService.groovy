@@ -2,7 +2,7 @@ package in.reeltime.security
 
 import java.security.SecureRandom
 
-class SecretService {
+class SecurityService {
 
     String generateSecret(int requiredLength, String allowedCharacters) {
         def secureRandom = new SecureRandom()

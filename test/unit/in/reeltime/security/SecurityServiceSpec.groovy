@@ -3,8 +3,8 @@ package in.reeltime.security
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
-@TestFor(SecretService)
-class SecretServiceSpec extends Specification {
+@TestFor(SecurityService)
+class SecurityServiceSpec extends Specification {
 
     private static REQUIRED_LENGTH = 12
     private static ALLOWED_CHARACTERS = 'abcdef'
