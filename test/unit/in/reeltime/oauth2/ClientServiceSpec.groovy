@@ -3,6 +3,7 @@ package in.reeltime.oauth2
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import in.reeltime.security.SecretService
 import spock.lang.Specification
 import in.reeltime.exceptions.RegistrationException
 import spock.lang.Unroll
@@ -11,6 +12,13 @@ import in.reeltime.oauth2.Client
 @TestFor(ClientService)
 @Mock([Client])
 class ClientServiceSpec extends Specification {
+
+    SecretService secretService
+
+    void setup() {
+        secretService = Mock(SecretService)
+        service.secretService = secretService
+    }
 
     void "generate random client id"() {
         expect:
@@ -75,16 +83,17 @@ class ClientServiceSpec extends Specification {
     }
 
     void "generate secure random client secret"() {
-        expect:
-        service.generateClientSecret().length() == 42
-    }
+        given:
+        def length = ClientService.REQUIRED_SECRET_LENGTH
+        def allowed = ClientService.ALLOWED_CHARACTERS
 
-    void "generate different passwords for subsequent executions"() {
         when:
-        def firstSecret = service.generateClientSecret()
-        def secondSecret = service.generateClientSecret()
+        def secret = service.generateClientSecret()
 
         then:
-        firstSecret != secondSecret
+        secret == 'TEST'
+
+        and:
+        1 * secretService.generateSecret(length, allowed) >> 'TEST'
     }
 }
