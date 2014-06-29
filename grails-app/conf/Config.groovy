@@ -1,3 +1,5 @@
+import static com.icegreen.greenmail.util.ServerSetupTest.SMTP
+
 // locations to search for config files that get merged into the main config;
 // config files can be ConfigSlurper scripts, Java properties files, or classes
 // in the classpath in ConfigSlurper format
@@ -123,6 +125,16 @@ grails.plugin.springsecurity.providerNames = [
         'clientCredentialsAuthenticationProvider',
         'daoAuthenticationProvider'
 ]
+
+// Configuration for Greenmail
+environments {
+    test {
+        def smtpPort = SMTP.port
+        grails.mail.port = smtpPort
+        greenmail.ports.smtp = smtpPort
+        grails.serverURL = "http://localhost:8080/${appName}"
+    }
+}
 
 // The following ReelTime settings must NOT be exposed in an external configuration:
 reeltime {
