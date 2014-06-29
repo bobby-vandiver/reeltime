@@ -197,6 +197,15 @@ reeltime {
         // TODO: Determine average size of 2 minute MP4 video
         maxVideoStreamSizeInBytes = 30 * 1024 * 1024
     }
+
+    // Account registration configuration
+    registration {
+        // The address to appear in confirmation emails
+        fromAddress = 'registration@reeltime.in'
+
+        // How long until an account verification code becomes invalid
+        verificationCodeValidityLengthInDays = 7
+    }
 }
 
 environments {

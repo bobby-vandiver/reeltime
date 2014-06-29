@@ -1,5 +1,6 @@
 package in.reeltime.registration
 
+import in.reeltime.exceptions.VerificationException
 import in.reeltime.user.User
 import java.security.MessageDigest
 
@@ -14,7 +15,8 @@ class RegistrationService {
     def localizedMessageService
     def mailService
 
-    protected static final FROM_ADDRESS = 'registration@reeltime.in'
+    def fromAddress
+    def verificationCodeValidityLengthInDays
 
     protected static final SALT_LENGTH = 8
     protected static final VERIFICATION_CODE_LENGTH = 8
@@ -51,7 +53,7 @@ class RegistrationService {
 
         mailService.sendMail {
             to email
-            from FROM_ADDRESS
+            from fromAddress
             subject localizedSubject
             body localizedMessage
         }
@@ -59,7 +61,9 @@ class RegistrationService {
 
     void verifyAccount(String code) {
         def currentUser = springSecurityService.currentUser as User
-        def accountVerification = AccountVerification.findByUser(currentUser)
+
+        def accountVerification = findAccountVerificationForUser(currentUser)
+        checkExpiration(accountVerification, currentUser)
 
         def hash = accountVerification.code
         def salt = accountVerification.salt
@@ -68,6 +72,28 @@ class RegistrationService {
             verifyUser(currentUser)
             accountVerification.delete()
         }
+    }
+
+    private static AccountVerification findAccountVerificationForUser(User user) {
+        def accountVerification = AccountVerification.findByUser(user)
+        if(!accountVerification) {
+            throw new VerificationException("The verification code is not associated with user [${user.username}]")
+        }
+        return accountVerification
+    }
+
+    private void checkExpiration(AccountVerification accountVerification, User user) {
+        def dateCreated = accountVerification.dateCreated
+        if(verificationCodeHasExpired(dateCreated)) {
+            accountVerification.delete()
+            throw new VerificationException("The verification code for user [${user.username}] has expired")
+        }
+    }
+
+    private boolean verificationCodeHasExpired(Date dateCreated) {
+        Calendar calendar = Calendar.instance
+        calendar.add(Calendar.DAY_OF_MONTH, -1 * verificationCodeValidityLengthInDays as int)
+        return dateCreated.time < calendar.timeInMillis
     }
 
     private void verifyUser(User user) {

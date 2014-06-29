@@ -49,6 +49,11 @@ class ConfigInjector {
             inputBase = config.reeltime.storage.input
             outputBase = config.reeltime.storage.output
         }
+
+        ctx.registrationService.with {
+            fromAddress = config.reeltime.registration.fromAddress
+            verificationCodeValidityLengthInDays = config.reeltime.registration.verificationCodeValidityLengthInDays
+        }
     }
 
     private static void enforceReadOnlyStaticField(Class clazz, String property) {
