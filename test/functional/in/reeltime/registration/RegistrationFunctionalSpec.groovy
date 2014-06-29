@@ -1,6 +1,5 @@
 package in.reeltime.registration
 
-import grails.plugins.rest.client.RestResponse
 import helper.oauth2.AccessTokenRequest
 import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
@@ -8,15 +7,32 @@ import spock.lang.Unroll
 
 class RegistrationFunctionalSpec extends FunctionalSpec {
 
+    static String token
+
+    void setupSpec() {
+        def username = 'registerTest'
+        def result = registerUser(username)
+
+        def accessTokenRequest = new AccessTokenRequest(
+                username: username,
+                password: TEST_PASSWORD,
+                grantType: 'password',
+                clientId: result.client_id,
+                clientSecret: result.client_secret,
+                scope: ['view']
+        )
+        token = getAccessTokenWithScope(accessTokenRequest)
+    }
+
     @Unroll
-    void "invalid http methods"() {
+    void "invalid http methods for register endpoint"() {
         expect:
-        assertInvalidHttpMethods(url, ['get', 'put', 'delete'])
+        assertInvalidHttpMethods(registerUrl, ['get', 'put', 'delete'])
     }
 
     void "register a new user"() {
         given:
-        def request = createRequest {
+        def request = createRegisterRequest {
             email = 'someone@somewhere.com'
             username = 'newUser'
             password = 'n3wP4s$w0rd!'
@@ -58,7 +74,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         registerUser(name)
 
         and:
-        def request = createRequest {
+        def request = createRegisterRequest {
             email = 'email@test.com'
             username = name
             password = 'password'
@@ -77,7 +93,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "invalid params email [#emailAddress], username [#user], password [#pass], client_name [#client]"() {
         given:
-        def request = createRequest {
+        def request = createRegisterRequest {
             email = emailAddress
             username = user
             password = pass
@@ -113,7 +129,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
     void "missing all params"() {
         given:
-        def request = createRequest()
+        def request = createRegisterRequest()
 
         when:
         def response = post(request)
@@ -129,11 +145,20 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         response.json.errors.contains('[email] is required')
     }
 
-    private static getUrl() {
+    void "invalid http methods for verify endpoint"() {
+        expect:
+        assertInvalidHttpMethods(verifyUrl, ['get', 'put', 'delete'], token)
+    }
+
+    private static getRegisterUrl() {
         getUrlForResource('register')
     }
 
-    private static RestRequest createRequest(Closure params = null) {
-        new RestRequest(url: url, customizer: params)
+    private static getVerifyUrl() {
+        getUrlForResource("verify")
+    }
+
+    private static RestRequest createRegisterRequest(Closure params = null) {
+        new RestRequest(url: registerUrl, customizer: params)
     }
 }

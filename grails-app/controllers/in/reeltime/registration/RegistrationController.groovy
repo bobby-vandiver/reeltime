@@ -11,7 +11,7 @@ class RegistrationController {
     def registrationService
     def localizedMessageService
 
-    static allowedMethods = [register: 'POST']
+    static allowedMethods = [register: 'POST', verify: 'POST']
 
     @Secured(["permitAll"])
     def register(RegistrationCommand command) {

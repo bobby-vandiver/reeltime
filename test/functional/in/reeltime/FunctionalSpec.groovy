@@ -6,6 +6,7 @@ import helper.oauth2.AccessTokenRequest
 import helper.oauth2.AccessTokenRequester
 import helper.rest.AuthorizationAwareRestClient
 import helper.rest.RestRequest
+import junit.framework.Assert
 import org.codehaus.groovy.grails.web.json.JSONElement
 import spock.lang.Specification
 
@@ -35,7 +36,9 @@ abstract class FunctionalSpec extends Specification {
             client_name = 'client'
         })
         def response = post(request)
-        assert response.status == 201
+        if(response.status != 201) {
+            Assert.fail("Failed to register user. Status code: ${response.status}. JSON: ${response.json}")
+        }
         return response.json
     }
 
