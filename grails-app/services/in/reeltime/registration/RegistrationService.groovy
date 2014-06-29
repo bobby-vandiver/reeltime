@@ -11,6 +11,7 @@ class RegistrationService {
     def clientService
 
     def secretService
+    def springSecurityService
 
     def localizedMessageService
     def mailService
@@ -55,6 +56,28 @@ class RegistrationService {
             subject localizedSubject
             body localizedMessage
         }
+    }
+
+    void verifyAccount(String code) {
+        def currentUser = springSecurityService.currentUser as User
+        def accountVerification = AccountVerification.findByUser(currentUser)
+
+        def hash = accountVerification.code
+        def salt = accountVerification.salt
+
+        if(verificationCodeIsCorrect(code, hash, salt)) {
+            verifyUser(currentUser)
+            accountVerification.delete()
+        }
+    }
+
+    private void verifyUser(User user) {
+        user.verified = true
+        userService.updateUser(user)
+    }
+
+    private static boolean verificationCodeIsCorrect(String rawCode, String storedCode, byte[] salt) {
+        hashVerificationCode(rawCode, salt) == storedCode
     }
 
     protected static String hashVerificationCode(String code, byte[] salt) {

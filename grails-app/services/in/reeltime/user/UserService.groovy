@@ -11,4 +11,8 @@ class UserService {
     User createUser(String username, String password, String email, Client client) {
         new User(username: username, password: password, email: email, clients: [client]).save()
     }
+
+    void updateUser(User user) {
+        user.save()
+    }
 }

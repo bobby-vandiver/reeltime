@@ -45,4 +45,18 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         user.clients.size() == 1
         user.clients[0] == client
     }
+
+    void "update user"() {
+        given:
+        def client = new Client(clientName: 'test-name', clientId: 'test-id').save()
+        def user = userService.createUser('foo', 'bar', 'foo@test.com', client)
+        assert !User.findByUsername('foo').accountExpired
+
+        when:
+        user.accountExpired = true
+        userService.updateUser(user)
+
+        then:
+        User.findByUsername('foo').accountExpired
+    }
 }

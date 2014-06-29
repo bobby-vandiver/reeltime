@@ -9,6 +9,7 @@ class User {
 	String email
 	String username
 	String password
+	boolean verified
 	boolean enabled = true
 	boolean accountExpired
 	boolean accountLocked
