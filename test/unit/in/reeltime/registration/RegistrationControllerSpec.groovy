@@ -4,11 +4,13 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
 import in.reeltime.exceptions.RegistrationException
+import in.reeltime.exceptions.VerificationException
 import in.reeltime.message.LocalizedMessageService
 import in.reeltime.user.User
 import org.springframework.context.MessageSource
 import spock.lang.Specification
 import in.reeltime.user.UserService
+import spock.lang.Unroll
 
 @TestFor(RegistrationController)
 @Mock([User])
@@ -105,5 +107,77 @@ class RegistrationControllerSpec extends Specification {
         and:
         1 * registrationService.registerUserAndClient(_) >> { throw new RegistrationException('TEST') }
         1 * localizedMessageService.getMessage('registration.internal.error', request.locale) >> message
+    }
+
+    @Unroll
+    void "verification code must be present -- cannot be [#code]"() {
+        given:
+        def message = 'verification code required'
+
+        and:
+        params.code = code
+
+        when:
+        controller.verify()
+
+        then:
+        response.status == 400
+        response.contentType.startsWith('application/json')
+
+        and:
+        def json = new JsonSlurper().parseText(response.contentAsString) as Map
+        json.size() == 1
+
+        and:
+        json.errors == [message]
+
+        and:
+        1 * localizedMessageService.getMessage('registration.verification.code.required', request.locale) >> message
+
+        where:
+        _   |   code
+        _   |   null
+        _   |   ''
+    }
+
+    void "pass verification code to service to complete account verification"() {
+        given:
+        params.code = 'let-me-in'
+
+        when:
+        controller.verify()
+
+        then:
+        response.status == 200
+        response.contentLength == 0
+
+        and:
+        1 * registrationService.verifyAccount('let-me-in')
+    }
+
+    void "handle verification error"() {
+        given:
+        def message = 'verification error'
+
+        and:
+        params.code = 'uh-oh'
+
+        when:
+        controller.verify()
+
+        then:
+        response.status == 400
+        response.contentType.startsWith('application/json')
+
+        and:
+        def json = new JsonSlurper().parseText(response.contentAsString) as Map
+        json.size() == 1
+
+        and:
+        json.errors == [message]
+
+        and:
+        1 * registrationService.verifyAccount(_) >> { throw new VerificationException('TEST') }
+        1 * localizedMessageService.getMessage('registration.verification.code.error', request.locale) >> message
     }
 }

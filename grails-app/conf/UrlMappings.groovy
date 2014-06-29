@@ -7,6 +7,8 @@ class UrlMappings {
 
         "/register" (controller: 'registration', action: 'register')
 
+        "/verify/$code" (controller: 'registration', action: 'verify')
+
         "/transcoder/notification/$action" (controller: 'notification')
 
         "/video" (controller: 'videoCreation', action: 'upload')
