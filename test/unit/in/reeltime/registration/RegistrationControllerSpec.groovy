@@ -29,7 +29,7 @@ class RegistrationControllerSpec extends Specification {
         }
     }
 
-    void "response with client credentials upon successful registration"() {
+    void "respond with client credentials upon successful registration"() {
         given:
         def username = 'foo'
         def password = 'secret'
