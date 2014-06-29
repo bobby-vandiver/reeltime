@@ -1,6 +1,9 @@
 package in.reeltime.registration
 
 import in.reeltime.user.User
+import org.springframework.security.crypto.keygen.KeyGenerators
+
+import java.security.MessageDigest
 
 class RegistrationService {
 
@@ -11,6 +14,8 @@ class RegistrationService {
 
     def localizedMessageService
     def mailService
+
+    protected static final FROM_ADDRESS = 'registration@reeltime.in'
 
     protected static final VERIFICATION_CODE_LENGTH = 8
     protected static final ALLOWED_CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -33,19 +38,29 @@ class RegistrationService {
 
     void sendVerificationEmail(String username, String email, Locale locale) {
 
-        def verificationCode = secretService.generateSecret(VERIFICATION_CODE_LENGTH, ALLOWED_CHARACTERS)
+        def code = secretService.generateSecret(VERIFICATION_CODE_LENGTH, ALLOWED_CHARACTERS)
+        def salt = KeyGenerators.secureRandom().generateKey()
 
+        def hashedCode = hashVerificationCode(code, salt)
         def user = User.findByUsernameAndEmail(username, email)
-        new AccountVerification(user: user, code: verificationCode).save()
+
+        new AccountVerification(user: user, code: hashedCode, salt: salt).save()
 
         def localizedSubject = localizedMessageService.getMessage('registration.email.subject', locale)
-        def localizedMessage = localizedMessageService.getMessage('registration.email.message', locale, [username, verificationCode])
+        def localizedMessage = localizedMessageService.getMessage('registration.email.message', locale, [username, code])
 
         mailService.sendMail {
             to email
-            from 'registration@reeltime.in'
+            from FROM_ADDRESS
             subject localizedSubject
             body localizedMessage
         }
+    }
+
+    protected static String hashVerificationCode(String code, byte[] salt) {
+        MessageDigest messageDigest = MessageDigest.getInstance('SHA-256')
+        messageDigest.update(code.getBytes('utf-8'))
+        messageDigest.update(salt)
+        messageDigest.digest().toString()
     }
 }

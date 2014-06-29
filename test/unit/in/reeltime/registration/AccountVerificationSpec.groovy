@@ -47,4 +47,21 @@ class AccountVerificationSpec extends Specification {
         ''          |   false
         '1234abcde' |   true
     }
+
+    @Unroll
+    void "salt [#salt] is valid [#valid]"() {
+        given:
+        def accountVerification = new AccountVerification(salt: salt?.bytes)
+
+        expect:
+        accountVerification.validate(['salt']) == valid
+
+        where:
+        salt        |   valid
+        null        |   false
+        ''          |   false
+        '1234abc'   |   false
+        '1234abcd'  |   true
+        '1234abcde' |   false
+    }
 }

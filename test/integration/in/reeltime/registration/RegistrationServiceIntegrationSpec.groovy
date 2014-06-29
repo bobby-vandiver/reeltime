@@ -36,7 +36,7 @@ class RegistrationServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         GreenMailUtil.getAddressList(message.allRecipients) == email
-        GreenMailUtil.getAddressList(message.from) == 'registration@reeltime.in'
+        GreenMailUtil.getAddressList(message.from) == RegistrationService.FROM_ADDRESS
         GreenMailUtil.getBody(message).startsWith("Hello $username, please enter the following code on your registered device:")
     }
 
