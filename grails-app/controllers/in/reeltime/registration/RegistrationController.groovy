@@ -16,15 +16,15 @@ class RegistrationController {
     @Secured(["permitAll"])
     def register(RegistrationCommand command) {
 
-        if(command.hasErrors()) {
-            render(status: SC_BAD_REQUEST, contentType: 'application/json') {
-                [errors: localizedMessageService.getErrorMessages(command, request.locale)]
-            }
-        }
-        else {
+        if(!command.hasErrors()) {
             def result = registrationService.registerUserAndClient(command)
             render(status: SC_CREATED, contentType: 'application/json') {
                 [client_id: result.clientId, client_secret: result.clientSecret]
+            }
+        }
+        else {
+            render(status: SC_BAD_REQUEST, contentType: 'application/json') {
+                [errors: localizedMessageService.getErrorMessages(command, request.locale)]
             }
         }
     }
