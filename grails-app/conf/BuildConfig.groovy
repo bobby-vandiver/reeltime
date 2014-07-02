@@ -11,6 +11,17 @@ grails.project.source.level = 1.6
 //   run: [maxMemory:1024, minMemory:64, debug:false, maxPerm:256]
 //]
 
+grails.war.resources = { stagingDir, args ->
+    // Package external applications, e.g. ffprobe
+    copy(todir: "$stagingDir/external") {
+        fileset(dir: "${basedir}/external")
+    }
+    // Package AWS Elastic Beanstalk configuration
+    copy(todir: "$stagingDir/.ebextensions") {
+        fileset(dir: "${basedir}/.ebextensions")
+    }
+}
+
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {

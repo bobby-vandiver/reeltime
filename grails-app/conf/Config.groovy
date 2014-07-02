@@ -188,7 +188,7 @@ reeltime {
     // Video metadata configuration
     metadata {
         // Use ffprobe to extract video metadata
-        ffprobe = System.getProperty('ffprobe') ?: System.getenv('FFPROBE')
+        ffprobe = System.getProperty('FFPROBE') ?: System.getenv('FFPROBE')
 
         // Max video duration is 2 minutes
         maxDurationInSeconds = 2 * 60
@@ -220,7 +220,7 @@ environments {
             transcoder {
 
                 ffmpeg {
-                    path = System.getProperty('ffmpeg') ?: System.getenv('FFMPEG')
+                    path = System.getProperty('FFMPEG') ?: System.getenv('FFMPEG')
                     segmentFormat = '%s-%%05d.ts'
                 }
             }
@@ -238,7 +238,7 @@ environments {
             transcoder {
 
                 ffmpeg {
-                    path = System.getProperty('ffmpeg') ?: System.getenv('FFMPEG')
+                    path = System.getProperty('FFMPEG') ?: System.getenv('FFMPEG')
                     segmentFormat = '%s-%%05d.ts'
                 }
             }
