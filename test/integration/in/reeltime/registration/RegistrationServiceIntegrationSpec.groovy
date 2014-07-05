@@ -16,19 +16,26 @@ class RegistrationServiceIntegrationSpec extends IntegrationSpec {
         inMemoryMailService.deleteAllMessages()
     }
 
-    void "send account confirmation email"() {
+    void "return client id and client secret in registration result and send confirmation email"() {
         given:
-        def username = 'foo'
         def email = 'foo@test.com'
+        def username = 'foo'
+        def password = 'bar'
+        def clientName = 'something'
 
         and:
-        def user = registerUserWithUsernameAndEmail(username, email)
+        def command = new RegistrationCommand(username: username, password: password,
+                email: email, client_name: clientName)
 
         when:
-        registrationService.sendConfirmationEmail(username, email, Locale.ENGLISH)
+        def result = registrationService.registerUserAndClient(command, Locale.ENGLISH)
 
         then:
-        AccountConfirmation.findByUser(user)
+        result.clientId != null
+        result.clientSecret != null
+
+        and:
+        User.findByUsernameAndEmail(username, email) != null
 
         and:
         inMemoryMailService.sentMessages.size() == 1
@@ -39,15 +46,5 @@ class RegistrationServiceIntegrationSpec extends IntegrationSpec {
         message.to == email
         message.from == 'registration@reeltime.in'
         message.body.startsWith("Hello $username, please enter the following code on your registered device:")
-    }
-
-    private User registerUserWithUsernameAndEmail(String username, String email) {
-        def command = new RegistrationCommand(username: username, password: 'bar',
-                email: email, client_name: 'test-bot')
-        registrationService.registerUserAndClient(command)
-
-        def user = User.findByUsername(username)
-        assert user != null
-        return user
     }
 }

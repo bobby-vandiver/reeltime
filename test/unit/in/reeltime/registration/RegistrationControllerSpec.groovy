@@ -52,11 +52,12 @@ class RegistrationControllerSpec extends Specification {
         params.client_name = clientName
 
         and:
-        def registrationCommandValidator = { RegistrationCommand command ->
+        def registrationCommandValidator = { RegistrationCommand command, Locale locale ->
             assert command.username == username
             assert command.password == password
             assert command.email == email
             assert command.client_name == clientName
+            assert locale == request.locale
             return registrationResult
         }
 
@@ -76,7 +77,7 @@ class RegistrationControllerSpec extends Specification {
         json.client_secret == clientSecret
 
         and:
-        1 * registrationService.registerUserAndClient(_) >> { command -> registrationCommandValidator(command) }
+        1 * registrationService.registerUserAndClient(*_) >> { command, locale -> registrationCommandValidator(command, locale) }
     }
 
     void "registration exception is thrown"() {
@@ -104,7 +105,7 @@ class RegistrationControllerSpec extends Specification {
         json.errors == [message]
 
         and:
-        1 * registrationService.registerUserAndClient(_) >> { throw new RegistrationException('TEST') }
+        1 * registrationService.registerUserAndClient(_, _) >> { throw new RegistrationException('TEST') }
         1 * localizedMessageService.getMessage('registration.internal.error', request.locale) >> message
     }
 

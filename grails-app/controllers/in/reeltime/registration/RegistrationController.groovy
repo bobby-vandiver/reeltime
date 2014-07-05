@@ -17,7 +17,7 @@ class RegistrationController {
     def register(RegistrationCommand command) {
 
         if(!command.hasErrors()) {
-            def result = registrationService.registerUserAndClient(command)
+            def result = registrationService.registerUserAndClient(command, request.locale)
             render(status: SC_CREATED, contentType: 'application/json') {
                 [client_id: result.clientId, client_secret: result.clientSecret]
             }
