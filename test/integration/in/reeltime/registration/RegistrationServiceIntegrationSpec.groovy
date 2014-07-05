@@ -1,16 +1,19 @@
 package in.reeltime.registration
 
-import com.icegreen.greenmail.util.GreenMailUtil
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
 
 class RegistrationServiceIntegrationSpec extends IntegrationSpec {
 
     def registrationService
-    def greenMail
+    def inMemoryMailService
+
+    void setup() {
+        registrationService.mailService = inMemoryMailService
+    }
 
     void cleanup() {
-        greenMail.deleteAllMessages()
+        inMemoryMailService.deleteAllMessages()
     }
 
     void "send account confirmation email"() {
@@ -28,16 +31,14 @@ class RegistrationServiceIntegrationSpec extends IntegrationSpec {
         AccountConfirmation.findByUser(user)
 
         and:
-        greenMail.receivedMessages.size() == 1
+        inMemoryMailService.sentMessages.size() == 1
 
         and:
-        def message = greenMail.receivedMessages[0]
+        def message = inMemoryMailService.sentMessages[0]
         message.subject == 'Please Verify Your ReelTime Account'
-
-        and:
-        GreenMailUtil.getAddressList(message.allRecipients) == email
-        GreenMailUtil.getAddressList(message.from) == 'registration@reeltime.in'
-        GreenMailUtil.getBody(message).startsWith("Hello $username, please enter the following code on your registered device:")
+        message.to == email
+        message.from == 'registration@reeltime.in'
+        message.body.startsWith("Hello $username, please enter the following code on your registered device:")
     }
 
     private User registerUserWithUsernameAndEmail(String username, String email) {

@@ -97,8 +97,6 @@ grails.project.dependency.resolution = {
         compile ":scaffolding:2.0.3"
         compile ':cache:1.1.6'
 
-        compile ":mail:1.0.6"
-
         // TODO: Specify the new release once plugin is merged back into main code line
         compile ":spring-security-oauth2-provider:1.0.5-SNAPSHOT"
         compile ":spring-security-core:2.0-RC2"
@@ -106,7 +104,6 @@ grails.project.dependency.resolution = {
         test ":code-coverage:1.2.7"
         test ":functional-spock:0.7"
         test ":rest-client-builder:2.0.1"
-        test ":greenmail:1.3.4"
     }
 }
 

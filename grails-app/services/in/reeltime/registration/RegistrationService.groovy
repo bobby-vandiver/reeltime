@@ -51,12 +51,7 @@ class RegistrationService {
         def localizedSubject = localizedMessageService.getMessage('registration.email.subject', locale)
         def localizedMessage = localizedMessageService.getMessage('registration.email.message', locale, [username, code])
 
-        mailService.sendMail {
-            to email
-            from fromAddress
-            subject localizedSubject
-            body localizedMessage
-        }
+        mailService.sendMail(email, fromAddress, localizedSubject, localizedMessage)
     }
 
     void confirmAccount(String code) {

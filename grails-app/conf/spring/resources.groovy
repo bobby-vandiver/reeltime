@@ -13,18 +13,21 @@ beans = {
     // Use AWS backed services by default
     springConfig.addAlias 'storageService', 's3StorageService'
     springConfig.addAlias 'transcoderService', 'elasticTranscoderService'
+    springConfig.addAlias 'mailService', 'simpleEmailMailService'
 
     Environment.executeForCurrentEnvironment {
 
-        // Use local file system and ffmpeg for local development
+        // Use local file system, ffmpeg and in-memory implementations for local development
         development {
             springConfig.addAlias 'storageService', 'localFileSystemStorageService'
             springConfig.addAlias 'transcoderService', 'ffmpegTranscoderService'
+            springConfig.addAlias 'mailService', 'inMemoryMailService'
         }
 
         test {
             springConfig.addAlias 'storageService', 'localFileSystemStorageService'
             springConfig.addAlias 'transcoderService', 'ffmpegTranscoderService'
+            springConfig.addAlias 'mailService', 'inMemoryMailService'
         }
     }
 }

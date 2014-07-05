@@ -124,23 +124,6 @@ grails.plugin.springsecurity.providerNames = [
         'daoAuthenticationProvider'
 ]
 
-// Configuration for Greenmail
-//
-// When running test-app, it is expected that an exception will be thrown between integration and functional
-// tests due to an issue in the Greenmail plugin not properly shutting down the SMTP server.
-//
-// The work around is to specify the port number in the eventTestPhaseStart callback. See _Events.groovy.
-//
-// http://grails.1312388.n4.nabble.com/greenmail-and-functional-testing-quot-Address-already-in-use-quot-td4651592.html
-environments {
-    test {
-        def smtpPort = System.properties["grails.test.smtp.port"]
-        grails.mail.port = smtpPort
-        greenmail.ports.smtp = smtpPort
-        grails.serverURL = "http://localhost:8080/${appName}"
-    }
-}
-
 // The following ReelTime settings must NOT be exposed in an external configuration:
 reeltime {
 
