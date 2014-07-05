@@ -3,6 +3,7 @@ package in.reeltime.metadata
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
+import in.reeltime.exceptions.ProbeException
 
 @TestFor(FfprobeService)
 class FfprobeServiceSpec extends Specification {
@@ -19,8 +20,9 @@ class FfprobeServiceSpec extends Specification {
         service.probeVideo(file)
 
         then:
-        def e = thrown(IllegalStateException)
-        e.message == 'ffprobe could not be found'
+        def e = thrown(ProbeException)
+        e.cause.class == IllegalStateException
+        e.cause.message == 'ffprobe could not be found'
 
         where:
         _   |   path

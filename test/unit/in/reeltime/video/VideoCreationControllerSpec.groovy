@@ -5,6 +5,7 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
 import in.reeltime.exceptions.TranscoderException
+import in.reeltime.exceptions.ProbeException
 import in.reeltime.message.LocalizedMessageService
 import in.reeltime.user.User
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockMultipartFile
@@ -76,7 +77,8 @@ class VideoCreationControllerSpec extends Specification {
         json.videoId > 0
     }
 
-    void "transcoder exception is thrown"() {
+    @Unroll
+    void "[#exceptionClass] is thrown"() {
         given:
         def message = 'TEST'
         def cause = new Exception('Broke it')
@@ -97,10 +99,15 @@ class VideoCreationControllerSpec extends Specification {
 
         and:
         1 * videoCreationService.allowCreation(_) >> true
-        1 * videoCreationService.createVideo(_) >> { throw new TranscoderException(cause) }
+        1 * videoCreationService.createVideo(_) >> { throw exceptionClass.newInstance(cause) }
 
         and:
-        1 * localizedMessageService.getMessage('videoCreation.transcoder.error', request.locale) >> message
+        1 * localizedMessageService.getMessage(messageCode, request.locale) >> message
+
+        where:
+        exceptionClass          |   messageCode
+        TranscoderException     |   'videoCreation.transcoder.error'
+        ProbeException          |   'videoCreation.probe.error'
     }
 
     @Unroll
