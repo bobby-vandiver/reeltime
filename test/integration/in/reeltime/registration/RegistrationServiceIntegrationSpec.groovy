@@ -8,10 +8,6 @@ class RegistrationServiceIntegrationSpec extends IntegrationSpec {
     def registrationService
     def inMemoryMailService
 
-    void setup() {
-        registrationService.mailService = inMemoryMailService
-    }
-
     void cleanup() {
         inMemoryMailService.deleteAllMessages()
     }

@@ -10,14 +10,16 @@ beans = {
     }
     accessDeniedHandler(OAuth2AccessDeniedHandler)
 
-    // Use AWS backed services by default
-    springConfig.addAlias 'storageService', 's3StorageService'
-    springConfig.addAlias 'transcoderService', 'elasticTranscoderService'
-    springConfig.addAlias 'mailService', 'simpleEmailMailService'
-
     Environment.executeForCurrentEnvironment {
 
-        // Use local file system, ffmpeg and in-memory implementations for local development
+        // Use AWS backed services for production
+        production {
+            springConfig.addAlias 'storageService', 's3StorageService'
+            springConfig.addAlias 'transcoderService', 'elasticTranscoderService'
+            springConfig.addAlias 'mailService', 'simpleEmailMailService'
+        }
+
+        // Use local file system, ffmpeg and in-memory implementations for local development and testing
         development {
             springConfig.addAlias 'storageService', 'localFileSystemStorageService'
             springConfig.addAlias 'transcoderService', 'ffmpegTranscoderService'
