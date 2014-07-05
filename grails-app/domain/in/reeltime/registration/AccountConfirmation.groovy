@@ -2,7 +2,7 @@ package in.reeltime.registration
 
 import in.reeltime.user.User
 
-class AccountVerification {
+class AccountConfirmation {
 
     User user
     String code

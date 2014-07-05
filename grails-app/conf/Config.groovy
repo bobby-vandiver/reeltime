@@ -203,8 +203,8 @@ reeltime {
         // The address to appear in confirmation emails
         fromAddress = 'registration@reeltime.in'
 
-        // How long until an account verification code becomes invalid
-        verificationCodeValidityLengthInDays = 7
+        // How long until an account confirmation code becomes invalid
+        confirmationCodeValidityLengthInDays = 7
     }
 }
 

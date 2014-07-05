@@ -3,21 +3,20 @@ package in.reeltime.registration
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import in.reeltime.registration.AccountVerification
 import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 
-@TestFor(AccountVerification)
+@TestFor(AccountConfirmation)
 @Mock([User])
-class AccountVerificationSpec extends Specification {
+class AccountConfirmationSpec extends Specification {
 
     void "user cannot be null"() {
         given:
-        def accountVerification = new AccountVerification(user: null)
+        def accountConfirmation = new AccountConfirmation(user: null)
 
         expect:
-        !accountVerification.validate(['user'])
+        !accountConfirmation.validate(['user'])
     }
 
     void "user is required"() {
@@ -27,19 +26,19 @@ class AccountVerificationSpec extends Specification {
         user.save(validate: false)
 
         and:
-        def accountVerification = new AccountVerification(user: user)
+        def accountConfirmation = new AccountConfirmation(user: user)
 
         expect:
-        accountVerification.validate(['user'])
+        accountConfirmation.validate(['user'])
     }
 
     @Unroll
     void "code [#code] is valid [#valid]"() {
         given:
-        def accountVerification = new AccountVerification(code: code)
+        def accountConfirmation = new AccountConfirmation(code: code)
 
         expect:
-        accountVerification.validate(['code']) == valid
+        accountConfirmation.validate(['code']) == valid
 
         where:
         code        |   valid
@@ -51,10 +50,10 @@ class AccountVerificationSpec extends Specification {
     @Unroll
     void "salt [#salt] is valid [#valid]"() {
         given:
-        def accountVerification = new AccountVerification(salt: salt?.bytes)
+        def accountConfirmation = new AccountConfirmation(salt: salt?.bytes)
 
         expect:
-        accountVerification.validate(['salt']) == valid
+        accountConfirmation.validate(['salt']) == valid
 
         where:
         salt        |   valid

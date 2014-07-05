@@ -155,7 +155,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     }
 
     private static getVerifyUrl() {
-        getUrlForResource("verify")
+        getUrlForResource("confirm")
     }
 
     private static RestRequest createRegisterRequest(Closure params = null) {

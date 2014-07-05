@@ -2,7 +2,7 @@ package in.reeltime.registration
 
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.exceptions.RegistrationException
-import in.reeltime.exceptions.VerificationException
+import in.reeltime.exceptions.ConfirmationException
 
 import static javax.servlet.http.HttpServletResponse.*
 
@@ -11,7 +11,7 @@ class RegistrationController {
     def registrationService
     def localizedMessageService
 
-    static allowedMethods = [register: 'POST', verify: 'POST']
+    static allowedMethods = [register: 'POST', confirm: 'POST']
 
     @Secured(["permitAll"])
     def register(RegistrationCommand command) {
@@ -39,23 +39,23 @@ class RegistrationController {
     }
 
     @Secured(["#oauth2.isUser()"])
-    def verify(String code) {
+    def confirm(String code) {
 
         if(code) {
-            registrationService.verifyAccount(code)
+            registrationService.confirmAccount(code)
             render(status: SC_OK)
         }
         else {
-            def message = localizedMessageService.getMessage('registration.verification.code.required', request.locale)
+            def message = localizedMessageService.getMessage('registration.confirmation.code.required', request.locale)
             render(status: SC_BAD_REQUEST, contentType: 'application/json') {
                 [errors: [message]]
             }
         }
     }
 
-    def handleVerificationException(VerificationException e) {
-        log.warn("Handling VerificationException: ", e)
-        def message = localizedMessageService.getMessage('registration.verification.code.error', request.locale)
+    def handleConfirmationException(ConfirmationException e) {
+        log.warn("Handling ConfirmationException: ", e)
+        def message = localizedMessageService.getMessage('registration.confirmation.code.error', request.locale)
 
         render(status: SC_BAD_REQUEST, contentType: 'application/json') {
             [errors: [message]]

@@ -7,11 +7,11 @@ import in.reeltime.oauth2.Client
 import in.reeltime.oauth2.ClientService
 import in.reeltime.user.User
 import in.reeltime.user.UserService
-import in.reeltime.exceptions.VerificationException
+import in.reeltime.exceptions.ConfirmationException
 import spock.lang.Specification
 
 @TestFor(RegistrationService)
-@Mock([User, AccountVerification])
+@Mock([User, AccountConfirmation])
 class RegistrationServiceSpec extends Specification {
 
     UserService userService
@@ -19,9 +19,9 @@ class RegistrationServiceSpec extends Specification {
 
     SpringSecurityService springSecurityService
 
-    private static final String RAW_VERIFICATION_CODE = '1234abcd'
+    private static final String RAW_CONFIRMATION_CODE = '1234abcd'
 
-    private static final int VERIFICATION_CODE_LENGTH_IN_DAYS = 7
+    private static final int CONFIRMATION_CODE_LENGTH_IN_DAYS = 7
 
     void setup() {
         userService = Mock(UserService)
@@ -32,7 +32,7 @@ class RegistrationServiceSpec extends Specification {
         service.clientService = clientService
         service.springSecurityService = springSecurityService
 
-        service.verificationCodeValidityLengthInDays = VERIFICATION_CODE_LENGTH_IN_DAYS
+        service.confirmationCodeValidityLengthInDays = CONFIRMATION_CODE_LENGTH_IN_DAYS
     }
 
     void "return client id and client secret in registration result"() {
@@ -69,89 +69,89 @@ class RegistrationServiceSpec extends Specification {
         1 * userService.createUser(username, password, email, client)
     }
 
-    void "current user has valid verification code"() {
+    void "current user has valid confirmation code"() {
         given:
         def user = createUser('current')
-        def accountVerificationId = createAccountVerification(user, RAW_VERIFICATION_CODE).id
+        def accountConfirmationId = createAccountConfirmation(user, RAW_CONFIRMATION_CODE).id
 
         when:
-        service.verifyAccount(RAW_VERIFICATION_CODE)
+        service.confirmAccount(RAW_CONFIRMATION_CODE)
 
         then:
         user.verified
 
         and:
-        !AccountVerification.findById(accountVerificationId)
+        !AccountConfirmation.findById(accountConfirmationId)
 
         and:
         1 * springSecurityService.currentUser >> user
         1 * userService.updateUser(user)
     }
 
-    void "verification code is old but has not expired"() {
+    void "confirmation code is old but has not expired"() {
         given:
         def user = createUser('current')
 
         and:
-        def accountVerification = createAccountVerification(user, RAW_VERIFICATION_CODE)
-        def accountVerificationId = accountVerification.id
+        def accountVerification = createAccountConfirmation(user, RAW_CONFIRMATION_CODE)
+        def accountConfirmationId = accountVerification.id
 
         and:
-        ageAccountVerification(accountVerification, VERIFICATION_CODE_LENGTH_IN_DAYS - 1)
+        ageAccountConfirmation(accountVerification, CONFIRMATION_CODE_LENGTH_IN_DAYS - 1)
 
         when:
-        service.verifyAccount(RAW_VERIFICATION_CODE)
+        service.confirmAccount(RAW_CONFIRMATION_CODE)
 
         then:
         user.verified
 
         and:
-        !AccountVerification.findById(accountVerificationId)
+        !AccountConfirmation.findById(accountConfirmationId)
 
         and:
         1 * springSecurityService.currentUser >> user
         1 * userService.updateUser(user)
     }
 
-    void "verification code was issued to current user but has expired"() {
+    void "confirmation code was issued to current user but has expired"() {
         given:
         def user = createUser('current')
 
         and:
-        def accountVerification = createAccountVerification(user, RAW_VERIFICATION_CODE)
-        def accountVerificationId = accountVerification.id
+        def accountVerification = createAccountConfirmation(user, RAW_CONFIRMATION_CODE)
+        def accountConfirmationId = accountVerification.id
 
         and:
-        ageAccountVerification(accountVerification, VERIFICATION_CODE_LENGTH_IN_DAYS)
+        ageAccountConfirmation(accountVerification, CONFIRMATION_CODE_LENGTH_IN_DAYS)
 
         when:
-        service.verifyAccount(RAW_VERIFICATION_CODE)
+        service.confirmAccount(RAW_CONFIRMATION_CODE)
 
         then:
-        def e = thrown(VerificationException)
-        e.message == 'The verification code for user [current] has expired'
+        def e = thrown(ConfirmationException)
+        e.message == 'The confirmation code for user [current] has expired'
 
         and:
         !user.verified
 
         and:
-        !AccountVerification.findById(accountVerificationId)
+        !AccountConfirmation.findById(accountConfirmationId)
 
         and:
         1 * springSecurityService.currentUser >> user
         0 * userService.updateUser(user)
     }
 
-    void "current user has not been issued an account verification code"() {
+    void "current user has not been issued an account confirmation code"() {
         given:
         def user = createUser('current')
 
         when:
-        service.verifyAccount(RAW_VERIFICATION_CODE)
+        service.confirmAccount(RAW_CONFIRMATION_CODE)
 
         then:
-        def e = thrown(VerificationException)
-        e.message == 'The verification code is not associated with user [current]'
+        def e = thrown(ConfirmationException)
+        e.message == 'The confirmation code is not associated with user [current]'
 
         and:
         !user.verified
@@ -166,20 +166,20 @@ class RegistrationServiceSpec extends Specification {
         def currentUser = createUser('current')
         def originalUser = createUser('original')
 
-        def accountVerificationId = createAccountVerification(originalUser, RAW_VERIFICATION_CODE).id
+        def accountConfirmationId = createAccountConfirmation(originalUser, RAW_CONFIRMATION_CODE).id
 
         when:
-        service.verifyAccount(RAW_VERIFICATION_CODE)
+        service.confirmAccount(RAW_CONFIRMATION_CODE)
 
         then:
-        def e = thrown(VerificationException)
-        e.message == 'The verification code is not associated with user [current]'
+        def e = thrown(ConfirmationException)
+        e.message == 'The confirmation code is not associated with user [current]'
 
         and:
         !originalUser.verified
 
         and:
-        AccountVerification.findById(accountVerificationId)
+        AccountConfirmation.findById(accountConfirmationId)
 
         and:
         1 * springSecurityService.currentUser >> currentUser
@@ -195,17 +195,17 @@ class RegistrationServiceSpec extends Specification {
         user.save(validate: false)
     }
 
-    private AccountVerification createAccountVerification(User user, String rawCode) {
+    private AccountConfirmation createAccountConfirmation(User user, String rawCode) {
         def salt = 'z14aflaa'.bytes
-        def hashedCode = service.hashVerificationCode(rawCode, salt)
-        new AccountVerification(user: user, code: hashedCode, salt: salt).save(flush: true)
+        def hashedCode = service.hashConfirmationCode(rawCode, salt)
+        new AccountConfirmation(user: user, code: hashedCode, salt: salt).save(flush: true)
     }
 
-    private static void ageAccountVerification(AccountVerification verification, int numberOfDays) {
+    private static void ageAccountConfirmation(AccountConfirmation confirmation, int numberOfDays) {
         Calendar calendar = Calendar.instance
-        calendar.setTime(verification.dateCreated)
+        calendar.setTime(confirmation.dateCreated)
         calendar.add(Calendar.DAY_OF_MONTH, -numberOfDays)
-        verification.dateCreated = calendar.time
-        verification.save(flush: true)
+        confirmation.dateCreated = calendar.time
+        confirmation.save(flush: true)
     }
 }

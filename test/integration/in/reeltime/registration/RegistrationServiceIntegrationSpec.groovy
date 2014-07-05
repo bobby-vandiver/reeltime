@@ -13,7 +13,7 @@ class RegistrationServiceIntegrationSpec extends IntegrationSpec {
         greenMail.deleteAllMessages()
     }
 
-    void "send account verification email"() {
+    void "send account confirmation email"() {
         given:
         def username = 'foo'
         def email = 'foo@test.com'
@@ -22,10 +22,10 @@ class RegistrationServiceIntegrationSpec extends IntegrationSpec {
         def user = registerUserWithUsernameAndEmail(username, email)
 
         when:
-        registrationService.sendVerificationEmail(username, email, Locale.ENGLISH)
+        registrationService.sendConfirmationEmail(username, email, Locale.ENGLISH)
 
         then:
-        AccountVerification.findByUser(user)
+        AccountConfirmation.findByUser(user)
 
         and:
         greenMail.receivedMessages.size() == 1

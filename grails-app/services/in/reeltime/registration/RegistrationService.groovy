@@ -1,6 +1,6 @@
 package in.reeltime.registration
 
-import in.reeltime.exceptions.VerificationException
+import in.reeltime.exceptions.ConfirmationException
 import in.reeltime.user.User
 import java.security.MessageDigest
 
@@ -16,10 +16,10 @@ class RegistrationService {
     def mailService
 
     def fromAddress
-    def verificationCodeValidityLengthInDays
+    def confirmationCodeValidityLengthInDays
 
     protected static final SALT_LENGTH = 8
-    protected static final VERIFICATION_CODE_LENGTH = 8
+    protected static final CONFIRMATION_CODE_LENGTH = 8
     protected static final ALLOWED_CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
     RegistrationResult registerUserAndClient(RegistrationCommand command) {
@@ -38,15 +38,15 @@ class RegistrationService {
         new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
     }
 
-    void sendVerificationEmail(String username, String email, Locale locale) {
+    void sendConfirmationEmail(String username, String email, Locale locale) {
 
-        def code = securityService.generateSecret(VERIFICATION_CODE_LENGTH, ALLOWED_CHARACTERS)
+        def code = securityService.generateSecret(CONFIRMATION_CODE_LENGTH, ALLOWED_CHARACTERS)
         def salt = securityService.generateSalt(SALT_LENGTH)
 
-        def hashedCode = hashVerificationCode(code, salt)
+        def hashedCode = hashConfirmationCode(code, salt)
         def user = User.findByUsernameAndEmail(username, email)
 
-        new AccountVerification(user: user, code: hashedCode, salt: salt).save()
+        new AccountConfirmation(user: user, code: hashedCode, salt: salt).save()
 
         def localizedSubject = localizedMessageService.getMessage('registration.email.subject', locale)
         def localizedMessage = localizedMessageService.getMessage('registration.email.message', locale, [username, code])
@@ -59,40 +59,40 @@ class RegistrationService {
         }
     }
 
-    void verifyAccount(String code) {
+    void confirmAccount(String code) {
         def currentUser = springSecurityService.currentUser as User
 
-        def accountVerification = findAccountVerificationForUser(currentUser)
-        checkExpiration(accountVerification, currentUser)
+        def accountConfirmation = findAccountConfirmationForUser(currentUser)
+        checkExpiration(accountConfirmation, currentUser)
 
-        def hash = accountVerification.code
-        def salt = accountVerification.salt
+        def hash = accountConfirmation.code
+        def salt = accountConfirmation.salt
 
-        if(verificationCodeIsCorrect(code, hash, salt)) {
+        if(confirmationCodeIsCorrect(code, hash, salt)) {
             verifyUser(currentUser)
-            accountVerification.delete()
+            accountConfirmation.delete()
         }
     }
 
-    private static AccountVerification findAccountVerificationForUser(User user) {
-        def accountVerification = AccountVerification.findByUser(user)
-        if(!accountVerification) {
-            throw new VerificationException("The verification code is not associated with user [${user.username}]")
+    private static AccountConfirmation findAccountConfirmationForUser(User user) {
+        def accountConfirmation = AccountConfirmation.findByUser(user)
+        if(!accountConfirmation) {
+            throw new ConfirmationException("The confirmation code is not associated with user [${user.username}]")
         }
-        return accountVerification
+        return accountConfirmation
     }
 
-    private void checkExpiration(AccountVerification accountVerification, User user) {
-        def dateCreated = accountVerification.dateCreated
-        if(verificationCodeHasExpired(dateCreated)) {
-            accountVerification.delete()
-            throw new VerificationException("The verification code for user [${user.username}] has expired")
+    private void checkExpiration(AccountConfirmation accountConfirmation, User user) {
+        def dateCreated = accountConfirmation.dateCreated
+        if(confirmationCodeHasExpired(dateCreated)) {
+            accountConfirmation.delete()
+            throw new ConfirmationException("The confirmation code for user [${user.username}] has expired")
         }
     }
 
-    private boolean verificationCodeHasExpired(Date dateCreated) {
+    private boolean confirmationCodeHasExpired(Date dateCreated) {
         Calendar calendar = Calendar.instance
-        calendar.add(Calendar.DAY_OF_MONTH, -1 * verificationCodeValidityLengthInDays as int)
+        calendar.add(Calendar.DAY_OF_MONTH, -1 * confirmationCodeValidityLengthInDays as int)
         return dateCreated.time < calendar.timeInMillis
     }
 
@@ -101,11 +101,11 @@ class RegistrationService {
         userService.updateUser(user)
     }
 
-    private static boolean verificationCodeIsCorrect(String rawCode, String storedCode, byte[] salt) {
-        hashVerificationCode(rawCode, salt) == storedCode
+    private static boolean confirmationCodeIsCorrect(String rawCode, String storedCode, byte[] salt) {
+        hashConfirmationCode(rawCode, salt) == storedCode
     }
 
-    protected static String hashVerificationCode(String code, byte[] salt) {
+    protected static String hashConfirmationCode(String code, byte[] salt) {
         MessageDigest messageDigest = MessageDigest.getInstance('SHA-256')
         messageDigest.update(code.getBytes('utf-8'))
         messageDigest.update(salt)

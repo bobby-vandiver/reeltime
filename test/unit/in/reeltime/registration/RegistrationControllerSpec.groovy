@@ -4,10 +4,9 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
 import in.reeltime.exceptions.RegistrationException
-import in.reeltime.exceptions.VerificationException
+import in.reeltime.exceptions.ConfirmationException
 import in.reeltime.message.LocalizedMessageService
 import in.reeltime.user.User
-import org.springframework.context.MessageSource
 import spock.lang.Specification
 import in.reeltime.user.UserService
 import spock.lang.Unroll
@@ -110,15 +109,15 @@ class RegistrationControllerSpec extends Specification {
     }
 
     @Unroll
-    void "verification code must be present -- cannot be [#code]"() {
+    void "confirmation code must be present -- cannot be [#code]"() {
         given:
-        def message = 'verification code required'
+        def message = 'confirmation code required'
 
         and:
         params.code = code
 
         when:
-        controller.verify()
+        controller.confirm()
 
         then:
         response.status == 400
@@ -132,7 +131,7 @@ class RegistrationControllerSpec extends Specification {
         json.errors == [message]
 
         and:
-        1 * localizedMessageService.getMessage('registration.verification.code.required', request.locale) >> message
+        1 * localizedMessageService.getMessage('registration.confirmation.code.required', request.locale) >> message
 
         where:
         _   |   code
@@ -140,30 +139,30 @@ class RegistrationControllerSpec extends Specification {
         _   |   ''
     }
 
-    void "pass verification code to service to complete account verification"() {
+    void "pass confirmation code to service to complete account confirmation"() {
         given:
         params.code = 'let-me-in'
 
         when:
-        controller.verify()
+        controller.confirm()
 
         then:
         response.status == 200
         response.contentLength == 0
 
         and:
-        1 * registrationService.verifyAccount('let-me-in')
+        1 * registrationService.confirmAccount('let-me-in')
     }
 
-    void "handle verification error"() {
+    void "handle confirmation error"() {
         given:
-        def message = 'verification error'
+        def message = 'confirmation error'
 
         and:
         params.code = 'uh-oh'
 
         when:
-        controller.verify()
+        controller.confirm()
 
         then:
         response.status == 400
@@ -177,7 +176,7 @@ class RegistrationControllerSpec extends Specification {
         json.errors == [message]
 
         and:
-        1 * registrationService.verifyAccount(_) >> { throw new VerificationException('TEST') }
-        1 * localizedMessageService.getMessage('registration.verification.code.error', request.locale) >> message
+        1 * registrationService.confirmAccount(_) >> { throw new ConfirmationException('TEST') }
+        1 * localizedMessageService.getMessage('registration.confirmation.code.error', request.locale) >> message
     }
 }

@@ -59,8 +59,8 @@ class UrlMappingsSpec extends Specification {
         assertForwardUrlMapping('/register', controller: 'registration', action: 'register')
     }
 
-    void "test verification endpoint mapping"() {
+    void "test confirmation endpoint mapping"() {
         expect:
-        assertForwardUrlMapping('/verify', controller: 'registration', action: 'verify')
+        assertForwardUrlMapping('/confirm', controller: 'registration', action: 'confirm')
     }
 }

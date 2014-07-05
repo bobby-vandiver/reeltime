@@ -52,7 +52,7 @@ class ConfigInjector {
 
         ctx.registrationService.with {
             fromAddress = config.reeltime.registration.fromAddress
-            verificationCodeValidityLengthInDays = config.reeltime.registration.verificationCodeValidityLengthInDays
+            confirmationCodeValidityLengthInDays = config.reeltime.registration.confirmationCodeValidityLengthInDays
         }
     }
 
