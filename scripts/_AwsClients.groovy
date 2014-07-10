@@ -4,12 +4,20 @@ import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.elasticbeanstalk.AWSElasticBeanstalk
 import com.amazonaws.services.elasticbeanstalk.AWSElasticBeanstalkClient
 import com.amazonaws.services.elasticbeanstalk.model.EnvironmentDescription
+import com.amazonaws.services.elastictranscoder.AmazonElasticTranscoder
+import com.amazonaws.services.elastictranscoder.AmazonElasticTranscoderClient
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagement
+import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.event.ProgressEvent
 import com.amazonaws.event.ProgressListener
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectRequest
+import com.amazonaws.services.sns.AmazonSNS
+import com.amazonaws.services.sns.AmazonSNSClient
+import com.amazonaws.services.sns.model.ListSubscriptionsByTopicResult
+import com.amazonaws.services.sns.model.Subscription
 
 includeTargets << new File("${basedir}/scripts/_Common.groovy")
 
@@ -25,11 +33,27 @@ target(initAwsClients: "Initializes all AWS clients as properties for use") {
         eb = createEBClient(credentials)
     }
 
+    if(!hasProperty('ets')) {
+        ets = createETSClient(credentials)
+    }
+
+    if(!hasProperty('sns')) {
+        sns = createSNSClient(credentials)
+    }
+
+    if(!hasProperty('iam')) {
+        iam = createIAMClient(credentials)
+    }
 }
 
 AmazonS3 createS3Client(AWSCredentials credentials) {
 
     def s3 = new AmazonS3Client(credentials)
+
+    s3.metaClass.bucketExists = { String bucketName ->
+        def bucket = delegate.listBuckets().find { it.name == bucketName }
+        return bucket != null
+    }
 
     s3.metaClass.objectExists = { String bucket, String key ->
         try {
@@ -41,6 +65,16 @@ AmazonS3 createS3Client(AWSCredentials credentials) {
             // instead an AmazonServiceException will be thrown if the object does not exist.
             return false
         }
+    }
+
+    def originalDeleteBucket = s3.metaClass.getMetaMethod('deleteBucket', [String] as Class[])
+    s3.metaClass.deleteBucket = { String bucketName ->
+
+        delegate.listObjects(bucketName)?.objectSummaries?.each { obj ->
+            displayStatus("Deleting object [${obj.key}].")
+            delegate.deleteObject(bucketName, obj.key)
+        }
+        originalDeleteBucket.invoke(delegate, bucketName)
     }
 
     s3.metaClass.uploadFile = { File file, String bucket, String key ->
@@ -120,6 +154,52 @@ AWSElasticBeanstalk createEBClient(AWSCredentials credentials) {
     }
 
     return eb
+}
+
+AmazonElasticTranscoder createETSClient(AWSCredentials credentials) {
+
+    def ets = new AmazonElasticTranscoderClient(credentials)
+
+    ets.metaClass.pipelineExists = { String pipelineName ->
+        def pipeline = delegate.listPipelines().pipelines.find { it.name == pipelineName }
+        return pipeline != null
+    }
+
+    return ets
+}
+
+AmazonSNS createSNSClient(AWSCredentials credentials) {
+
+    def sns = new AmazonSNSClient(credentials)
+
+    sns.metaClass.topicExists = { String topicName ->
+        def topic = delegate.listTopics().topics.find { it.topicArn.endsWith(topicName) }
+        return topic != null
+    }
+
+    sns.metaClass.findTopicArnByName = { String topicName ->
+        def topic = delegate.listTopics().topics.find { it.topicArn.endsWith(topicName) }
+        return topic?.topicArn
+    }
+
+    return sns
+}
+
+AmazonIdentityManagement createIAMClient(AWSCredentials credentials) {
+
+    def iam  = new AmazonIdentityManagementClient(credentials)
+
+    iam.metaClass.roleExists = { String roleName ->
+        def role = delegate.listRoles().roles.find { it.roleName == roleName }
+        return role != null
+    }
+
+    iam.metaClass.findRoleArnByName = { String roleName ->
+        def role = delegate.listRoles().roles.find { it.roleName == roleName }
+        return role.arn
+    }
+
+    return iam
 }
 
 AWSCredentials loadAWSCredentials() {

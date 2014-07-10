@@ -1,19 +1,30 @@
 import grails.util.Environment
 
+includeTargets << new File("${basedir}/scripts/_Common.groovy")
+
 target(loadDeployConfig: "Populates the deployConfig map based on the current Grails environment") {
 
     def currentEnvironment = Environment.currentEnvironment.name
+    displayStatus("Loading deployment configuration for environment [$currentEnvironment]")
+
     if(currentEnvironment == 'production') {
         deployConfig = loadProductionConfig()
     }
     else {
         // TODO: Create proper staging environment to mirror production
-        deployConfig = loadStagingConfig()
+        deployConfig = loadSingleInstanceConfig()
     }
 }
 
+resetResourcesIsAllowed = {
+    return deployConfig.resetResources == true
+}
+
+// TODO: Production config should be load balanced
 Map loadProductionConfig() {
     [
+            resetResources: false,
+
             launch: [
                     instanceProfileName: 'aws-elasticbeanstalk-ec2-role'
             ],
@@ -32,12 +43,24 @@ Map loadProductionConfig() {
 
             storage: [
                     warBucket: 'deployment-test-wars'
+            ],
+
+            transcoder: [
+                    topicName: 'transcoder-notification-prod-test',
+                    pipelineName: 'http-live-streaming-prod-test',
+
+                    roleName: 'elasticTranscoder-prod-test',
+
+                    inputBucket: 'master-videos-prod-test',
+                    outputBucket: 'playlist-and-segments-prod-test',
             ]
     ]
 }
 
-Map loadStagingConfig() {
+Map loadSingleInstanceConfig() {
     [
+            resetResources: true,
+
             launch: [
                     instanceProfileName: 'aws-elasticbeanstalk-ec2-role'
             ],
@@ -56,6 +79,16 @@ Map loadStagingConfig() {
 
             storage: [
                     warBucket: 'deployment-test-wars'
+            ],
+
+            transcoder: [
+                    topicName: 'transcoder-notification-test',
+                    pipelineName: 'http-live-streaming-test',
+
+                    roleName: 'elasticTranscoder-test',
+
+                    inputBucket: 'master-videos-test',
+                    outputBucket: 'playlist-and-segments-test',
             ]
     ]
 }
