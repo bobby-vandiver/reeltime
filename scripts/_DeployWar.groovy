@@ -8,6 +8,7 @@ import com.amazonaws.services.elasticbeanstalk.model.S3Location
 import com.amazonaws.services.elasticbeanstalk.model.SourceBundleDeletionException
 import com.amazonaws.services.elasticbeanstalk.model.TerminateEnvironmentRequest
 import com.amazonaws.services.elasticbeanstalk.model.UpdateEnvironmentRequest
+import com.amazonaws.services.sns.model.SubscribeRequest
 
 includeTargets << grailsScript("_GrailsBootstrap")
 includeTargets << grailsScript("_GrailsWar")
@@ -67,6 +68,36 @@ target(deployWar: "Builds and deploys the WAR") {
     else {
         displayStatus("Creating environment [$environmentName] for version [$version]")
         createEnvironment(applicationName, environmentName, version)
+    }
+    waitUntilEnvironmentIsReady(applicationName, environmentName, version)
+
+    EnvironmentDescription environment = eb.findEnvironment(applicationName, environmentName)
+    subscribeToTranscoderTopic(environment)
+
+    displayStatus("Successfully deployed WAR.")
+    displayStatus("Endpoint URL: ${environment.endpointURL}")
+    displayStatus("CNAME: ${environment.CNAME}")
+}
+
+void waitUntilEnvironmentIsReady(String applicationName, String environmentName, String version) {
+    String statusMessage = "Waiting for environment to go live."
+    String failureMessage = "Exceeded max retries for polling environment status. Check AWS console for more info."
+    long pollingInterval = 20 * 1000
+
+    waitForCondition(statusMessage, failureMessage, pollingInterval) {
+        return eb.environmentIsReady(applicationName, environmentName, version)
+    }
+}
+
+// TODO: Switch to HTTPS!
+void subscribeToTranscoderTopic(EnvironmentDescription environment) {
+    String endpoint = 'http://' + environment.CNAME + '/transcoder/notification'
+
+    ['completed', 'progressing', 'warning', 'error'].each { action ->
+        SubscribeRequest request = new SubscribeRequest(transcoderTopicArn, 'http', "${endpoint}/${action}")
+
+        displayStatus("Subscribing endpoint [$endpoint] to topic [$transcoderTopicArn]: $request")
+        sns.subscribe(request)
     }
 }
 
@@ -128,8 +159,7 @@ void createEnvironment(String applicationName, String environmentName, String ve
     )
 
     displayStatus("Creating environment: $createEnvironmentRequest")
-    def result = eb.createEnvironment(createEnvironmentRequest)
-    waitUntilEnvironmentIsReady(applicationName, environmentName, version, result)
+    eb.createEnvironment(createEnvironmentRequest)
 }
 
 void updateEnvironment(String applicationName, String environmentName, String version) {
@@ -140,8 +170,7 @@ void updateEnvironment(String applicationName, String environmentName, String ve
     )
 
     displayStatus("Updating environment: $updateEnvironmentRequest")
-    def result = eb.updateEnvironment(updateEnvironmentRequest)
-    waitUntilEnvironmentIsReady(applicationName, environmentName, version, result)
+    eb.updateEnvironment(updateEnvironmentRequest)
 }
 
 void createNewApplicationVersion(String applicationName, String bucket, String key, String version, File war) {
@@ -156,27 +185,6 @@ void createNewApplicationVersion(String applicationName, String bucket, String k
 
     displayStatus("Creating appliction version: $version")
     eb.createApplicationVersion(createApplicationVersionRequest)
-}
-
-void waitUntilEnvironmentIsReady(String applicationName, String environmentName, String version, Object result) {
-    String statusMessage = "Waiting for environment to go live."
-    String failureMessage = "Exceeded max retries for polling environment status. Check AWS console for more info."
-    long pollingInterval = 20 * 1000
-
-    waitForCondition(statusMessage, failureMessage, pollingInterval) {
-        return eb.environmentIsReady(applicationName, environmentName, version)
-    }
-
-    displayStatus("Successfully deployed WAR.")
-    displayUrlsForEnvironment(applicationName, environmentName)
-}
-
-void displayUrlsForEnvironment(String applicationName, String environmentName) {
-    EnvironmentDescription environment = eb.describeEnvironments().environments.find { EnvironmentDescription env ->
-        env.applicationName == applicationName && env.environmentName == environmentName
-    }
-    displayStatus("Endpoint URL: ${environment.endpointURL}")
-    displayStatus("CNAME: ${environment.CNAME}")
 }
 
 Collection<ConfigurationOptionSetting> getConfigurationOptions() {

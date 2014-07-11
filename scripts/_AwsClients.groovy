@@ -132,24 +132,30 @@ AWSElasticBeanstalk createEBClient(AWSCredentials credentials) {
         return applicationVersion != null
     }
 
-    eb.metaClass.environmentExists = { String applicationName, String environmentName ->
-        def environment = delegate.describeEnvironments().environments.find { EnvironmentDescription env ->
+    eb.metaClass.findEnvironment = { String applicationName, String environmentName ->
+        delegate.describeEnvironments().environments.find { EnvironmentDescription env ->
             env.applicationName == applicationName && env.environmentName == environmentName
         }
+    }
+
+    eb.metaClass.findEnvironmentByVersion = { String applicationName, String environmentName, String version ->
+        delegate.describeEnvironments().environments.find { EnvironmentDescription env ->
+            env.applicationName == applicationName && env.environmentName == environmentName && env.versionLabel == version
+        }
+    }
+
+    eb.metaClass.environmentExists = { String applicationName, String environmentName ->
+        def environment = delegate.findEnvironment(applicationName, environmentName)
         return environment != null && environment.status != 'Terminated'
     }
 
     eb.metaClass.environmentExistsForVersion = { String applicationName, String environmentName, String version ->
-        def environment = delegate.describeEnvironments().environments.find { EnvironmentDescription env ->
-            env.applicationName == applicationName && env.environmentName == environmentName && env.versionLabel == version
-        }
+        def environment = delegate.findEnvironmentByVersion(applicationName, environmentName, version)
         return environment != null && environment.status != 'Terminated'
     }
 
     eb.metaClass.environmentIsReady = { String applicationName, String environmentName, String version ->
-        def environment = delegate.describeEnvironments().environments.find { EnvironmentDescription env ->
-            env.applicationName == applicationName && env.environmentName == environmentName && env.versionLabel == version
-        }
+        def environment = delegate.findEnvironmentByVersion(applicationName, environmentName, version)
         return environment != null && environment.status == 'Ready'
     }
 
