@@ -5,6 +5,8 @@ class UrlMappings {
         "405" (controller: 'errors', action: 'methodNotAllowed')
         "500" (controller: 'errors', action: 'internalServerError')
 
+        "/available" (controller: 'applicationStatus', action: 'available')
+
         "/register" (controller: 'registration', action: 'register')
 
         "/confirm" (controller: 'registration', action: 'confirm')

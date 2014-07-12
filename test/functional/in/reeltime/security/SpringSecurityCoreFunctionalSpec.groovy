@@ -6,7 +6,7 @@ import spock.lang.Unroll
 
 class SpringSecurityCoreFunctionalSpec extends FunctionalSpec {
 
-    private String SPRING_SECURITY_CHECK_URL = getUrlForResource('j_spring_security_check')
+    private final String SPRING_SECURITY_CHECK_URL = getUrlForResource('j_spring_security_check')
 
     @Unroll
     void "cannot access the form login regardless of params"() {

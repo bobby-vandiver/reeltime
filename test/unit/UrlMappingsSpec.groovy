@@ -7,9 +7,11 @@ import in.reeltime.video.VideoCreationController
 import in.reeltime.playlist.PlaylistController
 import in.reeltime.playlist.SegmentController
 import in.reeltime.registration.RegistrationController
+import in.reeltime.status.ApplicationStatusController
 
 @TestMixin(UrlMappingsUnitTestMixin)
-@Mock([NotificationController, VideoCreationController, PlaylistController, SegmentController, RegistrationController])
+@Mock([NotificationController, VideoCreationController, PlaylistController,
+        SegmentController, RegistrationController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
 
     void "test notification endpoint mapping"() {
@@ -62,5 +64,10 @@ class UrlMappingsSpec extends Specification {
     void "test confirmation endpoint mapping"() {
         expect:
         assertForwardUrlMapping('/confirm', controller: 'registration', action: 'confirm')
+    }
+
+    void "test application available mapping"() {
+        expect:
+        assertForwardUrlMapping('/available', controller: 'applicationStatus', action: 'available')
     }
 }

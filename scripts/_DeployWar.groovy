@@ -4,6 +4,7 @@ import com.amazonaws.services.elasticbeanstalk.model.CreateEnvironmentRequest
 import com.amazonaws.services.elasticbeanstalk.model.DeleteApplicationVersionRequest
 import com.amazonaws.services.elasticbeanstalk.model.EnvironmentDescription
 import com.amazonaws.services.elasticbeanstalk.model.EnvironmentTier
+import com.amazonaws.services.elasticbeanstalk.model.OptionSpecification
 import com.amazonaws.services.elasticbeanstalk.model.S3Location
 import com.amazonaws.services.elasticbeanstalk.model.SourceBundleDeletionException
 import com.amazonaws.services.elasticbeanstalk.model.TerminateEnvironmentRequest
@@ -63,7 +64,7 @@ target(deployWar: "Builds and deploys the WAR") {
     // The staging environment will be torn down and rebuilt each time to ensure a clean slate
     if(!snapshot && eb.environmentExists(applicationName, environmentName)) {
         displayStatus("Updating environment [$environmentName] to version [$version]")
-        updateEnvironment(applicationName, environmentName, version)
+        updateEnvironment(environmentName, version)
     }
     else {
         displayStatus("Creating environment [$environmentName] for version [$version]")
@@ -155,14 +156,14 @@ void createEnvironment(String applicationName, String environmentName, String ve
             environmentName: environmentName,
             tier: tier,
             solutionStackName: solutionStack,
-            optionSettings: configurationOptions
+            optionSettings: configurationOptionSettings
     )
 
     displayStatus("Creating environment: $createEnvironmentRequest")
     eb.createEnvironment(createEnvironmentRequest)
 }
 
-void updateEnvironment(String applicationName, String environmentName, String version) {
+void updateEnvironment(String environmentName, String version) {
 
     UpdateEnvironmentRequest updateEnvironmentRequest = new UpdateEnvironmentRequest(
             environmentName: environmentName,
@@ -187,15 +188,20 @@ void createNewApplicationVersion(String applicationName, String bucket, String k
     eb.createApplicationVersion(createApplicationVersionRequest)
 }
 
-Collection<ConfigurationOptionSetting> getConfigurationOptions() {
+Collection<ConfigurationOptionSetting> getConfigurationOptionSettings() {
 
     // Launch options
     final String LAUNCH_CONFIGURATION_NAMESPACE = 'aws:autoscaling:launchconfiguration'
     final String IAM_INSTANCE_PROFILE = 'IamInstanceProfile'
+    final String SECURITY_GROUPS = 'SecurityGroups'
 
     // Environment options
     final String ENVIRONMENT_NAMESPACE = 'aws:elasticbeanstalk:environment'
     final String ENVIRONMENT_TYPE = 'EnvironmentType'
+
+    // Application status options
+    final String APPLICATION_NAMESPACE = 'aws:elasticbeanstalk:application'
+    final String HEALTHCHECK_URL = 'Application Healthcheck URL'
 
     // JVM options
     final String JVM_NAMESPACE = 'aws:elasticbeanstalk:container:tomcat:jvmoptions'
@@ -204,7 +210,10 @@ Collection<ConfigurationOptionSetting> getConfigurationOptions() {
     final String JVM_INIT_HEAP_SIZE = 'Xms'
 
     String instanceProfileName = deployConfig.launch.instanceProfileName
+    String securityGroupName = deployConfig.launch.securityGroupName
+
     String environmentType = deployConfig.environment.type
+    String healthCheckUrl = deployConfig.application.healthCheckUrl
 
     String jvmMaxHeapSize = deployConfig.jvm.maxHeapSize
     String jvmMaxPermSize = deployConfig.jvm.maxPermSize
@@ -212,7 +221,11 @@ Collection<ConfigurationOptionSetting> getConfigurationOptions() {
 
     [
             new ConfigurationOptionSetting(LAUNCH_CONFIGURATION_NAMESPACE, IAM_INSTANCE_PROFILE, instanceProfileName),
+            new ConfigurationOptionSetting(LAUNCH_CONFIGURATION_NAMESPACE, SECURITY_GROUPS, securityGroupName),
+
             new ConfigurationOptionSetting(ENVIRONMENT_NAMESPACE, ENVIRONMENT_TYPE, environmentType),
+
+            new ConfigurationOptionSetting(APPLICATION_NAMESPACE, HEALTHCHECK_URL, healthCheckUrl),
 
             new ConfigurationOptionSetting(JVM_NAMESPACE, JVM_MAX_HEAP_SIZE, jvmMaxHeapSize),
             new ConfigurationOptionSetting(JVM_NAMESPACE, JVM_MAX_PERM_SIZE, jvmMaxPermSize),

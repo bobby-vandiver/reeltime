@@ -20,19 +20,25 @@ resetResourcesIsAllowed = {
     return deployConfig.resetResources == true
 }
 
+// TODO: Refactor common options that are not environment specific, e.g. solution stack
 // TODO: Production config should be load balanced
 Map loadProductionConfig() {
     [
             resetResources: false,
 
             launch: [
-                    instanceProfileName: 'aws-elasticbeanstalk-ec2-role'
+                    instanceProfileName: 'aws-elasticbeanstalk-ec2-role',
+                    securityGroupName: 'single-ssl-test'
             ],
 
             environment: [
                     name: 'deploymentTest-env-prod',
                     type: 'SingleInstance',
                     solutionStackName: '64bit Amazon Linux 2014.03 v1.0.4 running Tomcat 7 Java 7',
+            ],
+
+            application: [
+                    healthCheckUrl: '/available'
             ],
 
             jvm: [
@@ -62,13 +68,18 @@ Map loadSingleInstanceConfig() {
             resetResources: true,
 
             launch: [
-                    instanceProfileName: 'aws-elasticbeanstalk-ec2-role'
+                    instanceProfileName: 'aws-elasticbeanstalk-ec2-role',
+                    securityGroupName: 'single-ssl-test'
             ],
 
             environment: [
                     name: 'deploymentTest-env-more',
                     type: 'SingleInstance',
                     solutionStackName: '64bit Amazon Linux 2014.03 v1.0.4 running Tomcat 7 Java 7',
+            ],
+
+            application: [
+                    healthCheckUrl: '/available'
             ],
 
             jvm: [
