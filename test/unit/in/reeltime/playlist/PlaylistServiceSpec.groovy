@@ -45,6 +45,7 @@ class PlaylistServiceSpec extends Specification {
         1 * service.playlistParserService.parseMediaPlaylist(keyPrefix + stream.uri) >> mediaPlaylist
 
         and:
+        video.available
         video.playlists.size() == 1
 
         and:
@@ -112,6 +113,7 @@ class PlaylistServiceSpec extends Specification {
         1 * service.playlistParserService.parseMediaPlaylist(keyPrefix + stream2.uri) >> media2
 
         and:
+        video.available
         video.playlists.size() == 2
 
         and:

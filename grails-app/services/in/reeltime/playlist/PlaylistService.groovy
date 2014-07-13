@@ -43,6 +43,9 @@ class PlaylistService {
             video.addToPlaylists(playlist)
         }
 
+        log.info("Making video [${video.id}] available for streaming")
+        video.available = true
+
         video.save()
     }
 
