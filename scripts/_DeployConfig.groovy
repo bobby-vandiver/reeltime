@@ -7,6 +7,9 @@ target(loadDeployConfig: "Populates the deployConfig map based on the current Gr
     def currentEnvironment = Environment.currentEnvironment.name
     displayStatus("Loading deployment configuration for environment [$currentEnvironment]")
 
+    // TODO: Temporary until single instance Grails environment is defined
+    deployConfig = loadSingleInstanceConfig()
+/*
     if(currentEnvironment == 'production') {
         deployConfig = loadProductionConfig()
     }
@@ -14,6 +17,7 @@ target(loadDeployConfig: "Populates the deployConfig map based on the current Gr
         // TODO: Create proper staging environment to mirror production
         deployConfig = loadSingleInstanceConfig()
     }
+*/
 }
 
 resetResourcesIsAllowed = {
@@ -96,7 +100,7 @@ Map loadSingleInstanceConfig() {
                     topicName: 'transcoder-notification-test',
                     pipelineName: 'http-live-streaming-test',
 
-                    roleName: 'elasticTranscoder-test',
+                    roleName: 'Transcoder-Test-Role',
 
                     inputBucket: 'master-videos-test',
                     outputBucket: 'playlist-and-segments-test',
