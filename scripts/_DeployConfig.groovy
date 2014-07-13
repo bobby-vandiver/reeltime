@@ -27,7 +27,7 @@ Map loadProductionConfig() {
             resetResources: false,
 
             launch: [
-                    instanceProfileName: 'aws-elasticbeanstalk-ec2-role',
+                    instanceProfileName: 'EC2-Instance-Test-Role',
                     securityGroupName: 'single-ssl-test'
             ],
 
@@ -68,7 +68,7 @@ Map loadSingleInstanceConfig() {
             resetResources: true,
 
             launch: [
-                    instanceProfileName: 'aws-elasticbeanstalk-ec2-role',
+                    instanceProfileName: 'EC2-Instance-Test-Role',
                     securityGroupName: 'single-ssl-test'
             ],
 
