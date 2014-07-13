@@ -28,6 +28,7 @@ class PlaylistParserServiceSpec extends Specification {
 
         then:
         1 * service.outputStorageService.load(path) >> playlistStream
+        2 * service.outputStorageService.exists(path) >>> [false, true]
 
         and:
         variantPlaylist.streams.size() == 2
@@ -91,6 +92,7 @@ class PlaylistParserServiceSpec extends Specification {
 
         then:
         1 * service.outputStorageService.load(path) >> playlistStream
+        2 * service.outputStorageService.exists(path) >>> [false, true]
 
         and:
         mediaPlaylist.version == 3

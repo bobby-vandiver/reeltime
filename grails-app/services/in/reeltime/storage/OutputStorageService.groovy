@@ -5,7 +5,11 @@ class OutputStorageService {
     def storageService
     def outputBase
 
-    def load(String path) {
+    InputStream load(String path) {
         storageService.load(outputBase, path)
+    }
+
+    boolean exists(String path) {
+        storageService.exists(outputBase, path)
     }
 }
