@@ -7,7 +7,8 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
 
     String uploadToken
 
-    private static final MAX_POLL_COUNT = 5
+    // TODO: Define what an acceptable turn around time
+    private static final MAX_POLL_COUNT = 12
     private static final STATUS_RETRY_DELAY_IN_MILLIS = 5 * 1000
 
     void setup() {
