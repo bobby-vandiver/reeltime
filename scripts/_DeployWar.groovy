@@ -106,7 +106,7 @@ void subscribeToTranscoderTopic(EnvironmentDescription environment) {
 
 void disableHttpAccess(EnvironmentDescription environment) {
     String environmentId = environment.environmentId
-    SecurityGroup securityGroup = environment.findSecurityGroupByEnvironmentId(environmentId)
+    SecurityGroup securityGroup = ec2.findSecurityGroupByEnvironmentId(environmentId)
 
     IpPermission httpAccess = securityGroup?.ipPermissions?.find { rule ->
         rule.toPort == 80 && rule.fromPort == 80 && rule.ipProtocol == 'tcp'
