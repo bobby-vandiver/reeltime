@@ -1,10 +1,12 @@
+import com.amazonaws.services.ec2.model.IpPermission
+import com.amazonaws.services.ec2.model.RevokeSecurityGroupIngressRequest
+import com.amazonaws.services.ec2.model.SecurityGroup
 import com.amazonaws.services.elasticbeanstalk.model.ConfigurationOptionSetting
 import com.amazonaws.services.elasticbeanstalk.model.CreateApplicationVersionRequest
 import com.amazonaws.services.elasticbeanstalk.model.CreateEnvironmentRequest
 import com.amazonaws.services.elasticbeanstalk.model.DeleteApplicationVersionRequest
 import com.amazonaws.services.elasticbeanstalk.model.EnvironmentDescription
 import com.amazonaws.services.elasticbeanstalk.model.EnvironmentTier
-import com.amazonaws.services.elasticbeanstalk.model.OptionSpecification
 import com.amazonaws.services.elasticbeanstalk.model.S3Location
 import com.amazonaws.services.elasticbeanstalk.model.SourceBundleDeletionException
 import com.amazonaws.services.elasticbeanstalk.model.TerminateEnvironmentRequest
@@ -73,6 +75,7 @@ target(deployWar: "Builds and deploys the WAR") {
     waitUntilEnvironmentIsReady(applicationName, environmentName, version)
 
     EnvironmentDescription environment = eb.findEnvironment(applicationName, environmentName)
+    disableHttpAccess(environment)
     subscribeToTranscoderTopic(environment)
 
     displayStatus("Successfully deployed WAR.")
@@ -90,16 +93,30 @@ void waitUntilEnvironmentIsReady(String applicationName, String environmentName,
     }
 }
 
-// TODO: Switch to HTTPS!
 void subscribeToTranscoderTopic(EnvironmentDescription environment) {
-    String endpoint = 'http://' + environment.CNAME + '/transcoder/notification'
+    String endpoint = 'https://' + environment.CNAME + '/transcoder/notification'
 
     ['completed', 'progressing', 'warning', 'error'].each { action ->
-        SubscribeRequest request = new SubscribeRequest(transcoderTopicArn, 'http', "${endpoint}/${action}")
+        SubscribeRequest request = new SubscribeRequest(transcoderTopicArn, 'https', "${endpoint}/${action}")
 
         displayStatus("Subscribing endpoint [$endpoint] to topic [$transcoderTopicArn]: $request")
         sns.subscribe(request)
     }
+}
+
+void disableHttpAccess(EnvironmentDescription environment) {
+    String environmentId = environment.environmentId
+    SecurityGroup securityGroup = environment.findSecurityGroupByEnvironmentId(environmentId)
+
+    IpPermission httpAccess = securityGroup?.ipPermissions?.find { rule ->
+        rule.toPort == 80 && rule.fromPort == 80 && rule.ipProtocol == 'tcp'
+    }
+
+    String groupName = securityGroup.groupName
+    RevokeSecurityGroupIngressRequest request = new RevokeSecurityGroupIngressRequest(groupName, [httpAccess])
+
+    displayStatus("Disabling HTTP access")
+    ec2.revokeSecurityGroupIngress(request)
 }
 
 void terminateEnvironment(String applicationName, String environmentName, String version) {

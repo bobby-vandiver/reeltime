@@ -1,6 +1,8 @@
 import com.amazonaws.AmazonServiceException
 import com.amazonaws.auth.AWSCredentials
 import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.services.ec2.AmazonEC2
+import com.amazonaws.services.ec2.AmazonEC2Client
 import com.amazonaws.services.elasticbeanstalk.AWSElasticBeanstalk
 import com.amazonaws.services.elasticbeanstalk.AWSElasticBeanstalkClient
 import com.amazonaws.services.elasticbeanstalk.model.EnvironmentDescription
@@ -16,8 +18,6 @@ import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PutObjectRequest
 import com.amazonaws.services.sns.AmazonSNS
 import com.amazonaws.services.sns.AmazonSNSClient
-import com.amazonaws.services.sns.model.ListSubscriptionsByTopicResult
-import com.amazonaws.services.sns.model.Subscription
 
 includeTargets << new File("${basedir}/scripts/_Common.groovy")
 
@@ -27,6 +27,10 @@ target(initAwsClients: "Initializes all AWS clients as properties for use") {
 
     if(!hasProperty('s3')) {
         s3 = createS3Client(credentials)
+    }
+
+    if(!hasProperty('ec2')) {
+        ec2 = createEC2Client(credentials)
     }
 
     if(!hasProperty('eb')) {
@@ -112,6 +116,19 @@ AmazonS3 createS3Client(AWSCredentials credentials) {
     }
 
     return s3
+}
+
+AmazonEC2 createEC2Client(AWSCredentials credentials) {
+
+    def ec2 = new AmazonEC2Client(credentials)
+
+    ec2.metaClass.findSecurityGroupByEnvironmentId = { String environmentId ->
+        delegate.describeSecurityGroups().securityGroups.find { securityGroup ->
+            securityGroup.tags.find { tag -> tag.key == 'elasticbeanstalk:environment-id' }
+        }
+    }
+
+    return ec2
 }
 
 AWSElasticBeanstalk createEBClient(AWSCredentials credentials) {
