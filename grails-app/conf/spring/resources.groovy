@@ -10,24 +10,25 @@ beans = {
     }
     accessDeniedHandler(OAuth2AccessDeniedHandler)
 
-    Environment.executeForCurrentEnvironment {
+    String environmentName = Environment.currentEnvironment.name
+    switch(environmentName) {
 
-        // Use AWS backed services for production
-        production {
+        // Use AWS backed services for production and acceptance
+        case 'production':
+        case 'acceptance':
             configureAwsBeans.delegate = delegate
-            configureAwsBeans()
-        }
+            configureAwsBeans ()
+            break
 
         // Use local file system, ffmpeg and in-memory implementations for local development and testing
-        development {
+        case 'development':
+        case 'test':
             configureLocalBeans.delegate = delegate
-            configureLocalBeans()
-        }
+            configureLocalBeans ()
+            break
 
-        test {
-            configureLocalBeans.delegate = delegate
-            configureLocalBeans()
-        }
+        default:
+            throw new IllegalStateException("Unknown environment ${environmentName}")
     }
 }
 

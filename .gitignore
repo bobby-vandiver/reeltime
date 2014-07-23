@@ -1,2 +1,2 @@
 cobertura.ser
-prodDb.h2.db
+*.h2.db

@@ -7,17 +7,16 @@ target(loadDeployConfig: "Populates the deployConfig map based on the current Gr
     def currentEnvironment = Environment.currentEnvironment.name
     displayStatus("Loading deployment configuration for environment [$currentEnvironment]")
 
-    // TODO: Temporary until single instance Grails environment is defined
-    deployConfig = loadSingleInstanceConfig()
-/*
     if(currentEnvironment == 'production') {
         deployConfig = loadProductionConfig()
     }
-    else {
-        // TODO: Create proper staging environment to mirror production
+    else if (currentEnvironment == 'acceptance') {
         deployConfig = loadSingleInstanceConfig()
     }
-*/
+    else {
+        displayStatus("Deployment from the current environment [$currentEnvironment] is not supported")
+        System.exit(1)
+    }
 }
 
 resetResourcesIsAllowed = {
