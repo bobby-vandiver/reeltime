@@ -14,22 +14,31 @@ beans = {
 
         // Use AWS backed services for production
         production {
-            springConfig.addAlias 'storageService', 's3StorageService'
-            springConfig.addAlias 'transcoderService', 'elasticTranscoderService'
-            springConfig.addAlias 'mailService', 'simpleEmailMailService'
+            configureAwsBeans.delegate = delegate
+            configureAwsBeans()
         }
 
         // Use local file system, ffmpeg and in-memory implementations for local development and testing
         development {
-            springConfig.addAlias 'storageService', 'localFileSystemStorageService'
-            springConfig.addAlias 'transcoderService', 'ffmpegTranscoderService'
-            springConfig.addAlias 'mailService', 'inMemoryMailService'
+            configureLocalBeans.delegate = delegate
+            configureLocalBeans()
         }
 
         test {
-            springConfig.addAlias 'storageService', 'localFileSystemStorageService'
-            springConfig.addAlias 'transcoderService', 'ffmpegTranscoderService'
-            springConfig.addAlias 'mailService', 'inMemoryMailService'
+            configureLocalBeans.delegate = delegate
+            configureLocalBeans()
         }
     }
+}
+
+configureAwsBeans = {
+    springConfig.addAlias 'storageService', 's3StorageService'
+    springConfig.addAlias 'transcoderService', 'elasticTranscoderService'
+    springConfig.addAlias 'mailService', 'simpleEmailMailService'
+}
+
+configureLocalBeans = {
+    springConfig.addAlias 'storageService', 'localFileSystemStorageService'
+    springConfig.addAlias 'transcoderService', 'ffmpegTranscoderService'
+    springConfig.addAlias 'mailService', 'inMemoryMailService'
 }
