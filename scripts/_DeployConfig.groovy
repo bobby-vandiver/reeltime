@@ -23,6 +23,10 @@ resetResourcesIsAllowed = {
     return deployConfig.resetResources == true
 }
 
+targetEnvironmentIsLoadBalanced = {
+    return Environment.currentEnvironment.name == 'production'
+}
+
 // TODO: Refactor common options that are not environment specific, e.g. solution stack
 // TODO: Production config should be load balanced
 Map loadProductionConfig() {
@@ -31,12 +35,18 @@ Map loadProductionConfig() {
 
             launch: [
                     instanceProfileName: 'EC2-Instance-Test-Role',
-                    securityGroupName: 'single-ssl-test'
+                    securityGroupId: 'sg-26f7b243'
+            ],
+
+            vpc: [
+                    vpcId: 'vpc-4f1fb92a',
+                    loadBalancerSubnetId: 'subnet-dbacacf3',
+                    autoScalingSubnetId: 'subnet-daacacf2'
             ],
 
             environment: [
                     name: 'deploymentTest-env-prod',
-                    type: 'SingleInstance',
+                    type: 'LoadBalanced',
                     solutionStackName: '64bit Amazon Linux 2014.03 v1.0.4 running Tomcat 7 Java 7',
             ],
 
@@ -58,10 +68,10 @@ Map loadProductionConfig() {
                     topicName: 'transcoder-notification-prod-test',
                     pipelineName: 'http-live-streaming-prod-test',
 
-                    roleName: 'elasticTranscoder-prod-test',
+                    roleName: 'Transcoder-Test-Role',
 
-                    inputBucket: 'master-videos-prod-test',
-                    outputBucket: 'playlist-and-segments-prod-test',
+                    inputBucket: 'master-videos-test',
+                    outputBucket: 'playlist-and-segments-test',
             ]
     ]
 }

@@ -227,7 +227,12 @@ Collection<ConfigurationOptionSetting> getConfigurationOptionSettings() {
     final String JVM_INIT_HEAP_SIZE = 'Xms'
 
     String instanceProfileName = deployConfig.launch.instanceProfileName
+
     String securityGroupName = deployConfig.launch.securityGroupName
+    String securityGroupId = deployConfig.launch.securityGroupId
+
+    // Security Group ID must be used for a VPC environment
+    String securityGroup = targetEnvironmentIsLoadBalanced() ? securityGroupId : securityGroupName
 
     String environmentType = deployConfig.environment.type
     String healthCheckUrl = deployConfig.application.healthCheckUrl
@@ -236,9 +241,10 @@ Collection<ConfigurationOptionSetting> getConfigurationOptionSettings() {
     String jvmMaxPermSize = deployConfig.jvm.maxPermSize
     String jvmInitHeapSize = deployConfig.jvm.initHeapSize
 
+    Collection<ConfigurationOptionSetting> configurationOptions =
     [
             new ConfigurationOptionSetting(LAUNCH_CONFIGURATION_NAMESPACE, IAM_INSTANCE_PROFILE, instanceProfileName),
-            new ConfigurationOptionSetting(LAUNCH_CONFIGURATION_NAMESPACE, SECURITY_GROUPS, securityGroupName),
+            new ConfigurationOptionSetting(LAUNCH_CONFIGURATION_NAMESPACE, SECURITY_GROUPS, securityGroup),
 
             new ConfigurationOptionSetting(ENVIRONMENT_NAMESPACE, ENVIRONMENT_TYPE, environmentType),
 
@@ -248,7 +254,33 @@ Collection<ConfigurationOptionSetting> getConfigurationOptionSettings() {
             new ConfigurationOptionSetting(JVM_NAMESPACE, JVM_MAX_PERM_SIZE, jvmMaxPermSize),
             new ConfigurationOptionSetting(JVM_NAMESPACE, JVM_INIT_HEAP_SIZE, jvmInitHeapSize)
     ]
+
+    if(targetEnvironmentIsLoadBalanced()) {
+        displayStatus("Adding load balanced environment configuration options")
+        configurationOptions = addLoadBalancedConfigurationOptionSettings(configurationOptions)
+    }
+    return configurationOptions
 }
+
+Collection<ConfigurationOptionSetting> addLoadBalancedConfigurationOptionSettings(Collection<ConfigurationOptionSetting> configurationOptions) {
+
+    // VPC options
+    final String VPC_NAMESPACE = 'aws:ec2:vpc'
+    final String VPC_ID = 'VPCId'
+    final String SUBNETS = 'Subnets'
+    final String ELB_SUBNETS = 'ELBSubnets'
+
+    String vpcId = deployConfig.vpc.vpcId
+    String autoScalingSubnetId = deployConfig.vpc.autoScalingSubnetId
+    String loadBalancerSubnetId = deployConfig.vpc.loadBalancerSubnetId
+
+    return configurationOptions + [
+            new ConfigurationOptionSetting(VPC_NAMESPACE, VPC_ID, vpcId),
+            new ConfigurationOptionSetting(VPC_NAMESPACE, SUBNETS, autoScalingSubnetId),
+            new ConfigurationOptionSetting(VPC_NAMESPACE, ELB_SUBNETS, loadBalancerSubnetId)
+    ]
+}
+
 
 File getWar(String name, String version) {
     File war = new File("target/${name}-${version}.war")
