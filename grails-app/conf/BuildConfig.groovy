@@ -1,3 +1,5 @@
+import grails.util.Environment
+
 grails.servlet.version = "2.5" // Change depending on target container compliance (2.5 or 3.0)
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
@@ -13,12 +15,18 @@ grails.project.source.level = 1.6
 
 grails.war.resources = { stagingDir, args ->
     // Package external applications, e.g. ffprobe
-    copy(todir: "$stagingDir/external") {
+    copy(todir: "${stagingDir}/external") {
         fileset(dir: "${basedir}/external")
     }
     // Package AWS Elastic Beanstalk configuration
-    copy(todir: "$stagingDir/.ebextensions") {
+    copy(todir: "${stagingDir}/.ebextensions") {
         fileset(dir: "${basedir}/.ebextensions")
+    }
+    // Do not use the self-signed certificate for production
+    if(Environment.currentEnvironment == Environment.PRODUCTION) {
+        delete {
+            fileset(file: "${stagingDir}/.ebextensions/00.singlessl.config")
+        }
     }
 }
 
