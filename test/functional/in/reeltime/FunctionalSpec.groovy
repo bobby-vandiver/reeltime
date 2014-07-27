@@ -17,6 +17,10 @@ abstract class FunctionalSpec extends Specification {
 
     private static final BASE_URL = System.getProperty(BuildSettings.FUNCTIONAL_BASE_URL_PROPERTY)
 
+    // Video creation completion polling defaults
+    private static final DEFAULT_MAX_POLL_COUNT = 12
+    private static final DEFAULT_RETRY_DELAY_IN_MILLIS = 5 * 1000
+
     @Delegate
     protected static AuthorizationAwareRestClient restClient = new AuthorizationAwareRestClient()
 
@@ -51,6 +55,35 @@ abstract class FunctionalSpec extends Specification {
         def response = post(request)
         assert response.status == 202
         return response.json.videoId
+    }
+
+    protected int pollForCreationComplete(long videoId, String uploadToken,
+              int maxPollCount = DEFAULT_MAX_POLL_COUNT, long retryDelayMillis = DEFAULT_RETRY_DELAY_IN_MILLIS) {
+        def request = createStatusRequest(videoId, uploadToken)
+
+        int videoCreatedStatus = 0
+        int pollCount = 0
+
+        while(videoCreatedStatus != 201 && pollCount < maxPollCount) {
+            def response = get(request)
+            videoCreatedStatus = response.status
+
+            if(videoCreatedStatus == 202) {
+                println "Video [$videoId] is still being created. Sleeping for 5 seconds before next status query."
+                sleep(retryDelayMillis)
+            }
+            pollCount++
+        }
+        return videoCreatedStatus
+    }
+
+    private static RestRequest createStatusRequest(Long videoId, String token) {
+        def statusUrl = getStatusUrl(videoId)
+        new RestRequest(url: statusUrl, token: token)
+    }
+
+    private static getStatusUrl(Long videoId) {
+        getUrlForResource("video/$videoId/status")
     }
 
     protected String getAccessTokenWithScopeForNonTestUser(String scope) {
