@@ -98,6 +98,11 @@ AmazonS3 createS3Client(AWSCredentials credentials) {
             void progressChanged(ProgressEvent progressEvent) {
                 bytesTransferred += progressEvent.bytesTransferred
                 displayStatus("Uploaded ${bytesTransferred}/${totalSize} bytes...")
+
+                if(bytesTransferred > totalSize) {
+                    displayStatus("Transferred more data than the file contains!")
+                    System.exit(1)
+                }
             }
         }
 
