@@ -23,7 +23,7 @@ resetResourcesIsAllowed = {
     return deployConfig.resetResources == true
 }
 
-targetEnvironmentIsLoadBalanced = {
+targetEnvironmentIsInVpc = {
     return Environment.currentEnvironment.name == 'production'
 }
 
@@ -35,13 +35,13 @@ Map loadProductionConfig() {
 
             launch: [
                     instanceProfileName: 'EC2-Instance-Test-Role',
-                    securityGroupId: 'sg-26f7b243'
+                    securityGroupName: 'NAT-SG'
             ],
 
             vpc: [
-                    vpcId: 'vpc-4f1fb92a',
-                    loadBalancerSubnetId: 'subnet-dbacacf3',
-                    autoScalingSubnetId: 'subnet-daacacf2'
+                    vpcId: 'vpc-20f35345',
+                    loadBalancerSubnetName: 'Public subnet',
+                    autoScalingSubnetName: 'Private subnet'
             ],
 
             environment: [

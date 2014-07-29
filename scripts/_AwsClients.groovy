@@ -122,9 +122,27 @@ AmazonEC2 createEC2Client(AWSCredentials credentials) {
 
     def ec2 = new AmazonEC2Client(credentials)
 
-    ec2.metaClass.findSecurityGroupByEnvironmentId = { String environmentId ->
-        delegate.describeSecurityGroups().securityGroups.find { securityGroup ->
+    ec2.metaClass.findSecurityGroupsByEnvironmentId = { String environmentId ->
+        delegate.describeSecurityGroups().securityGroups.findAll { securityGroup ->
             securityGroup.tags.find { tag -> tag.key == 'elasticbeanstalk:environment-id' }
+        }
+    }
+
+    ec2.metaClass.findSecurityGroupIdByGroupName = { String groupName ->
+        delegate.describeSecurityGroups().securityGroups.find { securityGroup ->
+            securityGroup.tags.find { tag -> tag.key == 'Name' && tag.value == groupName }
+        }
+    }
+
+    ec2.metaClass.findSubnetsByVpcId = { String vpcId ->
+        ec2.describeSubnets().subnets.findAll { subnet ->
+            subnet.vpcId == vpcId
+        }
+    }
+
+    ec2.metaClass.findSubnetByVpcIdAndSubnetName = { String vpcId, String subnetName ->
+        delegate.findSubnetsByVpcId(vpcId).find { subnet ->
+            subnet.tags.find { tag -> tag.key == 'Name' && tag.value == subnetName }
         }
     }
 

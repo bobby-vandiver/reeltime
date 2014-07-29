@@ -46,6 +46,8 @@ target(deployWar: "Builds and deploys the WAR") {
 
     String environmentName = deployConfig.environment.name
 
+    // TODO: The production environment cannot be terminated when continuous deployment is a reality
+    // TODO: Define a sane versioning scheme that is compatible with continuous deployment
     if(versionExists && snapshot) {
         terminateEnvironment(applicationName, environmentName, version)
         deleteExistingSnapshotApplicationVersion(applicationName, version, bucket, key)
@@ -106,17 +108,22 @@ void subscribeToTranscoderTopic(EnvironmentDescription environment) {
 
 void disableHttpAccess(EnvironmentDescription environment) {
     String environmentId = environment.environmentId
-    SecurityGroup securityGroup = ec2.findSecurityGroupByEnvironmentId(environmentId)
+    Collection<SecurityGroup> securityGroups = ec2.findSecurityGroupsByEnvironmentId(environmentId)
 
-    IpPermission httpAccess = securityGroup?.ipPermissions?.find { rule ->
-        rule.toPort == 80 && rule.fromPort == 80 && rule.ipProtocol == 'tcp'
+    securityGroups.each { securityGroup ->
+
+        IpPermission httpAccess = securityGroup?.ipPermissions?.find { rule ->
+            rule.toPort == 80 && rule.fromPort == 80 && rule.ipProtocol == 'tcp'
+        }
+
+        if(httpAccess) {
+            String groupId = securityGroup.groupId
+            RevokeSecurityGroupIngressRequest request = new RevokeSecurityGroupIngressRequest(groupId: groupId, ipPermissions: [httpAccess])
+
+            displayStatus("Disabling HTTP access: ${request}")
+            ec2.revokeSecurityGroupIngress(request)
+        }
     }
-
-    String groupName = securityGroup.groupName
-    RevokeSecurityGroupIngressRequest request = new RevokeSecurityGroupIngressRequest(groupName, [httpAccess])
-
-    displayStatus("Disabling HTTP access")
-    ec2.revokeSecurityGroupIngress(request)
 }
 
 void terminateEnvironment(String applicationName, String environmentName, String version) {
@@ -229,10 +236,12 @@ Collection<ConfigurationOptionSetting> getConfigurationOptionSettings() {
     String instanceProfileName = deployConfig.launch.instanceProfileName
 
     String securityGroupName = deployConfig.launch.securityGroupName
-    String securityGroupId = deployConfig.launch.securityGroupId
+    String securityGroup = securityGroupName
 
     // Security Group ID must be used for a VPC environment
-    String securityGroup = targetEnvironmentIsLoadBalanced() ? securityGroupId : securityGroupName
+    if(targetEnvironmentIsInVpc()) {
+        securityGroup = ec2.findSecurityGroupIdByGroupName(securityGroupName).groupId
+    }
 
     String environmentType = deployConfig.environment.type
     String healthCheckUrl = deployConfig.application.healthCheckUrl
@@ -255,14 +264,14 @@ Collection<ConfigurationOptionSetting> getConfigurationOptionSettings() {
             new ConfigurationOptionSetting(JVM_NAMESPACE, JVM_INIT_HEAP_SIZE, jvmInitHeapSize)
     ]
 
-    if(targetEnvironmentIsLoadBalanced()) {
-        displayStatus("Adding load balanced environment configuration options")
-        configurationOptions = addLoadBalancedConfigurationOptionSettings(configurationOptions)
+    if(targetEnvironmentIsInVpc()) {
+        displayStatus("Adding VPC configuration options")
+        configurationOptions = addVpcConfigurationOptionSettings(configurationOptions)
     }
     return configurationOptions
 }
 
-Collection<ConfigurationOptionSetting> addLoadBalancedConfigurationOptionSettings(Collection<ConfigurationOptionSetting> configurationOptions) {
+Collection<ConfigurationOptionSetting> addVpcConfigurationOptionSettings(Collection<ConfigurationOptionSetting> configurationOptions) {
 
     // VPC options
     final String VPC_NAMESPACE = 'aws:ec2:vpc'
@@ -271,8 +280,12 @@ Collection<ConfigurationOptionSetting> addLoadBalancedConfigurationOptionSetting
     final String ELB_SUBNETS = 'ELBSubnets'
 
     String vpcId = deployConfig.vpc.vpcId
-    String autoScalingSubnetId = deployConfig.vpc.autoScalingSubnetId
-    String loadBalancerSubnetId = deployConfig.vpc.loadBalancerSubnetId
+
+    String autoScalingSubnetName = deployConfig.vpc.autoScalingSubnetName
+    String autoScalingSubnetId = ec2.findSubnetByVpcIdAndSubnetName(vpcId, autoScalingSubnetName).subnetId
+
+    String loadBalancerSubnetName = deployConfig.vpc.loadBalancerSubnetName
+    String loadBalancerSubnetId = ec2.findSubnetByVpcIdAndSubnetName(vpcId, loadBalancerSubnetName).subnetId
 
     return configurationOptions + [
             new ConfigurationOptionSetting(VPC_NAMESPACE, VPC_ID, vpcId),
