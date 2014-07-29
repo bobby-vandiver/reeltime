@@ -212,6 +212,7 @@ void createNewApplicationVersion(String applicationName, String bucket, String k
     eb.createApplicationVersion(createApplicationVersionRequest)
 }
 
+// TODO: Move this to a separate script
 Collection<ConfigurationOptionSetting> getConfigurationOptionSettings() {
 
     // Launch options
@@ -235,14 +236,6 @@ Collection<ConfigurationOptionSetting> getConfigurationOptionSettings() {
 
     String instanceProfileName = deployConfig.launch.instanceProfileName
 
-    String securityGroupName = deployConfig.launch.securityGroupName
-    String securityGroup = securityGroupName
-
-    // Security Group ID must be used for a VPC environment
-    if(targetEnvironmentIsInVpc()) {
-        securityGroup = ec2.findSecurityGroupIdByGroupName(securityGroupName).groupId
-    }
-
     String environmentType = deployConfig.environment.type
     String healthCheckUrl = deployConfig.application.healthCheckUrl
 
@@ -253,7 +246,6 @@ Collection<ConfigurationOptionSetting> getConfigurationOptionSettings() {
     Collection<ConfigurationOptionSetting> configurationOptions =
     [
             new ConfigurationOptionSetting(LAUNCH_CONFIGURATION_NAMESPACE, IAM_INSTANCE_PROFILE, instanceProfileName),
-            new ConfigurationOptionSetting(LAUNCH_CONFIGURATION_NAMESPACE, SECURITY_GROUPS, securityGroup),
 
             new ConfigurationOptionSetting(ENVIRONMENT_NAMESPACE, ENVIRONMENT_TYPE, environmentType),
 
@@ -264,11 +256,31 @@ Collection<ConfigurationOptionSetting> getConfigurationOptionSettings() {
             new ConfigurationOptionSetting(JVM_NAMESPACE, JVM_INIT_HEAP_SIZE, jvmInitHeapSize)
     ]
 
+    configurationOptions += collectSecurityGroups(LAUNCH_CONFIGURATION_NAMESPACE, SECURITY_GROUPS)
+
     if(targetEnvironmentIsInVpc()) {
         displayStatus("Adding VPC configuration options")
         configurationOptions = addVpcConfigurationOptionSettings(configurationOptions)
     }
     return configurationOptions
+}
+
+Collection<ConfigurationOptionSetting> collectSecurityGroups(String namespace, String option) {
+
+    Collection<ConfigurationOptionSetting> securityGroups = []
+    List<String> securityGroupNames = deployConfig.launch.securityGroupNames
+
+    securityGroupNames.each { groupName ->
+        String securityGroup = groupName
+
+        // Security Group ID must be used for a VPC environment
+        if(targetEnvironmentIsInVpc()) {
+            securityGroup = ec2.findSecurityGroupIdByGroupName(groupName).groupId
+        }
+
+        securityGroups << new ConfigurationOptionSetting(namespace, option, securityGroup)
+    }
+    return securityGroups
 }
 
 Collection<ConfigurationOptionSetting> addVpcConfigurationOptionSettings(Collection<ConfigurationOptionSetting> configurationOptions) {

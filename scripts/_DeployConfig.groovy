@@ -35,7 +35,7 @@ Map loadProductionConfig() {
 
             launch: [
                     instanceProfileName: 'EC2-Instance-Test-Role',
-                    securityGroupName: 'NAT-SG'
+                    securityGroupNames: ['NAT-SG', 'SSL-SG']
             ],
 
             vpc: [
@@ -82,7 +82,7 @@ Map loadSingleInstanceConfig() {
 
             launch: [
                     instanceProfileName: 'EC2-Instance-Test-Role',
-                    securityGroupName: 'single-ssl-test'
+                    securityGroupNames: ['single-ssl-test']
             ],
 
             environment: [
