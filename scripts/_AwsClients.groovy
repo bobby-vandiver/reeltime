@@ -245,6 +245,13 @@ AmazonIdentityManagement createIAMClient(AWSCredentials credentials) {
         return role.arn
     }
 
+    iam.metaClass.findServerCertificateArnByName = { String certificateName ->
+        def certificate = delegate.listServerCertificates().serverCertificateMetadataList.find {
+            it.serverCertificateName == certificateName
+        }
+        return certificate.arn
+    }
+
     return iam
 }
 

@@ -1,7 +1,6 @@
 import com.amazonaws.services.ec2.model.IpPermission
 import com.amazonaws.services.ec2.model.RevokeSecurityGroupIngressRequest
 import com.amazonaws.services.ec2.model.SecurityGroup
-import com.amazonaws.services.elasticbeanstalk.model.ConfigurationOptionSetting
 import com.amazonaws.services.elasticbeanstalk.model.CreateApplicationVersionRequest
 import com.amazonaws.services.elasticbeanstalk.model.CreateEnvironmentRequest
 import com.amazonaws.services.elasticbeanstalk.model.DeleteApplicationVersionRequest
@@ -12,7 +11,6 @@ import com.amazonaws.services.elasticbeanstalk.model.SourceBundleDeletionExcepti
 import com.amazonaws.services.elasticbeanstalk.model.TerminateEnvironmentRequest
 import com.amazonaws.services.elasticbeanstalk.model.UpdateEnvironmentRequest
 import com.amazonaws.services.sns.model.SubscribeRequest
-import grails.util.Environment
 
 import java.text.SimpleDateFormat
 
@@ -22,6 +20,7 @@ includeTargets << grailsScript("_GrailsWar")
 includeTargets << new File("${basedir}/scripts/_DeployConfig.groovy")
 includeTargets << new File("${basedir}/scripts/_Common.groovy")
 includeTargets << new File("${basedir}/scripts/_AwsClients.groovy")
+includeTargets << new File("${basedir}/scripts/_AwsBeanstalkEnvironmentConfiguration.groovy")
 
 target(deployWar: "Builds and deploys the WAR") {
     depends(loadDeployConfig, initAwsClients, compile, classpath, war)
@@ -193,7 +192,7 @@ void createEnvironment(String applicationName, String environmentName, String ve
             environmentName: environmentName,
             tier: tier,
             solutionStackName: solutionStack,
-            optionSettings: configurationOptionSettings
+            optionSettings: getConfigurationOptionSettings()
     )
 
     displayStatus("Creating environment: $createEnvironmentRequest")
@@ -224,101 +223,6 @@ void createNewApplicationVersion(String applicationName, String bucket, String k
     displayStatus("Creating appliction version: $version")
     eb.createApplicationVersion(createApplicationVersionRequest)
 }
-
-// TODO: Move this to a separate script
-Collection<ConfigurationOptionSetting> getConfigurationOptionSettings() {
-
-    // Launch options
-    final String LAUNCH_CONFIGURATION_NAMESPACE = 'aws:autoscaling:launchconfiguration'
-    final String IAM_INSTANCE_PROFILE = 'IamInstanceProfile'
-    final String SECURITY_GROUPS = 'SecurityGroups'
-
-    // Environment options
-    final String ENVIRONMENT_NAMESPACE = 'aws:elasticbeanstalk:environment'
-    final String ENVIRONMENT_TYPE = 'EnvironmentType'
-
-    // Application status options
-    final String APPLICATION_NAMESPACE = 'aws:elasticbeanstalk:application'
-    final String HEALTHCHECK_URL = 'Application Healthcheck URL'
-
-    // JVM options
-    final String JVM_NAMESPACE = 'aws:elasticbeanstalk:container:tomcat:jvmoptions'
-    final String JVM_MAX_HEAP_SIZE = 'Xmx'
-    final String JVM_MAX_PERM_SIZE = 'XX:MaxPermSize'
-    final String JVM_INIT_HEAP_SIZE = 'Xms'
-
-    String instanceProfileName = deployConfig.launch.instanceProfileName
-
-    String environmentType = deployConfig.environment.type
-    String healthCheckUrl = deployConfig.application.healthCheckUrl
-
-    String jvmMaxHeapSize = deployConfig.jvm.maxHeapSize
-    String jvmMaxPermSize = deployConfig.jvm.maxPermSize
-    String jvmInitHeapSize = deployConfig.jvm.initHeapSize
-
-    Collection<ConfigurationOptionSetting> configurationOptions =
-    [
-            new ConfigurationOptionSetting(LAUNCH_CONFIGURATION_NAMESPACE, IAM_INSTANCE_PROFILE, instanceProfileName),
-
-            new ConfigurationOptionSetting(ENVIRONMENT_NAMESPACE, ENVIRONMENT_TYPE, environmentType),
-
-            new ConfigurationOptionSetting(APPLICATION_NAMESPACE, HEALTHCHECK_URL, healthCheckUrl),
-
-            new ConfigurationOptionSetting(JVM_NAMESPACE, JVM_MAX_HEAP_SIZE, jvmMaxHeapSize),
-            new ConfigurationOptionSetting(JVM_NAMESPACE, JVM_MAX_PERM_SIZE, jvmMaxPermSize),
-            new ConfigurationOptionSetting(JVM_NAMESPACE, JVM_INIT_HEAP_SIZE, jvmInitHeapSize)
-    ]
-
-    configurationOptions += collectSecurityGroups(LAUNCH_CONFIGURATION_NAMESPACE, SECURITY_GROUPS)
-
-    if(targetEnvironmentIsInVpc()) {
-        displayStatus("Adding VPC configuration options")
-        configurationOptions = addVpcConfigurationOptionSettings(configurationOptions)
-    }
-    return configurationOptions
-}
-
-Collection<ConfigurationOptionSetting> collectSecurityGroups(String namespace, String option) {
-
-    Collection<ConfigurationOptionSetting> securityGroups = []
-    List<String> securityGroupNames = deployConfig.launch.securityGroupNames
-
-    securityGroupNames.each { groupName ->
-        String securityGroup = groupName
-
-        // Security Group ID must be used for a VPC environment
-        if(targetEnvironmentIsInVpc()) {
-            securityGroup = ec2.findSecurityGroupIdByGroupName(groupName).groupId
-        }
-
-        securityGroups << new ConfigurationOptionSetting(namespace, option, securityGroup)
-    }
-    return securityGroups
-}
-
-Collection<ConfigurationOptionSetting> addVpcConfigurationOptionSettings(Collection<ConfigurationOptionSetting> configurationOptions) {
-
-    // VPC options
-    final String VPC_NAMESPACE = 'aws:ec2:vpc'
-    final String VPC_ID = 'VPCId'
-    final String SUBNETS = 'Subnets'
-    final String ELB_SUBNETS = 'ELBSubnets'
-
-    String vpcId = deployConfig.vpc.vpcId
-
-    String autoScalingSubnetName = deployConfig.vpc.autoScalingSubnetName
-    String autoScalingSubnetId = ec2.findSubnetByVpcIdAndSubnetName(vpcId, autoScalingSubnetName).subnetId
-
-    String loadBalancerSubnetName = deployConfig.vpc.loadBalancerSubnetName
-    String loadBalancerSubnetId = ec2.findSubnetByVpcIdAndSubnetName(vpcId, loadBalancerSubnetName).subnetId
-
-    return configurationOptions + [
-            new ConfigurationOptionSetting(VPC_NAMESPACE, VPC_ID, vpcId),
-            new ConfigurationOptionSetting(VPC_NAMESPACE, SUBNETS, autoScalingSubnetId),
-            new ConfigurationOptionSetting(VPC_NAMESPACE, ELB_SUBNETS, loadBalancerSubnetId)
-    ]
-}
-
 
 File getWar(String name, String version) {
     File war = new File("target/${name}-${version}.war")

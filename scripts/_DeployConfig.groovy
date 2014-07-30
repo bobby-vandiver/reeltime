@@ -27,6 +27,10 @@ targetEnvironmentIsInVpc = {
     return deployConfig.vpc != null
 }
 
+targetEnvironmentIsLoadBalanced = {
+    return deployConfig.loadBalancer != null
+}
+
 targetEnvironmentIsProduction = {
     return grailsEnvironmentName() == 'production'
 }
@@ -46,6 +50,10 @@ Map loadProductionConfig() {
                     vpcId: 'vpc-20f35345',
                     loadBalancerSubnetName: 'Public subnet',
                     autoScalingSubnetName: 'Private subnet'
+            ],
+
+            loadBalancer: [
+                    certificateName: 'single-instance-certificate'
             ],
 
             environment: [
