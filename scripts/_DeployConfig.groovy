@@ -24,7 +24,11 @@ resetResourcesIsAllowed = {
 }
 
 targetEnvironmentIsInVpc = {
-    return Environment.currentEnvironment.name == 'production'
+    return deployConfig.vpc != null
+}
+
+targetEnvironmentIsProduction = {
+    return grailsEnvironmentName() == 'production'
 }
 
 // TODO: Refactor common options that are not environment specific, e.g. solution stack

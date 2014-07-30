@@ -1,7 +1,13 @@
+import grails.util.Environment
+
 import java.text.SimpleDateFormat
 
 displayStatus = { String status ->
     println "[${timestamp()}] $status"
+}
+
+grailsEnvironmentName = {
+    return Environment.currentEnvironment.name
 }
 
 String timestamp() {

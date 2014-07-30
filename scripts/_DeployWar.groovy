@@ -12,6 +12,9 @@ import com.amazonaws.services.elasticbeanstalk.model.SourceBundleDeletionExcepti
 import com.amazonaws.services.elasticbeanstalk.model.TerminateEnvironmentRequest
 import com.amazonaws.services.elasticbeanstalk.model.UpdateEnvironmentRequest
 import com.amazonaws.services.sns.model.SubscribeRequest
+import grails.util.Environment
+
+import java.text.SimpleDateFormat
 
 includeTargets << grailsScript("_GrailsBootstrap")
 includeTargets << grailsScript("_GrailsWar")
@@ -25,53 +28,57 @@ target(deployWar: "Builds and deploys the WAR") {
 
     ConfigObject applicationProperties = loadApplicationProperties()
 
-    String name = applicationProperties.app.name
-    String version = applicationProperties.app.version
+    String projectName = applicationProperties.app.name
+    String projectVersion = applicationProperties.app.version
 
 // TODO: Change this for the final version to use app name
     String applicationName = 'deployment-test'
+    String applicationVersion = projectVersion + '-' + grailsEnvironmentName()
 
     if(!eb.applicationExists(applicationName)) {
         displayStatus("Application [$applicationName] does not exist -- creating...")
         eb.createApplication(applicationName)
     }
 
-    boolean snapshot = version.endsWith('SNAPSHOT')
-    boolean versionExists = eb.applicationVersionExists(applicationName, version)
+    boolean production = targetEnvironmentIsProduction()
+    boolean applicationVersionExists = eb.applicationVersionExists(applicationName, applicationVersion)
 
-    File war = getWar(name, version)
+    File war = getWar(projectName, projectVersion)
 
     String bucket = deployConfig.storage.warBucket
     String key = war.name
 
+    // Prefix instead of append build time for production to avoid file extension problems
+    if(production) {
+        String timestamp = generateBuildTimestamp()
+        applicationVersion = "$timestamp-$applicationVersion"
+        key = "$timestamp-$key"
+    }
+
     String environmentName = deployConfig.environment.name
 
-    // TODO: The production environment cannot be terminated when continuous deployment is a reality
-    // TODO: Define a sane versioning scheme that is compatible with continuous deployment
-    if(versionExists && snapshot) {
-        terminateEnvironment(applicationName, environmentName, version)
-        deleteExistingSnapshotApplicationVersion(applicationName, version, bucket, key)
-    }
-    else if(versionExists) {
-        displayStatus("Deploying versioned WAR is not allowed")
-        System.exit(1)
+    // The production environment should never be terminated
+    if(!production && applicationVersionExists) {
+        terminateEnvironment(applicationName, environmentName, applicationVersion)
+        deleteExistingSnapshotApplicationVersion(applicationName, applicationVersion, bucket, key)
     }
 
+    // Either the previous acceptance build will have been removed or the production WAR will have unique timestamp
     if(s3.objectExists(bucket, key)) {
         displayStatus("Object [$key] in bucket [$bucket] already exists")
         System.exit(1)
     }
 
-    createNewApplicationVersion(applicationName, bucket, key, version, war)
+    createNewApplicationVersion(applicationName, bucket, key, applicationVersion, war)
 
     // Production environment(s) should be the only environment that is ever updated
-    // The staging environment will be torn down and rebuilt each time to ensure a clean slate
-    if(!snapshot && eb.environmentExists(applicationName, environmentName)) {
-        displayStatus("Updating environment [$environmentName] to version [$version]")
+    // The acceptance environment will be torn down and rebuilt each time to ensure a clean slate
+    if(production && eb.environmentExists(applicationName, environmentName)) {
+        displayStatus("Updating environment [$environmentName] to version [$applicationVersion]")
         updateEnvironment(environmentName, version)
     }
     else {
-        displayStatus("Creating environment [$environmentName] for version [$version]")
+        displayStatus("Creating environment [$environmentName] for version [$applicationVersion]")
         createEnvironment(applicationName, environmentName, version)
     }
     waitUntilEnvironmentIsReady(applicationName, environmentName, version)
@@ -83,6 +90,12 @@ target(deployWar: "Builds and deploys the WAR") {
     displayStatus("Successfully deployed WAR.")
     displayStatus("Endpoint URL: ${environment.endpointURL}")
     displayStatus("CNAME: ${environment.CNAME}")
+}
+
+String generateBuildTimestamp() {
+    def dateFormat = new SimpleDateFormat('MM-dd-yyyy-HH:mm')
+    def now = new Date()
+    return dateFormat.format(now)
 }
 
 void waitUntilEnvironmentIsReady(String applicationName, String environmentName, String version) {
