@@ -34,6 +34,8 @@ target(deployWar: "Builds and deploys the WAR") {
     String applicationName = 'deployment-test'
     String applicationVersion = projectVersion + '-' + grailsEnvironmentName()
 
+    displayStatus("Deploying application [$applicationName] version [$applicationVersion]...")
+
     if(!eb.applicationExists(applicationName)) {
         displayStatus("Application [$applicationName] does not exist -- creating...")
         eb.createApplication(applicationName)
