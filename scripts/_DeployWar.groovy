@@ -108,7 +108,7 @@ String generateBuildTimestamp() {
 void waitUntilEnvironmentIsReady(String applicationName, String environmentName, String version) {
     String statusMessage = "Waiting for environment to go live."
     String failureMessage = "Exceeded max retries for polling environment status. Check AWS console for more info."
-    long pollingInterval = 20 * 1000
+    long pollingInterval = 30 * 1000
 
     waitForCondition(statusMessage, failureMessage, pollingInterval) {
         return eb.environmentIsReady(applicationName, environmentName, version)
