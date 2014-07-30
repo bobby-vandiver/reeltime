@@ -81,6 +81,8 @@ AmazonS3 createS3Client(AWSCredentials credentials) {
         originalDeleteBucket.invoke(delegate, bucketName)
     }
 
+    final long MEGABYTE = 1024L * 1024L
+
     s3.metaClass.uploadFile = { File file, String bucket, String key ->
         def inputStream = new FileInputStream(file)
 
@@ -90,16 +92,25 @@ AmazonS3 createS3Client(AWSCredentials credentials) {
         def metadata = new ObjectMetadata(contentLength: totalSize)
         def binaryStream = new ByteArrayInputStream(data)
 
-        def bytesTransferred = 0
+        long totalSizeInMB = totalSize / MEGABYTE
+
+        long megaBytesTransferred = 0
+        long bytesTransferred = 0
 
         def request = new PutObjectRequest(bucket, key, binaryStream, metadata)
         request.generalProgressListener = new ProgressListener() {
             @Override
             void progressChanged(ProgressEvent progressEvent) {
                 bytesTransferred += progressEvent.bytesTransferred
-                displayStatus("Uploaded ${bytesTransferred}/${totalSize} bytes...")
 
-                if(bytesTransferred > totalSize) {
+                if(bytesTransferred > MEGABYTE) {
+                    megaBytesTransferred = bytesTransferred / MEGABYTE
+                    bytesTransferred = bytesTransferred % MEGABYTE
+
+                    displayStatus("Uploaded ${megaBytesTransferred}MB of ${totalSizeInMB}MB...")
+                }
+
+                if(megaBytesTransferred > totalSizeInMB) {
                     displayStatus("Transferred more data than the file contains!")
                     System.exit(1)
                 }
