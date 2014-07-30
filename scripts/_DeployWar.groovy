@@ -76,16 +76,22 @@ target(deployWar: "Builds and deploys the WAR") {
     // The acceptance environment will be torn down and rebuilt each time to ensure a clean slate
     if(production && eb.environmentExists(applicationName, environmentName)) {
         displayStatus("Updating environment [$environmentName] to version [$applicationVersion]")
-        updateEnvironment(environmentName, version)
+        updateEnvironment(environmentName, applicationVersion)
     }
     else {
         displayStatus("Creating environment [$environmentName] for version [$applicationVersion]")
-        createEnvironment(applicationName, environmentName, version)
+        createEnvironment(applicationName, environmentName, applicationVersion)
     }
-    waitUntilEnvironmentIsReady(applicationName, environmentName, version)
+    waitUntilEnvironmentIsReady(applicationName, environmentName, applicationVersion)
 
     EnvironmentDescription environment = eb.findEnvironment(applicationName, environmentName)
-    disableHttpAccess(environment)
+
+    // AWS will set up the EC2 instances so they only accept traffic on port 80 from the load balancer
+    // this is required for the load balancer to perform health checks on the running instances
+    if(!targetEnvironmentIsLoadBalanced()) {
+        disableHttpAccess(environment)
+    }
+
     subscribeToTranscoderTopic(environment)
 
     displayStatus("Successfully deployed WAR.")

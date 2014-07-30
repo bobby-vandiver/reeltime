@@ -104,7 +104,7 @@ AmazonS3 createS3Client(AWSCredentials credentials) {
                 bytesTransferred += progressEvent.bytesTransferred
 
                 if(bytesTransferred > MEGABYTE) {
-                    megaBytesTransferred = bytesTransferred / MEGABYTE
+                    megaBytesTransferred++
                     bytesTransferred = bytesTransferred % MEGABYTE
 
                     displayStatus("Uploaded ${megaBytesTransferred}MB of ${totalSizeInMB}MB...")

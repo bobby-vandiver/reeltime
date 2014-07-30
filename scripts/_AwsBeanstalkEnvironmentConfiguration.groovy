@@ -13,6 +13,7 @@ VPC_NAMESPACE = 'aws:ec2:vpc'
 VPC_ID = 'VPCId'
 SUBNETS = 'Subnets'
 ELB_SUBNETS = 'ELBSubnets'
+ASSOCIATE_PUBLIC_IP_ADDRESS = 'AssociatePublicIpAddress'
 
 // Environment options
 ENVIRONMENT_NAMESPACE = 'aws:elasticbeanstalk:environment'
@@ -116,6 +117,7 @@ private Collection<ConfigurationOptionSetting> collectVpcConfigurationOptionSett
     [
             new ConfigurationOptionSetting(VPC_NAMESPACE, VPC_ID, vpcId),
             new ConfigurationOptionSetting(VPC_NAMESPACE, SUBNETS, autoScalingSubnetId),
-            new ConfigurationOptionSetting(VPC_NAMESPACE, ELB_SUBNETS, loadBalancerSubnetId)
+            new ConfigurationOptionSetting(VPC_NAMESPACE, ELB_SUBNETS, loadBalancerSubnetId),
+            new ConfigurationOptionSetting(VPC_NAMESPACE, ASSOCIATE_PUBLIC_IP_ADDRESS, 'false')
     ]
 }
