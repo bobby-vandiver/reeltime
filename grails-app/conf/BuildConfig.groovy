@@ -59,6 +59,10 @@ grails.project.dependency.resolution = {
         mavenRepo "http://repo.spring.io/milestone/"
 
         mavenRepo "http://ec2-54-85-10-255.compute-1.amazonaws.com/artifactory/repo"
+
+        // Repository for disable optimization JAR
+        // Source: https://github.com/renataogarcia/disableOptimizationsTransformation/issues/1
+        mavenRepo "https://raw.github.com/thecleancoder/mavenrepo/master/"
     }
 
     // Load credentials from a properties file
@@ -92,6 +96,9 @@ grails.project.dependency.resolution = {
         test 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.+', {
             excludes "commons-logging", "xml-apis", "groovy"
         }
+
+        // Disables Groovy optimizations for accurate Cobertura reporting
+        test 'com.github.renataogarcia:disable-groovy-compiler-optimizations-transformation:0.1-SNAPSHOT'
     }
 
     plugins {
