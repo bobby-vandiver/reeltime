@@ -127,16 +127,16 @@ reeltime {
     // S3 configuration
     storage {
         // The S3 bucket name where the master video files are stored
-        input = 'master-videos-test'
+        input = 'master-videos-production'
 
         // The S3 bucket name where the video segments and playlist are stored
-        output = 'playlist-and-segments-test'
+        output = 'playlist-and-segments-production'
     }
 
     // Elastic Transcoder configuration
     transcoder {
         // The name of the Elastic Transcoder pipeline to use for transcoding.
-        pipeline = 'http-live-streaming-test'
+        pipeline = 'http-live-streaming-production'
 
         // The default job input settings to use for all transcoding jobs
         input {
@@ -221,6 +221,20 @@ environments {
                     path = System.getProperty('FFMPEG') ?: System.getenv('FFMPEG')
                     segmentFormat = '%s-%%05d.ts'
                 }
+            }
+        }
+    }
+
+    acceptance {
+        reeltime {
+
+            storage {
+                input = 'master-videos-acceptance'
+                output = 'playlist-and-segments-acceptance'
+            }
+
+            transcoder {
+                pipeline = 'http-live-streaming-acceptance'
             }
         }
     }

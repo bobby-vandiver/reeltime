@@ -36,18 +36,17 @@ targetEnvironmentIsProduction = {
 }
 
 // TODO: Refactor common options that are not environment specific, e.g. solution stack
-// TODO: Production config should be load balanced
 Map loadProductionConfig() {
     [
             resetResources: false,
 
             launch: [
-                    instanceProfileName: 'EC2-Instance-Test-Role',
+                    instanceProfileName: 'EC2-Instance-Production-Role',
                     securityGroupNames: ['NAT-SG']
             ],
 
             vpc: [
-                    vpcId: 'vpc-20f35345',
+                    vpcId: 'vpc-cac96baf',
                     loadBalancerSubnetName: 'Public subnet',
                     autoScalingSubnetName: 'Private subnet'
             ],
@@ -57,7 +56,7 @@ Map loadProductionConfig() {
             ],
 
             environment: [
-                    name: 'deploymentTest-env-prod',
+                    name: 'reeltime-production',
                     type: 'LoadBalanced',
                     solutionStackName: '64bit Amazon Linux 2014.03 v1.0.4 running Tomcat 7 Java 7',
             ],
@@ -73,17 +72,17 @@ Map loadProductionConfig() {
             ],
 
             storage: [
-                    warBucket: 'deployment-test-wars'
+                    warBucket: 'reeltime-deployment-wars'
             ],
 
             transcoder: [
-                    topicName: 'transcoder-notification-prod-test',
-                    pipelineName: 'http-live-streaming-prod-test',
+                    topicName: 'transcoder-notification-production',
+                    pipelineName: 'http-live-streaming-production',
 
-                    roleName: 'Transcoder-Test-Role',
+                    roleName: 'Transcoder-Production-Role',
 
-                    inputBucket: 'master-videos-test',
-                    outputBucket: 'playlist-and-segments-test',
+                    inputBucket: 'master-videos-production',
+                    outputBucket: 'playlist-and-segments-production',
             ]
     ]
 }
@@ -93,12 +92,12 @@ Map loadSingleInstanceConfig() {
             resetResources: true,
 
             launch: [
-                    instanceProfileName: 'EC2-Instance-Test-Role',
-                    securityGroupNames: ['single-ssl-test']
+                    instanceProfileName: 'EC2-Instance-Acceptance-Role',
+                    securityGroupNames: ['HTTPS-Only-For-Acceptance-Tests-SG']
             ],
 
             environment: [
-                    name: 'deploymentTest-env-more',
+                    name: 'reeltime-acceptance',
                     type: 'SingleInstance',
                     solutionStackName: '64bit Amazon Linux 2014.03 v1.0.4 running Tomcat 7 Java 7',
             ],
@@ -114,17 +113,17 @@ Map loadSingleInstanceConfig() {
             ],
 
             storage: [
-                    warBucket: 'deployment-test-wars'
+                    warBucket: 'reeltime-deployment-wars'
             ],
 
             transcoder: [
-                    topicName: 'transcoder-notification-test',
-                    pipelineName: 'http-live-streaming-test',
+                    topicName: 'transcoder-notification-acceptance',
+                    pipelineName: 'http-live-streaming-acceptance',
 
-                    roleName: 'Transcoder-Test-Role',
+                    roleName: 'Transcoder-Acceptance-Role',
 
-                    inputBucket: 'master-videos-test',
-                    outputBucket: 'playlist-and-segments-test',
+                    inputBucket: 'master-videos-acceptance',
+                    outputBucket: 'playlist-and-segments-acceptance',
             ]
     ]
 }
