@@ -17,7 +17,7 @@ String timestamp() {
 
 waitForCondition = { String statusMessage, String failureMessage, long pollingInterval,  Closure condition ->
 
-    final MAX_RETRIES = 60
+    final MAX_RETRIES = 90
     int retryCount = 0
 
     while(!condition() && retryCount < MAX_RETRIES) {
