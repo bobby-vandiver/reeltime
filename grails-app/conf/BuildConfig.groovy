@@ -16,7 +16,7 @@ grails.project.source.level = 1.6
 grails.war.resources = { stagingDir, args ->
     // Package external applications, e.g. ffprobe
     copy(todir: "${stagingDir}/external") {
-        fileset(dir: "${basedir}/external")
+        fileset(dir: "${basedir}/external", excludes: "ffmpeg")
     }
     // Package AWS Elastic Beanstalk configuration
     copy(todir: "${stagingDir}/.ebextensions") {
