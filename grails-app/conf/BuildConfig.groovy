@@ -109,10 +109,22 @@ grails.project.dependency.resolution = {
         compile ":spring-security-oauth2-provider:1.0.5-SNAPSHOT"
         compile ":spring-security-core:2.0-RC2"
 
+        compile ":codenarc:0.21"
+
         test ":code-coverage:1.2.7"
         test ":functional-spock:0.7"
         test ":rest-client-builder:2.0.1"
     }
+}
+
+// CodeNarc configuration for provided rules
+codenarc.properties = {
+
+    // Ensure static import statements come after non-static imports
+    MisorderedStaticImports.comesBefore = false
+
+    // IntelliJ will automatically squash multiple imports from the same package into a wildcard import
+    NoWildcardImports.enabled = false
 }
 
 private Properties loadArtifactoryProperties() {
