@@ -1,6 +1,7 @@
 import com.amazonaws.services.ec2.model.IpPermission
 import com.amazonaws.services.ec2.model.RevokeSecurityGroupIngressRequest
 import com.amazonaws.services.ec2.model.SecurityGroup
+import com.amazonaws.services.elasticbeanstalk.model.CreateApplicationRequest
 import com.amazonaws.services.elasticbeanstalk.model.CreateApplicationVersionRequest
 import com.amazonaws.services.elasticbeanstalk.model.CreateEnvironmentRequest
 import com.amazonaws.services.elasticbeanstalk.model.DeleteApplicationVersionRequest
@@ -37,7 +38,7 @@ target(deployWar: "Builds and deploys the WAR") {
 
     if(!eb.applicationExists(applicationName)) {
         displayStatus("Application [$applicationName] does not exist -- creating...")
-        eb.createApplication(applicationName)
+        createApplication(applicationName)
     }
 
     boolean production = targetEnvironmentIsProduction()
@@ -96,6 +97,12 @@ target(deployWar: "Builds and deploys the WAR") {
     displayStatus("Successfully deployed WAR.")
     displayStatus("Endpoint URL: ${environment.endpointURL}")
     displayStatus("CNAME: ${environment.CNAME}")
+}
+
+void createApplication(String applicationName) {
+    def request = new CreateApplicationRequest(applicationName)
+    def result = eb.createApplication(request)
+    displayStatus("Create application result: $result")
 }
 
 String generateBuildTimestamp() {
