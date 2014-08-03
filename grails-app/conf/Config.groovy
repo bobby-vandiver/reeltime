@@ -130,7 +130,7 @@ reeltime {
         input = 'master-videos-production'
 
         // The S3 bucket name where the video segments and playlist are stored
-        output = 'playlist-and-segments-production'
+        output = 'playlists-and-segments-production'
     }
 
     // Elastic Transcoder configuration
@@ -230,7 +230,7 @@ environments {
 
             storage {
                 input = 'master-videos-acceptance'
-                output = 'playlist-and-segments-acceptance'
+                output = 'playlists-and-segments-acceptance'
             }
 
             transcoder {

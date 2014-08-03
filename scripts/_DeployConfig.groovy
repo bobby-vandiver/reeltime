@@ -82,7 +82,7 @@ Map loadProductionConfig() {
                     roleName: 'Transcoder-Production-Role',
 
                     inputBucket: 'master-videos-production',
-                    outputBucket: 'playlist-and-segments-production',
+                    outputBucket: 'playlists-and-segments-production',
             ]
     ]
 }
@@ -123,7 +123,7 @@ Map loadSingleInstanceConfig() {
                     roleName: 'Transcoder-Acceptance-Role',
 
                     inputBucket: 'master-videos-acceptance',
-                    outputBucket: 'playlist-and-segments-acceptance',
+                    outputBucket: 'playlists-and-segments-acceptance',
             ]
     ]
 }
