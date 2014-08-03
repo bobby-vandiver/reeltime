@@ -117,14 +117,31 @@ grails.project.dependency.resolution = {
     }
 }
 
-// CodeNarc configuration for provided rules
-codenarc.properties = {
+codenarc {
 
-    // Ensure static import statements come after non-static imports
-    MisorderedStaticImports.comesBefore = false
+    // CodeNarc configuration for provided rules
+    properties = {
+        // Ensure static import statements come after non-static imports
+        MisorderedStaticImports.comesBefore = false
 
-    // IntelliJ will automatically squash multiple imports from the same package into a wildcard import
-    NoWildcardImports.enabled = false
+        // IntelliJ will automatically squash multiple imports from the same package into a wildcard import
+        NoWildcardImports.enabled = false
+    }
+
+    reports = {
+
+        // Generate an HTML report for local viewing
+        HtmlCodeNarcReport('html') {
+            outputFile = 'target/codenarc.html'
+            title = 'ReelTime CodeNarc Report'
+        }
+
+        // Generate an XML report for Jenkins to use for violation analysis
+        XmlCodeNarcReport('xml') {
+            outputFile = 'target/codenarc.xml'
+            title = 'ReelTime CodeNarc Report'
+        }
+    }
 }
 
 private Properties loadArtifactoryProperties() {
