@@ -11,18 +11,22 @@ import spock.lang.Specification
 import in.reeltime.user.UserService
 import spock.lang.Unroll
 
-@TestFor(RegistrationController)
+@TestFor(AccountController)
 @Mock([User])
-class RegistrationControllerSpec extends Specification {
+class AccountControllerSpec extends Specification {
 
-    RegistrationService registrationService
+    AccountRegistrationService accountRegistrationService
+    AccountConfirmationService accountConfirmationService
+
     LocalizedMessageService localizedMessageService
 
     void setup() {
-        registrationService = Mock(RegistrationService)
+        accountRegistrationService = Mock(AccountRegistrationService)
+        accountConfirmationService = Mock(AccountConfirmationService)
         localizedMessageService = Mock(LocalizedMessageService)
 
-        controller.registrationService = registrationService
+        controller.accountRegistrationService = accountRegistrationService
+        controller.accountConfirmationService = accountConfirmationService
         controller.localizedMessageService = localizedMessageService
 
         defineBeans {
@@ -77,7 +81,7 @@ class RegistrationControllerSpec extends Specification {
         json.client_secret == clientSecret
 
         and:
-        1 * registrationService.registerUserAndClient(*_) >> { command, locale -> registrationCommandValidator(command, locale) }
+        1 * accountRegistrationService.registerUserAndClient(*_) >> { command, locale -> registrationCommandValidator(command, locale) }
     }
 
     void "registration exception is thrown"() {
@@ -105,7 +109,7 @@ class RegistrationControllerSpec extends Specification {
         json.errors == [message]
 
         and:
-        1 * registrationService.registerUserAndClient(_, _) >> { throw new RegistrationException('TEST') }
+        1 * accountRegistrationService.registerUserAndClient(_, _) >> { throw new RegistrationException('TEST') }
         1 * localizedMessageService.getMessage('registration.internal.error', request.locale) >> message
     }
 
@@ -152,7 +156,7 @@ class RegistrationControllerSpec extends Specification {
         response.contentLength == 0
 
         and:
-        1 * registrationService.confirmAccount('let-me-in')
+        1 * accountConfirmationService.confirmAccount('let-me-in')
     }
 
     void "handle confirmation error"() {
@@ -177,7 +181,7 @@ class RegistrationControllerSpec extends Specification {
         json.errors == [message]
 
         and:
-        1 * registrationService.confirmAccount(_) >> { throw new ConfirmationException('TEST') }
+        1 * accountConfirmationService.confirmAccount(_) >> { throw new ConfirmationException('TEST') }
         1 * localizedMessageService.getMessage('registration.confirmation.code.error', request.locale) >> message
     }
 }

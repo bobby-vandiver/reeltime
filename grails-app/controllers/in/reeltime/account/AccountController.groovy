@@ -6,9 +6,11 @@ import in.reeltime.exceptions.ConfirmationException
 
 import static javax.servlet.http.HttpServletResponse.*
 
-class RegistrationController {
+class AccountController {
 
-    def registrationService
+    def accountRegistrationService
+    def accountConfirmationService
+
     def localizedMessageService
 
     static allowedMethods = [register: 'POST', confirm: 'POST']
@@ -17,7 +19,7 @@ class RegistrationController {
     def register(RegistrationCommand command) {
 
         if(!command.hasErrors()) {
-            def result = registrationService.registerUserAndClient(command, request.locale)
+            def result = accountRegistrationService.registerUserAndClient(command, request.locale)
             render(status: SC_CREATED, contentType: 'application/json') {
                 [client_id: result.clientId, client_secret: result.clientSecret]
             }
@@ -42,7 +44,7 @@ class RegistrationController {
     def confirm(String code) {
 
         if(code) {
-            registrationService.confirmAccount(code)
+            accountConfirmationService.confirmAccount(code)
             render(status: SC_OK)
         }
         else {

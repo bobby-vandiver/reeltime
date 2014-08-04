@@ -3,9 +3,9 @@ package in.reeltime.account
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
 
-class RegistrationServiceIntegrationSpec extends IntegrationSpec {
+class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
 
-    def registrationService
+    def accountRegistrationService
     def inMemoryMailService
 
     void cleanup() {
@@ -24,7 +24,7 @@ class RegistrationServiceIntegrationSpec extends IntegrationSpec {
                 email: email, client_name: clientName)
 
         when:
-        def result = registrationService.registerUserAndClient(command, Locale.ENGLISH)
+        def result = accountRegistrationService.registerUserAndClient(command, Locale.ENGLISH)
 
         then:
         result.clientId != null

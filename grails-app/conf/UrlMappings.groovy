@@ -7,9 +7,9 @@ class UrlMappings {
 
         "/available" (controller: 'applicationStatus', action: 'available')
 
-        "/register" (controller: 'registration', action: 'register')
+        "/account/register" (controller: 'account', action: 'register')
 
-        "/confirm" (controller: 'registration', action: 'confirm')
+        "/account/confirm" (controller: 'account', action: 'confirm')
 
         "/transcoder/notification/$action" (controller: 'notification')
 

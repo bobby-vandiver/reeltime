@@ -8,9 +8,9 @@ import in.reeltime.user.UserService
 import in.reeltime.exceptions.ConfirmationException
 import spock.lang.Specification
 
-@TestFor(RegistrationService)
+@TestFor(AccountConfirmationService)
 @Mock([User, AccountConfirmation])
-class RegistrationServiceSpec extends Specification {
+class AccountConfirmationServiceSpec extends Specification {
 
     UserService userService
     SpringSecurityService springSecurityService
