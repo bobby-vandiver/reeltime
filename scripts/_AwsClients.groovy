@@ -1,4 +1,6 @@
+import com.amazonaws.AmazonClientException
 import com.amazonaws.AmazonServiceException
+import com.amazonaws.AmazonWebServiceClient
 import com.amazonaws.auth.AWSCredentials
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.ec2.AmazonEC2
@@ -50,9 +52,55 @@ target(initAwsClients: "Initializes all AWS clients as properties for use") {
     }
 }
 
+void wrapAwsClientInvokeMethod(AmazonWebServiceClient client) {
+
+    client.metaClass.invokeMethod { name, args ->
+        def clientDelegate = delegate
+
+        return performAwsOperation {
+            def metaMethod = clientDelegate.class.metaClass.getMetaMethod(name, args)
+            metaMethod?.invoke(clientDelegate, args)
+        }
+    }
+}
+
+Object performAwsOperation(Closure operation) {
+
+    final MAX_RETRIES = 5
+    final DELAY_IN_SECS = 5
+
+    int tries = 0
+    boolean executed = false
+
+    def result = null
+
+    while(!executed && tries < MAX_RETRIES) {
+        try {
+            result = operation()
+            executed = true
+        }
+        catch(AmazonClientException ace) {
+            tries++
+
+            // Rethrow last failed attempt
+            if(tries >= MAX_RETRIES) {
+                throw ace
+            }
+
+            displayStatus("Caught exception: $ace")
+            executed = false
+
+            displayStatus("Waiting ${DELAY_IN_SECS} seconds before retrying request")
+            sleep(DELAY_IN_SECS * 1000)
+        }
+    }
+    return result
+}
+
 AmazonS3 createS3Client(AWSCredentials credentials) {
 
     def s3 = new AmazonS3Client(credentials)
+    wrapAwsClientInvokeMethod(s3)
 
     s3.metaClass.bucketExists = { String bucketName ->
         def bucket = delegate.listBuckets().find { it.name == bucketName }
@@ -137,6 +185,7 @@ AmazonS3 createS3Client(AWSCredentials credentials) {
 AmazonEC2 createEC2Client(AWSCredentials credentials) {
 
     def ec2 = new AmazonEC2Client(credentials)
+    wrapAwsClientInvokeMethod(ec2)
 
     ec2.metaClass.findSecurityGroupsByEnvironmentId = { String environmentId ->
         delegate.describeSecurityGroups().securityGroups.findAll { securityGroup ->
@@ -168,6 +217,7 @@ AmazonEC2 createEC2Client(AWSCredentials credentials) {
 AWSElasticBeanstalk createEBClient(AWSCredentials credentials) {
 
     def eb = new AWSElasticBeanstalkClient(credentials)
+    wrapAwsClientInvokeMethod(eb)
 
     eb.metaClass.applicationExists = { String applicationName ->
         def application = delegate.describeApplications().applications.find {
@@ -216,6 +266,7 @@ AWSElasticBeanstalk createEBClient(AWSCredentials credentials) {
 AmazonElasticTranscoder createETSClient(AWSCredentials credentials) {
 
     def ets = new AmazonElasticTranscoderClient(credentials)
+    wrapAwsClientInvokeMethod(ets)
 
     ets.metaClass.pipelineExists = { String pipelineName ->
         def pipeline = delegate.listPipelines().pipelines.find { it.name == pipelineName }
@@ -228,6 +279,7 @@ AmazonElasticTranscoder createETSClient(AWSCredentials credentials) {
 AmazonSNS createSNSClient(AWSCredentials credentials) {
 
     def sns = new AmazonSNSClient(credentials)
+    wrapAwsClientInvokeMethod(sns)
 
     sns.metaClass.topicExists = { String topicName ->
         def topic = delegate.listTopics().topics.find { it.topicArn.endsWith(topicName) }
@@ -245,6 +297,7 @@ AmazonSNS createSNSClient(AWSCredentials credentials) {
 AmazonIdentityManagement createIAMClient(AWSCredentials credentials) {
 
     def iam  = new AmazonIdentityManagementClient(credentials)
+    wrapAwsClientInvokeMethod(iam)
 
     iam.metaClass.roleExists = { String roleName ->
         def role = delegate.listRoles().roles.find { it.roleName == roleName }
