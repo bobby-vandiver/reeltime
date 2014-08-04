@@ -1,4 +1,4 @@
-package in.reeltime.registration
+package in.reeltime.account
 
 import in.reeltime.user.User
 

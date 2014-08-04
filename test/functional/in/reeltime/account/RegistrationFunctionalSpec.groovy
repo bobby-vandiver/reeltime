@@ -1,4 +1,4 @@
-package in.reeltime.registration
+package in.reeltime.account
 
 import helper.oauth2.AccessTokenRequest
 import helper.rest.RestRequest

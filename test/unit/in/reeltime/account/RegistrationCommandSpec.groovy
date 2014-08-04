@@ -1,4 +1,4 @@
-package in.reeltime.registration
+package in.reeltime.account
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin

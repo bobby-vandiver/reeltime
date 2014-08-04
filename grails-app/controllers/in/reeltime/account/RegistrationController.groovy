@@ -1,4 +1,4 @@
-package in.reeltime.registration
+package in.reeltime.account
 
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.exceptions.RegistrationException

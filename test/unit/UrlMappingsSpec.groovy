@@ -6,7 +6,7 @@ import in.reeltime.notification.NotificationController
 import in.reeltime.video.VideoCreationController
 import in.reeltime.playlist.PlaylistController
 import in.reeltime.playlist.SegmentController
-import in.reeltime.registration.RegistrationController
+import in.reeltime.account.RegistrationController
 import in.reeltime.status.ApplicationStatusController
 
 @TestMixin(UrlMappingsUnitTestMixin)
