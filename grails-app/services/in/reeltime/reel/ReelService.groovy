@@ -1,6 +1,7 @@
 package in.reeltime.reel
 
 import in.reeltime.user.User
+import in.reeltime.video.Video
 
 class ReelService {
 
@@ -9,4 +10,10 @@ class ReelService {
         new Reel(owner: owner, name: reelName, audience: audience, videos: [])
     }
 
+    void addVideo(Long reelId, Long videoId) {
+        def reel = Reel.findById(reelId)
+        def video = Video.findById(videoId)
+        reel.addToVideos(video)
+        reel.save()
+    }
 }
