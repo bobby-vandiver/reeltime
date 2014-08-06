@@ -3,6 +3,7 @@ package in.reeltime.reel
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
 import in.reeltime.video.Video
+import spock.lang.Unroll
 
 class ReelServiceIntegrationSpec extends IntegrationSpec {
 
@@ -12,15 +13,22 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
     def clientService
 
     User owner
+    User notOwner
 
     void setup() {
-        def client = clientService.createAndSaveClient('clientName', 'clientId', 'clientSecret')
-        owner = userService.createAndSaveUser('user', 'password', 'user@test.com', client)
+        def ownerClient = clientService.createAndSaveClient('cname1', 'cid1', 'secret')
+        owner = userService.createAndSaveUser('someone', 'password', 'someone@test.com', ownerClient)
+
+        def notOwnerClient = clientService.createAndSaveClient('cname2', 'cid2', 'secret')
+        notOwner = userService.createAndSaveUser('nobody', 'password', 'nobody@test.com', notOwnerClient)
     }
 
-    void "add video the owner created to their reel"() {
+    @Unroll
+    void "add video to reel when video creator is reel owner [#videoCreatorIsReelOwner]"() {
         given:
-        def video = new Video(creator: owner, title: 'owner created', masterPath: 'somewhere').save()
+        def creator = selectUser(videoCreatorIsReelOwner)
+
+        def video = new Video(creator: creator, title: 'owner created', masterPath: 'somewhere').save()
         def videoId = video.id
 
         and:
@@ -37,5 +45,14 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         and:
         fetchedReel.videos.size() == 1
         fetchedReel.videos.contains(video)
+
+        where:
+        _   |   videoCreatorIsReelOwner
+        _   |   true
+        _   |   false
+    }
+
+    private User selectUser(boolean selectOwner) {
+        return selectOwner ? owner : notOwner
     }
 }
