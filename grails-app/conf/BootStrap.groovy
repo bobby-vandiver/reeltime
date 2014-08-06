@@ -27,7 +27,7 @@ class BootStrap {
 
         if(!User.findByUsername('bob')) {
             Client client = Client.findByClientId('test-client')
-            Reel uncategorizedReel = new Reel(name: 'Uncategorized', audience: new Audience())
+            Reel uncategorizedReel = new Reel(name: 'Uncategorized', audience: new Audience(), videos: [])
             User user = new User(
                     email: 'bob@test.com',
                     username: 'bob',

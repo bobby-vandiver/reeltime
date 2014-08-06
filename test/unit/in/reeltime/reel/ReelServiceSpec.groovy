@@ -19,5 +19,6 @@ class ReelServiceSpec extends Specification {
         then:
         reel.name == reelName
         reel.audience.users.size() == 0
+        reel.videos.size() == 0
     }
 }
