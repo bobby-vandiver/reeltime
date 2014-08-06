@@ -10,7 +10,7 @@ class UserService {
         User.findByUsername(username) != null
     }
 
-    User createUser(String username, String password, String email, Client client) {
+    User createAndSaveUser(String username, String password, String email, Client client) {
         def uncategorizedReel = reelService.createReel('Uncategorized')
         new User(username: username, password: password, email: email)
                 .addToClients(client)

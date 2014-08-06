@@ -8,7 +8,7 @@ class ClientServiceIntegrationSpec extends IntegrationSpec {
 
     void "create new native client"() {
         when:
-        def client = clientService.createClient('native-client-name', 'native-client-id', 'native-client-secret')
+        def client = clientService.createAndSaveClient('native-client-name', 'native-client-id', 'native-client-secret')
 
         then:
         client.id > 0

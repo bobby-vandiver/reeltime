@@ -1,8 +1,6 @@
 package in.reeltime.account
 
-import in.reeltime.exceptions.ConfirmationException
 import in.reeltime.user.User
-import java.security.MessageDigest
 
 class AccountRegistrationService {
 
@@ -33,8 +31,8 @@ class AccountRegistrationService {
         def clientId = clientService.generateClientId()
         def clientSecret = clientService.generateClientSecret()
 
-        def client = clientService.createClient(clientName, clientId, clientSecret)
-        def user = userService.createUser(username, password, email, client)
+        def client = clientService.createAndSaveClient(clientName, clientId, clientSecret)
+        def user = userService.createAndSaveUser(username, password, email, client)
 
         sendConfirmationEmail(user, locale)
         new RegistrationResult(clientId: clientId, clientSecret: clientSecret)

@@ -13,7 +13,7 @@ class ClientService {
 
     private static final MAX_ATTEMPTS = 5
 
-    Client createClient(String clientName, String clientId, String clientSecret) {
+    Client createAndSaveClient(String clientName, String clientId, String clientSecret) {
         new Client(
                 clientName: clientName,
                 clientId: clientId,
