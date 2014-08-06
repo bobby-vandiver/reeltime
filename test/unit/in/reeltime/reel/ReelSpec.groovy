@@ -9,49 +9,43 @@ import spock.lang.Unroll
 class ReelSpec extends Specification {
 
     void "a reel without an owner is impossible"() {
-        when:
+        given:
         def reel = new Reel()
 
-        then:
+        expect:
         !reel.validate(['owner'])
     }
 
     void "a reel must have an owner"() {
         given:
-        def user = new User()
+        def reel = new Reel(owner: new User())
 
-        when:
-        def reel = new Reel(owner: user)
-
-        then:
+        expect:
         reel.validate(['owner'])
     }
 
     void "a reel with no audience is impossible"() {
-        when:
+        given:
         def reel = new Reel()
 
-        then:
+        expect:
         !reel.validate(['audience'])
     }
 
     void "a reel must have one audience"() {
         given:
-        def audience = new Audience()
+        def reel = new Reel(audience: new Audience())
 
-        when:
-        def reel = new Reel(audience: audience)
-
-        then:
+        expect:
         reel.validate(['audience'])
     }
 
     @Unroll
     void "name [#name] is valid [#valid]"() {
-        when:
+        given:
         def reel = new Reel(name: name)
 
-        then:
+        expect:
         reel.validate(['name']) == valid
 
         where:
