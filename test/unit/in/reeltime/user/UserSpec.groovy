@@ -4,6 +4,7 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.oauth2.Client
+import in.reeltime.reel.Reel
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -82,6 +83,32 @@ class UserSpec extends Specification {
         3       |   false
     }
 
+    void "reels list cannot be null"() {
+        given:
+        def user = new User(reels: null)
+
+        expect:
+        !user.validate(['reels'])
+    }
+
+    @Unroll
+    void "[#count] reels is valid [#valid]"() {
+        given:
+        def reels = createReels(count)
+        def user = new User(reels: reels)
+
+        expect:
+        user.validate(['reels']) == valid
+
+        where:
+        count   |   valid
+        0       |   false
+        1       |   true
+        2       |   true
+        10      |   true
+        100     |   true
+    }
+
     private Collection<Client> createClients(int count) {
         def clients = []
         count.times { clients << createClient() }
@@ -93,5 +120,11 @@ class UserSpec extends Specification {
         client.springSecurityService = Stub(SpringSecurityService)
         client.save(validate: false)
         return client
+    }
+
+    private static Collection<Reel> createReels(int count) {
+        def reels = []
+        count.times { reels << new Reel() }
+        return reels
     }
 }

@@ -1,4 +1,6 @@
 import in.reeltime.injection.ConfigInjector
+import in.reeltime.reel.Audience
+import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.oauth2.Client
 
@@ -25,16 +27,19 @@ class BootStrap {
 
         if(!User.findByUsername('bob')) {
             Client client = Client.findByClientId('test-client')
+            Reel uncategorizedReel = new Reel(name: 'Uncategorized', audience: new Audience())
             User user = new User(
                     email: 'bob@test.com',
                     username: 'bob',
                     password: 'password',
                     clients: [client],
+                    reels: [uncategorizedReel],
                     enabled: true,
                     accountExpired: false,
                     accountLocked: false,
                     passwordExpired: false
             )
+            user.addToReels(uncategorizedReel)
             user.save(flush: true)
             log.info("Added user [${user.username}] with id [${user.id}]")
         }

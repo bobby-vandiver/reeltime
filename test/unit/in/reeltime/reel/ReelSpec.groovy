@@ -1,11 +1,31 @@
 package in.reeltime.reel
 
 import grails.test.mixin.TestFor
+import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(Reel)
 class ReelSpec extends Specification {
+
+    void "a reel without an owner is impossible"() {
+        when:
+        def reel = new Reel()
+
+        then:
+        !reel.validate(['owner'])
+    }
+
+    void "a reel must have an owner"() {
+        given:
+        def user = new User()
+
+        when:
+        def reel = new Reel(owner: user)
+
+        then:
+        reel.validate(['owner'])
+    }
 
     void "a reel with no audience is impossible"() {
         when:

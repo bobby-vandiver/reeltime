@@ -1,6 +1,7 @@
 package in.reeltime.user
 
 import in.reeltime.oauth2.Client
+import in.reeltime.reel.Reel
 
 class User {
 
@@ -15,7 +16,7 @@ class User {
 	boolean accountLocked
 	boolean passwordExpired
 
-    static hasMany = [clients: Client]
+    static hasMany = [clients: Client, reels: Reel]
 
 	static transients = ['springSecurityService']
 
@@ -24,6 +25,7 @@ class User {
 		username blank: false, nullable: false, matches: /^\w{2,15}$/, unique: true
 		password blank: false, nullable: false
         clients nullable: false, size: 1..1
+        reels nullable: false, minSize: 1
 	}
 
 	static mapping = {

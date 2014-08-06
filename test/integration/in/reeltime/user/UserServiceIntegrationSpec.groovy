@@ -44,6 +44,10 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         and:
         user.clients.size() == 1
         user.clients[0] == client
+
+        and:
+        user.reels.size() == 1
+        user.reels[0].name == 'Uncategorized'
     }
 
     void "update user"() {

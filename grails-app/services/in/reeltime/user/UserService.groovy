@@ -4,12 +4,18 @@ import in.reeltime.oauth2.Client
 
 class UserService {
 
+    def reelService
+
     boolean userExists(String username) {
         User.findByUsername(username) != null
     }
 
     User createUser(String username, String password, String email, Client client) {
-        new User(username: username, password: password, email: email, clients: [client]).save()
+        def uncategorizedReel = reelService.createReel('Uncategorized')
+        new User(username: username, password: password, email: email)
+                .addToClients(client)
+                .addToReels(uncategorizedReel)
+                .save()
     }
 
     void updateUser(User user) {
