@@ -1,10 +1,12 @@
 package in.reeltime.reel
 
+import in.reeltime.user.User
+
 class ReelService {
 
-    Reel createReel(String reelName) {
+    Reel createReel(User owner, String reelName) {
         def audience = new Audience(users: [])
-        new Reel(name: reelName, audience: audience, videos: [])
+        new Reel(owner: owner, name: reelName, audience: audience, videos: [])
     }
 
 }

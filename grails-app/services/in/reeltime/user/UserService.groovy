@@ -11,11 +11,11 @@ class UserService {
     }
 
     User createAndSaveUser(String username, String password, String email, Client client) {
-        def uncategorizedReel = reelService.createReel('Uncategorized')
-        new User(username: username, password: password, email: email)
-                .addToClients(client)
-                .addToReels(uncategorizedReel)
-                .save()
+        def user = new User(username: username, password: password, email: email, clients: [client])
+        def uncategorizedReel = reelService.createReel(user, 'Uncategorized')
+
+        user.addToReels(uncategorizedReel)
+        user.save()
     }
 
     void updateUser(User user) {
