@@ -52,7 +52,50 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         _   |   false
     }
 
+    @Unroll
+    void "reel contains [#count] videos"() {
+        given:
+        def reel = reelService.createReel(owner, "reel with $count videos")
+        def videos = createVideos(reel, count)
+
+        and:
+        reel.save()
+
+        when:
+        def list = reelService.listVideos(reel.id)
+
+        then:
+        list.size() == videos.size()
+
+        and:
+        assertVideosAreInList(list, videos)
+
+        where:
+        _   |   count
+        _   |   0
+        _   |   1
+        _   |   2
+        _   |   5
+        _   |   10
+    }
+
     private User selectUser(boolean selectOwner) {
         return selectOwner ? owner : notOwner
+    }
+
+    private Collection<Video> createVideos(Reel reel, int count) {
+        def videos = []
+        for(int i = 0; i < count; i++) {
+            def video = new Video(creator: owner, title: "test video $i", masterPath: "path $i").save()
+            videos << video
+            reel.addToVideos(video)
+        }
+        return videos
+    }
+
+    private static void assertVideosAreInList(Collection<Video> actual, Collection<Video> expected) {
+        expected.each { video ->
+            assert actual.contains(video)
+        }
     }
 }

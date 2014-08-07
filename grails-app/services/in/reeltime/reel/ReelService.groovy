@@ -16,4 +16,8 @@ class ReelService {
         reel.addToVideos(video)
         reel.save()
     }
+
+    Collection<Video> listVideos(Long reelId) {
+        Reel.findById(reelId).videos
+    }
 }
