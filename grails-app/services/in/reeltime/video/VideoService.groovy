@@ -1,5 +1,6 @@
 package in.reeltime.video
 
+import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.user.User
 
 class VideoService {
@@ -13,6 +14,14 @@ class VideoService {
 
     boolean videoExists(Long videoId) {
         Video.findById(videoId) != null
+    }
+
+    Video loadVideo(Long videoId) {
+        def video = Video.findById(videoId)
+        if(!video) {
+            throw new VideoNotFoundException("Video [$videoId] not found")
+        }
+        return video
     }
 
     boolean videoIsAvailable(Long videoId) {

@@ -1,19 +1,37 @@
 package in.reeltime.reel
 
+import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.user.User
 import in.reeltime.video.Video
 
 class ReelService {
+
+    def videoService
+    def springSecurityService
 
     Reel createReel(User owner, String reelName) {
         def audience = new Audience(users: [])
         new Reel(owner: owner, name: reelName, audience: audience, videos: [])
     }
 
-    // TODO: Ensure current user is the owner of the reel
-    void addVideo(Long reelId, Long videoId) {
+    Reel loadReel(Long reelId) {
         def reel = Reel.findById(reelId)
-        def video = Video.findById(videoId)
+        if(!reel) {
+            throw new ReelNotFoundException("Reel [$reelId] not found")
+        }
+        return reel
+    }
+
+    void addVideo(Long reelId, Long videoId) {
+
+        def reel = loadReel(reelId)
+        def video = videoService.loadVideo(videoId)
+
+        if(!currentUserIsReelOwner(reel)) {
+            throw new AuthorizationException("Only the owner of a reel can add videos to it")
+        }
+
         reel.addToVideos(video)
         reel.save()
     }
@@ -23,6 +41,13 @@ class ReelService {
     }
 
     Collection<Video> listVideos(Long reelId) {
-        Reel.findById(reelId).videos
+        loadReel(reelId).videos
     }
+
+    private boolean currentUserIsReelOwner(Reel reel) {
+        def currentUser = springSecurityService.currentUser as User
+        return reel.owner == currentUser
+    }
+
+
 }
