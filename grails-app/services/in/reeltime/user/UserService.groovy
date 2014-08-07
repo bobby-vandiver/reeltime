@@ -6,6 +6,7 @@ import in.reeltime.reel.Reel
 class UserService {
 
     def reelService
+    def springSecurityService
 
     boolean userExists(String username) {
         User.findByUsername(username) != null
@@ -13,10 +14,8 @@ class UserService {
 
     User createAndSaveUser(String username, String password, String email, Client client) {
         def user = new User(username: username, password: password, email: email, clients: [client])
-        def uncategorizedReel = reelService.createReel(user, 'Uncategorized')
-
-        user.addToReels(uncategorizedReel)
-        user.save()
+        createAndAddReelToUser(user, 'Uncategorized')
+        return user
     }
 
     void updateUser(User user) {
@@ -25,5 +24,16 @@ class UserService {
 
     Collection<Reel> listReels(String username) {
         User.findByUsername(username).reels
+    }
+
+    void addReel(String reelName) {
+        def currentUser = springSecurityService.currentUser as User
+        createAndAddReelToUser(currentUser, reelName)
+    }
+
+    private void createAndAddReelToUser(User user, String reelName) {
+        def reel = reelService.createReel(user, reelName)
+        user.addToReels(reel)
+        user.save()
     }
 }

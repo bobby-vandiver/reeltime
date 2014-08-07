@@ -1,8 +1,10 @@
 package in.reeltime.user
 
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
+import in.reeltime.video.Video
 import spock.lang.Unroll
 
 class UserServiceIntegrationSpec extends IntegrationSpec {
@@ -89,6 +91,33 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         _   |   5
         _   |   10
         _   |   100
+    }
+
+    @Unroll
+    void "add new reel to current user"() {
+        given:
+        def owner = userService.createAndSaveUser('foo', 'bar', 'foo@test.com', client)
+        def username = owner.username
+
+        and:
+        assert owner.reels.size() == 1
+
+        and:
+        def existingReelName = owner.reels[0].name
+        def newReelName = existingReelName + 'a'
+
+        when:
+        SpringSecurityUtils.doWithAuth(username) {
+            userService.addReel(newReelName)
+        }
+
+        then:
+        def retrieved = User.findByUsername(username)
+        retrieved.reels.size() == 2
+
+        and:
+        retrieved.reels.find { it.name == existingReelName } != null
+        retrieved.reels.find { it.name == newReelName } != null
     }
 
     private Collection<Reel> createReels(User owner, int count) {
