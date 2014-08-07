@@ -36,10 +36,6 @@ class ReelService {
         reel.save()
     }
 
-    Collection<Reel> listReels(String username) {
-        User.findByUsername(username).reels
-    }
-
     Collection<Video> listVideos(Long reelId) {
         loadReel(reelId).videos
     }
@@ -48,6 +44,4 @@ class ReelService {
         def currentUser = springSecurityService.currentUser as User
         return reel.owner == currentUser
     }
-
-
 }

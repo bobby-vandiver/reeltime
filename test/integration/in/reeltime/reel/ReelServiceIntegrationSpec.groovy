@@ -99,28 +99,6 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
     }
 
     @Unroll
-    void "list all reels belonging to specified user -- user has [#count] reels total"() {
-        given:
-        def username = owner.username
-        def reels = createReels(count)
-
-        when:
-        def list = reelService.listReels(username)
-
-        then:
-        assertListsContainSameElements(list, reels)
-
-        where:
-        _   |   count
-        _   |   0
-        _   |   1
-        _   |   2
-        _   |   5
-        _   |   10
-        _   |   100
-    }
-
-    @Unroll
     void "reel contains [#count] videos"() {
         given:
         def reel = reelService.createReel(owner, "reel with $count videos")
@@ -139,23 +117,6 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         _   |   2
         _   |   5
         _   |   10
-    }
-
-    private User selectUser(boolean selectOwner) {
-        return selectOwner ? owner : notOwner
-    }
-
-    private Collection<Reel> createReels(int count) {
-        def reels = owner.reels
-        def initialCount = reels.size()
-
-        for(int i = initialCount; i < count; i++) {
-            def reel = reelService.createReel(owner, "reel $i")
-            reels << reel
-            owner.addToReels(reel)
-        }
-        owner.save()
-        return reels
     }
 
     private Collection<Video> createVideos(Reel reel, int count) {

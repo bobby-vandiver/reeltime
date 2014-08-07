@@ -1,6 +1,7 @@
 package in.reeltime.user
 
 import in.reeltime.oauth2.Client
+import in.reeltime.reel.Reel
 
 class UserService {
 
@@ -20,5 +21,9 @@ class UserService {
 
     void updateUser(User user) {
         user.save()
+    }
+
+    Collection<Reel> listReels(String username) {
+        User.findByUsername(username).reels
     }
 }
