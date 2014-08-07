@@ -7,6 +7,12 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
     def userService
 
+    Client client
+
+    void setup() {
+        client = new Client(clientName: 'test-name', clientId: 'test-id').save()
+    }
+
     void "user exists"() {
         given:
         def existingUsername = 'foo'
@@ -27,9 +33,6 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         def email = 'foo@test.com'
         def username = 'foo'
         def password = 'bar'
-
-        and:
-        def client = new Client(clientName: 'test-name', clientId: 'test-id').save()
 
         when:
         def user = userService.createAndSaveUser(username, password, email, client)
@@ -52,7 +55,6 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
     void "update user"() {
         given:
-        def client = new Client(clientName: 'test-name', clientId: 'test-id').save()
         def user = userService.createAndSaveUser('foo', 'bar', 'foo@test.com', client)
         assert !User.findByUsername('foo').accountExpired
 
