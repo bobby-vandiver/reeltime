@@ -1,5 +1,6 @@
 package in.reeltime.user
 
+import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
 
@@ -18,12 +19,20 @@ class UserService {
         return user
     }
 
+    User loadUser(String username) {
+        def user = User.findByUsername(username)
+        if(!user) {
+            throw new UserNotFoundException("User [$username] not found")
+        }
+        return user
+    }
+
     void updateUser(User user) {
         user.save()
     }
 
     Collection<Reel> listReels(String username) {
-        User.findByUsername(username).reels
+        loadUser(username).reels
     }
 
     void addReel(String reelName) {

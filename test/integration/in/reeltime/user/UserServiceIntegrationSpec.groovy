@@ -4,7 +4,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
-import in.reeltime.video.Video
+import in.reeltime.exceptions.UserNotFoundException
 import spock.lang.Unroll
 
 class UserServiceIntegrationSpec extends IntegrationSpec {
@@ -58,6 +58,27 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         user.reels[0].name == 'Uncategorized'
     }
 
+    void "load an unknown user"() {
+        when:
+        userService.loadUser('unknown')
+
+        then:
+        def e = thrown(UserNotFoundException)
+        e.message == 'User [unknown] not found'
+    }
+
+    void "load an existing user"() {
+        given:
+        def username = 'exists'
+        new User(username: username, password: 'unknown', email: "$username@test.com").save(validate: false)
+
+        when:
+        def user = userService.loadUser(username)
+
+        then:
+        user.username == username
+    }
+
     void "update user"() {
         given:
         def user = userService.createAndSaveUser('foo', 'bar', 'foo@test.com', client)
@@ -69,6 +90,14 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         User.findByUsername('foo').accountExpired
+    }
+
+    void "cannot list reels for an unknown user"() {
+        when:
+        userService.listReels('nobody')
+
+        then:
+        thrown(UserNotFoundException)
     }
 
     @Unroll
