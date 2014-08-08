@@ -189,6 +189,93 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         'lions and tigers and bears'    |   false
     }
 
+    void "attempt to remove a video from a reel that does not belong to the current user"() {
+        given:
+        def reelId = owner.reels[0].id
+        def videoId = createAndSaveVideo(owner).id
+
+        and:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.addVideo(reelId, videoId)
+        }
+
+        when:
+        SpringSecurityUtils.doWithAuth(notOwner.username) {
+            reelService.removeVideo(reelId, videoId)
+        }
+
+        then:
+        def e = thrown(AuthorizationException)
+        e.message == "Only the owner of a reel can remove videos from it"
+    }
+
+    void "attempt to remove a video that does not belong to the reel"() {
+        given:
+        def reelId = owner.reels[0].id
+        def videoId = createAndSaveVideo(owner).id
+
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.removeVideo(reelId, videoId)
+        }
+
+        then:
+        def e = thrown(VideoNotFoundException)
+        e.message == "Reel [$reelId] does not contain video [$videoId]"
+    }
+
+    void "attempt to remove an unknown video from the reel"() {
+        given:
+        def reelId = owner.reels[0].id
+        def videoId = 123456789
+
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.removeVideo(reelId, videoId)
+        }
+
+        then:
+        thrown(VideoNotFoundException)
+    }
+
+    void "attempt to remove a video from an unknown reel"() {
+        given:
+        def reelId = 8675309
+        def videoId = createAndSaveVideo(owner).id
+
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.removeVideo(reelId, videoId)
+        }
+
+        then:
+        thrown(ReelNotFoundException)
+    }
+
+    void "removing a video from a reel does not delete the video instance"() {
+        given:
+        def reelId = owner.reels[0].id
+        def videoId = createAndSaveVideo(owner).id
+
+        and:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.addVideo(reelId, videoId)
+        }
+
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.removeVideo(reelId, videoId)
+        }
+
+        then:
+        def video = Video.findById(videoId)
+        video != null
+
+        and:
+        def reel = Reel.findById(reelId)
+        !reel.containsVideo(video)
+    }
+
     private Collection<Video> createVideos(Reel reel, int count) {
         def videos = []
         for(int i = 0; i < count; i++) {

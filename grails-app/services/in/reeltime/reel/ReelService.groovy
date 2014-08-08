@@ -2,6 +2,7 @@ package in.reeltime.reel
 
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ReelNotFoundException
+import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.user.User
 import in.reeltime.video.Video
 import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
@@ -48,6 +49,22 @@ class ReelService {
         }
 
         reel.addToVideos(video)
+        reel.save()
+    }
+
+    void removeVideo(Long reelId, Long videoId) {
+
+        def reel = loadReel(reelId)
+        def video = videoService.loadVideo(videoId)
+
+        if(currentUserIsNotReelOwner(reel)) {
+            throw new AuthorizationException("Only the owner of a reel can remove videos from it")
+        }
+        else if(!reel.containsVideo(video)) {
+            throw new VideoNotFoundException("Reel [$reelId] does not contain video [$videoId]")
+        }
+
+        reel.removeFromVideos(video)
         reel.save()
     }
 

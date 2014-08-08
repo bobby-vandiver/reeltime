@@ -19,4 +19,8 @@ class Reel {
         audience unique: true
         videos nullable: false
     }
+
+    boolean containsVideo(Video video) {
+        return videos.contains(video)
+    }
 }
