@@ -14,7 +14,7 @@ class UserService {
 
     User createAndSaveUser(String username, String password, String email, Client client) {
         def user = new User(username: username, password: password, email: email, clients: [client])
-        createAndAddReelToUser(user, 'Uncategorized')
+        addReelToUserAndSave(user, 'Uncategorized')
         return user
     }
 
@@ -28,10 +28,10 @@ class UserService {
 
     void addReel(String reelName) {
         def currentUser = springSecurityService.currentUser as User
-        createAndAddReelToUser(currentUser, reelName)
+        addReelToUserAndSave(currentUser, reelName)
     }
 
-    private void createAndAddReelToUser(User user, String reelName) {
+    private void addReelToUserAndSave(User user, String reelName) {
         def reel = reelService.createReel(user, reelName)
         user.addToReels(reel)
         user.save()
