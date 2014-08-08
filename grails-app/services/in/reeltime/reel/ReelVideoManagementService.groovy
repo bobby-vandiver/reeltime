@@ -25,7 +25,7 @@ class ReelVideoManagementService {
         }
 
         reel.addToVideos(video)
-        reel.save()
+        reelService.storeReel(reel)
     }
 
     void removeVideo(Long reelId, Long videoId) {
@@ -41,6 +41,6 @@ class ReelVideoManagementService {
         }
 
         reel.removeFromVideos(video)
-        reel.save()
+        reelService.storeReel(reel)
     }
 }

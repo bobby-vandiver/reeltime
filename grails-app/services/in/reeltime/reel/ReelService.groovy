@@ -28,6 +28,10 @@ class ReelService {
         return reel
     }
 
+    void storeReel(Reel reel) {
+        reel.save()
+    }
+
     Collection<Reel> listReels(String username) {
         userService.loadUser(username).reels
     }
