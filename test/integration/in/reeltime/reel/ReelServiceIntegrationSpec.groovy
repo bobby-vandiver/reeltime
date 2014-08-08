@@ -79,26 +79,6 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         Reel.findById(reelId) == null
     }
 
-    @Unroll
-    void "reel name [#name] is uncategorized [#truth]"() {
-        expect:
-        reelService.reelNameIsUncategorized(name) == truth
-
-        where:
-        name                            |   truth
-        'Uncategorized'                 |   true
-        'uncategorized'                 |   true
-        'uNCatEgoriZED'                 |   true
-        'UNCATEGORIZED'                 |   true
-        'categorized'                   |   false
-        'uncategorize'                  |   false
-        'lionZ'                         |   false
-        'TIgerS'                        |   false
-        'BEARS'                         |   false
-        'oh my'                         |   false
-        'lions and tigers and bears'    |   false
-    }
-
     void "cannot list reels for an unknown user"() {
         when:
         reelService.listReels('nobody')

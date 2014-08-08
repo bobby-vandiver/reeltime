@@ -2,15 +2,12 @@ package in.reeltime.reel
 
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ReelNotFoundException
-import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.user.User
-import in.reeltime.video.Video
-import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
 class ReelService {
 
     def userService
-    def springSecurityService
+    def reelAuthorizationService
 
     Reel createReel(String reelName) {
         def audience = new Audience(users: [])
@@ -36,10 +33,10 @@ class ReelService {
     }
 
     void addReel(String reelName) {
-        if(reelNameIsUncategorized(reelName)) {
+        if(reelAuthorizationService.reelNameIsReserved(reelName)) {
             throw new IllegalArgumentException("Reel name [$reelName] is reserved")
         }
-        def currentUser = springSecurityService.currentUser as User
+        def currentUser = userService.currentUser
         def reel = createReelForUser(currentUser, reelName)
 
         currentUser.addToReels(reel)
@@ -50,22 +47,13 @@ class ReelService {
         def reel = loadReel(reelId)
         def name = reel.name
 
-        if(currentUserIsNotReelOwner(reel)) {
+        if(reelAuthorizationService.currentUserIsNotReelOwner(reel)) {
             throw new AuthorizationException("Only the owner of a reel can delete it")
         }
-        else if(reelNameIsUncategorized(name)) {
+        else if(reelAuthorizationService.reelNameIsReserved(name)) {
             throw new AuthorizationException("The ${name} reel cannot be deleted")
         }
         reel.owner.removeFromReels(reel)
         reel.delete()
-    }
-
-    boolean reelNameIsUncategorized(String reelName) {
-        return reelName.toLowerCase() == UNCATEGORIZED_REEL_NAME.toLowerCase()
-    }
-
-    boolean currentUserIsNotReelOwner(Reel reel) {
-        def currentUser = springSecurityService.currentUser as User
-        return reel.owner != currentUser
     }
 }

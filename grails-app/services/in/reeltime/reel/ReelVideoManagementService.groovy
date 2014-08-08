@@ -7,6 +7,8 @@ import in.reeltime.video.Video
 class ReelVideoManagementService {
 
     def reelService
+    def reelAuthorizationService
+
     def videoService
 
     Collection<Video> listVideos(Long reelId) {
@@ -18,7 +20,7 @@ class ReelVideoManagementService {
         def reel = reelService.loadReel(reelId)
         def video = videoService.loadVideo(videoId)
 
-        if(reelService.currentUserIsNotReelOwner(reel)) {
+        if(reelAuthorizationService.currentUserIsNotReelOwner(reel)) {
             throw new AuthorizationException("Only the owner of a reel can add videos to it")
         }
 
@@ -31,7 +33,7 @@ class ReelVideoManagementService {
         def reel = reelService.loadReel(reelId)
         def video = videoService.loadVideo(videoId)
 
-        if(reelService.currentUserIsNotReelOwner(reel)) {
+        if(reelAuthorizationService.currentUserIsNotReelOwner(reel)) {
             throw new AuthorizationException("Only the owner of a reel can remove videos from it")
         }
         else if(!reel.containsVideo(video)) {
