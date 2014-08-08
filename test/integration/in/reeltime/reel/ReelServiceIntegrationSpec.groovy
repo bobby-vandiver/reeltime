@@ -169,6 +169,26 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         _   |   10
     }
 
+    @Unroll
+    void "reel name [#name] is uncategorized [#truth]"() {
+        expect:
+        reelService.reelNameIsUncategorized(name) == truth
+
+        where:
+        name                            |   truth
+        'Uncategorized'                 |   true
+        'uncategorized'                 |   true
+        'uNCatEgoriZED'                 |   true
+        'UNCATEGORIZED'                 |   true
+        'categorized'                   |   false
+        'uncategorize'                  |   false
+        'lionZ'                         |   false
+        'TIgerS'                        |   false
+        'BEARS'                         |   false
+        'oh my'                         |   false
+        'lions and tigers and bears'    |   false
+    }
+
     private Collection<Video> createVideos(Reel reel, int count) {
         def videos = []
         for(int i = 0; i < count; i++) {

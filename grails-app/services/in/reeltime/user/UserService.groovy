@@ -37,6 +37,9 @@ class UserService {
     }
 
     void addReel(String reelName) {
+        if(reelService.reelNameIsUncategorized(reelName)) {
+            throw new IllegalArgumentException("Reel name [$reelName] is reserved")
+        }
         def currentUser = springSecurityService.currentUser as User
         addReelToUserAndSave(currentUser, reelName)
     }

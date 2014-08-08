@@ -149,6 +149,28 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         retrieved.reels.find { it.name == newReelName } != null
     }
 
+    @Unroll
+    void "do not allow a user to add a reel named [#uncategorized]"() {
+        given:
+        def owner = createAndSaveValidUser('foo')
+
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            userService.addReel(uncategorized)
+        }
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == "Reel name [$uncategorized] is reserved"
+
+        where:
+        _   |   uncategorized
+        _   |   'Uncategorized'
+        _   |   'uncategorized'
+        _   |   'uNCatEgoriZED'
+        _   |   'UNCATEGORIZED'
+    }
+
     private User createAndSaveValidUser(String username) {
         userService.createAndSaveUser(username, 'bar', "username@test.com", client)
     }

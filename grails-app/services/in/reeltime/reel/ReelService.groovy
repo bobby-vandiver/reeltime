@@ -55,12 +55,12 @@ class ReelService {
         loadReel(reelId).videos
     }
 
+    boolean reelNameIsUncategorized(String reelName) {
+        return reelName.toLowerCase() == UNCATEGORIZED_REEL_NAME.toLowerCase()
+    }
+
     private boolean currentUserIsNotReelOwner(Reel reel) {
         def currentUser = springSecurityService.currentUser as User
         return reel.owner != currentUser
-    }
-
-    private static boolean reelNameIsUncategorized(String reelName) {
-        return reelName == UNCATEGORIZED_REEL_NAME
     }
 }
