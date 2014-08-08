@@ -9,8 +9,7 @@ import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.exceptions.AuthorizationException
 import spock.lang.Unroll
 
-import static in.reeltime.reel.Reel.getUNCATEGORIZED_REEL_NAME
-import static in.reeltime.reel.Reel.getUNCATEGORIZED_REEL_NAME
+import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
 class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
 

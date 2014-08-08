@@ -1,6 +1,5 @@
 package in.reeltime.reel
 
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import in.reeltime.user.User
 import in.reeltime.user.UserService
@@ -48,10 +47,10 @@ class ReelAuthorizationServiceSpec extends Specification {
         def reel = new Reel(owner: owner)
 
         when:
-        def result = service.currentUserIsNotReelOwner(reel)
+        def result = service.currentUserIsReelOwner(reel)
 
         then:
-        result
+        !result
 
         and:
         userService.currentUser >> notOwner
@@ -62,10 +61,10 @@ class ReelAuthorizationServiceSpec extends Specification {
         def reel = new Reel(owner: owner)
 
         when:
-        def result = service.currentUserIsNotReelOwner(reel)
+        def result = service.currentUserIsReelOwner(reel)
 
         then:
-        !result
+        result
 
         and:
         userService.currentUser >> owner

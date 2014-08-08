@@ -47,7 +47,7 @@ class ReelService {
         def reel = loadReel(reelId)
         def name = reel.name
 
-        if(reelAuthorizationService.currentUserIsNotReelOwner(reel)) {
+        if(!reelAuthorizationService.currentUserIsReelOwner(reel)) {
             throw new AuthorizationException("Only the owner of a reel can delete it")
         }
         else if(reelAuthorizationService.reelNameIsReserved(name)) {

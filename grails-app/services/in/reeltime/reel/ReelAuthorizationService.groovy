@@ -10,7 +10,7 @@ class ReelAuthorizationService {
         return reelName.toLowerCase() == UNCATEGORIZED_REEL_NAME.toLowerCase()
     }
 
-    boolean currentUserIsNotReelOwner(Reel reel) {
-        return reel.owner != userService.currentUser
+    boolean currentUserIsReelOwner(Reel reel) {
+        return reel.owner == userService.currentUser
     }
 }
