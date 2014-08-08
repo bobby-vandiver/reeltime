@@ -10,8 +10,6 @@ import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 class ReelService {
 
     def userService
-    def videoService
-
     def springSecurityService
 
     Reel createReel(String reelName) {
@@ -62,44 +60,11 @@ class ReelService {
         reel.delete()
     }
 
-    void addVideo(Long reelId, Long videoId) {
-
-        def reel = loadReel(reelId)
-        def video = videoService.loadVideo(videoId)
-
-        if(currentUserIsNotReelOwner(reel)) {
-            throw new AuthorizationException("Only the owner of a reel can add videos to it")
-        }
-
-        reel.addToVideos(video)
-        reel.save()
-    }
-
-    void removeVideo(Long reelId, Long videoId) {
-
-        def reel = loadReel(reelId)
-        def video = videoService.loadVideo(videoId)
-
-        if(currentUserIsNotReelOwner(reel)) {
-            throw new AuthorizationException("Only the owner of a reel can remove videos from it")
-        }
-        else if(!reel.containsVideo(video)) {
-            throw new VideoNotFoundException("Reel [$reelId] does not contain video [$videoId]")
-        }
-
-        reel.removeFromVideos(video)
-        reel.save()
-    }
-
-    Collection<Video> listVideos(Long reelId) {
-        loadReel(reelId).videos
-    }
-
     boolean reelNameIsUncategorized(String reelName) {
         return reelName.toLowerCase() == UNCATEGORIZED_REEL_NAME.toLowerCase()
     }
 
-    private boolean currentUserIsNotReelOwner(Reel reel) {
+    boolean currentUserIsNotReelOwner(Reel reel) {
         def currentUser = springSecurityService.currentUser as User
         return reel.owner != currentUser
     }
