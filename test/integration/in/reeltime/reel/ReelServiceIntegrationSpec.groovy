@@ -7,7 +7,10 @@ import in.reeltime.video.Video
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.exceptions.UserNotFoundException
 import spock.lang.Unroll
+
+import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
 class ReelServiceIntegrationSpec extends IntegrationSpec {
 
@@ -20,11 +23,13 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
     User notOwner
 
     void setup() {
+        def ownerRequiredReel = reelService.createReel(UNCATEGORIZED_REEL_NAME)
         def ownerClient = clientService.createAndSaveClient('cname1', 'cid1', 'secret')
-        owner = userService.createAndSaveUser('someone', 'password', 'someone@test.com', ownerClient)
+        owner = userService.createAndSaveUser('theOwner', 'password', 'someone@test.com', ownerClient, ownerRequiredReel)
 
+        def nowOwnerRequiredReel = reelService.createReel(UNCATEGORIZED_REEL_NAME)
         def notOwnerClient = clientService.createAndSaveClient('cname2', 'cid2', 'secret')
-        notOwner = userService.createAndSaveUser('nobody', 'password', 'nobody@test.com', notOwnerClient)
+        notOwner = userService.createAndSaveUser('notTheOwner', 'password', 'nobody@test.com', notOwnerClient, nowOwnerRequiredReel)
     }
 
     @Unroll
@@ -34,7 +39,7 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         def videoId = video.id
 
         and:
-        def reel = reelService.createReel(owner, 'some reel').save()
+        def reel = reelService.createReelForUser(owner, 'some reel').save()
         def reelId = reel.id
 
         when:
@@ -68,7 +73,7 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
     void "do not allow the uncategorized reel to be deleted"() {
         given:
         def reelId = owner.reels[0].id
-        assert owner.reels[0].name == Reel.UNCATEGORIZED_REEL_NAME
+        assert owner.reels[0].name == UNCATEGORIZED_REEL_NAME
 
         when:
         SpringSecurityUtils.doWithAuth(owner.username) {
@@ -86,7 +91,7 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         SpringSecurityUtils.doWithAuth(owner.username) {
-            userService.addReel(name)
+            reelService.addReel(name)
         }
 
         and:
@@ -107,7 +112,7 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         def videoId = video.id
 
         and:
-        def reel = reelService.createReel(owner, 'some reel').save()
+        def reel = reelService.createReelForUser(owner, 'some reel').save()
         def reelId = reel.id
 
         when:
@@ -151,7 +156,7 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
     @Unroll
     void "reel contains [#count] videos"() {
         given:
-        def reel = reelService.createReel(owner, "reel with $count videos")
+        def reel = reelService.createReelForUser(owner, "reel with $count videos").save()
         def videos = createVideos(reel, count)
 
         when:
@@ -187,6 +192,74 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         'BEARS'                         |   false
         'oh my'                         |   false
         'lions and tigers and bears'    |   false
+    }
+
+    void "cannot list reels for an unknown user"() {
+        when:
+        reelService.listReels('nobody')
+
+        then:
+        thrown(UserNotFoundException)
+    }
+
+    @Unroll
+    void "list all reels belonging to specified user -- user has [#count] reels total"() {
+        given:
+        def reels = createReels(owner, count)
+
+        when:
+        def list = reelService.listReels(owner.username)
+
+        then:
+        assertListsContainSameElements(list, reels)
+
+        where:
+        _   |   count
+        _   |   0
+        _   |   1
+        _   |   2
+        _   |   5
+        _   |   10
+        _   |   100
+    }
+
+    @Unroll
+    void "add new reel to current user"() {
+        given:
+        def existingReelName = owner.reels[0].name
+        def newReelName = existingReelName + 'a'
+
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.addReel(newReelName)
+        }
+
+        then:
+        def retrieved = User.findByUsername(owner.username)
+        retrieved.reels.size() == 2
+
+        and:
+        retrieved.reels.find { it.name == existingReelName } != null
+        retrieved.reels.find { it.name == newReelName } != null
+    }
+
+    @Unroll
+    void "do not allow a user to add a reel named [#uncategorized]"() {
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.addReel(uncategorized)
+        }
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == "Reel name [$uncategorized] is reserved"
+
+        where:
+        _   |   uncategorized
+        _   |   'Uncategorized'
+        _   |   'uncategorized'
+        _   |   'uNCatEgoriZED'
+        _   |   'UNCATEGORIZED'
     }
 
     void "attempt to remove a video from a reel that does not belong to the current user"() {
@@ -274,6 +347,19 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         and:
         def reel = Reel.findById(reelId)
         !reel.containsVideo(video)
+    }
+
+    private Collection<Reel> createReels(User owner, int count) {
+        def reels = owner.reels
+        def initialCount = reels.size()
+
+        for(int i = initialCount; i < count; i++) {
+            def reel = reelService.createReelForUser(owner, "reel $i")
+            reels << reel
+            owner.addToReels(reel)
+        }
+        owner.save()
+        return reels
     }
 
     private Collection<Video> createVideos(Reel reel, int count) {

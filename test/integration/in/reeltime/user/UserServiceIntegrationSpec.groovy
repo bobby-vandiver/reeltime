@@ -1,21 +1,21 @@
 package in.reeltime.user
 
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import in.reeltime.oauth2.Client
-import in.reeltime.reel.Reel
 import in.reeltime.exceptions.UserNotFoundException
-import spock.lang.Unroll
+import in.reeltime.reel.Audience
+import in.reeltime.reel.Reel
 
 class UserServiceIntegrationSpec extends IntegrationSpec {
 
     def userService
-    def reelService
 
+    Reel reel
     Client client
 
     void setup() {
         client = new Client(clientName: 'test-name', clientId: 'test-id').save()
+        reel = new Reel(name: 'test reel', audience: new Audience(), videos: [])
     }
 
     void "user exists"() {
@@ -40,7 +40,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         def password = 'bar'
 
         when:
-        def user = userService.createAndSaveUser(username, password, email, client)
+        def user = userService.createAndSaveUser(username, password, email, client, reel)
 
         then:
         user.id > 0
@@ -55,7 +55,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         user.reels.size() == 1
-        user.reels[0].name == 'Uncategorized'
+        user.reels.contains(reel)
     }
 
     void "load an unknown user"() {
@@ -92,107 +92,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         User.findByUsername('foo').accountExpired
     }
 
-    void "cannot list reels for an unknown user"() {
-        when:
-        userService.listReels('nobody')
-
-        then:
-        thrown(UserNotFoundException)
-    }
-
-    @Unroll
-    void "list all reels belonging to specified user -- user has [#count] reels total"() {
-        given:
-        def owner = createAndSaveValidUser('foo')
-        def reels = createReels(owner, count)
-
-        when:
-        def list = userService.listReels(owner.username)
-
-        then:
-        assertListsContainSameElements(list, reels)
-
-        where:
-        _   |   count
-        _   |   0
-        _   |   1
-        _   |   2
-        _   |   5
-        _   |   10
-        _   |   100
-    }
-
-    @Unroll
-    void "add new reel to current user"() {
-        given:
-        def owner = createAndSaveValidUser('foo')
-        def username = owner.username
-
-        and:
-        assert owner.reels.size() == 1
-
-        and:
-        def existingReelName = owner.reels[0].name
-        def newReelName = existingReelName + 'a'
-
-        when:
-        SpringSecurityUtils.doWithAuth(username) {
-            userService.addReel(newReelName)
-        }
-
-        then:
-        def retrieved = User.findByUsername(username)
-        retrieved.reels.size() == 2
-
-        and:
-        retrieved.reels.find { it.name == existingReelName } != null
-        retrieved.reels.find { it.name == newReelName } != null
-    }
-
-    @Unroll
-    void "do not allow a user to add a reel named [#uncategorized]"() {
-        given:
-        def owner = createAndSaveValidUser('foo')
-
-        when:
-        SpringSecurityUtils.doWithAuth(owner.username) {
-            userService.addReel(uncategorized)
-        }
-
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.message == "Reel name [$uncategorized] is reserved"
-
-        where:
-        _   |   uncategorized
-        _   |   'Uncategorized'
-        _   |   'uncategorized'
-        _   |   'uNCatEgoriZED'
-        _   |   'UNCATEGORIZED'
-    }
-
     private User createAndSaveValidUser(String username) {
-        userService.createAndSaveUser(username, 'bar', "username@test.com", client)
-    }
-
-    private Collection<Reel> createReels(User owner, int count) {
-        def reels = owner.reels
-        def initialCount = reels.size()
-
-        for(int i = initialCount; i < count; i++) {
-            def reel = reelService.createReel(owner, "reel $i")
-            reels << reel
-            owner.addToReels(reel)
-        }
-        owner.save()
-        return reels
-    }
-
-    private static void assertListsContainSameElements(Collection<?> actual, Collection<?> expected) {
-        assert actual.size() == expected.size()
-
-        expected.each { element ->
-            assert actual.contains(element)
-        }
+        userService.createAndSaveUser(username, 'bar', "username@test.com", client, reel)
     }
 }

@@ -2,10 +2,14 @@ package in.reeltime.account
 
 import in.reeltime.user.User
 
+import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
+
 class AccountRegistrationService {
 
     def userService
     def clientService
+
+    def reelService
 
     def accountConfirmationService
 
@@ -32,7 +36,9 @@ class AccountRegistrationService {
         def clientSecret = clientService.generateClientSecret()
 
         def client = clientService.createAndSaveClient(clientName, clientId, clientSecret)
-        def user = userService.createAndSaveUser(username, password, email, client)
+        def reel = reelService.createReel(UNCATEGORIZED_REEL_NAME)
+
+        def user = userService.createAndSaveUser(username, password, email, client, reel)
 
         sendConfirmationEmail(user, locale)
         new RegistrationResult(clientId: clientId, clientSecret: clientSecret)

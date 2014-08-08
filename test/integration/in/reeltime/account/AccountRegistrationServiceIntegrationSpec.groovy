@@ -31,7 +31,12 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
         result.clientSecret != null
 
         and:
-        User.findByUsernameAndEmail(username, email) != null
+        def user = User.findByUsernameAndEmail(username, email)
+        user != null
+
+        and:
+        user.reels.size() == 1
+        user.reels[0].name == 'Uncategorized'
 
         and:
         inMemoryMailService.sentMessages.size() == 1

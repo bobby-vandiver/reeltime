@@ -15,7 +15,7 @@ class ReelServiceSpec extends Specification {
         def reelName = 'awesome reel'
 
         when:
-        def reel = service.createReel(user, reelName)
+        def reel = service.createReelForUser(user, reelName)
 
         then:
         reel.owner == user

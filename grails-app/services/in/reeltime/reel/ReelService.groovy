@@ -9,12 +9,20 @@ import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
 class ReelService {
 
+    def userService
     def videoService
+
     def springSecurityService
 
-    Reel createReel(User owner, String reelName) {
+    Reel createReel(String reelName) {
         def audience = new Audience(users: [])
-        new Reel(owner: owner, name: reelName, audience: audience, videos: [])
+        new Reel(name: reelName, audience: audience, videos: [])
+    }
+
+    Reel createReelForUser(User owner, String reelName) {
+        def reel = createReel(reelName)
+        reel.owner = owner
+        return reel
     }
 
     Reel loadReel(Long reelId) {
@@ -23,6 +31,21 @@ class ReelService {
             throw new ReelNotFoundException("Reel [$reelId] not found")
         }
         return reel
+    }
+
+    Collection<Reel> listReels(String username) {
+        userService.loadUser(username).reels
+    }
+
+    void addReel(String reelName) {
+        if(reelNameIsUncategorized(reelName)) {
+            throw new IllegalArgumentException("Reel name [$reelName] is reserved")
+        }
+        def currentUser = springSecurityService.currentUser as User
+        def reel = createReelForUser(currentUser, reelName)
+
+        currentUser.addToReels(reel)
+        userService.storeUser(currentUser)
     }
 
     void deleteReel(Long reelId) {
