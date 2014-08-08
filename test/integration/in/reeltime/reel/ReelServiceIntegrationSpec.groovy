@@ -51,6 +51,56 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         fetchedReel.videos.contains(video)
     }
 
+    void "do not allow a reel to be deleted if owner is not current user"() {
+        given:
+        def reelId = owner.reels[0].id
+
+        when:
+        SpringSecurityUtils.doWithAuth(notOwner.username) {
+            reelService.deleteReel(reelId)
+        }
+
+        then:
+        def e = thrown(AuthorizationException)
+        e.message == "Only the owner of a reel can delete it"
+    }
+
+    void "do not allow the uncategorized reel to be deleted"() {
+        given:
+        def reelId = owner.reels[0].id
+        assert owner.reels[0].name == Reel.UNCATEGORIZED_REEL_NAME
+
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.deleteReel(reelId)
+        }
+
+        then:
+        def e = thrown(AuthorizationException)
+        e.message == "The Uncategorized reel cannot be deleted"
+    }
+
+    void "allow the owner to delete the reel"() {
+        given:
+        def name = 'another reel'
+
+        and:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            userService.addReel(name)
+        }
+
+        and:
+        def reelId = Reel.findByName(name).id
+
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.deleteReel(reelId)
+        }
+
+        then:
+        Reel.findById(reelId) == null
+    }
+
     void "only the owner of the reel can add videos to a reel"() {
         given:
         def video = createAndSaveVideo(owner)

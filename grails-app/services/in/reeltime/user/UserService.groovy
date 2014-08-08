@@ -3,6 +3,7 @@ package in.reeltime.user
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
+import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
 class UserService {
 
@@ -15,7 +16,7 @@ class UserService {
 
     User createAndSaveUser(String username, String password, String email, Client client) {
         def user = new User(username: username, password: password, email: email, clients: [client])
-        addReelToUserAndSave(user, 'Uncategorized')
+        addReelToUserAndSave(user, UNCATEGORIZED_REEL_NAME)
         return user
     }
 

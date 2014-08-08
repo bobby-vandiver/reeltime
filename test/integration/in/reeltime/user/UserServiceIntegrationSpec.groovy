@@ -81,7 +81,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
     void "update user"() {
         given:
-        def user = userService.createAndSaveUser('foo', 'bar', 'foo@test.com', client)
+        def user = createAndSaveValidUser('foo')
         assert !User.findByUsername('foo').accountExpired
 
         when:
@@ -103,7 +103,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
     @Unroll
     void "list all reels belonging to specified user -- user has [#count] reels total"() {
         given:
-        def owner = userService.createAndSaveUser('foo', 'bar', 'foo@test.com', client)
+        def owner = createAndSaveValidUser('foo')
         def reels = createReels(owner, count)
 
         when:
@@ -125,7 +125,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
     @Unroll
     void "add new reel to current user"() {
         given:
-        def owner = userService.createAndSaveUser('foo', 'bar', 'foo@test.com', client)
+        def owner = createAndSaveValidUser('foo')
         def username = owner.username
 
         and:
@@ -147,6 +147,10 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         and:
         retrieved.reels.find { it.name == existingReelName } != null
         retrieved.reels.find { it.name == newReelName } != null
+    }
+
+    private User createAndSaveValidUser(String username) {
+        userService.createAndSaveUser(username, 'bar', "username@test.com", client)
     }
 
     private Collection<Reel> createReels(User owner, int count) {

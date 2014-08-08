@@ -5,6 +5,8 @@ import in.reeltime.video.Video
 
 class Reel {
 
+    static final UNCATEGORIZED_REEL_NAME = 'Uncategorized'
+
     String name
 
     static belongsTo = [owner: User]
