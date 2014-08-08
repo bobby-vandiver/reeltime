@@ -50,7 +50,7 @@ class AccountConfirmationService {
 
     private void verifyUser(User user) {
         user.verified = true
-        userService.updateUser(user)
+        userService.storeUser(user)
     }
 
     private boolean confirmationCodeIsCorrect(String rawCode, String storedCode, byte[] salt) {

@@ -28,7 +28,7 @@ class UserService {
         return user
     }
 
-    void updateUser(User user) {
+    void storeUser(User user) {
         user.save()
     }
 

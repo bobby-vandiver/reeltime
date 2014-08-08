@@ -44,7 +44,7 @@ class AccountConfirmationServiceSpec extends Specification {
 
         and:
         1 * springSecurityService.currentUser >> user
-        1 * userService.updateUser(user)
+        1 * userService.storeUser(user)
     }
 
     void "confirmation code is old but has not expired"() {
@@ -69,7 +69,7 @@ class AccountConfirmationServiceSpec extends Specification {
 
         and:
         1 * springSecurityService.currentUser >> user
-        1 * userService.updateUser(user)
+        1 * userService.storeUser(user)
     }
 
     void "confirmation code was issued to current user but has expired"() {
@@ -98,7 +98,7 @@ class AccountConfirmationServiceSpec extends Specification {
 
         and:
         1 * springSecurityService.currentUser >> user
-        0 * userService.updateUser(user)
+        0 * userService.storeUser(user)
     }
 
     void "current user has not been issued an account confirmation code"() {
@@ -117,7 +117,7 @@ class AccountConfirmationServiceSpec extends Specification {
 
         and:
         1 * springSecurityService.currentUser >> user
-        0 * userService.updateUser(user)
+        0 * userService.storeUser(user)
     }
 
     void "current user is not associated with the presented code"() {
@@ -144,8 +144,8 @@ class AccountConfirmationServiceSpec extends Specification {
         1 * springSecurityService.currentUser >> currentUser
 
         and:
-        0 * userService.updateUser(currentUser)
-        0 * userService.updateUser(originalUser)
+        0 * userService.storeUser(currentUser)
+        0 * userService.storeUser(originalUser)
     }
 
     private User createUser(String username) {

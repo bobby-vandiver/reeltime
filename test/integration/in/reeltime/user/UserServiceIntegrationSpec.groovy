@@ -86,7 +86,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
         when:
         user.accountExpired = true
-        userService.updateUser(user)
+        userService.storeUser(user)
 
         then:
         User.findByUsername('foo').accountExpired
