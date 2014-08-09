@@ -4,6 +4,7 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
+import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.TranscoderException
 import in.reeltime.exceptions.ProbeException
 import in.reeltime.message.LocalizedMessageService
@@ -14,7 +15,7 @@ import spock.lang.Unroll
 
 @TestFor(VideoCreationController)
 @Mock([Video])
-class VideoCreationControllerSpec extends Specification {
+class VideoCreationControllerSpec extends AbstractControllerSpec {
 
     User currentUser
 
@@ -69,8 +70,7 @@ class VideoCreationControllerSpec extends Specification {
         1 * videoCreationService.createVideo(_) >> { command -> validateCommand(command) }
 
         and:
-        response.status == 202
-        response.contentType.startsWith('application/json')
+        assertStatusCodeAndContentType(response, 202)
 
         and:
         def json = new JsonSlurper().parseText(response.contentAsString)
@@ -87,15 +87,7 @@ class VideoCreationControllerSpec extends Specification {
         controller.upload()
 
         then:
-        response.status == 503
-        response.contentType.startsWith('application/json')
-
-        and:
-        def json = new JsonSlurper().parseText(response.contentAsString) as Map
-        json.size() == 1
-
-        and:
-        json.errors == [message]
+        assertErrorMessageResponse(response, 503, message)
 
         and:
         1 * videoCreationService.allowCreation(_) >> true

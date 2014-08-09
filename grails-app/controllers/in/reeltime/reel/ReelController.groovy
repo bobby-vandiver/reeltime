@@ -15,6 +15,6 @@ class ReelController extends AbstractController {
     }
 
     def handleInvalidReelNameException(InvalidReelNameException e) {
-        handleErrorResponse(e, 'reel.invalid.name', SC_BAD_REQUEST)
+        handleErrorMessageResponse(e, 'reel.invalid.name', SC_BAD_REQUEST)
     }
 }

@@ -1,6 +1,7 @@
 package in.reeltime.video
 
 import grails.plugin.springsecurity.annotation.Secured
+import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.ProbeException
 import in.reeltime.exceptions.TranscoderException
 import in.reeltime.user.User
@@ -8,12 +9,11 @@ import org.springframework.web.multipart.MultipartRequest
 
 import static javax.servlet.http.HttpServletResponse.*
 
-class VideoCreationController {
+class VideoCreationController extends AbstractController {
 
     def springSecurityService
     def videoService
     def videoCreationService
-    def localizedMessageService
 
     static allowedMethods = [upload: 'POST', status: 'GET']
 
@@ -23,12 +23,12 @@ class VideoCreationController {
 
         if(videoCreationService.allowCreation(command)) {
             def video = videoCreationService.createVideo(command)
-            render(status: SC_ACCEPTED, contentType: 'application/json') {
+            render(status: SC_ACCEPTED, contentType: JSON_CONTENT_TYPE) {
                 [videoId: video.id]
             }
         }
         else {
-            render(status: SC_BAD_REQUEST, contentType: 'application/json') {
+            render(status: SC_BAD_REQUEST, contentType: JSON_CONTENT_TYPE) {
                 [errors: localizedMessageService.getErrorMessages(command, request.locale)]
             }
         }
@@ -49,20 +49,11 @@ class VideoCreationController {
     }
 
     def handleTranscoderException(TranscoderException e) {
-        handleException(e, 'videoCreation.transcoder.error')
+        handleErrorMessageResponse(e, 'videoCreation.transcoder.error', SC_SERVICE_UNAVAILABLE)
     }
 
     def handleProbeException(ProbeException e) {
-        handleException(e, 'videoCreation.probe.error')
-    }
-
-    private void handleException(Throwable e, String code) {
-        log.warn("Handling TranscoderException: ", e)
-        def message = localizedMessageService.getMessage(code, request.locale)
-
-        render(status: SC_SERVICE_UNAVAILABLE, contentType: 'application/json') {
-            [errors: [message]]
-        }
+        handleErrorMessageResponse(e, 'videoCreation.probe.error', SC_SERVICE_UNAVAILABLE)
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('upload')"])

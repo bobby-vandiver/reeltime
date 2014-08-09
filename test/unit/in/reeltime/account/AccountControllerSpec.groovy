@@ -3,17 +3,17 @@ package in.reeltime.account
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
+import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.RegistrationException
 import in.reeltime.exceptions.ConfirmationException
 import in.reeltime.message.LocalizedMessageService
 import in.reeltime.user.User
-import spock.lang.Specification
 import in.reeltime.user.UserService
 import spock.lang.Unroll
 
 @TestFor(AccountController)
 @Mock([User])
-class AccountControllerSpec extends Specification {
+class AccountControllerSpec extends AbstractControllerSpec {
 
     AccountRegistrationService accountRegistrationService
     AccountConfirmationService accountConfirmationService
@@ -69,8 +69,7 @@ class AccountControllerSpec extends Specification {
         controller.register()
 
         then:
-        response.status == 201
-        response.contentType.startsWith('application/json')
+        assertStatusCodeAndContentType(response, 201)
 
         and:
         def json = new JsonSlurper().parseText(response.contentAsString) as Map
@@ -98,15 +97,7 @@ class AccountControllerSpec extends Specification {
         controller.register()
 
         then:
-        response.status == 503
-        response.contentType.startsWith('application/json')
-
-        and:
-        def json = new JsonSlurper().parseText(response.contentAsString) as Map
-        json.size() == 1
-
-        and:
-        json.errors == [message]
+        assertErrorMessageResponse(response, 503, message)
 
         and:
         1 * accountRegistrationService.registerUserAndClient(_, _) >> { throw new RegistrationException('TEST') }
@@ -125,15 +116,7 @@ class AccountControllerSpec extends Specification {
         controller.confirm()
 
         then:
-        response.status == 400
-        response.contentType.startsWith('application/json')
-
-        and:
-        def json = new JsonSlurper().parseText(response.contentAsString) as Map
-        json.size() == 1
-
-        and:
-        json.errors == [message]
+        assertErrorMessageResponse(response, 400, message)
 
         and:
         1 * localizedMessageService.getMessage('registration.confirmation.code.required', request.locale) >> message
@@ -170,15 +153,7 @@ class AccountControllerSpec extends Specification {
         controller.confirm()
 
         then:
-        response.status == 400
-        response.contentType.startsWith('application/json')
-
-        and:
-        def json = new JsonSlurper().parseText(response.contentAsString) as Map
-        json.size() == 1
-
-        and:
-        json.errors == [message]
+        assertErrorMessageResponse(response, 400, message)
 
         and:
         1 * accountConfirmationService.confirmAccount(_) >> { throw new ConfirmationException('TEST') }

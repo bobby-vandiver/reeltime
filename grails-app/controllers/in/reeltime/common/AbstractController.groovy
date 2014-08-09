@@ -6,7 +6,7 @@ abstract class AbstractController {
 
     static final JSON_CONTENT_TYPE = 'application/json'
 
-    void handleErrorResponse(Exception e, String messageCode, int statusCode) {
+    void handleErrorMessageResponse(Exception e, String messageCode, int statusCode) {
         def exceptionClassName = e.class.simpleName
         log.warn("Handling $exceptionClassName: ", e)
 

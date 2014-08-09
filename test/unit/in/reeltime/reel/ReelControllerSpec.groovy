@@ -44,7 +44,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         controller.addReel()
 
         then:
-        assertErrorResponse(response, 400, [message])
+        assertErrorMessageResponse(response, 400, message)
 
         and:
         1 * reelService.addReel(reelName) >> { throw new InvalidReelNameException('TEST') }
