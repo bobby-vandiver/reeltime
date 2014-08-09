@@ -1,13 +1,13 @@
 package in.reeltime.reel
 
+import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.InvalidReelNameException
 
 import static javax.servlet.http.HttpServletResponse.*
 
-class ReelController {
+class ReelController extends AbstractController {
 
     def reelService
-    def localizedMessageService
 
     def addReel(String name) {
         reelService.addReel(name)
@@ -15,11 +15,6 @@ class ReelController {
     }
 
     def handleInvalidReelNameException(InvalidReelNameException e) {
-        log.warn("Handling InvalidReelNameException: ", e)
-        def message = localizedMessageService.getMessage('reel.invalid.name', request.locale)
-
-        render(status: SC_BAD_REQUEST, contentType: 'application/json') {
-            [errors: [message]]
-        }
+        handleErrorResponse(e, 'reel.invalid.name', SC_BAD_REQUEST)
     }
 }

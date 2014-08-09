@@ -1,13 +1,12 @@
 package in.reeltime.reel
 
 import grails.test.mixin.TestFor
-import groovy.json.JsonSlurper
+import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.message.LocalizedMessageService
-import spock.lang.Specification
 
 @TestFor(ReelController)
-class ReelControllerSpec extends Specification {
+class ReelControllerSpec extends AbstractControllerSpec {
 
     ReelService reelService
     LocalizedMessageService localizedMessageService
@@ -45,15 +44,7 @@ class ReelControllerSpec extends Specification {
         controller.addReel()
 
         then:
-        response.status == 400
-        response.contentType.startsWith('application/json')
-
-        and:
-        def json = new JsonSlurper().parseText(response.contentAsString) as Map
-        json.size() == 1
-
-        and:
-        json.errors == [message]
+        assertErrorResponse(response, 400, [message])
 
         and:
         1 * reelService.addReel(reelName) >> { throw new InvalidReelNameException('TEST') }
