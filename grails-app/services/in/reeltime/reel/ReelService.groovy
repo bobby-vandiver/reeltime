@@ -1,6 +1,7 @@
 package in.reeltime.reel
 
 import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.user.User
 
@@ -38,7 +39,7 @@ class ReelService {
 
     void addReel(String reelName) {
         if(reelAuthorizationService.reelNameIsReserved(reelName)) {
-            throw new IllegalArgumentException("Reel name [$reelName] is reserved")
+            throw new InvalidReelNameException("Reel name [$reelName] is reserved")
         }
         def currentUser = userService.currentUser
         def reel = createReelForUser(currentUser, reelName)

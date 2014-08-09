@@ -5,6 +5,7 @@ import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.UserNotFoundException
+import in.reeltime.exceptions.InvalidReelNameException
 import spock.lang.Unroll
 
 import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
@@ -136,7 +137,7 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         }
 
         then:
-        def e = thrown(IllegalArgumentException)
+        def e = thrown(InvalidReelNameException)
         e.message == "Reel name [$uncategorized] is reserved"
 
         where:
