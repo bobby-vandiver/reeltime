@@ -1,7 +1,9 @@
 package in.reeltime.reel
 
 import in.reeltime.common.AbstractController
+import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.InvalidReelNameException
+import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
 
 import static javax.servlet.http.HttpServletResponse.*
@@ -34,8 +36,27 @@ class ReelController extends AbstractController {
         }
     }
 
+    def deleteReel(Long reelId) {
+
+        if(reelId) {
+            reelService.deleteReel(reelId)
+            render(status: SC_OK)
+        }
+        else {
+            errorMessageResponse('reel.id.required', SC_BAD_REQUEST)
+        }
+    }
+
+    def handleAuthorizationException(AuthorizationException e) {
+        exceptionErrorMessageResponse(e, 'reel.unauthorized', SC_FORBIDDEN)
+    }
+
     def handleUserNotFoundException(UserNotFoundException e) {
         exceptionErrorMessageResponse(e, 'reel.unknown.username', SC_BAD_REQUEST)
+    }
+
+    def handleReelNotFoundException(ReelNotFoundException e) {
+        exceptionErrorMessageResponse(e, 'reel.unknown', SC_BAD_REQUEST)
     }
 
     def handleInvalidReelNameException(InvalidReelNameException e) {

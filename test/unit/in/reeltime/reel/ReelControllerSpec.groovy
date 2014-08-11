@@ -4,7 +4,9 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
 import in.reeltime.common.AbstractControllerSpec
+import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.InvalidReelNameException
+import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.message.LocalizedMessageService
 import spock.lang.Unroll
@@ -201,6 +203,83 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         where:
         _   |   name
+        _   |   null
+        _   |   ''
+    }
+
+    void "successfully delete a reel"() {
+        given:
+        def reelId = 8675309
+        params.reelId = reelId
+
+        when:
+        controller.deleteReel()
+
+        then:
+        response.status == 200
+        response.contentLength == 0
+
+        and:
+        1 * reelService.deleteReel(reelId)
+    }
+
+    void "unauthorized delete reel request"() {
+        given:
+        def message = 'unauthorized request'
+
+        and:
+        def reelId = 1234
+        params.reelId = reelId
+
+        when:
+        controller.deleteReel()
+
+        then:
+        assertErrorMessageResponse(response, 403, message)
+
+        and:
+        1 * reelService.deleteReel(reelId) >> { throw new AuthorizationException('TEST') }
+        1 * localizedMessageService.getMessage('reel.unauthorized', request.locale) >> message
+    }
+
+    void "attempt to delete an unknown reel"() {
+        given:
+        def message = 'unknown reel'
+
+        and:
+        def reelId = 9431
+        params.reelId = reelId
+
+        when:
+        controller.deleteReel()
+
+        then:
+        assertErrorMessageResponse(response, 400, message)
+
+        and:
+        1 * reelService.deleteReel(reelId) >> { throw new ReelNotFoundException('TEST') }
+        1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> message
+    }
+
+    @Unroll
+    void "reelId must be present cannot be [#reelId]"() {
+        given:
+        def message = 'reel name required'
+
+        and:
+        params.reelId = reelId
+
+        when:
+        controller.deleteReel()
+
+        then:
+        assertErrorMessageResponse(response, 400, message)
+
+        and:
+        1 * localizedMessageService.getMessage('reel.id.required', request.locale) >> message
+
+        where:
+        _   |   reelId
         _   |   null
         _   |   ''
     }
