@@ -7,6 +7,10 @@ import static in.reeltime.common.AbstractController.JSON_CONTENT_TYPE
 
 abstract class AbstractControllerSpec extends Specification {
 
+    protected Object getJsonResponse(GrailsMockHttpServletResponse response) {
+        new JsonSlurper().parseText(response.contentAsString)
+    }
+
     protected void assertStatusCodeAndContentType(GrailsMockHttpServletResponse response, int statusCode) {
         assert response.status == statusCode
         assert response.contentType.startsWith(JSON_CONTENT_TYPE)
