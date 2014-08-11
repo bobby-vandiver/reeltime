@@ -10,11 +10,17 @@ class ReelController extends AbstractController {
     def reelService
 
     def addReel(String name) {
-        reelService.addReel(name)
-        render(status: SC_CREATED)
+
+        if(name) {
+            reelService.addReel(name)
+            render(status: SC_CREATED)
+        }
+        else {
+            handleErrorMessageResponse('reel.name.required', SC_BAD_REQUEST)
+        }
     }
 
     def handleInvalidReelNameException(InvalidReelNameException e) {
-        handleErrorMessageResponse(e, 'reel.invalid.name', SC_BAD_REQUEST)
+        handleExceptionErrorMessageResponse(e, 'reel.invalid.name', SC_BAD_REQUEST)
     }
 }

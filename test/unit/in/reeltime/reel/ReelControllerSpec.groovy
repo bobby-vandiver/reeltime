@@ -4,6 +4,7 @@ import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.message.LocalizedMessageService
+import spock.lang.Unroll
 
 @TestFor(ReelController)
 class ReelControllerSpec extends AbstractControllerSpec {
@@ -51,4 +52,26 @@ class ReelControllerSpec extends AbstractControllerSpec {
         1 * localizedMessageService.getMessage('reel.invalid.name', request.locale) >> message
     }
 
+    @Unroll
+    void "reel name must be present cannot be [#name]"() {
+        given:
+        def message = 'reel name required'
+
+        and:
+        params.name = name
+
+        when:
+        controller.addReel()
+
+        then:
+        assertErrorMessageResponse(response, 400, message)
+
+        and:
+        1 * localizedMessageService.getMessage('reel.name.required', request.locale) >> message
+
+        where:
+        _   |   name
+        _   |   null
+        _   |   ''
+    }
 }
