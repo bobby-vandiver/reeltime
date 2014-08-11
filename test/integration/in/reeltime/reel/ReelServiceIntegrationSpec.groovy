@@ -129,6 +129,25 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         retrieved.reels.find { it.name == newReelName } != null
     }
 
+    void "do not allow a user to add a reel with the same name as an existing reel"() {
+        given:
+        def reelName = 'something'
+
+        and:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.addReel(reelName)
+        }
+
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.addReel(reelName)
+        }
+
+        then:
+        def e = thrown(InvalidReelNameException)
+        e.message == "Reel named [$reelName] already exists"
+    }
+
     @Unroll
     void "do not allow a user to add a reel named [#uncategorized]"() {
         when:

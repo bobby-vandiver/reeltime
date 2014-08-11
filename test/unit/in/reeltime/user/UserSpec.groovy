@@ -92,6 +92,21 @@ class UserSpec extends Specification {
     }
 
     @Unroll
+    void "user has reel [#reelToCheck] [#truth] when reel [#reelToAdd] is the only reel"() {
+        given:
+        def reel = new Reel(name: reelToAdd)
+        def user = new User(reels: [reel])
+
+        expect:
+        user.hasReel(reelToCheck) == truth
+
+        where:
+        reelToAdd   |   reelToCheck     |   truth
+        'something' |   'something'     |   true
+        'something' |   'nothing'       |   false
+    }
+
+    @Unroll
     void "[#count] reels is valid [#valid]"() {
         given:
         def reels = createReels(count)

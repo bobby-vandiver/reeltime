@@ -32,6 +32,10 @@ class User {
 		password column: '`password`'
 	}
 
+    boolean hasReel(String reelName) {
+        reels.find { reel -> reel.name == reelName } != null
+    }
+
 	Set<Role> getAuthorities() {
 		UserRole.findAllByUser(this).collect { it.role } as Set
 	}

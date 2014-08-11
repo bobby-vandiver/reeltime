@@ -42,8 +42,10 @@ class ReelService {
             throw new InvalidReelNameException("Reel name [$reelName] is reserved")
         }
         def currentUser = userService.currentUser
+        if(currentUser.hasReel(reelName)) {
+            throw new InvalidReelNameException("Reel named [$reelName] already exists")
+        }
         def reel = createReelForUser(currentUser, reelName)
-
         currentUser.addToReels(reel)
         userService.storeUser(currentUser)
     }
