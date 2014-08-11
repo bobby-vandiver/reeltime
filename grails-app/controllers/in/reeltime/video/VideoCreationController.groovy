@@ -49,11 +49,11 @@ class VideoCreationController extends AbstractController {
     }
 
     def handleTranscoderException(TranscoderException e) {
-        handleErrorMessageResponse(e, 'videoCreation.transcoder.error', SC_SERVICE_UNAVAILABLE)
+        handleExceptionErrorMessageResponse(e, 'videoCreation.transcoder.error', SC_SERVICE_UNAVAILABLE)
     }
 
     def handleProbeException(ProbeException e) {
-        handleErrorMessageResponse(e, 'videoCreation.probe.error', SC_SERVICE_UNAVAILABLE)
+        handleExceptionErrorMessageResponse(e, 'videoCreation.probe.error', SC_SERVICE_UNAVAILABLE)
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('upload')"])

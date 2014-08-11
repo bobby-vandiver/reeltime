@@ -31,7 +31,7 @@ class AccountController extends AbstractController {
     }
 
     def handleRegistrationException(RegistrationException e) {
-        handleErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
+        handleExceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
     }
 
     @Secured(["#oauth2.isUser()"])
@@ -50,6 +50,6 @@ class AccountController extends AbstractController {
     }
 
     def handleConfirmationException(ConfirmationException e) {
-        handleErrorMessageResponse(e, 'registration.confirmation.code.error', SC_BAD_REQUEST)
+        handleExceptionErrorMessageResponse(e, 'registration.confirmation.code.error', SC_BAD_REQUEST)
     }
 }
