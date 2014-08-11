@@ -158,6 +158,9 @@ class ReelControllerSpec extends AbstractControllerSpec {
         then:
         response.status == 201
         response.contentLength == 0
+
+        and:
+        1 * reelService.addReel(reelName)
     }
 
     void "unable to add reel with invalid name"() {
