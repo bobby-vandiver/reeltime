@@ -126,29 +126,6 @@ class ReelControllerSpec extends AbstractControllerSpec {
         1 * localizedMessageService.getMessage('reel.unknown.username', request.locale) >> message
     }
 
-    @Unroll
-    void "username must be present cannot be [#username]"() {
-        given:
-        def message = 'username required'
-
-        and:
-        params.username = username
-
-        when:
-        controller.listReels()
-
-        then:
-        assertErrorMessageResponse(response, 400, message)
-
-        and:
-        1 * localizedMessageService.getMessage('reel.username.required', request.locale) >> message
-
-        where:
-        _   |   username
-        _   |   null
-        _   |   ''
-    }
-
     void "successfully add a new reel"() {
         given:
         def reelName = 'test-reel-name'
@@ -182,29 +159,6 @@ class ReelControllerSpec extends AbstractControllerSpec {
         and:
         1 * reelService.addReel(reelName) >> { throw new InvalidReelNameException('TEST') }
         1 * localizedMessageService.getMessage('reel.invalid.name', request.locale) >> message
-    }
-
-    @Unroll
-    void "reel name must be present cannot be [#name]"() {
-        given:
-        def message = 'reel name required'
-
-        and:
-        params.name = name
-
-        when:
-        controller.addReel()
-
-        then:
-        assertErrorMessageResponse(response, 400, message)
-
-        and:
-        1 * localizedMessageService.getMessage('reel.name.required', request.locale) >> message
-
-        where:
-        _   |   name
-        _   |   null
-        _   |   ''
     }
 
     void "successfully delete a reel"() {
@@ -262,25 +216,29 @@ class ReelControllerSpec extends AbstractControllerSpec {
     }
 
     @Unroll
-    void "reelId must be present cannot be [#reelId]"() {
+    void "[#paramName] cannot be [#paramValue] for action [#actionName]"() {
         given:
-        def message = 'reel name required'
+        def message = 'TEST'
 
         and:
-        params.reelId = reelId
+        params."$paramName" = paramValue
 
         when:
-        controller.deleteReel()
+        controller."$actionName"()
 
         then:
         assertErrorMessageResponse(response, 400, message)
 
         and:
-        1 * localizedMessageService.getMessage('reel.id.required', request.locale) >> message
+        1 * localizedMessageService.getMessage(code, request.locale) >> message
 
         where:
-        _   |   reelId
-        _   |   null
-        _   |   ''
+        paramName   |   paramValue  |   actionName      |   code
+        'username'  |   null        |   'listReels'     |   'reel.username.required'
+        'username'  |   ''          |   'listReels'     |   'reel.username.required'
+        'name'      |   null        |   'addReel'       |   'reel.name.required'
+        'name'      |   ''          |   'addReel'       |   'reel.name.required'
+        'reelId'    |   null        |   'deleteReel'    |   'reel.id.required'
+        'reelId'    |   ''          |   'deleteReel'    |   'reel.id.required'
     }
 }
