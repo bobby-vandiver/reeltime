@@ -16,11 +16,11 @@ class ReelController extends AbstractController {
             render(status: SC_CREATED)
         }
         else {
-            handleErrorMessageResponse('reel.name.required', SC_BAD_REQUEST)
+            errorMessageResponse('reel.name.required', SC_BAD_REQUEST)
         }
     }
 
     def handleInvalidReelNameException(InvalidReelNameException e) {
-        handleExceptionErrorMessageResponse(e, 'reel.invalid.name', SC_BAD_REQUEST)
+        exceptionErrorMessageResponse(e, 'reel.invalid.name', SC_BAD_REQUEST)
     }
 }

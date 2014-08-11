@@ -24,14 +24,12 @@ class AccountController extends AbstractController {
             }
         }
         else {
-            render(status: SC_BAD_REQUEST, contentType: JSON_CONTENT_TYPE) {
-                [errors: localizedMessageService.getErrorMessages(command, request.locale)]
-            }
+            commandErrorMessageResponse(command, SC_BAD_REQUEST)
         }
     }
 
     def handleRegistrationException(RegistrationException e) {
-        handleExceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
+        exceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
     }
 
     @Secured(["#oauth2.isUser()"])
@@ -42,14 +40,11 @@ class AccountController extends AbstractController {
             render(status: SC_OK)
         }
         else {
-            def message = localizedMessageService.getMessage('registration.confirmation.code.required', request.locale)
-            render(status: SC_BAD_REQUEST, contentType: 'application/json') {
-                [errors: [message]]
-            }
+            errorMessageResponse('registration.confirmation.code.required', SC_BAD_REQUEST)
         }
     }
 
     def handleConfirmationException(ConfirmationException e) {
-        handleExceptionErrorMessageResponse(e, 'registration.confirmation.code.error', SC_BAD_REQUEST)
+        exceptionErrorMessageResponse(e, 'registration.confirmation.code.error', SC_BAD_REQUEST)
     }
 }

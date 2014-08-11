@@ -28,9 +28,7 @@ class VideoCreationController extends AbstractController {
             }
         }
         else {
-            render(status: SC_BAD_REQUEST, contentType: JSON_CONTENT_TYPE) {
-                [errors: localizedMessageService.getErrorMessages(command, request.locale)]
-            }
+            commandErrorMessageResponse(command, SC_BAD_REQUEST)
         }
     }
 
@@ -49,11 +47,11 @@ class VideoCreationController extends AbstractController {
     }
 
     def handleTranscoderException(TranscoderException e) {
-        handleExceptionErrorMessageResponse(e, 'videoCreation.transcoder.error', SC_SERVICE_UNAVAILABLE)
+        exceptionErrorMessageResponse(e, 'videoCreation.transcoder.error', SC_SERVICE_UNAVAILABLE)
     }
 
     def handleProbeException(ProbeException e) {
-        handleExceptionErrorMessageResponse(e, 'videoCreation.probe.error', SC_SERVICE_UNAVAILABLE)
+        exceptionErrorMessageResponse(e, 'videoCreation.probe.error', SC_SERVICE_UNAVAILABLE)
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('upload')"])

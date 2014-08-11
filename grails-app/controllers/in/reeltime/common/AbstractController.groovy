@@ -6,17 +6,23 @@ abstract class AbstractController {
 
     static final JSON_CONTENT_TYPE = 'application/json'
 
-    void handleExceptionErrorMessageResponse(Exception e, String messageCode, int statusCode) {
+    void exceptionErrorMessageResponse(Exception e, String messageCode, int statusCode) {
         def exceptionClassName = e.class.simpleName
         log.warn("Handling $exceptionClassName: ", e)
 
-        handleErrorMessageResponse(messageCode, statusCode)
+        errorMessageResponse(messageCode, statusCode)
     }
 
-    void handleErrorMessageResponse(String messageCode, int statusCode) {
+    void errorMessageResponse(String messageCode, int statusCode) {
         def message = localizedMessageService.getMessage(messageCode, request.locale)
         render(status: statusCode, contentType: JSON_CONTENT_TYPE) {
             [errors: [message]]
+        }
+    }
+
+    void commandErrorMessageResponse(Object command, int statusCode) {
+        render(status: statusCode, contentType: JSON_CONTENT_TYPE) {
+            [errors: localizedMessageService.getErrorMessages(command, request.locale)]
         }
     }
 }
