@@ -9,20 +9,25 @@ import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.message.LocalizedMessageService
+import in.reeltime.video.Video
 import spock.lang.Unroll
 
 @TestFor(ReelController)
-@Mock([Reel])
+@Mock([Reel, Video])
 class ReelControllerSpec extends AbstractControllerSpec {
 
     ReelService reelService
+    ReelVideoManagementService reelVideoManagementService
+
     LocalizedMessageService localizedMessageService
 
     void setup() {
         reelService = Mock(ReelService)
+        reelVideoManagementService = Mock(ReelVideoManagementService)
         localizedMessageService = Mock(LocalizedMessageService)
 
         controller.reelService = reelService
+        controller.reelVideoManagementService = reelVideoManagementService
         controller.localizedMessageService = localizedMessageService
     }
 
@@ -78,7 +83,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         def reel2 = new Reel(name: 'bar').save(validate: false)
-        reel2.id > 0
+        assert reel2.id > 0
 
         and:
         params.username = 'bob'
@@ -215,6 +220,103 @@ class ReelControllerSpec extends AbstractControllerSpec {
         1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> message
     }
 
+    void "empty list of videos for reel"() {
+        given:
+        params.reelId = 1234
+
+        when:
+        controller.listVideos()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        def json = getJsonResponse(response)
+        json.size() == 0
+
+        and:
+        1 * reelVideoManagementService.listVideos(1234) >> []
+    }
+
+    void "video list contains only one video"() {
+        given:
+        def video = new Video().save(validate: false)
+        assert video.id > 0
+
+        and:
+        params.reelId = 1234
+
+        when:
+        controller.listVideos()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        def json = getJsonResponse(response)
+        json.size() == 1
+
+        and:
+        json[0].size() == 1
+        json[0].videoId == video.id
+
+        and:
+        1 * reelVideoManagementService.listVideos(1234) >> [video]
+    }
+
+    void "video list contains multiple videos"() {
+        given:
+        def video1 = new Video().save(validate: false)
+        assert video1.id > 0
+
+        and:
+        def video2 = new Video().save(validate: false)
+        assert video2.id > 0
+
+        and:
+        params.reelId = 1234
+
+        when:
+        controller.listVideos()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        def json = getJsonResponse(response)
+        json.size() == 2
+
+        and:
+        json[0].size() == 1
+        json[0].videoId == video1.id
+
+        and:
+        json[1].size() == 1
+        json[1].videoId == video2.id
+
+        and:
+        1 * reelVideoManagementService.listVideos(1234) >> [video1, video2]
+    }
+
+    void "attempt to list videos for an unknown reel"() {
+        given:
+        def message = 'unknown reel'
+
+        and:
+        def reelId = 9431
+        params.reelId = reelId
+
+        when:
+        controller.listVideos()
+
+        then:
+        assertErrorMessageResponse(response, 400, message)
+
+        and:
+        1 * reelVideoManagementService.listVideos(reelId) >> { throw new ReelNotFoundException('TEST') }
+        1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> message
+    }
+
     @Unroll
     void "[#paramName] cannot be [#paramValue] for action [#actionName]"() {
         given:
@@ -240,5 +342,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         'name'      |   ''          |   'addReel'       |   'reel.name.required'
         'reelId'    |   null        |   'deleteReel'    |   'reel.id.required'
         'reelId'    |   ''          |   'deleteReel'    |   'reel.id.required'
+        'reelId'    |   null        |   'listVideos'    |   'reel.id.required'
+        'reelId'    |   ''          |   'listVideos'    |   'reel.id.required'
     }
 }

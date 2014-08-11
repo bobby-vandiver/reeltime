@@ -5,12 +5,15 @@ import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
+import in.reeltime.video.Video
+
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.*
 
 class ReelController extends AbstractController {
 
     def reelService
+    def reelVideoManagementService
 
     def listReels(String username) {
         handleSingleParamRequest(username, 'reel.username.required') {
@@ -32,6 +35,15 @@ class ReelController extends AbstractController {
         handleSingleParamRequest(reelId, 'reel.id.required') {
             reelService.deleteReel(reelId)
             render(status: SC_OK)
+        }
+    }
+
+    def listVideos(Long reelId) {
+        handleSingleParamRequest(reelId, 'reel.id.required') {
+            def videos = reelVideoManagementService.listVideos(reelId)
+            render(status: SC_OK, contentType: APPLICATION_JSON) {
+                marshallVideoList(videos)
+            }
         }
     }
 
@@ -59,6 +71,12 @@ class ReelController extends AbstractController {
     private static List marshallReelList(Collection<Reel> reels) {
         reels.collect([]) { reel ->
             [reelId: reel.id, name: reel.name]
+        }
+    }
+
+    private static List marshallVideoList(Collection<Video> videos) {
+        videos.collect([]) { video ->
+            [videoId: video.id]
         }
     }
 }
