@@ -3,7 +3,7 @@ package in.reeltime.common
 import groovy.json.JsonSlurper
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
-import static in.reeltime.common.AbstractController.JSON_CONTENT_TYPE
+import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 
 abstract class AbstractControllerSpec extends Specification {
 
@@ -13,7 +13,7 @@ abstract class AbstractControllerSpec extends Specification {
 
     protected void assertStatusCodeAndContentType(GrailsMockHttpServletResponse response, int statusCode) {
         assert response.status == statusCode
-        assert response.contentType.startsWith(JSON_CONTENT_TYPE)
+        assert response.contentType.startsWith(APPLICATION_JSON)
     }
 
     protected void assertErrorMessageResponse(GrailsMockHttpServletResponse response, int statusCode, String message) {

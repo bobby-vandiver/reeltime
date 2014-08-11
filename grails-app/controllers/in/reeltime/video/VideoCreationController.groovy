@@ -6,7 +6,7 @@ import in.reeltime.exceptions.ProbeException
 import in.reeltime.exceptions.TranscoderException
 import in.reeltime.user.User
 import org.springframework.web.multipart.MultipartRequest
-
+import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.*
 
 class VideoCreationController extends AbstractController {
@@ -23,7 +23,7 @@ class VideoCreationController extends AbstractController {
 
         if(videoCreationService.allowCreation(command)) {
             def video = videoCreationService.createVideo(command)
-            render(status: SC_ACCEPTED, contentType: JSON_CONTENT_TYPE) {
+            render(status: SC_ACCEPTED, contentType: APPLICATION_JSON) {
                 [videoId: video.id]
             }
         }

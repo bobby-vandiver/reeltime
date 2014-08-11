@@ -5,7 +5,7 @@ import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
-
+import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.*
 
 class ReelController extends AbstractController {
@@ -13,38 +13,30 @@ class ReelController extends AbstractController {
     def reelService
 
     def listReels(String username) {
-
-        if(username) {
+        handleSingleParamRequest(username, 'reel.username.required') {
             def reels = reelService.listReels(username)
-            render(status: SC_OK, contentType: JSON_CONTENT_TYPE) {
+            render(status: SC_OK, contentType: APPLICATION_JSON) {
                 marshallReelList(reels)
             }
-        }
-        else {
-            errorMessageResponse('reel.username.required', SC_BAD_REQUEST)
         }
     }
 
     def addReel(String name) {
-
-        if(name) {
+        handleSingleParamRequest(name, 'reel.name.required') {
             reelService.addReel(name)
             render(status: SC_CREATED)
-        }
-        else {
-            errorMessageResponse('reel.name.required', SC_BAD_REQUEST)
         }
     }
 
     def deleteReel(Long reelId) {
-
-        if(reelId) {
+        handleSingleParamRequest(reelId, 'reel.id.required') {
             reelService.deleteReel(reelId)
             render(status: SC_OK)
         }
-        else {
-            errorMessageResponse('reel.id.required', SC_BAD_REQUEST)
-        }
+    }
+
+    private void handleSingleParamRequest(Object paramToCheck, String errorMessageCode, Closure action) {
+        paramToCheck ? action() : errorMessageResponse(errorMessageCode, SC_BAD_REQUEST)
     }
 
     def handleAuthorizationException(AuthorizationException e) {
