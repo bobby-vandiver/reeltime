@@ -5,6 +5,7 @@ import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
+import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.video.Video
 
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
@@ -60,6 +61,18 @@ class ReelController extends AbstractController {
         }
     }
 
+    def removeVideo(Long reelId, Long videoId) {
+        if(!reelId) {
+            errorMessageResponse('reel.id.required', SC_BAD_REQUEST)
+        }
+        else if(!videoId) {
+            errorMessageResponse('video.id.required', SC_BAD_REQUEST)
+        }
+        else {
+            reelVideoManagementService.removeVideo(reelId, videoId)
+        }
+    }
+
     private void handleSingleParamRequest(Object paramToCheck, String errorMessageCode, Closure action) {
         paramToCheck ? action() : errorMessageResponse(errorMessageCode, SC_BAD_REQUEST)
     }
@@ -78,6 +91,10 @@ class ReelController extends AbstractController {
 
     def handleInvalidReelNameException(InvalidReelNameException e) {
         exceptionErrorMessageResponse(e, 'reel.invalid.name', SC_BAD_REQUEST)
+    }
+
+    def handleVideoNotFoundException(VideoNotFoundException e) {
+        exceptionErrorMessageResponse(e, 'video.unknown', SC_BAD_REQUEST)
     }
 
     // TODO: Use marshallers plugin if this becomes more involved

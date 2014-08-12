@@ -2,12 +2,12 @@ package in.reeltime.reel
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import groovy.json.JsonSlurper
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
+import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.message.LocalizedMessageService
 import in.reeltime.video.Video
 import spock.lang.Unroll
@@ -346,6 +346,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
         'reelId'    |   ''          |   'listVideos'    |   'reel.id.required'
         'reelId'    |   null        |   'addVideo'      |   'reel.id.required'
         'reelId'    |   ''          |   'addVideo'      |   'reel.id.required'
+        'reelId'    |   null        |   'removeVideo'   |   'reel.id.required'
+        'reelId'    |   ''          |   'removeVideo'   |   'reel.id.required'
     }
 
     @Unroll
@@ -370,6 +372,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
         paramValue  |   actionName
         null        |   'addVideo'
         ''          |   'addVideo'
+        null        |   'removeVideo'
+        ''          |   'removeVideo'
     }
 
     @Unroll
@@ -419,5 +423,55 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         1 * reelVideoManagementService.addVideo(reelId, videoId)
+    }
+
+    @Unroll
+    void "attempt to remove video from reel throws [#exceptionClass]"() {
+        given:
+        def message = 'TEST'
+
+        and:
+        def reelId = 9431
+        def videoId = 81813
+
+        and:
+        params.reelId = reelId
+        params.videoId = videoId
+
+        when:
+        controller.removeVideo()
+
+        then:
+        assertErrorMessageResponse(response, statusCode, message)
+
+        and:
+        1 * reelVideoManagementService.removeVideo(reelId, videoId) >> { throw exceptionClass.newInstance('TEST') }
+        1 * localizedMessageService.getMessage(messageCode, request.locale) >> message
+
+        where:
+        exceptionClass          |   statusCode  |   messageCode
+        ReelNotFoundException   |   400         |   'reel.unknown'
+        VideoNotFoundException  |   400         |   'video.unknown'
+        AuthorizationException  |   403         |   'reel.unauthorized'
+    }
+
+    void "successfully remove a video from a reel"() {
+        given:
+        def reelId = 9431
+        def videoId = 81813
+
+        and:
+        params.reelId = reelId
+        params.videoId = videoId
+
+        when:
+        controller.removeVideo()
+
+        then:
+        response.status == 200
+        response.contentLength == 0
+
+        and:
+        1 * reelVideoManagementService.removeVideo(reelId, videoId)
     }
 }
