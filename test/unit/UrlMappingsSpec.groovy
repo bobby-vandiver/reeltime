@@ -8,10 +8,11 @@ import in.reeltime.playlist.PlaylistController
 import in.reeltime.playlist.SegmentController
 import in.reeltime.account.AccountController
 import in.reeltime.status.ApplicationStatusController
+import in.reeltime.reel.ReelController
 
 @TestMixin(UrlMappingsUnitTestMixin)
 @Mock([NotificationController, VideoCreationController, PlaylistController,
-        SegmentController, AccountController, ApplicationStatusController])
+        SegmentController, ReelController, AccountController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
 
     void "test notification endpoint mapping"() {
@@ -54,6 +55,43 @@ class UrlMappingsSpec extends Specification {
             playlistId = '5949'
             segmentId = '8891'
         }
+    }
+
+    void "test list reels endpoint mapping"() {
+        assertForwardUrlMapping('/user/bob/reels', controller: 'reel', action: 'listReels') {
+            username = 'bob'
+        }
+    }
+
+    void "test reel endpoint mapping"() {
+        expect:
+        assertForwardUrlMapping('/reel', controller: 'reel', action: 'addReel')
+    }
+
+    // TODO: Param assertions always fail this seems to be related to GRAILS-10609:
+    // TODO: https://jira.grails.org/browse/GRAILS-10609
+    void "test list videos in reel endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'GET'
+
+        expect:
+        assertForwardUrlMapping('/reel/1234', controller: 'reel', action: 'listVideos')
+    }
+
+    void "test add video to reel endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'POST'
+
+        expect:
+        assertForwardUrlMapping('/reel/5678', controller: 'reel', action: 'addVideo')
+    }
+
+    void "test delete reel endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'DELETE'
+
+        expect:
+        assertForwardUrlMapping('/reel/8675309', controller: 'reel', action: 'deleteReel')
     }
 
     void "test registration endpoint mapping"() {

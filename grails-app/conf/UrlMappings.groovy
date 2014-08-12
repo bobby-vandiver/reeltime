@@ -22,5 +22,13 @@ class UrlMappings {
         "/video/$videoId/$playlistId" (controller: 'playlist', action: 'getMediaPlaylist')
 
         "/video/$videoId/$playlistId/$segmentId" (controller: 'segment', action: 'getSegment')
+
+        "/user/$username/reels" (controller: 'reel', action: 'listReels')
+
+        "/reel" (controller: 'reel', action: 'addReel')
+
+        "/reel/$reelId" (controller: 'reel') {
+            action = [GET: 'listVideos', POST: 'addVideo', DELETE: 'deleteReel']
+        }
     }
 }
