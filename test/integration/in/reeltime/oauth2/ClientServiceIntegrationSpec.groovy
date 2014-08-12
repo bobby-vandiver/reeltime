@@ -30,12 +30,22 @@ class ClientServiceIntegrationSpec extends IntegrationSpec {
         client.authorizedGrantTypes.contains('refresh_token')
 
         and:
-        client.scopes.size() == 2
-        client.scopes.contains('view')
-        client.scopes.contains('upload')
+        assertScopes(client.scopes)
     }
 
     private static void secretIsEncrypted(Client client, String secret) {
         assert client.clientSecret != secret
+    }
+
+    private static void assertScopes(Collection<String> scopes) {
+        assert scopes.size() == 8
+
+        ['account', 'audiences', 'reels', 'videos'].each { resource ->
+            String readScope = resource + '-read'
+            String writeScope = resource + '-write'
+
+            assert scopes.contains(readScope)
+            assert scopes.contains(writeScope)
+        }
     }
 }

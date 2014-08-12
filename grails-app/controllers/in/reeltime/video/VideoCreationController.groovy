@@ -17,7 +17,7 @@ class VideoCreationController extends AbstractController {
 
     static allowedMethods = [upload: 'POST', status: 'GET']
 
-    @Secured(["#oauth2.isUser() and #oauth2.hasScope('upload')"])
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('videos-write')"])
     def upload(VideoCreationCommand command) {
         bindAdditionalData(command)
 
@@ -54,7 +54,7 @@ class VideoCreationController extends AbstractController {
         exceptionErrorMessageResponse(e, 'videoCreation.probe.error', SC_SERVICE_UNAVAILABLE)
     }
 
-    @Secured(["#oauth2.isUser() and #oauth2.hasScope('upload')"])
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('videos-write')"])
     def status(Long videoId) {
         int status
         if(!videoService.videoExists(videoId)) {

@@ -19,7 +19,12 @@ class BootStrap {
                     clientSecret: 'test-secret',
                     authorizedGrantTypes: ['password'],
                     authorities: ['ROLE_NATIVE_CLIENT'],
-                    scopes: ['view', 'upload']
+                    scopes: [
+                            'account-read', 'account-write',
+                            'audiences-read', 'audiences-write',
+                            'reels-read', 'reels-write',
+                            'videos-read', 'videos-write'
+                    ]
             )
             client.save(flush: true)
             log.info("Added client [${client.clientId}] with id [${client.id}]")

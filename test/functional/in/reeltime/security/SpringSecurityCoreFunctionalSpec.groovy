@@ -27,7 +27,7 @@ class SpringSecurityCoreFunctionalSpec extends FunctionalSpec {
 
     void "including a token makes no difference"() {
         given:
-        def token = getAccessTokenWithScope('view upload')
+        def token = getAccessTokenWithScope('account-read')
         def request = new RestRequest(url: SPRING_SECURITY_CHECK_URL, token: token)
 
         when:

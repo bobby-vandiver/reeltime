@@ -32,7 +32,7 @@ class AccountController extends AbstractController {
         exceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
     }
 
-    @Secured(["#oauth2.isUser()"])
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-write')"])
     def confirm(String code) {
 
         if(code) {

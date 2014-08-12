@@ -15,8 +15,8 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void setup() {
         invalidToken = 'bad-mojo'
-        insufficientScopeToken = getAccessTokenWithScope('view')
-        uploadToken = getAccessTokenWithScope('upload')
+        insufficientScopeToken = getAccessTokenWithScope('videos-read')
+        uploadToken = getAccessTokenWithScope('videos-write')
     }
 
     void "no token present"() {
@@ -39,7 +39,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
         then:
         response.status == 403
-        response.json.scope == 'upload'
+        response.json.scope == 'videos-write'
         response.json.error == 'insufficient_scope'
         response.json.error_description == 'Insufficient scope for this resource'
     }
@@ -164,7 +164,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
     void "cannot check status if not the creator"() {
         given:
         def videoId = uploadVideo(uploadToken)
-        def differentUserToken = getAccessTokenWithScopeForNonTestUser('upload')
+        def differentUserToken = getAccessTokenWithScopeForNonTestUser('videos-write')
 
         and:
         def request = createStatusRequest(videoId, differentUserToken)

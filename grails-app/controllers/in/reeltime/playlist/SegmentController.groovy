@@ -10,7 +10,7 @@ class SegmentController {
 
     static allowedMethods = [getSegment: 'GET']
 
-    @Secured(["#oauth2.hasScope('view')"])
+    @Secured(["#oauth2.hasScope('videos-read')"])
     def getSegment(long videoId, long playlistId, int segmentId) {
 
         log.debug("Requested segment [${segmentId}] for playlist [${playlistId}] belonging to video [${videoId}]")

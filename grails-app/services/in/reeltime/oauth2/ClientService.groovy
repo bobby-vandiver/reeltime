@@ -20,8 +20,17 @@ class ClientService {
                 clientSecret: clientSecret,
                 authorities: ['ROLE_NATIVE_CLIENT'],
                 authorizedGrantTypes: ['password', 'refresh_token'],
-                scopes: ['view', 'upload']
+                scopes: createScopesList()
         ).save()
+    }
+
+    private static Collection<String> createScopesList() {
+        def scopes = []
+        ['account', 'audiences', 'reels', 'videos'].each { resource ->
+            scopes << "$resource-read"
+            scopes << "$resource-write"
+        }
+        return scopes
     }
 
     String generateClientId() {

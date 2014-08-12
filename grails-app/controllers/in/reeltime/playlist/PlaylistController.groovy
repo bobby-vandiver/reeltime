@@ -10,7 +10,7 @@ class PlaylistController {
 
     static allowedMethods = [getVariantPlaylist: 'GET', getMediaPlaylist: 'GET']
 
-    @Secured(["#oauth2.hasScope('view')"])
+    @Secured(["#oauth2.hasScope('videos-read')"])
     def getVariantPlaylist(long videoId) {
 
         log.debug("Requested variant playlist for video [${videoId}]")
@@ -26,7 +26,7 @@ class PlaylistController {
         }
     }
 
-    @Secured(["#oauth2.hasScope('view')"])
+    @Secured(["#oauth2.hasScope('videos-read')"])
     def getMediaPlaylist(long videoId, long playlistId) {
 
         log.debug("Requested media playlist [${playlistId}] for video [${videoId}]")

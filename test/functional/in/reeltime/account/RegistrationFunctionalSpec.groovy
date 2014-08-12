@@ -19,7 +19,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
                 grantType: 'password',
                 clientId: result.client_id,
                 clientSecret: result.client_secret,
-                scope: ['view']
+                scope: ['account-write']
         )
         token = getAccessTokenWithScope(accessTokenRequest)
     }
@@ -58,7 +58,12 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
                 username: 'newUser',
                 password: 'n3wP4s$w0rd!',
                 grantType: 'password',
-                scope: ['view']
+                scope: [
+                        'account-read', 'account-write',
+                        'audiences-read', 'audiences-write',
+                        'reels-read', 'reels-write',
+                        'videos-read', 'videos-write'
+                ]
         )
 
         when:
