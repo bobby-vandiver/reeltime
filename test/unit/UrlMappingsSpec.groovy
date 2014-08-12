@@ -68,14 +68,14 @@ class UrlMappingsSpec extends Specification {
         assertForwardUrlMapping('/reel', controller: 'reel', action: 'addReel')
     }
 
-    // TODO: Param assertions always fail this seems to be related to GRAILS-10609:
-    // TODO: https://jira.grails.org/browse/GRAILS-10609
     void "test list videos in reel endpoint mapping"() {
         given:
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/reel/1234', controller: 'reel', action: 'listVideos')
+        assertForwardUrlMapping('/reel/1234', controller: 'reel', action: 'listVideos') {
+            reelId = '1234'
+        }
     }
 
     void "test add video to reel endpoint mapping"() {
@@ -83,7 +83,9 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'POST'
 
         expect:
-        assertForwardUrlMapping('/reel/5678', controller: 'reel', action: 'addVideo')
+        assertForwardUrlMapping('/reel/5678', controller: 'reel', action: 'addVideo') {
+            reelId = '5678'
+        }
     }
 
     void "test delete reel endpoint mapping"() {
@@ -91,7 +93,17 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'DELETE'
 
         expect:
-        assertForwardUrlMapping('/reel/8675309', controller: 'reel', action: 'deleteReel')
+        assertForwardUrlMapping('/reel/8675309', controller: 'reel', action: 'deleteReel') {
+            reelId = '8675309'
+        }
+    }
+
+    void "test remove video from reel endpoint mapping"() {
+        expect:
+        assertForwardUrlMapping('/reel/1234/5678', controller: 'reel', action: 'removeVideo') {
+            reelId = '1234'
+            videoId = '5678'
+        }
     }
 
     void "test registration endpoint mapping"() {

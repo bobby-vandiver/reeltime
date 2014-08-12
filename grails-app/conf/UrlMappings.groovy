@@ -30,5 +30,7 @@ class UrlMappings {
         "/reel/$reelId" (controller: 'reel') {
             action = [GET: 'listVideos', POST: 'addVideo', DELETE: 'deleteReel']
         }
+
+        "/reel/$reelId/$videoId" (controller: 'reel', action: 'removeVideo')
     }
 }
