@@ -6,8 +6,8 @@ import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
-import in.reeltime.video.Video
 
+import static in.reeltime.reel.ListMarshaller.*
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.*
 
@@ -95,18 +95,5 @@ class ReelController extends AbstractController {
 
     def handleVideoNotFoundException(VideoNotFoundException e) {
         exceptionErrorMessageResponse(e, 'video.unknown', SC_BAD_REQUEST)
-    }
-
-    // TODO: Use marshallers plugin if this becomes more involved
-    private static List marshallReelList(Collection<Reel> reels) {
-        reels.collect([]) { reel ->
-            [reelId: reel.id, name: reel.name]
-        }
-    }
-
-    private static List marshallVideoList(Collection<Video> videos) {
-        videos.collect([]) { video ->
-            [videoId: video.id]
-        }
     }
 }
