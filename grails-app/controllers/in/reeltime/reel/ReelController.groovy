@@ -17,6 +17,7 @@ class ReelController extends AbstractController {
     def reelVideoManagementService
 
     def listReels(String username) {
+        log.debug "Listing reels for user [$username]"
         handleSingleParamRequest(username, 'reel.username.required') {
             def reels = reelService.listReels(username)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
@@ -26,6 +27,7 @@ class ReelController extends AbstractController {
     }
 
     def addReel(String name) {
+        log.debug "Adding reel [$name]"
         handleSingleParamRequest(name, 'reel.name.required') {
             reelService.addReel(name)
             render(status: SC_CREATED)
@@ -33,6 +35,7 @@ class ReelController extends AbstractController {
     }
 
     def deleteReel(Long reelId) {
+        log.debug "Deleting reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {
             reelService.deleteReel(reelId)
             render(status: SC_OK)
@@ -40,6 +43,7 @@ class ReelController extends AbstractController {
     }
 
     def listVideos(Long reelId) {
+        log.debug "Listing videos in reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {
             def videos = reelVideoManagementService.listVideos(reelId)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
@@ -49,6 +53,7 @@ class ReelController extends AbstractController {
     }
 
     def addVideo(Long reelId, Long videoId) {
+        log.debug "Adding video [$videoId] to reel [$reelId]"
         if(!reelId) {
             errorMessageResponse('reel.id.required', SC_BAD_REQUEST)
         }
@@ -62,6 +67,7 @@ class ReelController extends AbstractController {
     }
 
     def removeVideo(Long reelId, Long videoId) {
+        log.debug "Removing video [$videoId] from reel [$reelId]"
         if(!reelId) {
             errorMessageResponse('reel.id.required', SC_BAD_REQUEST)
         }
