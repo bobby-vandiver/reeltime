@@ -47,6 +47,19 @@ class ReelController extends AbstractController {
         }
     }
 
+    def addVideo(Long reelId, Long videoId) {
+        if(!reelId) {
+            errorMessageResponse('reel.id.required', SC_BAD_REQUEST)
+        }
+        else if(!videoId) {
+            errorMessageResponse('video.id.required', SC_BAD_REQUEST)
+        }
+        else {
+            reelVideoManagementService.addVideo(reelId, videoId)
+            render(status: SC_CREATED)
+        }
+    }
+
     private void handleSingleParamRequest(Object paramToCheck, String errorMessageCode, Closure action) {
         paramToCheck ? action() : errorMessageResponse(errorMessageCode, SC_BAD_REQUEST)
     }

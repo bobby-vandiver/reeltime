@@ -344,5 +344,80 @@ class ReelControllerSpec extends AbstractControllerSpec {
         'reelId'    |   ''          |   'deleteReel'    |   'reel.id.required'
         'reelId'    |   null        |   'listVideos'    |   'reel.id.required'
         'reelId'    |   ''          |   'listVideos'    |   'reel.id.required'
+        'reelId'    |   null        |   'addVideo'      |   'reel.id.required'
+        'reelId'    |   ''          |   'addVideo'      |   'reel.id.required'
+    }
+
+    @Unroll
+    void "videoId cannot be [#paramValue] for [#actionName]"() {
+        given:
+        def message = 'TEST'
+
+        and:
+        params.reelId = 1234
+        params.videoId = paramValue
+
+        when:
+        controller."$actionName"()
+
+        then:
+        assertErrorMessageResponse(response, 400, message)
+
+        and:
+        1 * localizedMessageService.getMessage('video.id.required', request.locale) >> message
+
+        where:
+        paramValue  |   actionName
+        null        |   'addVideo'
+        ''          |   'addVideo'
+    }
+
+    @Unroll
+    void "attempt to add video throws [#exceptionClass]"() {
+        given:
+        def message = 'TEST'
+
+        and:
+        def reelId = 9431
+        def videoId = 81813
+
+        and:
+        params.reelId = reelId
+        params.videoId = videoId
+
+        when:
+        controller.addVideo()
+
+        then:
+        assertErrorMessageResponse(response, statusCode, message)
+
+        and:
+        1 * reelVideoManagementService.addVideo(reelId, videoId) >> { throw exceptionClass.newInstance('TEST') }
+        1 * localizedMessageService.getMessage(messageCode, request.locale) >> message
+
+        where:
+        exceptionClass          |   statusCode  |   messageCode
+        ReelNotFoundException   |   400         |   'reel.unknown'
+        AuthorizationException  |   403         |   'reel.unauthorized'
+    }
+
+    void "successfully add a video to a reel"() {
+        given:
+        def reelId = 9431
+        def videoId = 81813
+
+        and:
+        params.reelId = reelId
+        params.videoId = videoId
+
+        when:
+        controller.addVideo()
+
+        then:
+        response.status == 201
+        response.contentLength == 0
+
+        and:
+        1 * reelVideoManagementService.addVideo(reelId, videoId)
     }
 }
