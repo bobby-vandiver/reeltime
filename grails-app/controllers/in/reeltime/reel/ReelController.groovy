@@ -1,5 +1,6 @@
 package in.reeltime.reel
 
+import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.InvalidReelNameException
@@ -16,6 +17,12 @@ class ReelController extends AbstractController {
     def reelService
     def reelVideoManagementService
 
+    static allowedMethods = [
+            listReels: 'GET', addReel: 'POST', deleteReel: 'DELETE',
+            listVideos: 'GET', addVideo: 'POST', removeVideo: 'DELETE'
+    ]
+
+    @Secured(["#oauth2.hasScope('reels-read')"])
     def listReels(String username) {
         log.debug "Listing reels for user [$username]"
         handleSingleParamRequest(username, 'reel.username.required') {
@@ -26,6 +33,7 @@ class ReelController extends AbstractController {
         }
     }
 
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
     def addReel(String name) {
         log.debug "Adding reel [$name]"
         handleSingleParamRequest(name, 'reel.name.required') {
@@ -34,6 +42,7 @@ class ReelController extends AbstractController {
         }
     }
 
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
     def deleteReel(Long reelId) {
         log.debug "Deleting reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {
@@ -42,6 +51,7 @@ class ReelController extends AbstractController {
         }
     }
 
+    @Secured(["#oauth2.hasScope('reels-read')"])
     def listVideos(Long reelId) {
         log.debug "Listing videos in reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {
@@ -52,6 +62,7 @@ class ReelController extends AbstractController {
         }
     }
 
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
     def addVideo(Long reelId, Long videoId) {
         log.debug "Adding video [$videoId] to reel [$reelId]"
         if(!reelId) {
@@ -66,6 +77,7 @@ class ReelController extends AbstractController {
         }
     }
 
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
     def removeVideo(Long reelId, Long videoId) {
         log.debug "Removing video [$videoId] from reel [$reelId]"
         if(!reelId) {

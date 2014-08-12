@@ -101,6 +101,18 @@ abstract class FunctionalSpec extends Specification {
         getAccessTokenWithScope(accessRequest)
     }
 
+    protected static String getAccessTokenWithScopes(Collection<String> scopes) {
+        def request = new AccessTokenRequest(
+                clientId: 'test-client',
+                clientSecret: 'test-secret',
+                grantType: 'password',
+                username: TEST_USER,
+                password: TEST_PASSWORD,
+                scope: scopes
+        )
+        getAccessTokenWithScope(request)
+    }
+
     // TODO: Specify user once user registration is implemented
     protected static String getAccessTokenWithScope(String scope) {
         def request = new AccessTokenRequest(
@@ -120,6 +132,7 @@ abstract class FunctionalSpec extends Specification {
 
     protected static void assertInvalidHttpMethods(String url, Collection<String> methods, String token = null) {
         methods.each { String method ->
+            println "HTTP Method: $method"
             def request = new RestRequest(url: url, token: token)
             def response = restClient."$method"(request) as RestResponse
             assert response.status == 405
