@@ -85,11 +85,6 @@ grails.project.dependency.resolution = {
         compile 'commons-codec:commons-codec:1.9'
         compile 'com.amazonaws:aws-java-sdk:1.7.13'
 
-        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
-
-        test 'cglib:cglib-nodep:2.2.2'
-        test 'org.objenesis:objenesis:1.4'
-
         // FileUtils for test cleanup
         test 'commons-io:commons-io:2.4'
 
