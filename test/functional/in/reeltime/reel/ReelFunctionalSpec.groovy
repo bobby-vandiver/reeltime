@@ -41,4 +41,24 @@ class ReelFunctionalSpec extends FunctionalSpec {
         then:
         response.status == 403
     }
+
+    void "list reels"() {
+        given:
+        def request = createListReelsRequest()
+
+        when:
+        def response = restClient.get(request)
+
+        then:
+        response.status == 200
+
+        and:
+        response.json.size() == 1
+        response.json[0].name == 'Uncategorized'
+    }
+
+    private RestRequest createListReelsRequest() {
+        def reelsListUrl = getUrlForResource("/user/$TEST_USER/reels")
+        new RestRequest(url: reelsListUrl, token: readToken)
+    }
 }
