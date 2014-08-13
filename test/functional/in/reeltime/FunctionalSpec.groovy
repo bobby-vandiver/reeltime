@@ -140,6 +140,12 @@ abstract class FunctionalSpec extends Specification {
         }
     }
 
+    protected static void assertSingleErrorMessageResponse(RestResponse response, int expectedStatus, String expectedMessage) {
+        assert response.status == expectedStatus
+        assert response.json.errors.size() == 1
+        assert response.json.errors[0] == expectedMessage
+    }
+
     protected static void assertStatusCode(RestResponse response, int expected) {
         assert response.status == expected
     }
