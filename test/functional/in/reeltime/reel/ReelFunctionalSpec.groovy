@@ -2,6 +2,7 @@ package in.reeltime.reel
 
 import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
+import junit.framework.Assert
 import spock.lang.Unroll
 
 class ReelFunctionalSpec extends FunctionalSpec {
@@ -55,6 +56,68 @@ class ReelFunctionalSpec extends FunctionalSpec {
         and:
         response.json.size() == 1
         response.json[0].name == 'Uncategorized'
+        response.json[0].reelId > 0
+    }
+
+    void "add a new reel"() {
+        given:
+        def uncategorizedReelId = uncategorizedReelId
+
+        and:
+        def request = new RestRequest(url: getUrlForResource('reel'), token: writeToken, customizer: {
+            name = 'some new reel'
+        })
+
+        when:
+        def response = restClient.post(request)
+
+        then:
+        response.status == 201
+
+        and:
+        response.json.name == 'some new reel'
+        response.json.reelId > 0
+
+        and:
+        response.json.reelId != uncategorizedReelId
+    }
+
+    void "delete a reel"() {
+        given:
+        def reelId = addReel('reel to delete')
+
+        and:
+        def deleteReelUrl = getUrlForResource("reel/$reelId")
+        def request = new RestRequest(url: deleteReelUrl, token: writeToken)
+
+        when:
+        def response = restClient.delete(request)
+
+        then:
+        response.status == 200
+    }
+
+    private Long addReel(String reelName) {
+        def request = new RestRequest(url: getUrlForResource('reel'), token: writeToken, customizer: {
+            name = reelName
+        })
+
+        def response = restClient.post(request)
+        if(response.status != 201) {
+            Assert.fail("Failed to add reel [$reelName]. Status: ${response.status} JSON: ${response.json}")
+        }
+        return response.json.reelId
+    }
+
+    private Long getUncategorizedReelId() {
+        def request = createListReelsRequest()
+        def response = restClient.get(request)
+
+        if(response.status != 200) {
+            Assert.fail("Failed to list reels. Status: ${response.status} JSON: ${response.json}")
+        }
+        def uncategorizedReel = response.json.find { it.name == 'Uncategorized' }
+        return uncategorizedReel.reelId
     }
 
     private RestRequest createListReelsRequest() {
