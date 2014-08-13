@@ -7,30 +7,64 @@ class UrlMappings {
 
         "/available" (controller: 'applicationStatus', action: 'available')
 
-        "/account/register" (controller: 'account', action: 'register')
+        "/account/register" (controller: 'account') {
+            action = [POST: 'register']
+        }
 
-        "/account/confirm" (controller: 'account', action: 'confirm')
+        "/account/confirm" (controller: 'account') {
+            action = [POST:  'confirm']
+        }
 
-        "/transcoder/notification/$action" (controller: 'notification')
+        "/transcoder/notification/completed" (controller: 'notification') {
+            action = [POST: 'completed']
+        }
 
-        "/video" (controller: 'videoCreation', action: 'upload')
+        "/transcoder/notification/progressing" (controller: 'notification') {
+            action = [POST: 'progressing']
+        }
 
-        "/video/$videoId/status" (controller: 'videoCreation', action: 'status')
+        "/transcoder/notification/warning" (controller: 'notification') {
+            action = [POST: 'warning']
+        }
 
-        "/video/$videoId" (controller: 'playlist', action: 'getVariantPlaylist')
+        "/transcoder/notification/error" (controller: 'notification') {
+            action = [POST: 'error']
+        }
 
-        "/video/$videoId/$playlistId" (controller: 'playlist', action: 'getMediaPlaylist')
+        "/video" (controller: 'videoCreation') {
+            action = [POST: 'upload']
+        }
 
-        "/video/$videoId/$playlistId/$segmentId" (controller: 'segment', action: 'getSegment')
+        "/video/$videoId/status" (controller: 'videoCreation') {
+            action = [GET: 'status']
+        }
 
-        "/user/$username/reels" (controller: 'reel', action: 'listReels')
+        "/video/$videoId" (controller: 'playlist') {
+            action = [GET: 'getVariantPlaylist']
+        }
 
-        "/reel" (controller: 'reel', action: 'addReel')
+        "/video/$videoId/$playlistId" (controller: 'playlist') {
+            action = [GET: 'getMediaPlaylist']
+        }
+
+        "/video/$videoId/$playlistId/$segmentId" (controller: 'segment') {
+            action = [GET: 'getSegment']
+        }
+
+        "/user/$username/reels" (controller: 'reel') {
+            action = [GET: 'listReels']
+        }
+
+        "/reel" (controller: 'reel') {
+            action = [POST: 'addReel']
+        }
 
         "/reel/$reelId" (controller: 'reel') {
             action = [GET: 'listVideos', POST: 'addVideo', DELETE: 'deleteReel']
         }
 
-        "/reel/$reelId/$videoId" (controller: 'reel', action: 'removeVideo')
+        "/reel/$reelId/$videoId" (controller: 'reel') {
+            action = [DELETE: 'removeVideo']
+        }
     }
 }

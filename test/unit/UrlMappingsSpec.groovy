@@ -9,31 +9,49 @@ import in.reeltime.playlist.SegmentController
 import in.reeltime.account.AccountController
 import in.reeltime.status.ApplicationStatusController
 import in.reeltime.reel.ReelController
+import spock.lang.Unroll
 
 @TestMixin(UrlMappingsUnitTestMixin)
 @Mock([NotificationController, VideoCreationController, PlaylistController,
         SegmentController, ReelController, AccountController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
 
-    void "test notification endpoint mapping"() {
+    @Unroll
+    void "test notification [#action] endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'POST'
+
         expect:
-        assertForwardUrlMapping('/transcoder/notification/completed', controller: 'notification', action: 'completed')
-        assertForwardUrlMapping('/transcoder/notification/progressing', controller: 'notification', action: 'progressing')
-        assertForwardUrlMapping('/transcoder/notification/warning', controller: 'notification', action: 'warning')
-        assertForwardUrlMapping('/transcoder/notification/error', controller: 'notification', action: 'error')
+        assertForwardUrlMapping(url, controller: 'notification', action: action)
+
+        where:
+        action          |   url
+        'completed'     |   '/transcoder/notification/completed'
+        'progressing'   |   '/transcoder/notification/progressing'
+        'warning'       |   '/transcoder/notification/warning'
+        'error'         |   '/transcoder/notification/error'
     }
 
     void "test video endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'POST'
+
         expect:
         assertForwardUrlMapping('/video', controller: 'videoCreation', action: 'upload')
     }
 
     void "test video status endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'GET'
+
         expect:
         assertForwardUrlMapping('/video/1234/status', controller: 'videoCreation', action: 'status')
     }
 
     void "test variant playlist streaming endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'GET'
+
         expect:
         assertForwardUrlMapping('/video/1234', controller: 'playlist', action: 'getVariantPlaylist') {
             videoId = '1234'
@@ -41,6 +59,9 @@ class UrlMappingsSpec extends Specification {
     }
 
     void "test media playlist streaming endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'GET'
+
         expect:
         assertForwardUrlMapping('/video/12434/949', controller: 'playlist', action: 'getMediaPlaylist') {
             videoId = '12434'
@@ -49,6 +70,9 @@ class UrlMappingsSpec extends Specification {
     }
 
     void "test media segment streaming endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'GET'
+
         expect:
         assertForwardUrlMapping('/video/124344/5949/8891', controller: 'segment', action: 'getSegment') {
             videoId = '124344'
@@ -58,12 +82,18 @@ class UrlMappingsSpec extends Specification {
     }
 
     void "test list reels endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'GET'
+
         assertForwardUrlMapping('/user/bob/reels', controller: 'reel', action: 'listReels') {
             username = 'bob'
         }
     }
 
     void "test reel endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'POST'
+
         expect:
         assertForwardUrlMapping('/reel', controller: 'reel', action: 'addReel')
     }
@@ -99,6 +129,9 @@ class UrlMappingsSpec extends Specification {
     }
 
     void "test remove video from reel endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'DELETE'
+
         expect:
         assertForwardUrlMapping('/reel/1234/5678', controller: 'reel', action: 'removeVideo') {
             reelId = '1234'
@@ -107,16 +140,25 @@ class UrlMappingsSpec extends Specification {
     }
 
     void "test registration endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'POST'
+
         expect:
         assertForwardUrlMapping('/account/register', controller: 'account', action: 'register')
     }
 
     void "test confirmation endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'POST'
+
         expect:
         assertForwardUrlMapping('/account/confirm', controller: 'account', action: 'confirm')
     }
 
     void "test application available mapping"() {
+        given:
+        webRequest.currentRequest.method = 'GET'
+
         expect:
         assertForwardUrlMapping('/available', controller: 'applicationStatus', action: 'available')
     }

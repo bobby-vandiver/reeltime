@@ -16,7 +16,7 @@ class NotificationControllerFunctionalSpec extends FunctionalSpec {
         def response = "$method"(request)
 
         then:
-        response.status == 405
+        response.status == 400
         response.body == ''
 
         where:

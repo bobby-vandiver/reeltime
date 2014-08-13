@@ -32,20 +32,8 @@ class ReelFunctionalSpec extends FunctionalSpec {
         where:
         resource            |   methods
         'reel'              |   ['get', 'put', 'delete']
+        'reel/1234'         |   ['put']
         'reel/1234/5678'    |   ['get', 'put', 'post']
-    }
-
-    // The 403 status code is a side effect of mapping the action
-    // based on the HTTP method in UrlMappings
-    void "PUT is forbidden for reel resource"() {
-        given:
-        def request = new RestRequest(url: getUrlForResource('reel/1234'), token: token)
-
-        when:
-        def response = restClient.put(request)
-
-        then:
-        response.status == 403
     }
 
     @Unroll

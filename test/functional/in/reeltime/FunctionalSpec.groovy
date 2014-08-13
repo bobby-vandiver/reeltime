@@ -2,6 +2,7 @@ package in.reeltime
 
 import grails.plugins.rest.client.RestResponse
 import grails.util.BuildSettings
+import groovy.json.JsonSlurper
 import helper.oauth2.AccessTokenRequest
 import helper.oauth2.AccessTokenRequester
 import helper.rest.AuthorizationAwareRestClient
@@ -135,8 +136,22 @@ abstract class FunctionalSpec extends Specification {
             println "HTTP Method: $method"
             def request = new RestRequest(url: url, token: token)
             def response = restClient."$method"(request) as RestResponse
-            assert response.status == 405
-            assert response.body == ''
+
+            if(token) {
+                assert response.status == 403
+                assert response.json.error == 'access_denied'
+                assert response.json.error_description == 'Access is denied'
+            }
+            else {
+                assert response.status == 401
+
+                // There's some weirdness with the json accessor on the RestResponse returning
+                // null despite the HTTP response containing valid JSON
+                if(method.toLowerCase() != 'put') {
+                    assert response.json.error == 'unauthorized'
+                    assert response.json.error_description == 'Full authentication is required to access this resource'
+                }
+            }
         }
     }
 
