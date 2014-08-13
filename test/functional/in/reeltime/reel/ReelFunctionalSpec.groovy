@@ -3,6 +3,7 @@ package in.reeltime.reel
 import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
 import junit.framework.Assert
+import org.codehaus.groovy.grails.web.json.JSONElement
 import spock.lang.Unroll
 
 class ReelFunctionalSpec extends FunctionalSpec {
@@ -45,6 +46,28 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
         then:
         response.status == 403
+    }
+
+    @Unroll
+    void "use token to access [#resource] via [#httpMethod] requiring write access"() {
+        given:
+        def tokenToUse = useReadToken ? readToken : writeToken
+        def request = new RestRequest(url: getUrlForResource(resource), token: tokenToUse)
+
+        when:
+        def response = restClient."$httpMethod"(request)
+
+        then:
+        response.status == 403
+
+        where:
+        resource        |   httpMethod  |   useReadToken
+        'user/foo/123'  |   'get'       |   false
+        'reel'          |   'post'      |   true
+        'reel/1234'     |   'get'       |   false
+        'reel/1234'     |   'post'      |   true
+        'reel/1234'     |   'delete'    |   true
+        'reel/1234/57'  |   'delete'    |   true
     }
 
     void "missing reel name when adding a reel"() {
@@ -190,6 +213,77 @@ class ReelFunctionalSpec extends FunctionalSpec {
         response.status == 200
     }
 
+    void "list videos in reel"() {
+        given:
+        def reelId = uncategorizedReelId
+
+        and:
+        def listVideosUrl = getUrlForResource("reel/$reelId")
+        def request = new RestRequest(url: listVideosUrl, token: readToken)
+
+        when:
+        def response = restClient.get(request)
+
+        then:
+        response.status == 200
+        response.json.size() == 0
+    }
+
+    void "add video to reel"() {
+        given:
+        def reelId = addReel('add video test reel')
+        def videoId = uploadVideo(uploadVideoToken)
+
+        and:
+        addVideoToReel(reelId, videoId)
+
+        and:
+        def listVideosUrl = getUrlForResource("reel/$reelId")
+        def request = new RestRequest(url: listVideosUrl, token: readToken)
+
+        when:
+        def response = restClient.get(request)
+
+        then:
+        response.status == 200
+        response.json.size() == 1
+        response.json[0].videoId == videoId
+    }
+
+    void "remove video from reel"() {
+        given:
+        def reelId = addReel('remove video test reel')
+        def videoId = uploadVideo(uploadVideoToken)
+
+        and:
+        addVideoToReel(reelId, videoId)
+        assert listVideosInReel(reelId).size() == 1
+
+        and:
+        def removeVideoUrl = getUrlForResource("reel/$reelId/$videoId")
+        def request = new RestRequest(url: removeVideoUrl, token: writeToken)
+
+        when:
+        def response = restClient.delete(request)
+
+        then:
+        response.status == 200
+
+        and:
+        listVideosInReel(reelId).size() == 0
+    }
+
+    private JSONElement listVideosInReel(Long reelId) {
+        def listVideosUrl = getUrlForResource("reel/$reelId")
+        def request = new RestRequest(url: listVideosUrl, token: readToken)
+
+        def response = restClient.get(request)
+        if(response.status != 200) {
+            Assert.fail("Failed to list videos in reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
+        }
+        return response.json
+    }
+
     private Long addReel(String reelName) {
         def request = new RestRequest(url: getUrlForResource('reel'), token: writeToken, customizer: {
             name = reelName
@@ -208,7 +302,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         })
 
         def response = restClient.post(request)
-        if(response.status != 200) {
+        if(response.status != 201) {
             Assert.fail("Failed to add video [$vid] to reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
         }
     }
