@@ -88,6 +88,7 @@ class ReelController extends AbstractController {
         }
         else {
             reelVideoManagementService.removeVideo(reelId, videoId)
+            render(status: SC_OK)
         }
     }
 
