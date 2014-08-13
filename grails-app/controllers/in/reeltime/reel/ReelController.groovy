@@ -37,8 +37,10 @@ class ReelController extends AbstractController {
     def addReel(String name) {
         log.debug "Adding reel [$name]"
         handleSingleParamRequest(name, 'reel.name.required') {
-            reelService.addReel(name)
-            render(status: SC_CREATED)
+            def reel = reelService.addReel(name)
+            render(status: SC_CREATED, contentType: APPLICATION_JSON) {
+                [reelId: reel.id, name: reel.name]
+            }
         }
     }
 

@@ -134,17 +134,24 @@ class ReelControllerSpec extends AbstractControllerSpec {
     void "successfully add a new reel"() {
         given:
         def reelName = 'test-reel-name'
+        def reel = new Reel(name: reelName).save(validate: false)
+
+        and:
         params.name = reelName
 
         when:
         controller.addReel()
 
         then:
-        response.status == 201
-        response.contentLength == 0
+        assertStatusCodeAndContentType(response, 201)
 
         and:
-        1 * reelService.addReel(reelName)
+        def json = getJsonResponse(response)
+        json.reelId == reel.id
+        json.name == reelName
+
+        and:
+        1 * reelService.addReel(reelName) >> reel
     }
 
     void "unable to add reel with invalid name"() {

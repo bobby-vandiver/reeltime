@@ -112,12 +112,16 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
     @Unroll
     void "add new reel to current user"() {
         given:
-        def existingReelName = owner.reels[0].name
+        def existingReel = owner.reels[0]
+        def newReel = null
+
+        and:
+        def existingReelName = existingReel.name
         def newReelName = existingReelName + 'a'
 
         when:
         SpringSecurityUtils.doWithAuth(owner.username) {
-            reelService.addReel(newReelName)
+            newReel = reelService.addReel(newReelName)
         }
 
         then:
@@ -125,8 +129,8 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         retrieved.reels.size() == 2
 
         and:
-        retrieved.reels.find { it.name == existingReelName } != null
-        retrieved.reels.find { it.name == newReelName } != null
+        retrieved.reels.contains(existingReel)
+        retrieved.reels.contains(newReel)
     }
 
     void "do not allow a user to add a reel with the same name as an existing reel"() {
