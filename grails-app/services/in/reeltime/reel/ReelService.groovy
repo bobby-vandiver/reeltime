@@ -8,10 +8,11 @@ import in.reeltime.user.User
 class ReelService {
 
     def userService
+    def audienceService
     def reelAuthorizationService
 
     Reel createReel(String reelName) {
-        def audience = new Audience(users: [])
+        def audience = audienceService.createAudience()
         new Reel(name: reelName, audience: audience, videos: [])
     }
 

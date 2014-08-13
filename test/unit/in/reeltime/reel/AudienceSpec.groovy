@@ -21,40 +21,40 @@ class AudienceSpec extends Specification {
         def audience = new Audience()
 
         then:
-        audience.validate(['users'])
+        audience.validate(['members'])
     }
 
-    void "audience contains one user"() {
+    void "audience contains one member"() {
         given:
         def user = new User(username: 'foo', password: 'bar')
 
         when:
-        def audience = new Audience(users: [user])
+        def audience = new Audience(members: [user])
 
         then:
-        audience.validate(['users'])
+        audience.validate(['members'])
 
         and:
-        audience.users.size() == 1
-        audience.users.contains(user)
+        audience.members.size() == 1
+        audience.members.contains(user)
     }
 
-    void "audience contains many users"() {
+    void "audience contains many members"() {
         given:
         def user1 = new User(username: 'foo', password: 'bar')
         def user2 = new User(username: 'buzz', password: 'bazz')
 
         when:
-        def audience = new Audience(users: [user1, user2])
+        def audience = new Audience(members: [user1, user2])
 
         then:
-        audience.validate(['users'])
+        audience.validate(['members'])
 
         and:
-        audience.users.size()  == 2
+        audience.members.size()  == 2
 
         and:
-        audience.users.contains(user1)
-        audience.users.contains(user2)
+        audience.members.contains(user1)
+        audience.members.contains(user2)
     }
 }

@@ -30,6 +30,21 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         notOwner = userService.createAndSaveUser('notTheOwner', 'password', 'nobody@test.com', notOwnerClient, nowOwnerRequiredReel)
     }
 
+    void "create reel"() {
+        given:
+        def user = new User(username: 'someone')
+        def reelName = 'awesome reel'
+
+        when:
+        def reel = reelService.createReelForUser(user, reelName)
+
+        then:
+        reel.owner == user
+        reel.name == reelName
+        reel.audience.members.size() == 0
+        reel.videos.size() == 0
+    }
+
     void "do not allow a reel to be deleted if owner is not current user"() {
         given:
         def reelId = owner.reels[0].id
