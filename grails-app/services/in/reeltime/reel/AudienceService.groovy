@@ -16,8 +16,8 @@ class AudienceService {
 
     void addMember(Long reelId) {
         def reel = reelService.loadReel(reelId)
-        def user = userService.currentUser
-        reel.audience.addToMembers(user)
+        def currentUser = userService.currentUser
+        reel.audience.addToMembers(currentUser)
         reelService.storeReel(reel)
     }
 
@@ -30,7 +30,7 @@ class AudienceService {
             def message = "Current user [${currentUser.username}] is not a member of the audience for reel [$reelId]"
             throw new AuthorizationException(message)
         }
-        reel.audience.removeFromMembers(currentUser)
+        audience.removeFromMembers(currentUser)
         reelService.storeReel(reel)
     }
 }
