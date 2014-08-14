@@ -79,9 +79,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def response = restClient.post(request)
 
         then:
-        response.status == 403
-        response.json.errors.size() == 1
-        response.json.errors[0] == 'Unauthorized audience operation requested'
+        assertSingleErrorMessageResponse(response, 403, 'Unauthorized audience operation requested')
     }
 
     void "current user is not a member of the audience"() {
@@ -97,9 +95,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def response = restClient.delete(request)
 
         then:
-        response.status == 403
-        response.json.errors.size() == 1
-        response.json.errors[0] == 'Unauthorized audience operation requested'
+        assertSingleErrorMessageResponse(response, 403, 'Unauthorized audience operation requested')
     }
 
     void "no audience members"() {
