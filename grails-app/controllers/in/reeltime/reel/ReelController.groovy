@@ -8,7 +8,7 @@ import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
 
-import static in.reeltime.reel.ListMarshaller.*
+import static in.reeltime.common.ListMarshaller.*
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.*
 
@@ -92,10 +92,6 @@ class ReelController extends AbstractController {
             reelVideoManagementService.removeVideo(reelId, videoId)
             render(status: SC_OK)
         }
-    }
-
-    private void handleSingleParamRequest(Object paramToCheck, String errorMessageCode, Closure action) {
-        paramToCheck ? action() : errorMessageResponse(errorMessageCode, SC_BAD_REQUEST)
     }
 
     def handleAuthorizationException(AuthorizationException e) {
