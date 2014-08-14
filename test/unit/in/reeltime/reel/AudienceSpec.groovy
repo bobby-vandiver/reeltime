@@ -57,4 +57,22 @@ class AudienceSpec extends Specification {
         audience.members.contains(user1)
         audience.members.contains(user2)
     }
+
+    void "audience does not have member"() {
+        given:
+        def notMember = new User(username: 'nobody', password: 'secret')
+        def audience = new Audience()
+
+        expect:
+        !audience.hasMember(notMember)
+    }
+
+    void "audience has member"() {
+        given:
+        def member = new User(username: 'somebody', password: 'secret')
+        def audience = new Audience(members: [member])
+
+        expect:
+        audience.hasMember(member)
+    }
 }

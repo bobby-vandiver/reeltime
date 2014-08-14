@@ -9,4 +9,8 @@ class Audience {
 
     static constraints = {
     }
+
+    boolean hasMember(User user) {
+        return members?.contains(user)
+    }
 }
