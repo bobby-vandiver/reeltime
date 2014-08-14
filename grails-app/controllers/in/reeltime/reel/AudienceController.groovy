@@ -1,5 +1,6 @@
 package in.reeltime.reel
 
+import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ReelNotFoundException
@@ -14,6 +15,7 @@ class AudienceController extends AbstractController {
 
     static allowedMethods = [listMembers: 'GET', addMember: 'POST', removeMember: 'DELETE']
 
+    @Secured(["#oauth2.hasScope('audiences-read')"])
     def listMembers(Long reelId) {
         log.debug "List audience members for reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {
@@ -24,6 +26,7 @@ class AudienceController extends AbstractController {
         }
     }
 
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('audiences-write')"])
     def addMember(Long reelId) {
         log.debug "Add audience member for reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {
@@ -32,6 +35,7 @@ class AudienceController extends AbstractController {
         }
     }
 
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('audiences-write')"])
     def removeMember(Long reelId) {
         log.debug "Remove audience member for reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {

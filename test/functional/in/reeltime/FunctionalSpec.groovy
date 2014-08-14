@@ -103,19 +103,23 @@ abstract class FunctionalSpec extends Specification {
         new RestRequest(url: reelsListUrl, token: token)
     }
 
-    protected String getAccessTokenWithScopeForNonTestUser(String scope) {
-        def otherUsername = TEST_USER + 'a'
-        def registrationResult = registerUser(otherUsername)
+    protected String getAccessTokenWithScopeForNonTestUser(String username, String scope) {
+        def registrationResult = registerUser(username)
 
         def accessRequest = new AccessTokenRequest(
                 clientId: registrationResult.client_id,
                 clientSecret: registrationResult.client_secret,
                 grantType: 'password',
-                username: otherUsername,
+                username: username,
                 password: TEST_PASSWORD,
                 scope: [scope]
         )
         getAccessTokenWithScope(accessRequest)
+    }
+
+    protected String getAccessTokenWithScopeForNonTestUser(String scope) {
+        def otherUsername = TEST_USER + 'a'
+        return getAccessTokenWithScopeForNonTestUser(otherUsername, scope)
     }
 
     protected static String getAccessTokenWithScopes(Collection<String> scopes) {
