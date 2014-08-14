@@ -37,7 +37,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     }
 
     @Unroll
-    void "use token to access [#resource] via [#httpMethod] requiring write access"() {
+    void "use token to access [#resource] via [#httpMethod] requiring write access [#useReadToken]"() {
         given:
         def tokenToUse = useReadToken ? readToken : writeToken
         def request = new RestRequest(url: getUrlForResource(resource), token: tokenToUse)
