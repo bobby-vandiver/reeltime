@@ -90,7 +90,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "invalid videoId when removing video from reel"() {
         given:
-        def reelId = uncategorizedReelId
+        def reelId = getUncategorizedReelId(readToken)
 
         and:
         def removeVideoUrl = getUrlForResource("reel/$reelId/$videoId")
@@ -110,7 +110,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "missing videoId when adding video to reel"() {
         given:
-        def uncategorizedReelId = uncategorizedReelId
+        def uncategorizedReelId = getUncategorizedReelId(readToken)
 
         and:
         def addVideoToReelUrl = getUrlForResource("reel/$uncategorizedReelId")
@@ -149,7 +149,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "list reels"() {
         given:
-        def request = createListReelsRequest()
+        def request = createListReelsRequest(readToken)
 
         when:
         def response = restClient.get(request)
@@ -165,7 +165,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "add a new reel"() {
         given:
-        def uncategorizedReelId = uncategorizedReelId
+        def uncategorizedReelId = getUncategorizedReelId(readToken)
 
         and:
         def request = new RestRequest(url: getUrlForResource('reel'), token: writeToken, customizer: {
@@ -203,7 +203,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "list videos in reel"() {
         given:
-        def reelId = uncategorizedReelId
+        def reelId = getUncategorizedReelId(readToken)
 
         and:
         def listVideosUrl = getUrlForResource("reel/$reelId")
@@ -293,21 +293,5 @@ class ReelFunctionalSpec extends FunctionalSpec {
         if(response.status != 201) {
             Assert.fail("Failed to add video [$vid] to reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
         }
-    }
-
-    private Long getUncategorizedReelId() {
-        def request = createListReelsRequest()
-        def response = restClient.get(request)
-
-        if(response.status != 200) {
-            Assert.fail("Failed to list reels. Status: ${response.status} JSON: ${response.json}")
-        }
-        def uncategorizedReel = response.json.find { it.name == 'Uncategorized' }
-        return uncategorizedReel.reelId
-    }
-
-    private RestRequest createListReelsRequest() {
-        def reelsListUrl = getUrlForResource("/user/$TEST_USER/reels")
-        new RestRequest(url: reelsListUrl, token: readToken)
     }
 }

@@ -87,6 +87,22 @@ abstract class FunctionalSpec extends Specification {
         getUrlForResource("video/$videoId/status")
     }
 
+    protected static Long getUncategorizedReelId(String token) {
+        def request = createListReelsRequest(token)
+        def response = restClient.get(request)
+
+        if(response.status != 200) {
+            Assert.fail("Failed to list reels. Status: ${response.status} JSON: ${response.json}")
+        }
+        def uncategorizedReel = response.json.find { it.name == 'Uncategorized' }
+        return uncategorizedReel.reelId
+    }
+
+    protected static RestRequest createListReelsRequest(String token) {
+        def reelsListUrl = getUrlForResource("/user/$TEST_USER/reels")
+        new RestRequest(url: reelsListUrl, token: token)
+    }
+
     protected String getAccessTokenWithScopeForNonTestUser(String scope) {
         def otherUsername = TEST_USER + 'a'
         def registrationResult = registerUser(otherUsername)
