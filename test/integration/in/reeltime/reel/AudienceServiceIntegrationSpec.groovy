@@ -41,6 +41,28 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         _   |   50
     }
 
+    void "the owner of the reel cannot add themselves to the audience"() {
+        given:
+        def reel = createReelWithEmptyAudience()
+        def reelId = reel.id
+
+        and:
+        def ownerUsername = reel.owner.username
+
+        when:
+        SpringSecurityUtils.doWithAuth(ownerUsername) {
+            audienceService.addMember(reelId)
+        }
+
+        then:
+        def e = thrown(AuthorizationException)
+        e.message == "Owner of a reel cannot be a member of the reel's audience"
+
+        and:
+        def audience = Audience.findByReel(reel)
+        audience.members.size() == 0
+    }
+
     void "add the current user as an audience member"() {
         given:
         def reel = createReelWithEmptyAudience()

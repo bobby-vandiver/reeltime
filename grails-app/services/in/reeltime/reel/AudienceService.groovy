@@ -7,6 +7,8 @@ import in.reeltime.user.User
 class AudienceService {
 
     def reelService
+    def reelAuthorizationService
+
     def userService
 
     Collection<User> listMembers(Long reelId) {
@@ -16,6 +18,9 @@ class AudienceService {
 
     void addMember(Long reelId) {
         def reel = reelService.loadReel(reelId)
+        if(reelAuthorizationService.currentUserIsReelOwner(reel)) {
+            throw new AuthorizationException("Owner of a reel cannot be a member of the reel's audience")
+        }
         def currentUser = userService.currentUser
         reel.audience.addToMembers(currentUser)
         reelService.storeReel(reel)

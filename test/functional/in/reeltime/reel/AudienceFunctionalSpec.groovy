@@ -67,6 +67,23 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         _   |   'delete'
     }
 
+    void "reel owner cannot be a member of the audience"() {
+        given:
+        def reelId = getUncategorizedReelId(listReelsToken)
+
+        and:
+        def addAudienceMemberUrl = getUrlForResource("reel/$reelId/audience")
+        def request = new RestRequest(url: addAudienceMemberUrl, token: writeToken)
+
+        when:
+        def response = restClient.post(request)
+
+        then:
+        response.status == 403
+        response.json.errors.size() == 1
+        response.json.errors[0] == 'Unauthorized audience operation requested'
+    }
+
     void "current user is not a member of the audience"() {
         given:
         def reelId = getUncategorizedReelId(listReelsToken)
