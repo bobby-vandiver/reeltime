@@ -147,6 +147,25 @@ class ReelFunctionalSpec extends FunctionalSpec {
         assertSingleErrorMessageResponse(response, 400, 'Requested reel name is not allowed')
     }
 
+    void "only reel owner can delete reel"() {
+        given:
+        def reelId = addReel('only owner can delete')
+        def otherUserToken = getAccessTokenWithScopeForNonTestUser('otherUser', 'reels-write')
+
+        and:
+        def deleteReelUrl = getUrlForResource("reel/$reelId")
+        def request = new RestRequest(url: deleteReelUrl, token: otherUserToken)
+
+        when:
+        def response = restClient.delete(request)
+
+        then:
+        assertSingleErrorMessageResponse(response, 403, 'Unauthorized reel operation requested')
+
+        cleanup:
+        deleteReel(reelId)
+    }
+
     void "list reels"() {
         given:
         def request = createListReelsRequest(readToken)
@@ -292,6 +311,16 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def response = restClient.post(request)
         if(response.status != 201) {
             Assert.fail("Failed to add video [$vid] to reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
+        }
+    }
+
+    private void deleteReel(Long reelId) {
+        def deleteReelUrl = getUrlForResource("reel/$reelId")
+        def request = new RestRequest(url: deleteReelUrl, token: writeToken)
+
+        def response = restClient.delete(request)
+        if(response.status != 200) {
+            Assert.fail("Failed to delete reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
         }
     }
 }
