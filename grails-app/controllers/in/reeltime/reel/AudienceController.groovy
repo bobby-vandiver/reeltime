@@ -12,6 +12,8 @@ class AudienceController extends AbstractController {
 
     def audienceService
 
+    static allowedMethods = [listMembers: 'GET', addMember: 'POST', removeMember: 'DELETE']
+
     def listMembers(Long reelId) {
         log.debug "List audience members for reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {

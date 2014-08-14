@@ -9,11 +9,13 @@ import in.reeltime.playlist.SegmentController
 import in.reeltime.account.AccountController
 import in.reeltime.status.ApplicationStatusController
 import in.reeltime.reel.ReelController
+import in.reeltime.reel.AudienceController
 import spock.lang.Unroll
 
 @TestMixin(UrlMappingsUnitTestMixin)
 @Mock([NotificationController, VideoCreationController, PlaylistController,
-        SegmentController, ReelController, AccountController, ApplicationStatusController])
+        SegmentController, ReelController, AudienceController, AccountController,
+        ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
 
     @Unroll
@@ -136,6 +138,36 @@ class UrlMappingsSpec extends Specification {
         assertForwardUrlMapping('/reel/1234/5678', controller: 'reel', action: 'removeVideo') {
             reelId = '1234'
             videoId = '5678'
+        }
+    }
+
+    void "test list audience members endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'GET'
+
+        expect:
+        assertForwardUrlMapping('/reel/1234/audience', controller: 'audience', action: 'listMembers') {
+            reelId = '1234'
+        }
+    }
+
+    void "test add audience member endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'POST'
+
+        expect:
+        assertForwardUrlMapping('/reel/1234/audience', controller: 'audience', action: 'addMember') {
+            reelId = '1234'
+        }
+    }
+
+    void "test remove audience member endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'DELETE'
+
+        expect:
+        assertForwardUrlMapping('/reel/1234/audience', controller: 'audience', action: 'removeMember') {
+            reelId = '1234'
         }
     }
 
