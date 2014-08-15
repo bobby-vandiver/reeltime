@@ -38,17 +38,26 @@ class ReelService {
     }
 
     Reel addReel(String reelName) {
-        if(reelAuthorizationService.reelNameIsReserved(reelName)) {
-            throw new InvalidReelNameException("Reel name [$reelName] is reserved")
-        }
+        validateReelName(reelName)
+
         def currentUser = userService.currentUser
         if(currentUser.hasReel(reelName)) {
             throw new InvalidReelNameException("Reel named [$reelName] already exists")
         }
+
         def reel = createReelForUser(currentUser, reelName)
         currentUser.addToReels(reel)
         userService.storeUser(currentUser)
         return reel
+    }
+
+    private void validateReelName(String reelName) {
+        if(reelAuthorizationService.reelNameIsReserved(reelName)) {
+            throw new InvalidReelNameException("Reel name [$reelName] is reserved")
+        }
+        else if(!reelAuthorizationService.reelNameIsValidLength(reelName)) {
+            throw new InvalidReelNameException("Reel name [$reelName] length is invalid")
+        }
     }
 
     void deleteReel(Long reelId) {

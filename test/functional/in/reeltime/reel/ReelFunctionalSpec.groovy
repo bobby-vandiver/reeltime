@@ -147,6 +147,26 @@ class ReelFunctionalSpec extends FunctionalSpec {
         assertSingleErrorMessageResponse(response, 400, 'Requested reel name is not allowed')
     }
 
+    @Unroll
+    void "attempt to add a reel with a reel name [#reelName] of invalid length"() {
+        given:
+        def request = new RestRequest(url: getUrlForResource('reel'), token: writeToken, customizer: {
+            name = reelName
+        })
+
+        when:
+        def response = restClient.post(request)
+
+        then:
+        assertSingleErrorMessageResponse(response, 400, 'Requested reel name is not allowed')
+
+        where:
+        _   |   reelName
+        _   |   'z'
+        _   |   'bad'
+        _   |   'this is a really long reel name that is invalid'
+    }
+
     void "only reel owner can delete reel"() {
         given:
         def reelId = addReel('only owner can delete')

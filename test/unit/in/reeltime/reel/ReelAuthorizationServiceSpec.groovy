@@ -40,6 +40,24 @@ class ReelAuthorizationServiceSpec extends Specification {
         'BEARS'                         |   false
         'oh my'                         |   false
         'lions and tigers and bears'    |   false
+        ''                              |   false
+        null                            |   false
+    }
+
+    @Unroll
+    void "reel name [#name] is valid length [#valid]"() {
+        expect:
+        service.reelNameIsValidLength(name) == valid
+
+        where:
+        name        |   valid
+        null        |   false
+        ''          |   false
+        'a'         |   false
+        'a' * 4     |   false
+        'a' * 5     |   true
+        'a' * 25    |   true
+        'a' * 26    |   false
     }
 
     void "reel owner is not the current user"() {

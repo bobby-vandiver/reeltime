@@ -186,6 +186,27 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         _   |   'UNCATEGORIZED'
     }
 
+    @Unroll
+    void "do not allow a user to add a reel named [#name] that is an invalid length"() {
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelService.addReel(name)
+        }
+
+        then:
+        def e = thrown(InvalidReelNameException)
+        e.message == "Reel name [$name] length is invalid"
+
+        where:
+        _   |   name
+        _   |   null
+        _   |   ''
+        _   |   'a'
+        _   |   'abc'
+        _   |   'uhoh'
+        _   |   'c' * 26
+    }
+
     private Collection<Reel> createReels(User owner, int count) {
         def reels = owner.reels
         def initialCount = reels.size()

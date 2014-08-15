@@ -7,6 +7,9 @@ class Reel {
 
     static final UNCATEGORIZED_REEL_NAME = 'Uncategorized'
 
+    static final MINIMUM_NAME_LENGTH = 5
+    static final MAXIMUM_NAME_LENGTH = 25
+
     String name
 
     static belongsTo = [owner: User]
@@ -14,7 +17,7 @@ class Reel {
     static hasMany = [videos: Video]
 
     static constraints = {
-        name nullable: false, blank: false, size: 5..25
+        name nullable: false, blank: false, size: MINIMUM_NAME_LENGTH..MAXIMUM_NAME_LENGTH
         owner nullable: false
         audience unique: true
         videos nullable: false
