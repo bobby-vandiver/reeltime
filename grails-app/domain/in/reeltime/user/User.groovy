@@ -25,12 +25,16 @@ class User {
 		username blank: false, nullable: false, matches: /^\w{2,15}$/, unique: true
 		password blank: false, nullable: false
         clients nullable: false, size: 1..1
-        reels nullable: false, minSize: 1
+        reels nullable: false, minSize: 1, validator: reelsValidator
 	}
 
 	static mapping = {
 		password column: '`password`'
 	}
+
+    static Closure reelsValidator = { val, obj ->
+        return obj.hasReel(Reel.UNCATEGORIZED_REEL_NAME)
+    }
 
     boolean hasReel(String reelName) {
         reels.find { reel -> reel.name == reelName } != null

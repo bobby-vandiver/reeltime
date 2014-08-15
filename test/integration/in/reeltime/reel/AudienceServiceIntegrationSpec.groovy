@@ -171,7 +171,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
     private User createUser(String username, String clientId) {
         def client = new Client(clientId: clientId, clientSecret: 'secret', clientName: 'name').save()
-        def reel = reelService.createReel('test reel')
+        def reel = reelService.createReel(Reel.UNCATEGORIZED_REEL_NAME)
 
         new User(username: "$username", password: 'password', email: "$username@test.com")
                 .addToClients(client)

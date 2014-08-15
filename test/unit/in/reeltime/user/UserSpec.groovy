@@ -106,6 +106,20 @@ class UserSpec extends Specification {
         'something' |   'nothing'       |   false
     }
 
+    void "user must have an uncategorized reel"() {
+        given:
+        def reel = new Reel(name: reelName)
+        def user = new User(reels: [reel])
+
+        expect:
+        user.validate(['reels']) == valid
+
+        where:
+        reelName                        |   valid
+        Reel.UNCATEGORIZED_REEL_NAME    |   true
+        'foo'                           |   false
+    }
+
     @Unroll
     void "[#count] reels is valid [#valid]"() {
         given:
@@ -139,6 +153,11 @@ class UserSpec extends Specification {
 
     private static Collection<Reel> createReels(int count) {
         def reels = []
+
+        if(count > 0) {
+            reels << new Reel(name: Reel.UNCATEGORIZED_REEL_NAME)
+            count--
+        }
         count.times { reels << new Reel() }
         return reels
     }

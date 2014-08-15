@@ -15,7 +15,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
     void setup() {
         client = new Client(clientName: 'test-name', clientId: 'test-id').save()
-        reel = new Reel(name: 'test reel', audience: new Audience(), videos: [])
+        reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME, audience: new Audience(), videos: [])
     }
 
     void "user exists"() {
