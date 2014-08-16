@@ -32,6 +32,9 @@ abstract class FunctionalSpec extends Specification {
     protected static final TEST_USER = 'bob'
     protected static final TEST_PASSWORD = 'password'
 
+    protected static final TEST_CLIENT_ID = 'test-client'
+    protected static final TEST_CLIENT_SECRET = 'test-secret'
+
     protected JSONElement registerUser(String name) {
         def url = getUrlForResource('account/register')
         def request = new RestRequest(url: url, customizer: {
@@ -137,8 +140,8 @@ abstract class FunctionalSpec extends Specification {
     // TODO: Specify user once user registration is implemented
     protected static String getAccessTokenWithScope(String scope) {
         def request = new AccessTokenRequest(
-                clientId: 'test-client',
-                clientSecret: 'test-secret',
+                clientId: TEST_CLIENT_ID,
+                clientSecret: TEST_CLIENT_SECRET,
                 grantType: 'password',
                 username: TEST_USER,
                 password: TEST_PASSWORD,

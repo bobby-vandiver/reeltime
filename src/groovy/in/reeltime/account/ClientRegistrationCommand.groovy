@@ -21,7 +21,12 @@ class ClientRegistrationCommand {
         def username = obj.username
         def password = obj.password
 
-        if(!obj.userAuthenticationService.authenticate(username, password)) {
+        // Let the blank and nullable constraints handle these scenarios
+        // so the messages returned are accurate for the error encountered
+        if(!username || !password) {
+            return true
+        }
+        else if(!obj.userAuthenticationService.authenticate(username, password)) {
             return 'unauthenticated'
         }
     }

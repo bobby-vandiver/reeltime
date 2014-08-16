@@ -12,6 +12,8 @@ import in.reeltime.user.UserService
 import in.reeltime.user.UserAuthenticationService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionStatus
 import spock.lang.Unroll
 
 @TestFor(AccountController)
@@ -151,12 +153,19 @@ class AccountControllerSpec extends AbstractControllerSpec {
             userAuthenticationService(UserAuthenticationService)
         }
         def userAuthenticationService = grailsApplication.mainContext.getBean('userAuthenticationService')
+
         userAuthenticationService.authenticationManager = Stub(AuthenticationManager) {
             authenticate(_) >> {
                 if(!authenticated) {
                     throw new BadCredentialsException('TEST')
                 }
             }
+        }
+
+        // Workaround for GRAILS-10538 per comment by Aaron Long:
+        // Source: https://jira.grails.org/browse/GRAILS-10538
+        userAuthenticationService.transactionManager = Mock(PlatformTransactionManager) {
+            getTransaction(_) >> Mock(TransactionStatus)
         }
     }
 

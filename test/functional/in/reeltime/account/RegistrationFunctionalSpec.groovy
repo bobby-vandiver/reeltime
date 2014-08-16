@@ -155,8 +155,125 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         assertInvalidHttpMethods(verifyUrl, ['get', 'put', 'delete'], token)
     }
 
+    void "register client with bad credentials"() {
+        given:
+        def request = new RestRequest(url: registerClientUrl, customizer: {
+            username = 'user'
+            password = 'pass'
+            client_name = 'client'
+        })
+
+        when:
+        def response = post(request)
+
+        then:
+        response.status == 400
+        response.json.errors.size() == 1
+        response.json.errors[0] == 'Invalid credentials'
+    }
+
+    @Unroll
+    void "register client with invalid params username [#user], password [#pass], client_name [#client]"() {
+        given:
+        def request = new RestRequest(url: registerClientUrl, customizer: {
+            username = user
+            password = pass
+            client_name = client
+        })
+
+        when:
+        def response = post(request)
+
+        then:
+        response.status == 400
+        response.json.errors.size() > 0
+        response.json.errors.contains(message)
+
+        where:
+        user     | pass     | client     | message
+        'user'   | 'secret' | ''         | '[client_name] is required'
+        'user'   | 'secret' | null       | '[client_name] is required'
+
+        ''       | 'secret' | 'client'   | '[username] is required'
+        null     | 'secret' | 'client'   | '[username] is required'
+
+        'user'   | ''       | 'client'   | '[password] is required'
+        'user'   | null     | 'client'   | '[password] is required'
+    }
+
+    void "invalid http methods for register client endpoint"() {
+        expect:
+        assertInvalidHttpMethods(registerClientUrl, ['get', 'put', 'delete'])
+    }
+
+    void "register a new client for an existing user"() {
+        given:
+        def request = new RestRequest(url: registerClientUrl, customizer: {
+            username = TEST_USER
+            password = TEST_PASSWORD
+            client_name = 'some new client'
+        })
+
+        when:
+        def response = post(request)
+
+        then:
+        response.status == 201
+        response.json.client_id
+        response.json.client_secret
+
+        and:
+        def clientId = response.json.client_id
+        def clientSecret = response.json.client_secret
+
+        and:
+        def tokenRequestForNewClient = new AccessTokenRequest(
+                clientId: clientId,
+                clientSecret: clientSecret,
+                username: TEST_USER,
+                password: TEST_PASSWORD,
+                grantType: 'password',
+                scope: [
+                        'account-read', 'account-write',
+                        'audiences-read', 'audiences-write',
+                        'reels-read', 'reels-write',
+                        'videos-read', 'videos-write'
+                ]
+        )
+
+        and:
+        def tokenRequestForExistingClient = new AccessTokenRequest(
+                clientId: TEST_CLIENT_ID,
+                clientSecret: TEST_CLIENT_SECRET,
+                username: TEST_USER,
+                password: TEST_PASSWORD,
+                grantType: 'password',
+                scope: [
+                        'account-read', 'account-write',
+                        'audiences-read', 'audiences-write',
+                        'reels-read', 'reels-write',
+                        'videos-read', 'videos-write'
+                ]
+        )
+
+        when:
+        def tokenForNewClient = getAccessTokenWithScope(tokenRequestForNewClient)
+        def tokenForExistingClient = getAccessTokenWithScope(tokenRequestForExistingClient)
+
+        then:
+        tokenForNewClient != null
+        tokenForExistingClient != null
+
+        and:
+        tokenForNewClient != tokenForExistingClient
+    }
+
     private static getRegisterUrl() {
         getUrlForResource('account/register')
+    }
+
+    private getRegisterClientUrl() {
+        getUrlForResource('account/client')
     }
 
     private static getVerifyUrl() {
