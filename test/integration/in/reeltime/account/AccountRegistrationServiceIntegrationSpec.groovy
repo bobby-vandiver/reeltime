@@ -48,4 +48,39 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
         message.from == 'registration@reeltime.in'
         message.body.startsWith("Hello $username, please enter the following code on your registered device:")
     }
+
+    void "register a new client for an existing user"() {
+        given:
+        def username = 'foo'
+        def password = 'bar'
+
+        def firstClientName = 'first one'
+        def secondClientName = 'second one'
+
+        and:
+        registerNewUser(username, password, firstClientName)
+
+        when:
+        def result = accountRegistrationService.registerClientForExistingUser(username, secondClientName)
+
+        then:
+        result.clientId != null
+        result.clientSecret != null
+
+        and:
+        def user = User.findByUsername(username)
+        user != null
+
+        and:
+        user.clients.size() == 2
+        user.clients.find { it.clientName == firstClientName } != null
+        user.clients.find { it.clientName == secondClientName } != null
+    }
+
+    private void registerNewUser(String username, String password, String clientName) {
+        def command = new AccountRegistrationCommand(username: username, password: password,
+                email: "$username@test.com", client_name: clientName)
+
+        accountRegistrationService.registerUserAndClient(command, Locale.ENGLISH)
+    }
 }

@@ -44,6 +44,19 @@ class AccountRegistrationService {
         new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
     }
 
+    RegistrationResult registerClientForExistingUser(String username, String clientName) {
+        def user = userService.loadUser(username)
+
+        def clientId = clientService.generateClientId()
+        def clientSecret = clientService.generateClientSecret()
+
+        def client = clientService.createAndSaveClient(clientName, clientId, clientSecret)
+        user.addToClients(client)
+        userService.storeUser(user)
+
+        new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
+    }
+
     void sendConfirmationEmail(User user, Locale locale) {
 
         def code = securityService.generateSecret(CONFIRMATION_CODE_LENGTH, ALLOWED_CHARACTERS)

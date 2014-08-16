@@ -79,8 +79,8 @@ class UserSpec extends Specification {
         count   |   valid
         0       |   false
         1       |   true
-        2       |   false
-        3       |   false
+        2       |   true
+        3       |   true
     }
 
     void "reels list cannot be null"() {
