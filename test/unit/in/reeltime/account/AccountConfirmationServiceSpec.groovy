@@ -47,6 +47,32 @@ class AccountConfirmationServiceSpec extends Specification {
         1 * userService.storeUser(user)
     }
 
+    void "current user does not have a valid confirmation code"() {
+        given:
+        def user = createUser('current')
+        def accountConfirmationId = createAccountConfirmation(user, RAW_CONFIRMATION_CODE).id
+
+        and:
+        def invalidCode = RAW_CONFIRMATION_CODE.reverse()
+
+        when:
+        service.confirmAccount(invalidCode)
+
+        then:
+        def e = thrown(ConfirmationException)
+        e.message == "The confirmation code [$invalidCode] is not correct"
+
+        and:
+        !user.verified
+
+        and:
+        AccountConfirmation.findById(accountConfirmationId)
+
+        and:
+        1 * springSecurityService.currentUser >> user
+        0 * userService.storeUser(user)
+    }
+
     void "confirmation code is old but has not expired"() {
         given:
         def user = createUser('current')

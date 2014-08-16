@@ -20,10 +20,11 @@ class AccountConfirmationService {
         def hash = accountConfirmation.code
         def salt = accountConfirmation.salt
 
-        if(confirmationCodeIsCorrect(code, hash, salt)) {
-            verifyUser(currentUser)
-            accountConfirmation.delete()
+        if(!confirmationCodeIsCorrect(code, hash, salt)) {
+            throw new ConfirmationException("The confirmation code [$code] is not correct")
         }
+        verifyUser(currentUser)
+        accountConfirmation.delete()
     }
 
     private static AccountConfirmation findAccountConfirmationForUser(User user) {
