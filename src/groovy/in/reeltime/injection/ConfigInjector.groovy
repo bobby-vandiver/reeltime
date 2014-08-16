@@ -2,6 +2,7 @@ package in.reeltime.injection
 
 import org.springframework.context.ApplicationContext
 import in.reeltime.video.VideoCreationCommand
+import org.springframework.security.authentication.AuthenticationManager
 
 class ConfigInjector {
 
@@ -56,6 +57,10 @@ class ConfigInjector {
 
         ctx.accountConfirmationService.with {
             confirmationCodeValidityLengthInDays = config.reeltime.registration.confirmationCodeValidityLengthInDays
+        }
+
+        ctx.userAuthenticationService.with {
+            authenticationManager = ctx.getBean('authenticationManager') as AuthenticationManager
         }
     }
 
