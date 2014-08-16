@@ -9,6 +9,9 @@ import in.reeltime.exceptions.ConfirmationException
 import in.reeltime.message.LocalizedMessageService
 import in.reeltime.user.User
 import in.reeltime.user.UserService
+import in.reeltime.user.UserAuthenticationService
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.BadCredentialsException
 import spock.lang.Unroll
 
 @TestFor(AccountController)
@@ -102,6 +105,59 @@ class AccountControllerSpec extends AbstractControllerSpec {
         and:
         1 * accountRegistrationService.registerUserAndClient(_, _) >> { throw new RegistrationException('TEST') }
         1 * localizedMessageService.getMessage('registration.internal.error', request.locale) >> message
+    }
+
+    void "respond with client credentials upon successful registration of a previously unknown client"() {
+        given:
+        def username = 'foo'
+        def password = 'secret'
+        def clientName = 'something'
+
+        and:
+        def clientId = 'buzz'
+        def clientSecret = 'bazz'
+
+        and:
+        def registrationResult = new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
+
+        and:
+        stubUserAuthenticationService(true)
+
+        and:
+        params.username = username
+        params.password = password
+        params.client_name = clientName
+
+        when:
+        controller.registerClient()
+
+        then:
+        assertStatusCodeAndContentType(response, 201)
+
+        and:
+        def json = getJsonResponse(response) as Map
+        json.size() == 2
+
+        and:
+        json.client_id == clientId
+        json.client_secret == clientSecret
+
+        and:
+        1 * accountRegistrationService.registerClientForExistingUser(username, clientName) >> registrationResult
+    }
+
+    private void stubUserAuthenticationService(boolean authenticated) {
+        defineBeans {
+            userAuthenticationService(UserAuthenticationService)
+        }
+        def userAuthenticationService = grailsApplication.mainContext.getBean('userAuthenticationService')
+        userAuthenticationService.authenticationManager = Stub(AuthenticationManager) {
+            authenticate(_) >> {
+                if(!authenticated) {
+                    throw new BadCredentialsException('TEST')
+                }
+            }
+        }
     }
 
     @Unroll

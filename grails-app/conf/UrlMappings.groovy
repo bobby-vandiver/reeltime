@@ -11,6 +11,10 @@ class UrlMappings {
             action = [POST: 'register']
         }
 
+        "/account/client" (controller: 'account') {
+            action = [POST: 'registerClient']
+        }
+
         "/account/confirm" (controller: 'account') {
             action = [POST:  'confirm']
         }

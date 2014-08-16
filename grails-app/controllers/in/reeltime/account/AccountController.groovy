@@ -12,7 +12,7 @@ class AccountController extends AbstractController {
     def accountRegistrationService
     def accountConfirmationService
 
-    static allowedMethods = [register: 'POST', confirm: 'POST']
+    static allowedMethods = [register: 'POST', registerClient: 'POST', confirm: 'POST']
 
     @Secured(["permitAll"])
     def register(AccountRegistrationCommand command) {
@@ -28,8 +28,18 @@ class AccountController extends AbstractController {
         }
     }
 
-    def handleRegistrationException(RegistrationException e) {
-        exceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
+    @Secured(["permitAll"])
+    def registerClient(ClientRegistrationCommand command) {
+
+        if(!command.hasErrors()) {
+            def result = accountRegistrationService.registerClientForExistingUser(command.username, command.client_name)
+            render(status: SC_CREATED, contentType: APPLICATION_JSON) {
+                [client_id: result.clientId, client_secret: result.clientSecret]
+            }
+        }
+        else {
+            commandErrorMessageResponse(command, SC_BAD_REQUEST)
+        }
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-write')"])
@@ -42,6 +52,10 @@ class AccountController extends AbstractController {
         else {
             errorMessageResponse('registration.confirmation.code.required', SC_BAD_REQUEST)
         }
+    }
+
+    def handleRegistrationException(RegistrationException e) {
+        exceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
     }
 
     def handleConfirmationException(ConfirmationException e) {
