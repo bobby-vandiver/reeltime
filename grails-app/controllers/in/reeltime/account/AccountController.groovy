@@ -15,7 +15,7 @@ class AccountController extends AbstractController {
     static allowedMethods = [register: 'POST', confirm: 'POST']
 
     @Secured(["permitAll"])
-    def register(RegistrationCommand command) {
+    def register(AccountRegistrationCommand command) {
 
         if(!command.hasErrors()) {
             def result = accountRegistrationService.registerUserAndClient(command, request.locale)

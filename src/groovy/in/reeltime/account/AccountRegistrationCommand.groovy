@@ -4,7 +4,7 @@ import grails.validation.Validateable
 import in.reeltime.user.User
 
 @Validateable
-class RegistrationCommand {
+class AccountRegistrationCommand {
 
     def userService
 

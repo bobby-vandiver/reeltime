@@ -20,7 +20,7 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
         def clientName = 'something'
 
         and:
-        def command = new RegistrationCommand(username: username, password: password,
+        def command = new AccountRegistrationCommand(username: username, password: password,
                 email: email, client_name: clientName)
 
         when:

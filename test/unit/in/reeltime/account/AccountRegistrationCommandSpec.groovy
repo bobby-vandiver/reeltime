@@ -10,12 +10,12 @@ import spock.lang.Unroll
 
 @TestMixin(GrailsUnitTestMixin)
 @Mock([User])
-class RegistrationCommandSpec extends Specification {
+class AccountRegistrationCommandSpec extends Specification {
 
     @Unroll
     void "username [#username] is valid [#valid] -- inherited from User domain class"() {
         given:
-        def command = new RegistrationCommand(username: username)
+        def command = new AccountRegistrationCommand(username: username)
         command.userService = mockUserService(username, false)
 
         expect:
@@ -47,7 +47,7 @@ class RegistrationCommandSpec extends Specification {
         assert existingUser.id
 
         and:
-        def command = new RegistrationCommand(username: 'foo')
+        def command = new AccountRegistrationCommand(username: 'foo')
         command.userService = mockUserService('foo', true)
 
         expect:
@@ -60,7 +60,7 @@ class RegistrationCommandSpec extends Specification {
     @Unroll
     void "password [#password] is valid [#valid] -- inherited from User domain class"() {
         given:
-        def command = new RegistrationCommand(password: password)
+        def command = new AccountRegistrationCommand(password: password)
 
         expect:
         command.validate(['password']) == valid
@@ -83,7 +83,7 @@ class RegistrationCommandSpec extends Specification {
     @Unroll
     void "email [#email] is valid [#valid]"() {
         given:
-        def command = new RegistrationCommand(email: email)
+        def command = new AccountRegistrationCommand(email: email)
 
         expect:
         command.validate(['email']) == valid
@@ -106,7 +106,7 @@ class RegistrationCommandSpec extends Specification {
     @Unroll
     void "client_name [#clientName] is valid [#valid]"() {
         given:
-        def command = new RegistrationCommand(client_name: clientName)
+        def command = new AccountRegistrationCommand(client_name: clientName)
 
         expect:
         command.validate(['client_name']) == valid

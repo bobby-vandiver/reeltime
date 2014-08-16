@@ -25,7 +25,7 @@ class AccountRegistrationService {
     protected static final CONFIRMATION_CODE_LENGTH = 8
     protected static final ALLOWED_CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-    RegistrationResult registerUserAndClient(RegistrationCommand command, Locale locale) {
+    RegistrationResult registerUserAndClient(AccountRegistrationCommand command, Locale locale) {
 
         def username = command.username
         def password = command.password
