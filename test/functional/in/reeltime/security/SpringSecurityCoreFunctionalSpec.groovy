@@ -25,7 +25,7 @@ class SpringSecurityCoreFunctionalSpec extends FunctionalSpec {
 
     void "including a token makes no difference"() {
         given:
-        def token = getAccessTokenWithScope('account-read')
+        def token = getAccessTokenWithScopeForTestUser('account-read')
         def request = new RestRequest(url: springSecurityCheckUrl, token: token)
 
         when:

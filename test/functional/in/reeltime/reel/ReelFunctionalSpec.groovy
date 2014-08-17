@@ -16,12 +16,12 @@ class ReelFunctionalSpec extends FunctionalSpec {
     String token
 
     void setup() {
-        readToken = getAccessTokenWithScope('reels-read')
-        writeToken = getAccessTokenWithScope('reels-write')
+        readToken = getAccessTokenWithScopeForTestUser('reels-read')
+        writeToken = getAccessTokenWithScopeForTestUser('reels-write')
 
-        uploadVideoToken = getAccessTokenWithScope('videos-write')
+        uploadVideoToken = getAccessTokenWithScopeForTestUser('videos-write')
 
-        token = getAccessTokenWithScopes(['reels-read', 'reels-write'])
+        token = getAccessTokenWithScopesForTestUser(['reels-read', 'reels-write'])
     }
 
     @Unroll
@@ -170,7 +170,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     void "only reel owner can delete reel"() {
         given:
         def reelId = addReel('only owner can delete')
-        def otherUserToken = getAccessTokenWithScopeForNonTestUser('otherUser', 'reels-write')
+        def otherUserToken = registerNewUserAndGetToken('otherUser', 'reels-write')
 
         and:
         def deleteReelUrl = getReelUrl(reelId)

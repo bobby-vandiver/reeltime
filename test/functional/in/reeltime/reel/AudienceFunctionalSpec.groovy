@@ -14,12 +14,12 @@ class AudienceFunctionalSpec extends FunctionalSpec {
     String token
 
     void setup() {
-        readToken = getAccessTokenWithScope('audiences-read')
-        writeToken = getAccessTokenWithScope('audiences-write')
+        readToken = getAccessTokenWithScopeForTestUser('audiences-read')
+        writeToken = getAccessTokenWithScopeForTestUser('audiences-write')
 
-        listReelsToken = getAccessTokenWithScope('reels-read')
+        listReelsToken = getAccessTokenWithScopeForTestUser('reels-read')
 
-        token = getAccessTokenWithScopes(['audiences-read', 'audiences-write'])
+        token = getAccessTokenWithScopesForTestUser(['audiences-read', 'audiences-write'])
     }
 
     @Unroll
@@ -83,7 +83,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
     void "current user is not a member of the audience"() {
         given:
         def reelId = getUncategorizedReelId(listReelsToken)
-        def nonTestUserWriteToken = getAccessTokenWithScopeForNonTestUser('badMember', 'audiences-write')
+        def nonTestUserWriteToken = registerNewUserAndGetToken('badMember', 'audiences-write')
 
         and:
         def removeAudienceMemberUrl = getAudienceUrl(reelId)
@@ -110,7 +110,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
     void "add current user as audience member then remove them when current user is not the owner of the reel"() {
         given:
         def reelId = getUncategorizedReelId(listReelsToken)
-        def nonTestUserWriteToken = getAccessTokenWithScopeForNonTestUser('goodMember', 'audiences-write')
+        def nonTestUserWriteToken = registerNewUserAndGetToken('goodMember', 'audiences-write')
 
         when:
         addAudienceMember(reelId, nonTestUserWriteToken)

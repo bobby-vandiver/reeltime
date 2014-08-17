@@ -3,7 +3,6 @@ package in.reeltime.account
 import helper.oauth2.AccessTokenRequest
 import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
-import junit.framework.Assert
 import spock.lang.Unroll
 
 class RegistrationFunctionalSpec extends FunctionalSpec {
@@ -11,22 +10,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     static String token
 
     void setup() {
-        def username = 'registerTest'
-        def result = registerUser(username).json
-
-        def accessTokenRequest = new AccessTokenRequest(
-                username: username,
-                password: TEST_PASSWORD,
-                grantType: 'password',
-                clientId: result.client_id,
-                clientSecret: result.client_secret,
-                scope: ['account-write']
-        )
-        token = getAccessTokenWithScope(accessTokenRequest)
-    }
-
-    void cleanup() {
-        removeAccount(token)
+        registerUser('registerTest')
     }
 
     @Unroll
@@ -248,8 +232,8 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
         and:
         def tokenRequestForExistingClient = new AccessTokenRequest(
-                clientId: TEST_CLIENT_ID,
-                clientSecret: TEST_CLIENT_SECRET,
+                clientId: testClientId,
+                clientSecret: testClientSecret,
                 username: TEST_USER,
                 password: TEST_PASSWORD,
                 grantType: 'password',

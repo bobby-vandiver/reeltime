@@ -11,8 +11,8 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void setup() {
         invalidToken = 'bad-mojo'
-        insufficientScopeToken = getAccessTokenWithScope('videos-read')
-        uploadToken = getAccessTokenWithScope('videos-write')
+        insufficientScopeToken = getAccessTokenWithScopeForTestUser('videos-read')
+        uploadToken = getAccessTokenWithScopeForTestUser('videos-write')
     }
 
     void "no token present"() {
@@ -160,7 +160,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
     void "cannot check status if not the creator"() {
         given:
         def videoId = uploadVideo(uploadToken)
-        def differentUserToken = getAccessTokenWithScopeForNonTestUser('videos-write')
+        def differentUserToken = registerNewUserAndGetToken('notTheCreator', 'videos-write')
 
         and:
         def request = createStatusRequest(videoId, differentUserToken)

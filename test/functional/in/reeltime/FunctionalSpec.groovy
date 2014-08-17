@@ -30,13 +30,15 @@ abstract class FunctionalSpec extends Specification {
     @Delegate
     protected ResponseChecker responseChecker
 
-    protected static final TEST_USER = 'bob'
-    protected static final TEST_PASSWORD = 'password'
+    protected static final String TEST_USER = 'bob'
+    protected static final String TEST_PASSWORD = 'password'
 
-    protected static final TEST_CLIENT_NAME = 'test-client-name'
+    protected static final String TEST_CLIENT_NAME = 'test-client-name'
 
-    protected static TEST_CLIENT_ID = 'test-client'
-    protected static TEST_CLIENT_SECRET = 'test-secret'
+    protected testClientId
+    protected testClientSecret
+
+    private Collection<Map> registeredTestUsers
 
     void setup() {
         restClient = new AuthorizationAwareRestClient()
@@ -47,71 +49,70 @@ abstract class FunctionalSpec extends Specification {
         requestFactory = new ReelTimeRequestFactory(urlFactory)
         reelTimeClient = new ReelTimeClient(restClient, requestFactory)
 
+        registeredTestUsers = []
         registerTestUser()
     }
 
     private void registerTestUser() {
-        def registrationResult = registerUser(TEST_USER, TEST_PASSWORD, TEST_CLIENT_NAME).json
+        def registrationResult = registerUser(TEST_USER).json
 
-        TEST_CLIENT_ID = registrationResult.client_id
-        TEST_CLIENT_SECRET = registrationResult.client_secret
+        testClientId = registrationResult.client_id
+        testClientSecret = registrationResult.client_secret
     }
 
     void cleanup() {
-        removeTestUser()
+        registeredTestUsers.each { Map entry ->
+            removeTestUser(entry.username, entry.clientId, entry.clientSecret)
+        }
     }
 
-    private void removeTestUser() {
-        def token = getAccessTokenWithScope('account-write')
+    private void removeTestUser(String username, String clientId, String clientSecret) {
+        println "Removing account for [$username]"
+        def request = createAccessTokenRequest(username, clientId, clientSecret, ['account-write'])
+
+        def token = getAccessTokenWithScope(request)
         removeAccount(token)
     }
 
     protected RestResponse registerUser(String username) {
-        reelTimeClient.registerUser(username, TEST_PASSWORD, TEST_CLIENT_NAME)
+        def response = reelTimeClient.registerUser(username, TEST_PASSWORD, TEST_CLIENT_NAME)
+
+        def clientId = response.json.client_id
+        def clientSecret = response.json.client_secret
+
+        registeredTestUsers << [username:username, clientId: clientId, clientSecret: clientSecret]
+        return response
     }
 
-    protected String getAccessTokenWithScopeForNonTestUser(String username, String scope) {
+    protected String registerNewUserAndGetToken(String username, String scope) {
         def registrationResult = registerUser(username).json
 
-        def accessRequest = new AccessTokenRequest(
-                clientId: registrationResult.client_id,
-                clientSecret: registrationResult.client_secret,
-                grantType: 'password',
-                username: username,
-                password: TEST_PASSWORD,
-                scope: [scope]
-        )
+        def clientId = registrationResult.client_id
+        def clientSecret = registrationResult.client_secret
+
+        def accessRequest = createAccessTokenRequest(username, clientId, clientSecret, [scope])
         getAccessTokenWithScope(accessRequest)
     }
 
-    protected String getAccessTokenWithScopeForNonTestUser(String scope) {
-        def otherUsername = TEST_USER + 'a'
-        return getAccessTokenWithScopeForNonTestUser(otherUsername, scope)
+    protected String getAccessTokenWithScopeForTestUser(String scope) {
+        getAccessTokenWithScopesForTestUser([scope])
     }
 
-    protected static String getAccessTokenWithScopes(Collection<String> scopes) {
-        def request = new AccessTokenRequest(
-                clientId: TEST_CLIENT_ID,
-                clientSecret: TEST_CLIENT_SECRET,
+    protected String getAccessTokenWithScopesForTestUser(Collection<String> scopes) {
+        def request = createAccessTokenRequest(TEST_USER, testClientId, testClientSecret, scopes)
+        getAccessTokenWithScope(request)
+    }
+
+    private static AccessTokenRequest createAccessTokenRequest(String username, String clientId, String clientSecret,
+                                                               Collection<String> scopes) {
+        new AccessTokenRequest(
+                clientId: clientId,
+                clientSecret: clientSecret,
                 grantType: 'password',
-                username: TEST_USER,
+                username: username,
                 password: TEST_PASSWORD,
                 scope: scopes
         )
-        getAccessTokenWithScope(request)
-    }
-
-    // TODO: Specify user once user registration is implemented
-    protected static String getAccessTokenWithScope(String scope) {
-        def request = new AccessTokenRequest(
-                clientId: TEST_CLIENT_ID,
-                clientSecret: TEST_CLIENT_SECRET,
-                grantType: 'password',
-                username: TEST_USER,
-                password: TEST_PASSWORD,
-                scope: [scope]
-        )
-        getAccessTokenWithScope(request)
     }
 
     protected static String getAccessTokenWithScope(AccessTokenRequest request) {

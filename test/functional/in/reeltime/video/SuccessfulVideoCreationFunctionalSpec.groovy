@@ -12,7 +12,7 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
     private static final STATUS_RETRY_DELAY_IN_MILLIS = 5 * 1000
 
     void setup() {
-        uploadToken = getAccessTokenWithScope('videos-write')
+        uploadToken = getAccessTokenWithScopeForTestUser('videos-write')
     }
 
     void "minimum required params"() {
