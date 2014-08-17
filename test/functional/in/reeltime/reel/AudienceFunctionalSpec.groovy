@@ -27,14 +27,14 @@ class AudienceFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "invalid http method for audience resource"() {
         expect:
-        assertInvalidHttpMethods(getUrlForResource('reel/1234/audience'), ['put'], token)
+        assertInvalidHttpMethods(getAudienceUrl(1234), ['put'], token)
     }
 
     @Unroll
     void "use token to access audience via [#httpMethod] requiring write access [#useReadToken]"() {
         given:
         def tokenToUse = useReadToken ? readToken : writeToken
-        def request = new RestRequest(url: getUrlForResource('reel/1234/audience'), token: tokenToUse)
+        def request = new RestRequest(url: getAudienceUrl(1234), token: tokenToUse)
 
         when:
         def response = "$httpMethod"(request)
@@ -52,7 +52,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "invalid reelId when performing a [#httpMethod]"() {
         given:
-        def request = new RestRequest(url: getUrlForResource('reel/invalid123/audience'), token: token)
+        def request = new RestRequest(url: getAudienceUrl('invalid123'), token: token)
 
         when:
         def response = "$httpMethod"(request)
@@ -72,7 +72,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def reelId = getUncategorizedReelId(listReelsToken)
 
         and:
-        def addAudienceMemberUrl = getUrlForResource("reel/$reelId/audience")
+        def addAudienceMemberUrl = getAudienceUrl(reelId)
         def request = new RestRequest(url: addAudienceMemberUrl, token: writeToken)
 
         when:
@@ -88,7 +88,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def nonTestUserWriteToken = getAccessTokenWithScopeForNonTestUser('badMember', 'audiences-write')
 
         and:
-        def removeAudienceMemberUrl = getUrlForResource("reel/$reelId/audience")
+        def removeAudienceMemberUrl = getAudienceUrl(reelId)
         def request = new RestRequest(url: removeAudienceMemberUrl, token: nonTestUserWriteToken)
 
         when:
@@ -128,7 +128,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
     }
 
     private JSONElement listAudienceMembers(Long reelId) {
-        def listAudienceMembersUrl = getUrlForResource("reel/$reelId/audience")
+        def listAudienceMembersUrl = getAudienceUrl(reelId)
         def request = new RestRequest(url: listAudienceMembersUrl, token: readToken)
 
         def response = get(request)
@@ -139,7 +139,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
     }
 
     private void addAudienceMember(Long reelId, String token) {
-        def addAudienceMemberUrl = getUrlForResource("reel/$reelId/audience")
+        def addAudienceMemberUrl = getAudienceUrl(reelId)
         def request = new RestRequest(url: addAudienceMemberUrl, token: token)
 
         def response = post(request)
@@ -149,7 +149,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
     }
 
     private void removeAudienceMember(Long reelId, String token) {
-        def removeAudienceMemberUrl = getUrlForResource("reel/$reelId/audience")
+        def removeAudienceMemberUrl = getAudienceUrl(reelId)
         def request = new RestRequest(url: removeAudienceMemberUrl, token: token)
 
         def response = delete(request)

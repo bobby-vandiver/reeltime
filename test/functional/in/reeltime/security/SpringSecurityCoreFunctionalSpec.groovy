@@ -6,12 +6,10 @@ import spock.lang.Unroll
 
 class SpringSecurityCoreFunctionalSpec extends FunctionalSpec {
 
-    private final String SPRING_SECURITY_CHECK_URL = getUrlForResource('j_spring_security_check')
-
     @Unroll
     void "cannot access the form login regardless of params"() {
         given:
-        def request = new RestRequest(url: SPRING_SECURITY_CHECK_URL, customizer: params)
+        def request = new RestRequest(url: springSecurityCheckUrl, customizer: params)
 
         when:
         def response = post(request)
@@ -28,7 +26,7 @@ class SpringSecurityCoreFunctionalSpec extends FunctionalSpec {
     void "including a token makes no difference"() {
         given:
         def token = getAccessTokenWithScope('account-read')
-        def request = new RestRequest(url: SPRING_SECURITY_CHECK_URL, token: token)
+        def request = new RestRequest(url: springSecurityCheckUrl, token: token)
 
         when:
         def response = post(request)

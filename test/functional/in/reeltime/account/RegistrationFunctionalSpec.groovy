@@ -26,7 +26,6 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     }
 
     void cleanup() {
-        def removeAccountUrl = getUrlForResource('account')
         def request = new RestRequest(url: removeAccountUrl, token: token)
 
         def response = delete(request)
@@ -282,18 +281,6 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
         and:
         tokenForNewClient != tokenForExistingClient
-    }
-
-    private getRegisterUrl() {
-        getUrlForResource('account/register')
-    }
-
-    private getRegisterClientUrl() {
-        getUrlForResource('account/client')
-    }
-
-    private getVerifyUrl() {
-        getUrlForResource("account/confirm")
     }
 
     private RestRequest createRegisterRequest(Closure params = null) {

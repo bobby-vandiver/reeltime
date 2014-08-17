@@ -6,9 +6,9 @@ import helper.oauth2.AccessTokenRequester
 import helper.rest.AuthorizationAwareRestClient
 import helper.rest.RestRequest
 import helper.test.ReelTimeClient
+import helper.test.ReelTimeUrlFactory
 import helper.test.ResponseChecker
 import junit.framework.Assert
-import org.codehaus.groovy.grails.web.json.JSONElement
 import spock.lang.Specification
 
 abstract class FunctionalSpec extends Specification {
@@ -20,13 +20,16 @@ abstract class FunctionalSpec extends Specification {
     private static final DEFAULT_RETRY_DELAY_IN_MILLIS = 5 * 1000
 
     @Delegate
-    protected AuthorizationAwareRestClient restClient = new AuthorizationAwareRestClient()
+    protected AuthorizationAwareRestClient restClient
 
     @Delegate
-    protected ReelTimeClient reelTimeClient = new ReelTimeClient(restClient, BASE_URL)
+    protected ReelTimeClient reelTimeClient
 
     @Delegate
-    protected ResponseChecker responseChecker = new ResponseChecker(restClient)
+    protected ReelTimeUrlFactory urlFactory
+
+    @Delegate
+    protected ResponseChecker responseChecker
 
     protected static final TEST_USER = 'bob'
     protected static final TEST_PASSWORD = 'password'
@@ -34,9 +37,16 @@ abstract class FunctionalSpec extends Specification {
     protected static final TEST_CLIENT_ID = 'test-client'
     protected static final TEST_CLIENT_SECRET = 'test-secret'
 
+    void setup() {
+        restClient = new AuthorizationAwareRestClient()
+        responseChecker = new ResponseChecker(restClient)
+
+        urlFactory = new ReelTimeUrlFactory(BASE_URL)
+        reelTimeClient = new ReelTimeClient(restClient, urlFactory)
+    }
+
     protected long uploadVideo(String token) {
-        def url = getUrlForResource('video')
-        def request = new RestRequest(url: url, token: token, isMultiPart: true, customizer: {
+        def request = new RestRequest(url: uploadUrl, token: token, isMultiPart: true, customizer: {
             title = 'minimum-viable-video'
             video = new File('test/files/small.mp4')
         })
@@ -70,10 +80,6 @@ abstract class FunctionalSpec extends Specification {
         new RestRequest(url: statusUrl, token: token)
     }
 
-    private getStatusUrl(Long videoId) {
-        getUrlForResource("video/$videoId/status")
-    }
-
     protected Long getUncategorizedReelId(String token) {
         def request = createListReelsRequest(token)
         def response = get(request)
@@ -86,7 +92,7 @@ abstract class FunctionalSpec extends Specification {
     }
 
     protected RestRequest createListReelsRequest(String token) {
-        def reelsListUrl = getUrlForResource("/user/$TEST_USER/reels")
+        def reelsListUrl = getReelsListUrl(TEST_USER)
         new RestRequest(url: reelsListUrl, token: token)
     }
 

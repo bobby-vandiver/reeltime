@@ -10,19 +10,15 @@ class ReelTimeClient {
     @Delegate
     private AuthorizationAwareRestClient restClient
 
-    private String baseUrl
+    private ReelTimeUrlFactory urlFactory
 
-    ReelTimeClient(AuthorizationAwareRestClient restClient, String baseUrl) {
+    ReelTimeClient(AuthorizationAwareRestClient restClient, ReelTimeUrlFactory urlFactory) {
         this.restClient = restClient
-        this.baseUrl = baseUrl
-    }
-
-    String getUrlForResource(String resource) {
-        return baseUrl + resource
+        this.urlFactory = urlFactory
     }
 
     RestResponse registerUser(String name, String pass = 'password', String client = 'client') {
-        def url = getUrlForResource('account/register')
+        def url = urlFactory.registerUrl
         def request = new RestRequest(url: url, customizer: {
             email = name + '@test.com'
             username = name

@@ -42,8 +42,4 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
     private RestRequest createUploadRequest(String token = null, Closure params = null) {
         new RestRequest(url: uploadUrl, token: token, isMultiPart: params != null, customizer: params)
     }
-
-    private getUploadUrl() {
-        getUrlForResource('video')
-    }
 }

@@ -60,7 +60,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "missing reel name when adding a reel"() {
         given:
-        def request = new RestRequest(url: getUrlForResource('reel'), token: writeToken)
+        def request = new RestRequest(url: addReelUrl, token: writeToken)
 
         when:
         def response = post(request)
@@ -72,7 +72,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "invalid reelId in [#resource] when performing a [#httpMethod]"() {
         given:
-        def request = new RestRequest(url: getUrlForResource('reel/invalid123'), token: token)
+        def request = new RestRequest(url: getUrlForResource(resource), token: token)
 
         when:
         def response = "$httpMethod"(request)
@@ -93,7 +93,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def reelId = getUncategorizedReelId(readToken)
 
         and:
-        def removeVideoUrl = getUrlForResource("reel/$reelId/$videoId")
+        def removeVideoUrl = getRemoveVideoFromReelUrl(reelId, videoId)
         def request = new RestRequest(url: removeVideoUrl, token: writeToken)
 
         when:
@@ -113,7 +113,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def uncategorizedReelId = getUncategorizedReelId(readToken)
 
         and:
-        def addVideoToReelUrl = getUrlForResource("reel/$uncategorizedReelId")
+        def addVideoToReelUrl = getReelUrl(uncategorizedReelId)
         def request = new RestRequest(url: addVideoToReelUrl, token: writeToken)
 
         when:
@@ -125,7 +125,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "attempt to list reels for an unknown user"() {
         given:
-        def request = new RestRequest(url: getUrlForResource('/user/unknown-user/reels'), token: readToken)
+        def request = new RestRequest(url: getReelsListUrl('unknown-user'), token: readToken)
 
         when:
         def response = get(request)
@@ -136,7 +136,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "attempt to add another uncategorized reel"() {
         given:
-        def request = new RestRequest(url: getUrlForResource('reel'), token: writeToken, customizer: {
+        def request = new RestRequest(url: addReelUrl, token: writeToken, customizer: {
             name = 'Uncategorized'
         })
 
@@ -150,7 +150,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "attempt to add a reel with a reel name [#reelName] of invalid length"() {
         given:
-        def request = new RestRequest(url: getUrlForResource('reel'), token: writeToken, customizer: {
+        def request = new RestRequest(url: addReelUrl, token: writeToken, customizer: {
             name = reelName
         })
 
@@ -173,7 +173,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def otherUserToken = getAccessTokenWithScopeForNonTestUser('otherUser', 'reels-write')
 
         and:
-        def deleteReelUrl = getUrlForResource("reel/$reelId")
+        def deleteReelUrl = getReelUrl(reelId)
         def request = new RestRequest(url: deleteReelUrl, token: otherUserToken)
 
         when:
@@ -207,7 +207,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def uncategorizedReelId = getUncategorizedReelId(readToken)
 
         and:
-        def request = new RestRequest(url: getUrlForResource('reel'), token: writeToken, customizer: {
+        def request = new RestRequest(url: addReelUrl, token: writeToken, customizer: {
             name = 'some new reel'
         })
 
@@ -230,7 +230,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def reelId = addReel('reel to delete')
 
         and:
-        def deleteReelUrl = getUrlForResource("reel/$reelId")
+        def deleteReelUrl = getReelUrl(reelId)
         def request = new RestRequest(url: deleteReelUrl, token: writeToken)
 
         when:
@@ -245,7 +245,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def reelId = getUncategorizedReelId(readToken)
 
         and:
-        def listVideosUrl = getUrlForResource("reel/$reelId")
+        def listVideosUrl = getReelUrl(reelId)
         def request = new RestRequest(url: listVideosUrl, token: readToken)
 
         when:
@@ -265,7 +265,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         addVideoToReel(reelId, videoId)
 
         and:
-        def listVideosUrl = getUrlForResource("reel/$reelId")
+        def listVideosUrl = getReelUrl(reelId)
         def request = new RestRequest(url: listVideosUrl, token: readToken)
 
         when:
@@ -287,7 +287,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         assert listVideosInReel(reelId).size() == 1
 
         and:
-        def removeVideoUrl = getUrlForResource("reel/$reelId/$videoId")
+        def removeVideoUrl = getRemoveVideoFromReelUrl(reelId, videoId)
         def request = new RestRequest(url: removeVideoUrl, token: writeToken)
 
         when:
@@ -301,7 +301,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     }
 
     private JSONElement listVideosInReel(Long reelId) {
-        def listVideosUrl = getUrlForResource("reel/$reelId")
+        def listVideosUrl = getReelUrl(reelId)
         def request = new RestRequest(url: listVideosUrl, token: readToken)
 
         def response = get(request)
@@ -312,7 +312,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     }
 
     private Long addReel(String reelName) {
-        def request = new RestRequest(url: getUrlForResource('reel'), token: writeToken, customizer: {
+        def request = new RestRequest(url: addReelUrl, token: writeToken, customizer: {
             name = reelName
         })
 
@@ -324,7 +324,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     }
 
     private void addVideoToReel(Long reelId, Long vid) {
-        def request = new RestRequest(url: getUrlForResource("reel/$reelId"), token: writeToken, customizer: {
+        def request = new RestRequest(url: getReelUrl(reelId), token: writeToken, customizer: {
             videoId = vid
         })
 
@@ -335,7 +335,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     }
 
     private void deleteReel(Long reelId) {
-        def deleteReelUrl = getUrlForResource("reel/$reelId")
+        def deleteReelUrl = getReelUrl(reelId)
         def request = new RestRequest(url: deleteReelUrl, token: writeToken)
 
         def response = delete(request)

@@ -172,14 +172,6 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         response.status == 403
     }
 
-    private getUploadUrl() {
-        getUrlForResource('video')
-    }
-
-    private getStatusUrl(Long videoId) {
-        getUrlForResource("video/$videoId/status")
-    }
-
     private RestRequest createUploadRequest(String token = null, Closure params = null) {
         new RestRequest(url: uploadUrl, token: token, isMultiPart: params != null, customizer: params)
     }

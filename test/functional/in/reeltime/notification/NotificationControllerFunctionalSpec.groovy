@@ -9,7 +9,7 @@ class NotificationControllerFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "invalid http method [#method] for action [#action]"() {
         given:
-        def notificationUrl = getUrlForResource("transcoder/notification/$action")
+        def notificationUrl = getNotificationUrl(action)
         def request = new RestRequest(url: notificationUrl)
 
         when:
