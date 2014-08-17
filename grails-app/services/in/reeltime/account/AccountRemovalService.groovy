@@ -20,7 +20,7 @@ class AccountRemovalService {
         log.info "Removing clients for user [${username}]"
         deleteClientsForUser(currentUser)
 
-        log.debug "Deleting user [${username}]"
+        log.info "Deleting user [${username}]"
         currentUser.delete()
 
         log.info "Finished removing account for user [${username}]"
