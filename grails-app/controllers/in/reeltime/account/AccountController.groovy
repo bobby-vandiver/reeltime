@@ -11,6 +11,7 @@ class AccountController extends AbstractController {
 
     def accountRegistrationService
     def accountConfirmationService
+    def accountRemovalService
 
     static allowedMethods = [register: 'POST', registerClient: 'POST', confirm: 'POST']
 
@@ -52,6 +53,12 @@ class AccountController extends AbstractController {
         else {
             errorMessageResponse('registration.confirmation.code.required', SC_BAD_REQUEST)
         }
+    }
+
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-write')"])
+    def removeAccount() {
+        accountRemovalService.removeAccountForCurrentUser()
+        render(status: SC_OK)
     }
 
     def handleRegistrationException(RegistrationException e) {

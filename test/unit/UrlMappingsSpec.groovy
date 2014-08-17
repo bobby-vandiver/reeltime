@@ -195,6 +195,14 @@ class UrlMappingsSpec extends Specification {
         assertForwardUrlMapping('/account/confirm', controller: 'account', action: 'confirm')
     }
 
+    void "test remove account endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'DELETE'
+
+        expect:
+        assertForwardUrlMapping('/account', controller: 'account', action: 'removeAccount')
+    }
+
     void "test application available mapping"() {
         given:
         webRequest.currentRequest.method = 'GET'

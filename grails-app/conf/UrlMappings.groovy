@@ -7,6 +7,10 @@ class UrlMappings {
 
         "/available" (controller: 'applicationStatus', action: 'available')
 
+        "/account" (controller: 'account') {
+            action = [DELETE: 'removeAccount']
+        }
+
         "/account/register" (controller: 'account') {
             action = [POST: 'register']
         }

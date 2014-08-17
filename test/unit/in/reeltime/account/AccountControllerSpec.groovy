@@ -23,15 +23,18 @@ class AccountControllerSpec extends AbstractControllerSpec {
     AccountRegistrationService accountRegistrationService
     AccountConfirmationService accountConfirmationService
 
+    AccountRemovalService accountRemovalService
     LocalizedMessageService localizedMessageService
 
     void setup() {
         accountRegistrationService = Mock(AccountRegistrationService)
         accountConfirmationService = Mock(AccountConfirmationService)
+        accountRemovalService = Mock(AccountRemovalService)
         localizedMessageService = Mock(LocalizedMessageService)
 
         controller.accountRegistrationService = accountRegistrationService
         controller.accountConfirmationService = accountConfirmationService
+        controller.accountRemovalService = accountRemovalService
         controller.localizedMessageService = localizedMessageService
 
         defineBeans {
@@ -223,5 +226,16 @@ class AccountControllerSpec extends AbstractControllerSpec {
         and:
         1 * accountConfirmationService.confirmAccount(_) >> { throw new ConfirmationException('TEST') }
         1 * localizedMessageService.getMessage('registration.confirmation.code.error', request.locale) >> message
+    }
+
+    void "remove account"() {
+        when:
+        controller.removeAccount()
+
+        then:
+        assertStatusCodeOnlyResponse(response, 200)
+
+        and:
+        1 * accountRemovalService.removeAccountForCurrentUser()
     }
 }

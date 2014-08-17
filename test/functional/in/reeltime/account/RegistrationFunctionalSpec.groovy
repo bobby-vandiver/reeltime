@@ -3,6 +3,7 @@ package in.reeltime.account
 import helper.oauth2.AccessTokenRequest
 import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
+import junit.framework.Assert
 import spock.lang.Unroll
 
 class RegistrationFunctionalSpec extends FunctionalSpec {
@@ -22,6 +23,21 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
                 scope: ['account-write']
         )
         token = getAccessTokenWithScope(accessTokenRequest)
+    }
+
+    void cleanupSpec() {
+        def removeAccountUrl = getUrlForResource('account')
+        def request = new RestRequest(url: removeAccountUrl, token: token)
+
+        def response = delete(request)
+        if(response.status != 200) {
+            Assert.fail("Failed to remove access token")
+        }
+
+        response = delete(request)
+        if(response.status != 401) {
+            Assert.fail("The token associated with the deleted account is still valid! Status: ${response.status}")
+        }
     }
 
     @Unroll
@@ -272,7 +288,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         getUrlForResource('account/register')
     }
 
-    private getRegisterClientUrl() {
+    private static getRegisterClientUrl() {
         getUrlForResource('account/client')
     }
 
