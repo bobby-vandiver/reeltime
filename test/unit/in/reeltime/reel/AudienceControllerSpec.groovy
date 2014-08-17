@@ -62,7 +62,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         controller.listMembers()
 
         then:
-        assertErrorMessageResponse(response, 400, message)
+        assertErrorMessageResponse(response, 404, message)
 
         and:
         1 * audienceService.listMembers(reelId) >> { throw new ReelNotFoundException('TEST') }
@@ -77,7 +77,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         controller.addMember()
 
         then:
-        assertErrorMessageResponse(response, 400, message)
+        assertErrorMessageResponse(response, 404, message)
 
         and:
         1 * audienceService.addMember(reelId) >> { throw new ReelNotFoundException('TEST') }
@@ -92,7 +92,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         controller.removeMember()
 
         then:
-        assertErrorMessageResponse(response, 400, message)
+        assertErrorMessageResponse(response, 404, message)
 
         and:
         1 * audienceService.removeMember(reelId) >> { throw new ReelNotFoundException('TEST') }

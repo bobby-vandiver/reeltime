@@ -124,7 +124,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         controller.listReels()
 
         then:
-        assertErrorMessageResponse(response, 400, message)
+        assertErrorMessageResponse(response, 404, message)
 
         and:
         1 * reelService.listReels(username) >> { throw new UserNotFoundException('TEST') }
@@ -220,7 +220,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         controller.deleteReel()
 
         then:
-        assertErrorMessageResponse(response, 400, message)
+        assertErrorMessageResponse(response, 404, message)
 
         and:
         1 * reelService.deleteReel(reelId) >> { throw new ReelNotFoundException('TEST') }
@@ -317,7 +317,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         controller.listVideos()
 
         then:
-        assertErrorMessageResponse(response, 400, message)
+        assertErrorMessageResponse(response, 404, message)
 
         and:
         1 * reelVideoManagementService.listVideos(reelId) >> { throw new ReelNotFoundException('TEST') }
@@ -408,7 +408,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         where:
         exceptionClass          |   statusCode  |   messageCode
-        ReelNotFoundException   |   400         |   'reel.unknown'
+        ReelNotFoundException   |   404         |   'reel.unknown'
         AuthorizationException  |   403         |   'reel.unauthorized'
     }
 
@@ -457,8 +457,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         where:
         exceptionClass          |   statusCode  |   messageCode
-        ReelNotFoundException   |   400         |   'reel.unknown'
-        VideoNotFoundException  |   400         |   'video.unknown'
+        ReelNotFoundException   |   404         |   'reel.unknown'
+        VideoNotFoundException  |   404         |   'video.unknown'
         AuthorizationException  |   403         |   'reel.unauthorized'
     }
 

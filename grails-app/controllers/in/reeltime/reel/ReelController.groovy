@@ -99,11 +99,11 @@ class ReelController extends AbstractController {
     }
 
     def handleUserNotFoundException(UserNotFoundException e) {
-        exceptionErrorMessageResponse(e, 'reel.unknown.username', SC_BAD_REQUEST)
+        exceptionErrorMessageResponse(e, 'reel.unknown.username', SC_NOT_FOUND)
     }
 
     def handleReelNotFoundException(ReelNotFoundException e) {
-        exceptionErrorMessageResponse(e, 'reel.unknown', SC_BAD_REQUEST)
+        exceptionErrorMessageResponse(e, 'reel.unknown', SC_NOT_FOUND)
     }
 
     def handleInvalidReelNameException(InvalidReelNameException e) {
@@ -111,6 +111,6 @@ class ReelController extends AbstractController {
     }
 
     def handleVideoNotFoundException(VideoNotFoundException e) {
-        exceptionErrorMessageResponse(e, 'video.unknown', SC_BAD_REQUEST)
+        exceptionErrorMessageResponse(e, 'video.unknown', SC_NOT_FOUND)
     }
 }

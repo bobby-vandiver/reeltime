@@ -100,12 +100,12 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def response = restClient.delete(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, message)
+        assertSingleErrorMessageResponse(response, statusCode, message)
 
         where:
-        videoId         |   message
-        '12'            |   'Requested video was not found'
-        'invalid123'    |   '[videoId] is required'
+        videoId         |   statusCode  |   message
+        '12'            |   404         |   'Requested video was not found'
+        'invalid123'    |   400         |   '[videoId] is required'
     }
 
     void "missing videoId when adding video to reel"() {
@@ -131,7 +131,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def response = restClient.get(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, 'Requested user was not found')
+        assertSingleErrorMessageResponse(response, 404, 'Requested user was not found')
     }
 
     void "attempt to add another uncategorized reel"() {
