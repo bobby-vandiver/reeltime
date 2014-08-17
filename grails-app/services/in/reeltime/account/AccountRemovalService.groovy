@@ -5,8 +5,8 @@ import in.reeltime.user.User
 class AccountRemovalService {
 
     def userService
+    def tokenRemovalService
 
-    // TODO: Remove all access and refresh tokens associated with the current user
     void removeAccountForCurrentUser() {
         def currentUser = userService.currentUser
         def username = currentUser.username
@@ -14,7 +14,10 @@ class AccountRemovalService {
         log.info "Removing confirmation codes for user [${username}]"
         deleteConfirmationCodesForUser(currentUser)
 
-        log.info "Removing client for user [${username}]"
+        log.info "Removing tokens associated with user [${username}]"
+        tokenRemovalService.removeAllTokensForUser(currentUser)
+
+        log.info "Removing clients for user [${username}]"
         deleteClientsForUser(currentUser)
 
         log.debug "Deleting user [${username}]"
