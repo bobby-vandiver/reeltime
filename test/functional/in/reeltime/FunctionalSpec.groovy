@@ -19,10 +19,10 @@ abstract class FunctionalSpec extends Specification {
     private static final DEFAULT_RETRY_DELAY_IN_MILLIS = 5 * 1000
 
     @Delegate
-    protected static AuthorizationAwareRestClient restClient = new AuthorizationAwareRestClient()
+    protected AuthorizationAwareRestClient restClient = new AuthorizationAwareRestClient()
 
     @Delegate
-    protected static RestResponseAssert restResponseAssert = new RestResponseAssert(restClient)
+    protected RestResponseAssert restResponseAssert = new RestResponseAssert(restClient)
 
     protected static String getUrlForResource(String resource) {
         return BASE_URL + resource

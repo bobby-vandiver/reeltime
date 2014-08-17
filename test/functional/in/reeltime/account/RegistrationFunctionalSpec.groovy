@@ -10,7 +10,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
     static String token
 
-    void setupSpec() {
+    void setup() {
         def username = 'registerTest'
         def result = registerUser(username)
 
@@ -25,7 +25,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         token = getAccessTokenWithScope(accessTokenRequest)
     }
 
-    void cleanupSpec() {
+    void cleanup() {
         def removeAccountUrl = getUrlForResource('account')
         def request = new RestRequest(url: removeAccountUrl, token: token)
 

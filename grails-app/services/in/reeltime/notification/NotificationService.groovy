@@ -20,6 +20,11 @@ class NotificationService {
         try {
             def signingCertUrl = parsedMessage.SigningCertURL
 
+            if(!signingCertUrl) {
+                log.warn "No SigningCertUrl was found"
+                return false
+            }
+
             def certificate = retrieveCertificate(signingCertUrl)
             def publicKey = certificate.publicKey
 
