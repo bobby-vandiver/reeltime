@@ -1,7 +1,6 @@
 package in.reeltime.video
 
 import grails.plugins.rest.client.RestResponse
-import helper.oauth2.AccessTokenRequest
 import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
 
@@ -193,7 +192,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         new RestRequest(url: statusUrl, token: token)
     }
 
-    private static void assertErrorResponse(RestResponse response, Collection<String> expectedErrors) {
+    private void assertErrorResponse(RestResponse response, Collection<String> expectedErrors) {
         assertStatusCode(response, 400)
         assertContentType(response, APPLICATION_JSON)
 
