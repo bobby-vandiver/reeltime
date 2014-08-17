@@ -17,17 +17,17 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
     }
 
     @Unroll
-    void "remove all tokens associated with the specified user"() {
+    void "remove all tokens associated with the specified user - [#clientCount] clients, [#accessTokenCount] access tokens and [#refreshTokenCount] refresh tokens"() {
         given:
         def username = 'someone'
-        def clientId = 'someClientId'
+        def baseClientId = 'someClientId'
 
         and:
-        def client = createClient(clientId)
-        def user = createUser(username, client)
+        def clientIds = createClients(baseClientId, clientCount)
+        def user = createUser(username, clientIds[0])
 
         and:
-        def tokenIds = createAccessTokensAndRefreshTokens(username, [clientId], accessTokenCount, refreshTokenCount)
+        def tokenIds = createAccessTokensAndRefreshTokens(username, clientIds, accessTokenCount, refreshTokenCount)
 
         when:
         tokenRemovalService.removeAllTokensForUser(user)
@@ -42,6 +42,18 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
         1           |   2                   |   0
         1           |   2                   |   1
         1           |   2                   |   2
+
+        2           |   1                   |   0
+        2           |   1                   |   1
+        2           |   2                   |   0
+        2           |   2                   |   1
+        2           |   2                   |   2
+
+        5           |   1                   |   0
+        5           |   1                   |   1
+        5           |   10                  |   0
+        5           |   10                  |   5
+        5           |   10                  |   8
     }
 
     private Map createAccessTokensAndRefreshTokens(String username, Collection<String> clientIds,
@@ -90,11 +102,25 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
         }
     }
 
+    private static Collection<String> createClients(String baseClientId, int count) {
+        def clientIds = []
+
+        for(int id = 0; id < count; id++) {
+            clientIds << baseClientId + '-' + id
+        }
+
+        clientIds.each {
+            createClient(it)
+        }
+        return clientIds
+    }
+
     private static Client createClient(String clientId) {
         new Client(clientId: clientId, clientSecret: 'clientSecret', clientName: 'clientName').save()
     }
 
-    private static User createUser(String username, Client client) {
+    private static User createUser(String username, String clientId) {
+        def client = Client.findByClientId(clientId)
         def reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME, videos: [], audience: new Audience(members: []))
 
         new User(username: username, password: 'secret', email: "$username@test.com")
@@ -105,12 +131,15 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
 
     private AccessToken createAccessToken(String username, String clientId, String refreshTokenValue = null) {
         def tokenValue = 'ACCESS-TOKEN-TEST' + randomNumberGenerator.nextInt()
+        println "Creating access token [$tokenValue] for client [$clientId]"
+
         new AccessToken(username: username, clientId: clientId, value: tokenValue, refreshToken: refreshTokenValue,
                 tokenType: 'test', scope: ['scope'], authentication: [1, 2, 3, 4] as byte[]).save()
     }
 
     private RefreshToken createRefreshToken() {
         def tokenValue = 'REFRESH-TOKEN-TEST' + randomNumberGenerator.nextInt()
+        println "Creating refresh token [$tokenValue]"
         new RefreshToken(value: tokenValue, authentication: [5, 6, 7, 8] as byte[]).save()
     }
 }

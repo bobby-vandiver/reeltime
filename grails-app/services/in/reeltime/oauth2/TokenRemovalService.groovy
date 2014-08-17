@@ -7,15 +7,15 @@ class TokenRemovalService {
     void removeAllTokensForUser(User user) {
         def clientIds = collectClientIdsForUser(user)
 
-        def accessTokens = collectAccessTokens(user, clientIds)
-        def refreshTokens = collectRefreshTokensFromAccessTokens(accessTokens)
+        def accessTokens = findAccessTokens(user, clientIds)
+        def refreshTokens = findRefreshTokensFromAccessTokens(accessTokens)
 
-        accessTokens.each { accessToken ->
+        accessTokens.each { AccessToken accessToken ->
             log.info "Removing access token [${accessToken.id}]"
             accessToken.delete()
         }
 
-        refreshTokens.each { refreshToken ->
+        refreshTokens.each { RefreshToken refreshToken ->
             log.info "Removing refresh token [${refreshToken.id}]"
             refreshToken.delete()
         }
@@ -25,13 +25,13 @@ class TokenRemovalService {
         user.clients.collect { it.clientId }
     }
 
-    private static Collection<AccessToken> collectAccessTokens(User user, Collection<String> clientIds) {
+    private static Collection<AccessToken> findAccessTokens(User user, Collection<String> clientIds) {
         AccessToken.findAll {
             username == user.username || clientIds.contains(clientId)
         }
     }
 
-    private static Collection<RefreshToken> collectRefreshTokensFromAccessTokens(Collection<AccessToken> accessTokens) {
+    private static Collection<RefreshToken> findRefreshTokensFromAccessTokens(Collection<AccessToken> accessTokens) {
         def refreshTokenValues = collectRefreshTokenValuesFromAccessTokens(accessTokens)
 
         RefreshToken.findAll {
