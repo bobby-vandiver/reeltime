@@ -57,6 +57,25 @@ class AccountRegistrationService {
         new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
     }
 
+    void removeAccount() {
+        def currentUser = userService.currentUser
+        log.info "Removing account for user [${currentUser.username}]"
+
+        def confirmationCodes = AccountConfirmation.findAllByUser(currentUser)
+        confirmationCodes.each { code ->
+            log.debug "Deleting account confirmation code [${code.id}]"
+            code.delete()
+        }
+
+        currentUser.clients.each { client ->
+            log.debug "Deleting client [${client.id}]"
+            client.delete()
+        }
+
+        log.debug "Deleting user [${currentUser.username}]"
+        currentUser.delete()
+    }
+
     void sendConfirmationEmail(User user, Locale locale) {
 
         def code = securityService.generateSecret(CONFIRMATION_CODE_LENGTH, ALLOWED_CHARACTERS)
