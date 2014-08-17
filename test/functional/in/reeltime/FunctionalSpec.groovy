@@ -5,6 +5,7 @@ import helper.oauth2.AccessTokenRequest
 import helper.oauth2.AccessTokenRequester
 import helper.rest.AuthorizationAwareRestClient
 import helper.rest.RestRequest
+import helper.test.ReelTimeClient
 import helper.test.ResponseChecker
 import junit.framework.Assert
 import org.codehaus.groovy.grails.web.json.JSONElement
@@ -22,32 +23,16 @@ abstract class FunctionalSpec extends Specification {
     protected AuthorizationAwareRestClient restClient = new AuthorizationAwareRestClient()
 
     @Delegate
-    protected ResponseChecker responseChecker = new ResponseChecker(restClient)
+    protected ReelTimeClient reelTimeClient = new ReelTimeClient(restClient, BASE_URL)
 
-    protected static String getUrlForResource(String resource) {
-        return BASE_URL + resource
-    }
+    @Delegate
+    protected ResponseChecker responseChecker = new ResponseChecker(restClient)
 
     protected static final TEST_USER = 'bob'
     protected static final TEST_PASSWORD = 'password'
 
     protected static final TEST_CLIENT_ID = 'test-client'
     protected static final TEST_CLIENT_SECRET = 'test-secret'
-
-    protected JSONElement registerUser(String name) {
-        def url = getUrlForResource('account/register')
-        def request = new RestRequest(url: url, customizer: {
-            email = name + '@test.com'
-            username = name
-            password = TEST_PASSWORD
-            client_name = 'client'
-        })
-        def response = post(request)
-        if(response.status != 201) {
-            Assert.fail("Failed to register user. Status code: ${response.status}. JSON: ${response.json}")
-        }
-        return response.json
-    }
 
     protected long uploadVideo(String token) {
         def url = getUrlForResource('video')
@@ -80,12 +65,12 @@ abstract class FunctionalSpec extends Specification {
         return videoCreatedStatus
     }
 
-    private static RestRequest createStatusRequest(Long videoId, String token) {
+    private RestRequest createStatusRequest(Long videoId, String token) {
         def statusUrl = getStatusUrl(videoId)
         new RestRequest(url: statusUrl, token: token)
     }
 
-    private static getStatusUrl(Long videoId) {
+    private getStatusUrl(Long videoId) {
         getUrlForResource("video/$videoId/status")
     }
 
@@ -100,13 +85,13 @@ abstract class FunctionalSpec extends Specification {
         return uncategorizedReel.reelId
     }
 
-    protected static RestRequest createListReelsRequest(String token) {
+    protected RestRequest createListReelsRequest(String token) {
         def reelsListUrl = getUrlForResource("/user/$TEST_USER/reels")
         new RestRequest(url: reelsListUrl, token: token)
     }
 
     protected String getAccessTokenWithScopeForNonTestUser(String username, String scope) {
-        def registrationResult = registerUser(username)
+        def registrationResult = registerUser(username).json
 
         def accessRequest = new AccessTokenRequest(
                 clientId: registrationResult.client_id,

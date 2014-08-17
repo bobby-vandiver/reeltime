@@ -12,7 +12,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
     void setup() {
         def username = 'registerTest'
-        def result = registerUser(username)
+        def result = registerUser(username).json
 
         def accessTokenRequest = new AccessTokenRequest(
                 username: username,
@@ -284,19 +284,19 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         tokenForNewClient != tokenForExistingClient
     }
 
-    private static getRegisterUrl() {
+    private getRegisterUrl() {
         getUrlForResource('account/register')
     }
 
-    private static getRegisterClientUrl() {
+    private getRegisterClientUrl() {
         getUrlForResource('account/client')
     }
 
-    private static getVerifyUrl() {
+    private getVerifyUrl() {
         getUrlForResource("account/confirm")
     }
 
-    private static RestRequest createRegisterRequest(Closure params = null) {
+    private RestRequest createRegisterRequest(Closure params = null) {
         new RestRequest(url: registerUrl, customizer: params)
     }
 }

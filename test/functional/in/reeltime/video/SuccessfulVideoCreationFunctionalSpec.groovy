@@ -39,11 +39,11 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
         pollForCreationComplete(videoId, uploadToken, MAX_POLL_COUNT, STATUS_RETRY_DELAY_IN_MILLIS) == 201
     }
 
-    private static RestRequest createUploadRequest(String token = null, Closure params = null) {
+    private RestRequest createUploadRequest(String token = null, Closure params = null) {
         new RestRequest(url: uploadUrl, token: token, isMultiPart: params != null, customizer: params)
     }
 
-    private static getUploadUrl() {
+    private getUploadUrl() {
         getUrlForResource('video')
     }
 }
