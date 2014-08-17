@@ -41,9 +41,17 @@ class RestResponseAssert {
     }
 
     void assertSingleErrorMessageResponse(RestResponse response, int expectedStatus, String expectedMessage) {
-        assert response.status == expectedStatus
-        assert response.json.errors.size() == 1
-        assert response.json.errors[0] == expectedMessage
+        assertMultipleErrorMessagesResponse(response, expectedStatus, [expectedMessage])
+    }
+
+    void assertMultipleErrorMessagesResponse(RestResponse response, int expectedStatus, Collection<String> expectedErrors) {
+        assertStatusCode(response, expectedStatus)
+        assertContentType(response, APPLICATION_JSON)
+
+        assert response.json.errors.size() == expectedErrors.size()
+        expectedErrors.each {
+            assert response.json.errors.contains(it)
+        }
     }
 
     void assertStatusCode(RestResponse response, int expected) {

@@ -1,10 +1,7 @@
 package in.reeltime.video
 
-import grails.plugins.rest.client.RestResponse
 import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
-
-import static helper.rest.HttpContentTypes.*
 
 class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
@@ -67,7 +64,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertErrorResponse(response, ['[video] is required', '[title] is required'])
+        assertMultipleErrorMessagesResponse(response, 400, ['[video] is required', '[title] is required'])
     }
 
     void "video param is missing"() {
@@ -80,7 +77,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertErrorResponse(response, ['[video] is required'])
+        assertSingleErrorMessageResponse(response, 400, '[video] is required')
     }
 
     void "title param is missing"() {
@@ -93,7 +90,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertErrorResponse(response, ['[title] is required'])
+        assertSingleErrorMessageResponse(response, 400, '[title] is required')
     }
 
     void "submitted video contains only aac stream"() {
@@ -107,7 +104,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertErrorResponse(response, ['[video] must contain an h264 video stream'])
+        assertSingleErrorMessageResponse(response, 400, '[video] must contain an h264 video stream')
     }
 
     void "submitted video does not contain either h264 or aac streams"() {
@@ -124,7 +121,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertErrorResponse(response, expected)
+        assertMultipleErrorMessagesResponse(response, 400, expected)
     }
 
     void "submitted video exceeds max length"() {
@@ -138,7 +135,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertErrorResponse(response, ['[video] exceeds max length of 2 minutes'])
+        assertSingleErrorMessageResponse(response, 400, '[video] exceeds max length of 2 minutes')
     }
 
     void "invalid http method for status"() {
@@ -190,15 +187,5 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
     private static RestRequest createStatusRequest(Long videoId, String token) {
         def statusUrl = getStatusUrl(videoId)
         new RestRequest(url: statusUrl, token: token)
-    }
-
-    private void assertErrorResponse(RestResponse response, Collection<String> expectedErrors) {
-        assertStatusCode(response, 400)
-        assertContentType(response, APPLICATION_JSON)
-
-        assert response.json.errors.size() == expectedErrors.size()
-        expectedErrors.each {
-            assert response.json.errors.contains(it)
-        }
     }
 }
