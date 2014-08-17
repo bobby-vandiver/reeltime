@@ -89,9 +89,9 @@ abstract class FunctionalSpec extends Specification {
         getUrlForResource("video/$videoId/status")
     }
 
-    protected static Long getUncategorizedReelId(String token) {
+    protected Long getUncategorizedReelId(String token) {
         def request = createListReelsRequest(token)
-        def response = restClient.get(request)
+        def response = get(request)
 
         if(response.status != 200) {
             Assert.fail("Failed to list reels. Status: ${response.status} JSON: ${response.json}")

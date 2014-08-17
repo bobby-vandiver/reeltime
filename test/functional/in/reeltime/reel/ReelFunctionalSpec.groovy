@@ -43,7 +43,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: getUrlForResource(resource), token: tokenToUse)
 
         when:
-        def response = restClient."$httpMethod"(request)
+        def response = "$httpMethod"(request)
 
         then:
         response.status == 403
@@ -63,7 +63,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: getUrlForResource('reel'), token: writeToken)
 
         when:
-        def response = restClient.post(request)
+        def response = post(request)
 
         then:
         assertSingleErrorMessageResponse(response, 400, '[name] is required')
@@ -75,7 +75,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: getUrlForResource('reel/invalid123'), token: token)
 
         when:
-        def response = restClient."$httpMethod"(request)
+        def response = "$httpMethod"(request)
 
         then:
         assertSingleErrorMessageResponse(response, 400, '[reelId] is required')
@@ -97,7 +97,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: removeVideoUrl, token: writeToken)
 
         when:
-        def response = restClient.delete(request)
+        def response = delete(request)
 
         then:
         assertSingleErrorMessageResponse(response, statusCode, message)
@@ -117,7 +117,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: addVideoToReelUrl, token: writeToken)
 
         when:
-        def response = restClient.post(request)
+        def response = post(request)
 
         then:
         assertSingleErrorMessageResponse(response, 400, '[videoId] is required')
@@ -128,7 +128,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: getUrlForResource('/user/unknown-user/reels'), token: readToken)
 
         when:
-        def response = restClient.get(request)
+        def response = get(request)
 
         then:
         assertSingleErrorMessageResponse(response, 404, 'Requested user was not found')
@@ -141,7 +141,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         })
 
         when:
-        def response = restClient.post(request)
+        def response = post(request)
 
         then:
         assertSingleErrorMessageResponse(response, 400, 'Requested reel name is not allowed')
@@ -155,7 +155,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         })
 
         when:
-        def response = restClient.post(request)
+        def response = post(request)
 
         then:
         assertSingleErrorMessageResponse(response, 400, 'Requested reel name is not allowed')
@@ -177,7 +177,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: deleteReelUrl, token: otherUserToken)
 
         when:
-        def response = restClient.delete(request)
+        def response = delete(request)
 
         then:
         assertSingleErrorMessageResponse(response, 403, 'Unauthorized reel operation requested')
@@ -191,7 +191,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def request = createListReelsRequest(readToken)
 
         when:
-        def response = restClient.get(request)
+        def response = get(request)
 
         then:
         response.status == 200
@@ -212,7 +212,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         })
 
         when:
-        def response = restClient.post(request)
+        def response = post(request)
 
         then:
         response.status == 201
@@ -234,7 +234,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: deleteReelUrl, token: writeToken)
 
         when:
-        def response = restClient.delete(request)
+        def response = delete(request)
 
         then:
         response.status == 200
@@ -249,7 +249,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: listVideosUrl, token: readToken)
 
         when:
-        def response = restClient.get(request)
+        def response = get(request)
 
         then:
         response.status == 200
@@ -269,7 +269,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: listVideosUrl, token: readToken)
 
         when:
-        def response = restClient.get(request)
+        def response = get(request)
 
         then:
         response.status == 200
@@ -291,7 +291,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: removeVideoUrl, token: writeToken)
 
         when:
-        def response = restClient.delete(request)
+        def response = delete(request)
 
         then:
         response.status == 200
@@ -304,7 +304,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def listVideosUrl = getUrlForResource("reel/$reelId")
         def request = new RestRequest(url: listVideosUrl, token: readToken)
 
-        def response = restClient.get(request)
+        def response = get(request)
         if(response.status != 200) {
             Assert.fail("Failed to list videos in reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
         }
@@ -316,7 +316,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
             name = reelName
         })
 
-        def response = restClient.post(request)
+        def response = post(request)
         if(response.status != 201) {
             Assert.fail("Failed to add reel [$reelName]. Status: ${response.status} JSON: ${response.json}")
         }
@@ -328,7 +328,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
             videoId = vid
         })
 
-        def response = restClient.post(request)
+        def response = post(request)
         if(response.status != 201) {
             Assert.fail("Failed to add video [$vid] to reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
         }
@@ -338,7 +338,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def deleteReelUrl = getUrlForResource("reel/$reelId")
         def request = new RestRequest(url: deleteReelUrl, token: writeToken)
 
-        def response = restClient.delete(request)
+        def response = delete(request)
         if(response.status != 200) {
             Assert.fail("Failed to delete reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
         }

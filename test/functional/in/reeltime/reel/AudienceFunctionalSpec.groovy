@@ -37,7 +37,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: getUrlForResource('reel/1234/audience'), token: tokenToUse)
 
         when:
-        def response = restClient."$httpMethod"(request)
+        def response = "$httpMethod"(request)
 
         then:
         response.status == 403
@@ -55,7 +55,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: getUrlForResource('reel/invalid123/audience'), token: token)
 
         when:
-        def response = restClient."$httpMethod"(request)
+        def response = "$httpMethod"(request)
 
         then:
         assertSingleErrorMessageResponse(response, 400, '[reelId] is required')
@@ -76,7 +76,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: addAudienceMemberUrl, token: writeToken)
 
         when:
-        def response = restClient.post(request)
+        def response = post(request)
 
         then:
         assertSingleErrorMessageResponse(response, 403, 'Unauthorized audience operation requested')
@@ -92,7 +92,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def request = new RestRequest(url: removeAudienceMemberUrl, token: nonTestUserWriteToken)
 
         when:
-        def response = restClient.delete(request)
+        def response = delete(request)
 
         then:
         assertSingleErrorMessageResponse(response, 403, 'Unauthorized audience operation requested')
@@ -131,28 +131,28 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def listAudienceMembersUrl = getUrlForResource("reel/$reelId/audience")
         def request = new RestRequest(url: listAudienceMembersUrl, token: readToken)
 
-        def response = restClient.get(request)
+        def response = get(request)
         if(response.status != 200) {
             Assert.fail("Failed to list audience members for reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
         }
         return response.json
     }
 
-    private static void addAudienceMember(Long reelId, String token) {
+    private void addAudienceMember(Long reelId, String token) {
         def addAudienceMemberUrl = getUrlForResource("reel/$reelId/audience")
         def request = new RestRequest(url: addAudienceMemberUrl, token: token)
 
-        def response = restClient.post(request)
+        def response = post(request)
         if(response.status != 201) {
             Assert.fail("Failed to add audience member for reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
         }
     }
 
-    private static void removeAudienceMember(Long reelId, String token) {
+    private void removeAudienceMember(Long reelId, String token) {
         def removeAudienceMemberUrl = getUrlForResource("reel/$reelId/audience")
         def request = new RestRequest(url: removeAudienceMemberUrl, token: token)
 
-        def response = restClient.delete(request)
+        def response = delete(request)
         if(response.status != 200) {
             Assert.fail("Failed to remove audience member for reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
         }
