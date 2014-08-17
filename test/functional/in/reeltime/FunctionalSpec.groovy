@@ -5,7 +5,7 @@ import helper.oauth2.AccessTokenRequest
 import helper.oauth2.AccessTokenRequester
 import helper.rest.AuthorizationAwareRestClient
 import helper.rest.RestRequest
-import helper.test.RestResponseAssert
+import helper.test.ResponseChecker
 import junit.framework.Assert
 import org.codehaus.groovy.grails.web.json.JSONElement
 import spock.lang.Specification
@@ -22,7 +22,7 @@ abstract class FunctionalSpec extends Specification {
     protected AuthorizationAwareRestClient restClient = new AuthorizationAwareRestClient()
 
     @Delegate
-    protected RestResponseAssert restResponseAssert = new RestResponseAssert(restClient)
+    protected ResponseChecker responseChecker = new ResponseChecker(restClient)
 
     protected static String getUrlForResource(String resource) {
         return BASE_URL + resource

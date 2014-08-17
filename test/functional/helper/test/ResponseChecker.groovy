@@ -8,11 +8,11 @@ import static helper.rest.HttpContentTypes.APPLICATION_JSON
 import static helper.rest.HttpHeaders.CONTENT_TYPE
 import static helper.rest.HttpHeaders.WWW_AUTHENTICATE
 
-class RestResponseAssert {
+class ResponseChecker {
 
     private AuthorizationAwareRestClient restClient
 
-    RestResponseAssert(AuthorizationAwareRestClient restClient) {
+    ResponseChecker(AuthorizationAwareRestClient restClient) {
         this.restClient = restClient
     }
 
