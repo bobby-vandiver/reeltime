@@ -12,9 +12,7 @@ class AccountRegistrationService {
     def reelService
 
     def accountConfirmationService
-
     def securityService
-    def springSecurityService
 
     def localizedMessageService
     def mailService
@@ -44,39 +42,7 @@ class AccountRegistrationService {
         new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
     }
 
-    RegistrationResult registerClientForExistingUser(String username, String clientName) {
-        def user = userService.loadUser(username)
-
-        def clientId = clientService.generateClientId()
-        def clientSecret = clientService.generateClientSecret()
-
-        def client = clientService.createAndSaveClient(clientName, clientId, clientSecret)
-        user.addToClients(client)
-        userService.storeUser(user)
-
-        new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
-    }
-
-    void removeAccount() {
-        def currentUser = userService.currentUser
-        log.info "Removing account for user [${currentUser.username}]"
-
-        def confirmationCodes = AccountConfirmation.findAllByUser(currentUser)
-        confirmationCodes.each { code ->
-            log.debug "Deleting account confirmation code [${code.id}]"
-            code.delete()
-        }
-
-        currentUser.clients.each { client ->
-            log.debug "Deleting client [${client.id}]"
-            client.delete()
-        }
-
-        log.debug "Deleting user [${currentUser.username}]"
-        currentUser.delete()
-    }
-
-    void sendConfirmationEmail(User user, Locale locale) {
+    private void sendConfirmationEmail(User user, Locale locale) {
 
         def code = securityService.generateSecret(CONFIRMATION_CODE_LENGTH, ALLOWED_CHARACTERS)
         def salt = securityService.generateSalt(SALT_LENGTH)
@@ -88,5 +54,18 @@ class AccountRegistrationService {
         def localizedMessage = localizedMessageService.getMessage('registration.email.message', locale, [user.username, code])
 
         mailService.sendMail(user.email, fromAddress, localizedSubject, localizedMessage)
+    }
+
+    RegistrationResult registerClientForExistingUser(String username, String clientName) {
+        def user = userService.loadUser(username)
+
+        def clientId = clientService.generateClientId()
+        def clientSecret = clientService.generateClientSecret()
+
+        def client = clientService.createAndSaveClient(clientName, clientId, clientSecret)
+        user.addToClients(client)
+        userService.storeUser(user)
+
+        new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
     }
 }

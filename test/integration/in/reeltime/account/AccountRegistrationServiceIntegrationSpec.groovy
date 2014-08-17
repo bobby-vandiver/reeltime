@@ -1,14 +1,16 @@
 package in.reeltime.account
 
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
-import in.reeltime.oauth2.Client
 
 class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
 
     def accountRegistrationService
     def inMemoryMailService
+
+    void setup() {
+        inMemoryMailService.deleteAllMessages()
+    }
 
     void cleanup() {
         inMemoryMailService.deleteAllMessages()
@@ -77,36 +79,6 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
         user.clients.size() == 2
         user.clients.find { it.clientName == firstClientName } != null
         user.clients.find { it.clientName == secondClientName } != null
-    }
-
-    void "remove account for current user who has multiple clients"() {
-        given:
-        def username = 'foo'
-        def password = 'bar'
-
-        def firstClientName = 'first one'
-        def secondClientName = 'second one'
-
-        and:
-        def firstClientId = registerNewUser(username, password, firstClientName).clientId
-        def secondClientId = accountRegistrationService.registerClientForExistingUser(username, secondClientName).clientId
-
-        and:
-        def user = User.findByUsername(username)
-        assert user != null
-
-        when:
-        SpringSecurityUtils.doWithAuth(username) {
-            accountRegistrationService.removeAccount()
-        }
-
-        then:
-        User.findByUsername(username) == null
-        AccountConfirmation.findByUser(user) == null
-
-        and:
-        Client.findByClientNameAndClientId(firstClientName, firstClientId) == null
-        Client.findByClientNameAndClientId(secondClientName, secondClientId) == null
     }
 
     private RegistrationResult registerNewUser(String username, String password, String clientName) {
