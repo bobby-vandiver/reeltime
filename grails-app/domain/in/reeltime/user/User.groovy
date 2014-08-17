@@ -1,5 +1,6 @@
 package in.reeltime.user
 
+import in.reeltime.video.Video
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
 
@@ -16,7 +17,7 @@ class User {
 	boolean accountLocked
 	boolean passwordExpired
 
-    static hasMany = [clients: Client, reels: Reel]
+    static hasMany = [videos: Video, clients: Client, reels: Reel]
 
 	static transients = ['springSecurityService']
 

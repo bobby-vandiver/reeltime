@@ -1,5 +1,6 @@
 package in.reeltime
 
+import grails.plugins.rest.client.RestResponse
 import grails.util.BuildSettings
 import helper.oauth2.AccessTokenRequest
 import helper.oauth2.AccessTokenRequester
@@ -32,8 +33,10 @@ abstract class FunctionalSpec extends Specification {
     protected static final TEST_USER = 'bob'
     protected static final TEST_PASSWORD = 'password'
 
-    protected static final TEST_CLIENT_ID = 'test-client'
-    protected static final TEST_CLIENT_SECRET = 'test-secret'
+    protected static final TEST_CLIENT_NAME = 'test-client-name'
+
+    protected static TEST_CLIENT_ID = 'test-client'
+    protected static TEST_CLIENT_SECRET = 'test-secret'
 
     void setup() {
         restClient = new AuthorizationAwareRestClient()
@@ -43,6 +46,28 @@ abstract class FunctionalSpec extends Specification {
 
         requestFactory = new ReelTimeRequestFactory(urlFactory)
         reelTimeClient = new ReelTimeClient(restClient, requestFactory)
+
+        registerTestUser()
+    }
+
+    private void registerTestUser() {
+        def registrationResult = registerUser(TEST_USER, TEST_PASSWORD, TEST_CLIENT_NAME).json
+
+        TEST_CLIENT_ID = registrationResult.client_id
+        TEST_CLIENT_SECRET = registrationResult.client_secret
+    }
+
+    void cleanup() {
+        removeTestUser()
+    }
+
+    private void removeTestUser() {
+        def token = getAccessTokenWithScope('account-write')
+        removeAccount(token)
+    }
+
+    protected RestResponse registerUser(String username) {
+        reelTimeClient.registerUser(username, TEST_PASSWORD, TEST_CLIENT_NAME)
     }
 
     protected String getAccessTokenWithScopeForNonTestUser(String username, String scope) {
@@ -66,8 +91,8 @@ abstract class FunctionalSpec extends Specification {
 
     protected static String getAccessTokenWithScopes(Collection<String> scopes) {
         def request = new AccessTokenRequest(
-                clientId: 'test-client',
-                clientSecret: 'test-secret',
+                clientId: TEST_CLIENT_ID,
+                clientSecret: TEST_CLIENT_SECRET,
                 grantType: 'password',
                 username: TEST_USER,
                 password: TEST_PASSWORD,

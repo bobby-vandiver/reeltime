@@ -19,6 +19,10 @@ class ReelTimeRequestFactory {
         })
     }
 
+    RestRequest removeAccount(String token) {
+        new RestRequest(url: urlFactory.removeAccountUrl, token: token)
+    }
+
     RestRequest uploadVideo(String token, String videoTitle, File videoFile) {
         new RestRequest(url: urlFactory.uploadUrl, token: token, isMultiPart: true, customizer: {
             title = videoTitle

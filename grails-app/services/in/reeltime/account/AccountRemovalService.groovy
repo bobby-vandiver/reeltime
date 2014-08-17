@@ -7,6 +7,7 @@ class AccountRemovalService {
     def userService
     def tokenRemovalService
 
+    // TODO: Handle deletion of the user's videos!!
     void removeAccountForCurrentUser() {
         def currentUser = userService.currentUser
         def username = currentUser.username

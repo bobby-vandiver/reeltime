@@ -5,14 +5,13 @@ import in.reeltime.playlist.Playlist
 
 class Video {
 
-    User creator
-
     String title
     String description
 
     String masterPath
     boolean available
 
+    static belongsTo = [creator: User]
     static hasMany = [playlists: Playlist]
 
     static constraints = {

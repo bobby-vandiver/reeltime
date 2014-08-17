@@ -26,17 +26,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     }
 
     void cleanup() {
-        def request = new RestRequest(url: removeAccountUrl, token: token)
-
-        def response = delete(request)
-        if(response.status != 200) {
-            Assert.fail("Failed to remove access token")
-        }
-
-        response = delete(request)
-        if(response.status != 401) {
-            Assert.fail("The token associated with the deleted account is still valid! Status: ${response.status}")
-        }
+        removeAccount(token)
     }
 
     @Unroll

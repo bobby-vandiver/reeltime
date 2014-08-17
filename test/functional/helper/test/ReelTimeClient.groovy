@@ -2,6 +2,7 @@ package helper.test
 
 import grails.plugins.rest.client.RestResponse
 import helper.rest.AuthorizationAwareRestClient
+import helper.rest.RestRequest
 import junit.framework.Assert
 import org.codehaus.groovy.grails.web.json.JSONElement
 
@@ -21,7 +22,7 @@ class ReelTimeClient {
         this.requestFactory = requestFactory
     }
 
-    RestResponse registerUser(String username, String password = 'password', String clientName = 'client') {
+    RestResponse registerUser(String username, String password, String clientName) {
         def email = username + '@test.com'
         def request = requestFactory.registerUser(username, password, email, clientName)
 
@@ -30,6 +31,21 @@ class ReelTimeClient {
             Assert.fail("Failed to register user. Status code: ${response.status}. JSON: ${response.json}")
         }
         return response
+    }
+
+    void removeAccount(String token) {
+        def request = requestFactory.removeAccount(token)
+
+        def response = delete(request)
+        if(response.status != 200) {
+            Assert.fail("Failed to remove access token")
+        }
+
+        response = delete(request)
+        if(response.status != 401) {
+            Assert.fail("The token associated with the deleted account is still valid! Status: ${response.status}")
+        }
+
     }
 
     long uploadVideo(String token) {
