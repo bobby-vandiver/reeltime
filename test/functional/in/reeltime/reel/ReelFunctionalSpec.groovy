@@ -188,7 +188,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "list reels"() {
         given:
-        def request = createListReelsRequest(readToken)
+        def request = requestFactory.listReels(readToken, TEST_USER)
 
         when:
         def response = get(request)

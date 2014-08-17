@@ -2,8 +2,6 @@ package in.reeltime.reel
 
 import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
-import junit.framework.Assert
-import org.codehaus.groovy.grails.web.json.JSONElement
 import spock.lang.Unroll
 
 class AudienceFunctionalSpec extends FunctionalSpec {
@@ -103,7 +101,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def reelId = getUncategorizedReelId(listReelsToken)
 
         when:
-        def list = listAudienceMembers(reelId)
+        def list = listAudienceMembers(reelId, readToken)
 
         then:
         list.size() == 0
@@ -118,43 +116,12 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         addAudienceMember(reelId, nonTestUserWriteToken)
 
         then:
-        listAudienceMembers(reelId).size() == 1
+        listAudienceMembers(reelId, readToken).size() == 1
 
         when:
         removeAudienceMember(reelId, nonTestUserWriteToken)
 
         then:
-        listAudienceMembers(reelId).size() == 0
-    }
-
-    private JSONElement listAudienceMembers(Long reelId) {
-        def listAudienceMembersUrl = getAudienceUrl(reelId)
-        def request = new RestRequest(url: listAudienceMembersUrl, token: readToken)
-
-        def response = get(request)
-        if(response.status != 200) {
-            Assert.fail("Failed to list audience members for reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
-        }
-        return response.json
-    }
-
-    private void addAudienceMember(Long reelId, String token) {
-        def addAudienceMemberUrl = getAudienceUrl(reelId)
-        def request = new RestRequest(url: addAudienceMemberUrl, token: token)
-
-        def response = post(request)
-        if(response.status != 201) {
-            Assert.fail("Failed to add audience member for reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
-        }
-    }
-
-    private void removeAudienceMember(Long reelId, String token) {
-        def removeAudienceMemberUrl = getAudienceUrl(reelId)
-        def request = new RestRequest(url: removeAudienceMemberUrl, token: token)
-
-        def response = delete(request)
-        if(response.status != 200) {
-            Assert.fail("Failed to remove audience member for reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
-        }
+        listAudienceMembers(reelId, readToken).size() == 0
     }
 }
