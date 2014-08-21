@@ -49,10 +49,11 @@ class ReelTimeClient {
     }
 
     long uploadVideo(String token) {
+        def reel = 'Uncategorized'
         def title = 'minimum-viable-video'
         def video = new File('test/files/small.mp4')
 
-        def request = requestFactory.uploadVideo(token, title, video)
+        def request = requestFactory.uploadVideo(token, title, reel, video)
         def response = post(request)
 
         if(response.status != 202) {

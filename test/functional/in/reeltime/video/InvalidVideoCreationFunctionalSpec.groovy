@@ -60,16 +60,24 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         given:
         def request = createUploadRequest(uploadToken)
 
+        and:
+        def expectedErrors = [
+                '[video] is required',
+                '[reel] is required',
+                '[title] is required'
+        ]
+
         when:
         def response = post(request)
 
         then:
-        assertMultipleErrorMessagesResponse(response, 400, ['[video] is required', '[title] is required'])
+        assertMultipleErrorMessagesResponse(response, 400, expectedErrors)
     }
 
     void "video param is missing"() {
         given:
         def request = createUploadRequest(uploadToken) {
+            reel = 'Uncategorized'
             title = 'no-video'
         }
 
@@ -83,6 +91,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
     void "title param is missing"() {
         given:
         def request = createUploadRequest(uploadToken) {
+            reel = 'Uncategorized'
             video = new File('test/files/small.mp4')
         }
 
@@ -93,9 +102,39 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         assertSingleErrorMessageResponse(response, 400, '[title] is required')
     }
 
+    void "reel param is missing"() {
+        given:
+        def request = createUploadRequest(uploadToken) {
+            title = 'no-reel'
+            video = new File('test/files/small.mp4')
+        }
+
+        when:
+        def response = post(request)
+
+        then:
+        assertSingleErrorMessageResponse(response, 400, '[reel] is required')
+    }
+
+    void "unknown reel specified"() {
+        given:
+        def request = createUploadRequest(uploadToken) {
+            reel = 'unknown-reel'
+            title = 'unknown reel test'
+            video = new File('test/files/small.mp4')
+        }
+
+        when:
+        def response = post(request)
+
+        then:
+        assertSingleErrorMessageResponse(response, 400, '[reel] is unknown')
+    }
+
     void "submitted video contains only aac stream"() {
         given:
         def request = createUploadRequest(uploadToken) {
+            reel = 'Uncategorized'
             title = 'video-is-only-aac'
             video = new File('test/files/sample_mpeg4.mp4')
         }
@@ -113,6 +152,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
         and:
         def request = createUploadRequest(uploadToken) {
+            reel = 'Uncategorized'
             title = 'video-has-no-valid-streams'
             video = new File('test/files/empty')
         }
@@ -127,6 +167,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
     void "submitted video exceeds max length"() {
         given:
         def request = createUploadRequest(uploadToken) {
+            reel = 'Uncategorized'
             title = 'video-exceeds-max-length'
             video = new File('test/files/spidey.mp4')
         }

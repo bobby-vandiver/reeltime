@@ -6,6 +6,7 @@ import in.reeltime.user.User
 @Validateable
 class VideoCreationCommand {
     User creator
+    String reel
 
     String title
     String description
@@ -22,6 +23,7 @@ class VideoCreationCommand {
 
     static constraints = {
         creator nullable: false
+        reel nullable: false, blank: false, validator: reelNameValidator
 
         title nullable: false, blank: false
         videoStream nullable: false
@@ -31,6 +33,12 @@ class VideoCreationCommand {
 
         h264StreamIsPresent nullable: true, validator: h264StreamValidator
         aacStreamIsPresent nullable: true, validator: aacStreamValidator
+    }
+
+    private static Closure reelNameValidator = { val, obj ->
+        if(obj.creator && !obj.creator.hasReel(val)) {
+            return 'unknown'
+        }
     }
 
     private static Closure videoStreamSizeIsValidValidator = { val, obj ->

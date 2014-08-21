@@ -1,5 +1,6 @@
 package in.reeltime.user
 
+import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.video.Video
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
@@ -38,7 +39,19 @@ class User {
     }
 
     boolean hasReel(String reelName) {
-        reels.find { reel -> reel.name == reelName } != null
+        return findReelByName(reelName) != null
+    }
+
+    Reel getReel(String reelName) {
+        def reel = findReelByName(reelName)
+        if(!reel) {
+            throw new ReelNotFoundException("User [$username] does not have reel named [$reelName]")
+        }
+        return reel
+    }
+
+    private Reel findReelByName(String reelName) {
+        reels.find { reel -> reel.name == reelName }
     }
 
 	Set<Role> getAuthorities() {

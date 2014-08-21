@@ -1,15 +1,16 @@
 package in.reeltime.video
 
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.metadata.StreamMetadata
+import in.reeltime.reel.Reel
 import spock.lang.Specification
 import in.reeltime.storage.PathGenerationService
 import in.reeltime.user.User
 import in.reeltime.storage.InputStorageService
 import in.reeltime.transcoder.TranscoderService
 import in.reeltime.metadata.StreamMetadataService
+import in.reeltime.reel.ReelVideoManagementService
 import spock.lang.Unroll
 import test.helper.StreamMetadataListFactory
 
@@ -30,6 +31,7 @@ class VideoCreationServiceSpec extends Specification {
         service.pathGenerationService = Mock(PathGenerationService)
         service.transcoderService = Mock(TranscoderService)
         service.streamMetadataService = streamMetadataService
+        service.reelVideoManagementService = Mock(ReelVideoManagementService)
 
         VideoCreationCommand.maxDuration = MAX_DURATION
         service.maxVideoStreamSizeInBytes = MAX_VIDEO_STREAM_SIZE
@@ -37,22 +39,29 @@ class VideoCreationServiceSpec extends Specification {
 
     void "store video stream, save the video object and then transcode it"() {
         given:
-        def creator = new User(username: 'bob')
+        def reelName = 'something'
+        def reel = new Reel(name: reelName)
+        def creator = new User(username: 'bob', reels: [reel])
         def title = 'fun times'
         def videoStream = new ByteArrayInputStream('yay'.bytes)
 
         and:
-        def command = new VideoCreationCommand(creator: creator, title: title, videoStream: videoStream)
+        def command = new VideoCreationCommand(creator: creator, title: title, reel: reelName, videoStream: videoStream)
 
         and:
         def masterPath = 'foo'
         def outputPath = 'bar'
 
         and:
-        def validateTranscodeVideoArgs = { Video v ->
+        def validateVideoArg = { Video v ->
             assert v.creator == creator
             assert v.title == title
             assert v.masterPath == masterPath
+        }
+
+        and:
+        def validateReelArg = { Reel r ->
+            assert r.name == reelName
         }
 
         when:
@@ -64,7 +73,13 @@ class VideoCreationServiceSpec extends Specification {
 
         and:
         1 * service.pathGenerationService.getUniqueOutputPath() >> outputPath
-        1 * service.transcoderService.transcode(_ as Video, outputPath) >> { args -> validateTranscodeVideoArgs(args[0])}
+        1 * service.transcoderService.transcode(_ as Video, outputPath) >> { args -> validateVideoArg(args[0])}
+
+        and:
+        1 * service.reelVideoManagementService.addVideoToReel(_ as Reel, _ as Video) >> { args ->
+            validateReelArg(args[0])
+            validateVideoArg(args[1])
+        }
 
         and:
         video.creator == creator
@@ -197,8 +212,9 @@ class VideoCreationServiceSpec extends Specification {
     }
 
     private static VideoCreationCommand createCommandWithVideoStream(byte[] data) {
-        def creator = new User(username: 'videoCreationTestUser')
+        def reel = new Reel(name: 'test-reel')
+        def creator = new User(username: 'videoCreationTestUser', reels: [reel])
         def videoStream = new ByteArrayInputStream(data)
-        new VideoCreationCommand(creator: creator, videoStream: videoStream, title: 'test-title')
+        new VideoCreationCommand(creator: creator, videoStream: videoStream, title: 'test-title', reel: 'test-reel')
     }
 }

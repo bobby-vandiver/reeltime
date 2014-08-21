@@ -3,6 +3,8 @@ package in.reeltime.video
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import in.reeltime.metadata.StreamMetadata
+import in.reeltime.reel.Reel
+import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 import test.helper.StreamMetadataListFactory
@@ -39,6 +41,56 @@ class VideoCreationCommandSpec extends Specification {
         title   |   code
         null    |   'nullable'
         ''      |   'blank'
+    }
+
+    @Unroll
+    void "reel name cannot be [#name]"() {
+        given:
+        def command = new VideoCreationCommand(reel: name)
+
+        expect:
+        !command.validate(['reel'])
+
+        and:
+        command.errors.getFieldError('reel').code == code
+
+        where:
+        name   |   code
+        null    |   'nullable'
+        ''      |   'blank'
+    }
+
+    void "creator does not have the reel specified"() {
+        given:
+        def command = new VideoCreationCommand(creator: new User(), reel: 'some reel')
+
+        expect:
+        !command.validate(['reel'])
+
+        and:
+        command.errors.getFieldError('reel').code == 'unknown'
+    }
+
+    void "creator does have the reel"() {
+        given:
+        def reel = new Reel(name: 'test')
+        def creator = new User(reels: [reel])
+
+        def command = new VideoCreationCommand(creator: creator, reel: 'test')
+
+        expect:
+        command.validate(['reel'])
+    }
+
+    void "skip reel validation if the creator is null"() {
+        given:
+        def command = new VideoCreationCommand(reel: 'some reel')
+
+        expect:
+        command.validate(['reel'])
+
+        and:
+        !command.validate(['creator'])
     }
 
     @Unroll

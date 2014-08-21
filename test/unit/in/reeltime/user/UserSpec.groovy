@@ -5,6 +5,7 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
+import in.reeltime.exceptions.ReelNotFoundException
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -104,6 +105,27 @@ class UserSpec extends Specification {
         reelToAdd   |   reelToCheck     |   truth
         'something' |   'something'     |   true
         'something' |   'nothing'       |   false
+    }
+
+    void "get reel by name when user has reel"() {
+        given:
+        def reel = new Reel(name: 'something')
+        def user = new User(reels: [reel])
+
+        expect:
+        user.getReel('something') == reel
+    }
+
+    void "cannot get unknown reel by name if user does not have the reel"() {
+        given:
+        def user = new User(username: 'joe')
+
+        when:
+        user.getReel('something')
+
+        then:
+        def e = thrown(ReelNotFoundException)
+        e.message == "User [joe] does not have reel named [something]"
     }
 
     void "user must have an uncategorized reel"() {

@@ -20,6 +20,11 @@ class ReelVideoManagementService {
         def reel = reelService.loadReel(reelId)
         def video = videoService.loadVideo(videoId)
 
+        addVideoToReel(reel, video)
+    }
+
+    void addVideoToReel(Reel reel, Video video) {
+
         if(!reelAuthorizationService.currentUserIsReelOwner(reel)) {
             throw new AuthorizationException("Only the owner of a reel can add videos to it")
         }

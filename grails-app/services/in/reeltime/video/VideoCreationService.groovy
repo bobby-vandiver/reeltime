@@ -10,6 +10,7 @@ class VideoCreationService {
     def transcoderService
     def streamMetadataService
 
+    def reelVideoManagementService
     def maxVideoStreamSizeInBytes
 
     private static final int BUFFER_SIZE = 8 * 1024
@@ -127,6 +128,11 @@ class VideoCreationService {
 
         def outputPath = pathGenerationService.uniqueOutputPath
         transcoderService.transcode(video, outputPath)
+
+        def reel = creator.getReel(command.reel)
+
+        log.info("Adding video with id [${video.id}] to reel with id [${reel.id}]")
+        reelVideoManagementService.addVideoToReel(reel, video)
 
         return video
     }
