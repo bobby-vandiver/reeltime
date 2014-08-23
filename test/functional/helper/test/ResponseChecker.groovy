@@ -3,6 +3,8 @@ package helper.test
 import grails.plugins.rest.client.RestResponse
 import helper.rest.AuthorizationAwareRestClient
 import helper.rest.RestRequest
+import org.codehaus.groovy.grails.web.json.JSONElement
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 import static helper.rest.HttpContentTypes.APPLICATION_JSON
 import static helper.rest.HttpHeaders.CONTENT_TYPE
@@ -70,5 +72,17 @@ class ResponseChecker {
         def wwwAuthenticate = response.headers.get(WWW_AUTHENTICATE)[0]
         assert wwwAuthenticate.contains("error=\"$error\"")
         assert wwwAuthenticate.contains("error_description=\"$description\"")
+    }
+
+    void assertVideoIdInList(JSONElement list, Long videoId) {
+        boolean found = false
+        JSONObject expected = [videoId: videoId]
+
+        list.each { elem ->
+            if(elem == expected) {
+                found = true
+            }
+        }
+        assert found
     }
 }

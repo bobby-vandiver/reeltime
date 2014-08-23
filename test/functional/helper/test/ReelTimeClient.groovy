@@ -83,9 +83,9 @@ class ReelTimeClient {
         return videoCreatedStatus
     }
 
-    // TODO: Specify username
-    Long getUncategorizedReelId(String token) {
-        def request = requestFactory.listReels(token, 'bob')
+    // TODO: Update existing invocations to specify username
+    Long getUncategorizedReelId(String token, String username = 'bob') {
+        def request = requestFactory.listReels(token, username)
         def response = get(request)
 
         if(response.status != 200) {
@@ -93,6 +93,25 @@ class ReelTimeClient {
         }
         def uncategorizedReel = response.json.find { it.name == 'Uncategorized' }
         return uncategorizedReel.reelId
+    }
+
+    void addVideoToReel(Long reelId, Long videoId, String token) {
+        def request = requestFactory.addVideoToReel(token, reelId, videoId)
+
+        def response = post(request)
+        if(response.status != 201) {
+            Assert.fail("Failed to add video [$videoId] to reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
+        }
+    }
+
+    JSONElement listVideosInReel(Long reelId, String token) {
+        def request = requestFactory.listVideosInReel(token, reelId)
+
+        def response = get(request)
+        if(response.status != 200) {
+            Assert.fail("Failed to list videos in reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
+        }
+        return response.json
     }
 
     JSONElement listAudienceMembers(Long reelId, String token) {

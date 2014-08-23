@@ -85,12 +85,16 @@ abstract class FunctionalSpec extends Specification {
     }
 
     protected String registerNewUserAndGetToken(String username, String scope) {
+        registerNewUserAndGetToken(username, [scope])
+    }
+
+    protected String registerNewUserAndGetToken(String username, Collection<String> scopes) {
         def registrationResult = registerUser(username).json
 
         def clientId = registrationResult.client_id
         def clientSecret = registrationResult.client_secret
 
-        def accessRequest = createAccessTokenRequest(username, clientId, clientSecret, [scope])
+        def accessRequest = createAccessTokenRequest(username, clientId, clientSecret, scopes)
         getAccessTokenWithScope(accessRequest)
     }
 

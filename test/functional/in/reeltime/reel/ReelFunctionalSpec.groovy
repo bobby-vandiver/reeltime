@@ -4,6 +4,7 @@ import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
 import junit.framework.Assert
 import org.codehaus.groovy.grails.web.json.JSONElement
+import spock.lang.Ignore
 import spock.lang.Unroll
 
 class ReelFunctionalSpec extends FunctionalSpec {
@@ -262,7 +263,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def videoId = uploadVideo(uploadVideoToken)
 
         and:
-        addVideoToReel(reelId, videoId)
+        addVideoToReel(reelId, videoId, writeToken)
 
         and:
         def listVideosUrl = getReelUrl(reelId)
@@ -277,14 +278,31 @@ class ReelFunctionalSpec extends FunctionalSpec {
         response.json[0].videoId == videoId
     }
 
+    @Ignore("Enable once videos are being properly removed during account removal")
+    void "uploaded video is added to another person's reel"() {
+        given:
+        def otherUserToken = registerNewUserAndGetToken('someone', ['reels-read', 'reels-write'])
+
+        and:
+        def reelId = getUncategorizedReelId(otherUserToken, 'someone')
+        def videoId = uploadVideo(uploadVideoToken)
+
+        when:
+        addVideoToReel(reelId, videoId, otherUserToken)
+
+        then:
+        def list = listVideosInReel(reelId, otherUserToken)
+        assertVideoIdInList(list, videoId)
+    }
+
     void "remove video from reel"() {
         given:
         def reelId = addReel('remove video test reel')
         def videoId = uploadVideo(uploadVideoToken)
 
         and:
-        addVideoToReel(reelId, videoId)
-        assert listVideosInReel(reelId).size() == 1
+        addVideoToReel(reelId, videoId, writeToken)
+        assert listVideosInReel(reelId, readToken).size() == 1
 
         and:
         def removeVideoUrl = getRemoveVideoFromReelUrl(reelId, videoId)
@@ -297,18 +315,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         response.status == 200
 
         and:
-        listVideosInReel(reelId).size() == 0
-    }
-
-    private JSONElement listVideosInReel(Long reelId) {
-        def listVideosUrl = getReelUrl(reelId)
-        def request = new RestRequest(url: listVideosUrl, token: readToken)
-
-        def response = get(request)
-        if(response.status != 200) {
-            Assert.fail("Failed to list videos in reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
-        }
-        return response.json
+        listVideosInReel(reelId, readToken).size() == 0
     }
 
     private Long addReel(String reelName) {
@@ -321,17 +328,6 @@ class ReelFunctionalSpec extends FunctionalSpec {
             Assert.fail("Failed to add reel [$reelName]. Status: ${response.status} JSON: ${response.json}")
         }
         return response.json.reelId
-    }
-
-    private void addVideoToReel(Long reelId, Long vid) {
-        def request = new RestRequest(url: getReelUrl(reelId), token: writeToken, customizer: {
-            videoId = vid
-        })
-
-        def response = post(request)
-        if(response.status != 201) {
-            Assert.fail("Failed to add video [$vid] to reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
-        }
     }
 
     private void deleteReel(Long reelId) {
