@@ -30,6 +30,7 @@ class ReelVideoManagementService {
         }
 
         reel.addToVideos(video)
+        video.addToReels(reel)
         reelService.storeReel(reel)
     }
 
@@ -45,17 +46,23 @@ class ReelVideoManagementService {
             throw new VideoNotFoundException("Reel [$reelId] does not contain video [$videoId]")
         }
 
-        reel.removeFromVideos(video)
+        removeVideoFromReel(reel, video)
         reelService.storeReel(reel)
     }
 
     void removeVideoFromAllReels(Video video) {
-//
-//        def reels = Reel.findAllByVideosInList([])
-//
-//        reels.each { reel ->
-//            reel.removeFromVideos(video)
-//            reel.save()
-//        }
+
+        def reelsVideoBelongsTo = []
+        reelsVideoBelongsTo.addAll(video.reels)
+
+        reelsVideoBelongsTo.each { Reel reel ->
+            removeVideoFromReel(reel, video)
+            reelService.storeReel(reel)
+        }
+    }
+
+    private static void removeVideoFromReel(Reel reel, Video video) {
+        reel.removeFromVideos(video)
+        video.removeFromReels(reel)
     }
 }

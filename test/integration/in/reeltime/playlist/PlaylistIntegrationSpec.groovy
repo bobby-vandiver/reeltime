@@ -15,8 +15,9 @@ class PlaylistIntegrationSpec extends IntegrationSpec {
         playlist.addToSegments(segment)
 
         def user = UserFactory.createTestUser()
+        def reel = user.reels[0]
 
-        def video = new Video(creator: user, title: 'ignore', masterPath: 'ignore')
+        def video = new Video(creator: user, title: 'ignore', masterPath: 'ignore', reels: [reel])
         video.addToPlaylists(playlist)
         video.save()
 

@@ -2,6 +2,7 @@ package in.reeltime.video
 
 import in.reeltime.user.User
 import in.reeltime.playlist.Playlist
+import in.reeltime.reel.Reel
 
 class Video {
 
@@ -11,13 +12,28 @@ class Video {
     String masterPath
     boolean available
 
-    static belongsTo = [creator: User]
+    User creator
+    Set<Reel> reels
+
+    static belongsTo = [User, Reel]
     static hasMany = [playlists: Playlist]
 
     static constraints = {
         creator nullable: false
-        title blank: false
-        description blank: true, nullable: true
-        masterPath blank: false
+        title nullable: false, blank: false
+        description nullable: true, blank: true
+        masterPath nullable: false, blank: false
+        reels nullable: false, minSize: 1
+    }
+
+    void addToReels(Reel reel) {
+        if(!reels) {
+            reels = []
+        }
+        reels.add(reel)
+    }
+
+    void removeFromReels(Reel reel) {
+        reels?.remove(reel)
     }
 }

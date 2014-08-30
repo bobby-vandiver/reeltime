@@ -1,6 +1,7 @@
 package in.reeltime.video
 
 import grails.test.mixin.TestFor
+import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.playlist.Playlist
 import spock.lang.Specification
@@ -13,6 +14,7 @@ class VideoSpec extends Specification {
         given:
         def user = new User()
         def playlist = new Playlist()
+        def reel = new Reel()
 
         when:
         def video = new Video(
@@ -20,7 +22,8 @@ class VideoSpec extends Specification {
                 title: 'foo',
                 description: 'bar',
                 masterPath: 'sample.mp4',
-                playlists: [playlist]
+                playlists: [playlist],
+                reels: [reel]
         )
 
         then:
@@ -33,6 +36,7 @@ class VideoSpec extends Specification {
         video.description == 'bar'
         video.masterPath == 'sample.mp4'
         video.playlists == [playlist] as Set
+        video.reels == [reel] as Set
     }
 
     void "creator cannot be null (videos cannot be orphans)"() {
@@ -41,6 +45,68 @@ class VideoSpec extends Specification {
 
         then:
         !video.validate(['creator'])
+    }
+
+    @Unroll
+    void "reels cannot be [#reels]"() {
+        when:
+        def video = new Video(reels: reels)
+
+        then:
+        !video.validate(['reels'])
+
+        where:
+        reels << [null, []]
+    }
+
+    void "video can belong to multiple reels"() {
+        given:
+        def reel1 = new Reel()
+        def reel2 = new Reel()
+
+        when:
+        def video = new Video(reels: [reel1, reel2])
+
+        then:
+        video.validate(['reels'])
+    }
+
+    void "add reel to reels video belongs to"() {
+        given:
+        def reel = new Reel()
+        def video = new Video()
+
+        when:
+        video.addToReels(reel)
+
+        then:
+        video.reels.size() == 1
+        video.reels.contains(reel)
+    }
+
+    void "remove reel from reels video belongs to"() {
+        given:
+        def reel = new Reel()
+        def video = new Video(reels: [reel])
+
+        when:
+        video.removeFromReels(reel)
+
+        then:
+        video.reels.size() == 0
+        !video.reels.contains(reel)
+    }
+
+    void "attempt to remove reel that video does not belong to"() {
+        given:
+        def reel = new Reel()
+        def video = new Video()
+
+        when:
+        video.removeFromReels(reel)
+
+        then:
+        notThrown(Exception)
     }
 
     @Unroll

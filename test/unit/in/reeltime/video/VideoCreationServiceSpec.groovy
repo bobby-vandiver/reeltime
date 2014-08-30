@@ -77,8 +77,13 @@ class VideoCreationServiceSpec extends Specification {
 
         and:
         1 * service.reelVideoManagementService.addVideoToReel(_ as Reel, _ as Video) >> { args ->
-            validateReelArg(args[0])
-            validateVideoArg(args[1])
+            def r = args[0] as Reel
+            def v = args[1] as Video
+
+            validateReelArg(r)
+            validateVideoArg(v)
+
+            v.addToReels(r)
         }
 
         and:

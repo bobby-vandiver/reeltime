@@ -189,9 +189,11 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         and:
         def reel = Reel.findById(reelId)
         !reel.containsVideo(video)
+
+        and:
+        !video.reels.contains(reel)
     }
 
-    @Ignore()
     void "remove video from all reels"() {
         given:
         def video = createAndSaveVideo(owner)
@@ -225,9 +227,12 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
 
     private void assertVideoInReel(Long reelId, Long videoId, boolean shouldContain) {
         def video = Video.findById(videoId)
+        def reel = Reel.findById(reelId)
+
         def list = reelVideoManagementService.listVideos(reelId)
 
         assert list.contains(video) == shouldContain
+        assert video.reels.contains(reel) == shouldContain
     }
 
     @Unroll
@@ -254,7 +259,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
     private Collection<Video> createVideos(Reel reel, int count) {
         def videos = []
         for(int i = 0; i < count; i++) {
-            def video = createAndSaveVideo(owner, "test video $i", "path $i")
+            def video = createAndSaveVideo(owner, reel, "test video $i", "path $i")
             videos << video
             reel.addToVideos(video)
         }
@@ -262,8 +267,11 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         return videos
     }
 
-    private static Video createAndSaveVideo(User creator, String title = 'some video', String path = 'somewhere') {
-        new Video(creator: creator, title: title, masterPath: path).save()
+    private static Video createAndSaveVideo(User creator, Reel reel = null, String title = 'some video', String path = 'somewhere') {
+        if(!reel) {
+            reel = creator.reels[0]
+        }
+        new Video(creator: creator, title: title, masterPath: path, reels: [reel]).save()
     }
 
     // TODO: Pull into helper class

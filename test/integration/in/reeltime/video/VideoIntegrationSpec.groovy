@@ -8,10 +8,12 @@ class VideoIntegrationSpec extends IntegrationSpec {
 
     void "deleting video deletes playlist"() {
         given:
-        def playlist = new Playlist(codecs: 'buzz', resolution: 'bazz')
         def creator = UserFactory.createTestUser()
+        def reel = creator.reels[0]
 
-        def video = new Video(creator: creator, title: 'bar', masterPath: 'foo')
+        def playlist = new Playlist(codecs: 'buzz', resolution: 'bazz')
+        def video = new Video(creator: creator, title: 'bar', masterPath: 'foo', reels: [reel])
+
         video.addToPlaylists(playlist)
         video.save()
 
