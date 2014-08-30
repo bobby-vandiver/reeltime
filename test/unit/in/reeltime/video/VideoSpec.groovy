@@ -35,12 +35,12 @@ class VideoSpec extends Specification {
         video.playlists == [playlist] as Set
     }
 
-    void "creator can be null (when the user has been removed)"() {
+    void "creator cannot be null (videos cannot be orphans)"() {
         when:
         def video = new Video(creator: null)
 
         then:
-        video.validate(['creator'])
+        !video.validate(['creator'])
     }
 
     @Unroll

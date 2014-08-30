@@ -1,24 +1,35 @@
 package in.reeltime.playlist
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.hls.playlist.MediaPlaylist
 import in.reeltime.hls.playlist.MediaSegment
 import in.reeltime.hls.playlist.StreamAttributes
 import in.reeltime.hls.playlist.VariantPlaylist
+import in.reeltime.user.User
 import in.reeltime.video.Video
 import spock.lang.Specification
 
 @TestFor(PlaylistService)
-@Mock([Video, Playlist, Segment])
+@Mock([Video, Playlist, Segment, User])
 class PlaylistServiceSpec extends Specification {
+
+    PlaylistParserService playlistParserService
+    User creator
+
+    void setup() {
+        playlistParserService = Mock(PlaylistParserService)
+        service.playlistParserService = playlistParserService
+
+        creator = new User(username: 'someone')
+        creator.springSecurityService = Stub(SpringSecurityService)
+        creator.save(validate: false)
+    }
 
     void "combine metadata in variant playlist and one media playlist into model for a single stream"() {
         given:
-        service.playlistParserService = Mock(PlaylistParserService)
-
-        and:
-        def video = new Video(title: 'awesome', masterPath: 'pathToVideo').save()
+        def video = new Video(creator: creator, title: 'awesome', masterPath: 'pathToVideo').save()
         def variantPlaylistKey = 'master-playlist'
 
         and:
@@ -41,8 +52,8 @@ class PlaylistServiceSpec extends Specification {
         service.addPlaylists(video, keyPrefix, variantPlaylistKey)
 
         then:
-        1 * service.playlistParserService.parseVariantPlaylist(keyPrefix + variantPlaylistKey + '.m3u8') >> variantPlaylist
-        1 * service.playlistParserService.parseMediaPlaylist(keyPrefix + stream.uri) >> mediaPlaylist
+        1 * playlistParserService.parseVariantPlaylist(keyPrefix + variantPlaylistKey + '.m3u8') >> variantPlaylist
+        1 * playlistParserService.parseMediaPlaylist(keyPrefix + stream.uri) >> mediaPlaylist
 
         and:
         video.available
@@ -82,10 +93,7 @@ class PlaylistServiceSpec extends Specification {
 
     void "playlist has more than one stream variant"() {
         given:
-        service.playlistParserService = Mock(PlaylistParserService)
-
-        and:
-        def video = new Video(title: 'awesome', masterPath: 'pathToVideo').save()
+        def video = new Video(creator: creator, title: 'awesome', masterPath: 'pathToVideo').save()
 
         and:
         def stream1 = new StreamAttributes(uri: 'media-low.m3u8', bandwidth: 121, programId: 1, codecs: 'bar1', resolution: 'buzz1')
@@ -106,11 +114,11 @@ class PlaylistServiceSpec extends Specification {
         service.addPlaylists(video, keyPrefix, variantPlaylistKey)
 
         then:
-        1 * service.playlistParserService.parseVariantPlaylist(keyPrefix + variantPlaylistKey + '.m3u8') >> variantPlaylist
+        1 * playlistParserService.parseVariantPlaylist(keyPrefix + variantPlaylistKey + '.m3u8') >> variantPlaylist
 
         and:
-        1 * service.playlistParserService.parseMediaPlaylist(keyPrefix + stream1.uri) >> media1
-        1 * service.playlistParserService.parseMediaPlaylist(keyPrefix + stream2.uri) >> media2
+        1 * playlistParserService.parseMediaPlaylist(keyPrefix + stream1.uri) >> media1
+        1 * playlistParserService.parseMediaPlaylist(keyPrefix + stream2.uri) >> media2
 
         and:
         video.available

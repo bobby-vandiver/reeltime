@@ -48,4 +48,14 @@ class ReelVideoManagementService {
         reel.removeFromVideos(video)
         reelService.storeReel(reel)
     }
+
+    void removeVideoFromAllReels(Video video) {
+//
+//        def reels = Reel.findAllByVideosInList([])
+//
+//        reels.each { reel ->
+//            reel.removeFromVideos(video)
+//            reel.save()
+//        }
+    }
 }

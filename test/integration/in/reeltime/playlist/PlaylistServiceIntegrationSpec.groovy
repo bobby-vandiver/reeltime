@@ -1,15 +1,19 @@
 package in.reeltime.playlist
 
 import grails.test.spock.IntegrationSpec
+import in.reeltime.user.User
 import in.reeltime.video.Video
 import spock.lang.Unroll
+import test.helper.UserFactory
 
 class PlaylistServiceIntegrationSpec extends IntegrationSpec {
 
-    PlaylistService service
+    def playlistService
+
+    User creator
 
     void setup() {
-        service = new PlaylistService()
+        creator = UserFactory.createTestUser()
     }
 
     void "generate variant playlist for video with only one stream"() {
@@ -21,14 +25,14 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
                 codecs: 'avc1.42001e,mp4a.40.2'
         )
 
-        def video = new Video(title: 'none', masterPath: 'ignore')
+        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore')
         video.addToPlaylists(playlist)
         video.save()
 
         assert playlist.id != null
 
         when:
-        def output = service.generateVariantPlaylist(video)
+        def output = playlistService.generateVariantPlaylist(video)
 
         then:
         output == """#EXTM3U
@@ -54,7 +58,7 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
         )
 
         and:
-        def video = new Video(title: 'none', masterPath: 'ignore')
+        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore')
         video.addToPlaylists(playlist1)
         video.addToPlaylists(playlist2)
         video.save()
@@ -71,7 +75,7 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
                         |${video.id}/${playlist2.id}""".stripMargin()
 
         when:
-        def output = service.generateVariantPlaylist(video)
+        def output = playlistService.generateVariantPlaylist(video)
 
         then:
         output.startsWith('#EXTM3U')
@@ -91,7 +95,7 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
         playlist.addToSegments(segment2)
 
         and:
-        def video = new Video(title: 'none', masterPath: 'ignore')
+        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore')
         video.addToPlaylists(playlist)
         video.save()
 
@@ -113,7 +117,7 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
                        |${playlist.id}/${segment2.segmentId}""".stripMargin()
 
         when:
-        def output = service.generateMediaPlaylist(playlist, allowCacheTruth)
+        def output = playlistService.generateMediaPlaylist(playlist, allowCacheTruth)
 
         then:
         output.startsWith(header)

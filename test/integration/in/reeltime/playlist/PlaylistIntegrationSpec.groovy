@@ -1,7 +1,9 @@
 package in.reeltime.playlist
 
 import grails.test.spock.IntegrationSpec
+import in.reeltime.user.User
 import in.reeltime.video.Video
+import test.helper.UserFactory
 
 class PlaylistIntegrationSpec extends IntegrationSpec {
 
@@ -12,7 +14,9 @@ class PlaylistIntegrationSpec extends IntegrationSpec {
         def playlist = new Playlist(codecs: 'heh', resolution: 'hah')
         playlist.addToSegments(segment)
 
-        def video = new Video(title: 'ignore', masterPath: 'ignore')
+        def user = UserFactory.createTestUser()
+
+        def video = new Video(creator: user, title: 'ignore', masterPath: 'ignore')
         video.addToPlaylists(playlist)
         video.save()
 

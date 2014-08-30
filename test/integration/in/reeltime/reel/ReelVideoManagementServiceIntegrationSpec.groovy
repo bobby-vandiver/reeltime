@@ -7,6 +7,7 @@ import in.reeltime.video.Video
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.exceptions.AuthorizationException
+import spock.lang.Ignore
 import spock.lang.Unroll
 
 import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
@@ -188,6 +189,45 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         and:
         def reel = Reel.findById(reelId)
         !reel.containsVideo(video)
+    }
+
+    @Ignore()
+    void "remove video from all reels"() {
+        given:
+        def video = createAndSaveVideo(owner)
+        def videoId = video.id
+
+        and:
+        def ownerReelId = owner.reels[0].id
+        def notOwnerReelId = notOwner.reels[0].id
+
+        and:
+        addVideoToReelForUser(ownerReelId, videoId, owner.username)
+        addVideoToReelForUser(notOwnerReelId, videoId, notOwner.username)
+
+        when:
+        reelVideoManagementService.removeVideoFromAllReels(video)
+
+        then:
+        assertVideoInReel(ownerReelId, videoId, false)
+        assertVideoInReel(notOwnerReelId, videoId, false)
+    }
+
+    private void addVideoToReelForUser(Long reelId, Long videoId, String username) {
+        assert reelId > 0
+        assert videoId > 0
+
+        SpringSecurityUtils.doWithAuth(username) {
+            reelVideoManagementService.addVideo(reelId, videoId)
+        }
+        assertVideoInReel(reelId, videoId, true)
+    }
+
+    private void assertVideoInReel(Long reelId, Long videoId, boolean shouldContain) {
+        def video = Video.findById(videoId)
+        def list = reelVideoManagementService.listVideos(reelId)
+
+        assert list.contains(video) == shouldContain
     }
 
     @Unroll

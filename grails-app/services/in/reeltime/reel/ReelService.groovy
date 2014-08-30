@@ -60,6 +60,7 @@ class ReelService {
         }
     }
 
+    // TODO: Make sure reel does not have videos before deleting
     void deleteReel(Long reelId) {
         def reel = loadReel(reelId)
         def name = reel.name

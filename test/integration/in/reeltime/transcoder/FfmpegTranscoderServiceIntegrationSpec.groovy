@@ -3,6 +3,7 @@ package in.reeltime.transcoder
 import grails.test.spock.IntegrationSpec
 import in.reeltime.video.Video
 import spock.lang.IgnoreIf
+import test.helper.UserFactory
 
 class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
 
@@ -16,8 +17,10 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
     @IgnoreIf({!System.getProperty('ffmpeg') && !System.getenv('FFMPEG')})
     void "transcode video file using ffmpeg"() {
         given:
+        def creator = UserFactory.createTestUser()
+
         def masterPath = pathGenerationService.uniqueInputPath
-        def video = new Video(title: 'change peter parker', masterPath:  masterPath).save()
+        def video = new Video(creator: creator, title: 'change peter parker', masterPath:  masterPath).save()
 
         and:
         def videoFilePath = 'test/files/spidey.mp4'
@@ -36,6 +39,9 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
         assertDirectoryContainsPlaylistAndSegments(outputPath)
 
         cleanup:
+        creator.delete()
+
+        and:
         def outputDirectoryPath = grailsApplication.config.reeltime.storage.output as String
         new File(outputDirectoryPath).deleteOnExit()
     }

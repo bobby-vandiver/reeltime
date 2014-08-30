@@ -15,7 +15,7 @@ class Video {
     static hasMany = [playlists: Playlist]
 
     static constraints = {
-        creator nullable: true
+        creator nullable: false
         title blank: false
         description blank: true, nullable: true
         masterPath blank: false
