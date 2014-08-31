@@ -123,17 +123,14 @@ class VideoCreationService {
         def masterPath = pathGenerationService.uniqueInputPath
         inputStorageService.store(videoStream, masterPath)
 
+        def reel = creator.getReel(command.reel)
         def video = new Video(creator: creator, title: title, masterPath: masterPath)
-        log.info("Created video with id [${video.id}] for user [${creator.username}]")
+        reelVideoManagementService.addVideoToReel(reel, video)
 
+        log.info("Created video with id [${video.id}] for user [${creator.username}]")
         def outputPath = pathGenerationService.uniqueOutputPath
         transcoderService.transcode(video, outputPath)
 
-        def reel = creator.getReel(command.reel)
-
-        log.info("Adding video with id [${video.id}] to reel with id [${reel.id}]")
-        reelVideoManagementService.addVideoToReel(reel, video)
-
-        return video.save()
+        return video
     }
 }

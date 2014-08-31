@@ -24,6 +24,10 @@ class VideoService {
         return video
     }
 
+    void storeVideo(Video video) {
+        video.save()
+    }
+
     boolean videoIsAvailable(Long videoId) {
         def video = Video.findById(videoId)
         return video?.available ?: false

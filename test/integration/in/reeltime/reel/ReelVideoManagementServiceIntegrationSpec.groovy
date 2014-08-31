@@ -213,6 +213,10 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         then:
         assertVideoInReel(ownerReelId, videoId, false)
         assertVideoInReel(notOwnerReelId, videoId, false)
+
+        and:
+        def retrievedVideo = Video.findById(videoId)
+        !retrievedVideo.available
     }
 
     private void addVideoToReelForUser(Long reelId, Long videoId, String username) {
@@ -271,7 +275,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         if(!reel) {
             reel = creator.reels[0]
         }
-        new Video(creator: creator, title: title, masterPath: path, reels: [reel]).save()
+        new Video(creator: creator, title: title, masterPath: path, reels: [reel], available: true).save()
     }
 
     // TODO: Pull into helper class

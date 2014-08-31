@@ -6,8 +6,8 @@ class AccountRemovalService {
 
     def userService
     def tokenRemovalService
+    def videoRemovalService
 
-    // TODO: Handle deletion of the user's videos!!
     void removeAccountForCurrentUser() {
         def currentUser = userService.currentUser
         def username = currentUser.username
@@ -20,6 +20,9 @@ class AccountRemovalService {
 
         log.info "Removing clients for user [${username}]"
         deleteClientsForUser(currentUser)
+
+//        log.info "Removing videos for user [${username}]"
+//        deleteVideosForUser(currentUser)
 
         log.info "Deleting user [${username}]"
         currentUser.delete()
@@ -39,6 +42,13 @@ class AccountRemovalService {
         user.clients.each { client ->
             log.debug "Deleting client [${client.id}]"
             client.delete()
+        }
+    }
+
+    private void deleteVideosForUser(User user) {
+        user.videos.each { video ->
+            log.debug "Removing video [${video.id}]"
+            videoRemovalService.removeVideo(video)
         }
     }
 }

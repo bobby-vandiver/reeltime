@@ -52,15 +52,17 @@ class VideoSpec extends Specification {
     }
 
     @Unroll
-    void "reels cannot be [#reels]"() {
+    void "reels [#reels] are valid [#valid]"() {
         when:
         def video = new Video(reels: reels)
 
         then:
-        !video.validate(['reels'])
+        video.validate(['reels']) == valid
 
         where:
-        reels << [null, []]
+        reels   |   valid
+        null    |   false
+        []      |   true
     }
 
     void "video can belong to multiple reels"() {

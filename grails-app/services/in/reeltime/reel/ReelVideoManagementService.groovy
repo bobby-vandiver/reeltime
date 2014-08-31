@@ -31,7 +31,8 @@ class ReelVideoManagementService {
 
         reel.addToVideos(video)
         video.addToReels(reel)
-        reelService.storeReel(reel)
+
+        updateReelAndVideo(reel, video)
     }
 
     void removeVideo(Long reelId, Long videoId) {
@@ -47,22 +48,33 @@ class ReelVideoManagementService {
         }
 
         removeVideoFromReel(reel, video)
-        reelService.storeReel(reel)
     }
 
     void removeVideoFromAllReels(Video video) {
 
         def reelsVideoBelongsTo = []
-        reelsVideoBelongsTo.addAll(video.reels)
+        video.reels?.each { Reel reel ->
+            reelsVideoBelongsTo << reel
+        }
 
         reelsVideoBelongsTo.each { Reel reel ->
             removeVideoFromReel(reel, video)
-            reelService.storeReel(reel)
         }
+
+        log.info "Marking video [${video.id}] as unavailable"
+        video.available = false
+        videoService.storeVideo(video)
     }
 
-    private static void removeVideoFromReel(Reel reel, Video video) {
+    private void removeVideoFromReel(Reel reel, Video video) {
         reel.removeFromVideos(video)
         video.removeFromReels(reel)
+
+        updateReelAndVideo(reel, video)
+    }
+
+    private void updateReelAndVideo(Reel reel, Video video) {
+        reelService.storeReel(reel)
+        videoService.storeVideo(video)
     }
 }

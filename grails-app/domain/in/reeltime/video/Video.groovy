@@ -14,7 +14,7 @@ class Video {
     boolean available
 
     User creator
-    Set<Reel> reels
+    Set<Reel> reels = []
 
     static belongsTo = [User, Reel]
 
@@ -28,7 +28,7 @@ class Video {
         title nullable: false, blank: false
         description nullable: true, blank: true
         masterPath nullable: false, blank: false
-        reels nullable: false, minSize: 1
+        reels nullable: false, minSize: 0
     }
 
     void addToReels(Reel reel) {
