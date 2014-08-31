@@ -65,6 +65,16 @@ class PlaylistServiceSpec extends Specification {
         video.playlists.size() == 1
 
         and:
+        def variantPlaylistUris = video.playlistUris.findAll { it.type == PlaylistType.Variant }
+        variantPlaylistUris.size() == 1
+        variantPlaylistUris[0].uri == 'base/master-playlist.m3u8'
+
+        and:
+        def mediaPlaylistUris = video.playlistUris.findAll { it.type == PlaylistType.Media }
+        mediaPlaylistUris.size() == 1
+        mediaPlaylistUris[0].uri == 'base/media-low.m3u8'
+
+        and:
         def playlist = (video.playlists as List)[0]
         playlist.video == video
         playlist.id != null
@@ -128,6 +138,19 @@ class PlaylistServiceSpec extends Specification {
         and:
         video.available
         video.playlists.size() == 2
+
+        and:
+        def variantPlaylistUris = video.playlistUris.findAll { it.type == PlaylistType.Variant }
+        variantPlaylistUris.size() == 1
+        variantPlaylistUris[0].uri == 'base/master-playlist.m3u8'
+
+        and:
+        def mediaPlaylistUris = video.playlistUris.findAll { it.type == PlaylistType.Media }
+        mediaPlaylistUris.size() == 2
+
+        and:
+        mediaPlaylistUris.find { it.uri == 'base/media-low.m3u8' }
+        mediaPlaylistUris.find { it.uri == 'base/media-high.m3u8' }
 
         and:
         def playlist1 = (video.playlists as List)[0]

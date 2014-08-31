@@ -14,15 +14,22 @@ class PlaylistService {
 
     def addPlaylists(Video video, String keyPrefix, String variantPlaylistKey) {
 
-        log.debug("Adding playlists to video [${video.id}] with keyPrefix [$keyPrefix] and variantPlaylistKey [$variantPlaylistKey]")
+        def videoId = video.id
+        log.debug("Adding playlists to video [$videoId] with keyPrefix [$keyPrefix] and variantPlaylistKey [$variantPlaylistKey]")
 
         def variantPath = keyPrefix + variantPlaylistKey + '.m3u8'
         def variantPlaylist = playlistParserService.parseVariantPlaylist(variantPath) as VariantPlaylist
+
+        log.info "Adding variant playlist uri [$variantPath] to tracked uris for video [$videoId]"
+        video.addToPlaylistUris(type: PlaylistType.Variant, uri: variantPath)
 
         variantPlaylist.streams.each { stream ->
 
             def mediaPath = keyPrefix + stream.uri
             def mediaPlaylist = playlistParserService.parseMediaPlaylist(mediaPath) as MediaPlaylist
+
+            log.info "Adding media playlist uri [$mediaPath] to tracked uris for video [$videoId]"
+            video.addToPlaylistUris(type: PlaylistType.Media, uri: mediaPath)
 
             def playlist = new Playlist(
                     codecs: stream.codecs,
@@ -34,16 +41,16 @@ class PlaylistService {
                     mediaSequence: mediaPlaylist.mediaSequence
             )
 
-            log.info("Adding segments to playlist for video [${video.id}]")
+            log.info("Adding segments to playlist for video [$videoId]")
             mediaPlaylist.segments.eachWithIndex { seg, idx ->
                 playlist.addToSegments(segmentId: idx, uri: keyPrefix + seg.uri, duration: seg.duration)
             }
 
-            log.info("Adding playlist to video [${video.id}]")
+            log.info("Adding playlist to video [$videoId]")
             video.addToPlaylists(playlist)
         }
 
-        log.info("Making video [${video.id}] available for streaming")
+        log.info("Making video [$videoId] available for streaming")
         video.available = true
 
         video.save()
