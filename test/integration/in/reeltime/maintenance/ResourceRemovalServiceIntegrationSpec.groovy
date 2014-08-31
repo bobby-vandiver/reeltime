@@ -8,9 +8,9 @@ class ResourceRemovalServiceIntegrationSpec extends IntegrationSpec {
 
     void "schedule new resource for removal"() {
         when:
-        resourceRemovalService.scheduleForRemoval('somewhere')
+        resourceRemovalService.scheduleForRemoval('parent', 'child')
 
         then:
-        ResourceRemovalTarget.findByUri('somewhere') != null
+        ResourceRemovalTarget.findByBaseAndRelative('parent', 'child') != null
     }
 }

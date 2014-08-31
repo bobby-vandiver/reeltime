@@ -8,28 +8,36 @@ import spock.lang.Unroll
 class ResourceRemovalTargetSpec extends Specification {
 
     @Unroll
-    void "uri cannot be [#value]"() {
+    void "[#key] cannot be [#value]"() {
         given:
-        def target = new ResourceRemovalTarget(uri: value)
+        def target = new ResourceRemovalTarget((key): value)
 
         expect:
-        !target.validate(['uri'])
+        !target.validate([key])
 
         where:
-        _   |   value
-        _   |   null
-        _   |   ''
+        key         |   value
+        'base'      |   null
+        'base'      |   ''
+        'relative'  |   null
+        'relative'  |   ''
     }
 
-    void "uri must be unique"() {
+    @Unroll
+    void "existing [#existingBase:#existingRelative] and new [#newBase:#newRelative] is valid [#valid]"() {
         given:
-        def existing = new ResourceRemovalTarget(uri: 'somewhere')
-        mockForConstraintsTests(ResourceRemovalTarget, [existing])
+        new ResourceRemovalTarget(base: existingBase, relative: existingRelative).save()
 
         when:
-        def target = new ResourceRemovalTarget(uri: 'somewhere')
+        def target = new ResourceRemovalTarget(base: newBase, relative: newRelative)
 
         then:
-        !target.validate(['uri'])
+        target.validate() == valid
+
+        where:
+        existingBase    |   existingRelative    |   newBase     |   newRelative     |   valid
+        'sameBase'      |   'diffRel1'          |   'sameBase'  |   'diffRel2'      |   true
+        'diffBase1'     |   'sameRel'           |   'diffBase2' |   'sameRel'       |   true
+        'sameBase'      |   'sameRel'           |   'sameBase'  |   'sameRel'       |   false
     }
 }
