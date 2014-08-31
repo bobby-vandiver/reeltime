@@ -1,6 +1,7 @@
 package in.reeltime.video
 
 import grails.test.mixin.TestFor
+import in.reeltime.playlist.PlaylistUri
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.playlist.Playlist
@@ -14,6 +15,7 @@ class VideoSpec extends Specification {
         given:
         def user = new User()
         def playlist = new Playlist()
+        def playlistUri = new PlaylistUri(uri: 'somewhere')
         def reel = new Reel()
 
         when:
@@ -23,6 +25,7 @@ class VideoSpec extends Specification {
                 description: 'bar',
                 masterPath: 'sample.mp4',
                 playlists: [playlist],
+                playlistUris: [playlistUri],
                 reels: [reel]
         )
 
@@ -36,6 +39,7 @@ class VideoSpec extends Specification {
         video.description == 'bar'
         video.masterPath == 'sample.mp4'
         video.playlists == [playlist] as Set
+        video.playlistUris == [playlistUri] as Set
         video.reels == [reel] as Set
     }
 

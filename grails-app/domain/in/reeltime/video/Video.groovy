@@ -2,6 +2,7 @@ package in.reeltime.video
 
 import in.reeltime.user.User
 import in.reeltime.playlist.Playlist
+import in.reeltime.playlist.PlaylistUri
 import in.reeltime.reel.Reel
 
 class Video {
@@ -16,7 +17,11 @@ class Video {
     Set<Reel> reels
 
     static belongsTo = [User, Reel]
-    static hasMany = [playlists: Playlist]
+
+    static hasMany = [
+            playlists: Playlist,
+            playlistUris: PlaylistUri
+    ]
 
     static constraints = {
         creator nullable: false

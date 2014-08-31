@@ -13,7 +13,7 @@ import in.reeltime.video.Video
 import spock.lang.Specification
 
 @TestFor(PlaylistService)
-@Mock([Video, Playlist, Segment, User, Reel])
+@Mock([Video, PlaylistUri, Playlist, Segment, User, Reel])
 class PlaylistServiceSpec extends Specification {
 
     PlaylistParserService playlistParserService
