@@ -49,12 +49,56 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         }
 
         then:
+        def fetchedVideo = Video.findById(videoId)
+        fetchedVideo.reels.contains(reel)
+
+        and:
         def fetchedReel = Reel.findById(reelId)
         fetchedReel != null
 
         and:
         fetchedReel.videos.size() == 1
         fetchedReel.videos.contains(video)
+    }
+
+    void "add same video to multiple reels"() {
+        given:
+        def video = createAndSaveVideo(owner)
+        def videoId = video.id
+
+        and:
+        def reel1 = reelService.createReelForUser(owner, 'reel1').save()
+        def reel1Id = reel1.id
+
+        and:
+        def reel2 = reelService.createReelForUser(owner, 'reel2').save()
+        def reel2Id = reel2.id
+
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelVideoManagementService.addVideo(reel1Id, videoId)
+            reelVideoManagementService.addVideo(reel2Id, videoId)
+        }
+
+        then:
+        def fetchedVideo = Video.findById(videoId)
+        fetchedVideo.reels.contains(reel1)
+        fetchedVideo.reels.contains(reel2)
+
+        def fetchedReel1 = Reel.findById(reel1Id)
+        fetchedReel1 != null
+
+        and:
+        fetchedReel1.videos.size() == 1
+        fetchedReel1.videos.contains(video)
+
+        and:
+        def fetchedReel2 = Reel.findById(reel2Id)
+        fetchedReel2 != null
+
+        and:
+        fetchedReel2.videos.size() == 1
+        fetchedReel2.videos.contains(video)
     }
 
     void "only the owner of the reel can add videos to a reel"() {
