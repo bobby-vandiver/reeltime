@@ -42,7 +42,6 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         reel.owner == user
         reel.name == reelName
         reel.audience.members.size() == 0
-        reel.videos.size() == 0
     }
 
     void "do not allow a reel to be deleted if owner is not current user"() {

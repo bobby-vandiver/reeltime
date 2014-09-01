@@ -12,11 +12,9 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
     def playlistService
 
     User creator
-    Reel reel
 
     void setup() {
         creator = UserFactory.createTestUser()
-        reel = creator.reels[0]
     }
 
     void "generate variant playlist for video with only one stream"() {
@@ -29,7 +27,6 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
         )
 
         def video = new Video(creator: creator, title: 'none', masterPath: 'ignore')
-        video.addToReels(reel)
         video.addToPlaylists(playlist)
         video.save()
 
@@ -63,7 +60,6 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def video = new Video(creator: creator, title: 'none', masterPath: 'ignore')
-        video.addToReels(reel)
         video.addToPlaylists(playlist1)
         video.addToPlaylists(playlist2)
         video.save()
@@ -101,7 +97,6 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def video = new Video(creator: creator, title: 'none', masterPath: 'ignore')
-        video.addToReels(reel)
         video.addToPlaylists(playlist)
         video.save()
 

@@ -82,8 +82,6 @@ class VideoCreationServiceSpec extends Specification {
 
             validateReelArg(r)
             validateVideoArg(v)
-
-            v.addToReels(r)
         }
 
         and:

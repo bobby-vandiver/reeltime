@@ -3,6 +3,7 @@ package in.reeltime.video
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import in.reeltime.reel.Reel
+import in.reeltime.reel.ReelVideo
 import in.reeltime.user.User
 import test.helper.UserFactory
 
@@ -40,8 +41,6 @@ class VideoCreationServiceIntegrationSpec extends IntegrationSpec {
         video.masterPath != null
 
         and:
-        video.reels.size() == 1
-        video.reels.contains(reel)
-        reel.videos.contains(video)
+        ReelVideo.findByReelAndVideo(reel, video) != null
     }
 }

@@ -13,10 +13,7 @@ class Video {
     String masterPath
     boolean available
 
-    User creator
-    Set<Reel> reels = []
-
-    static belongsTo = [User, Reel]
+    static belongsTo = [creator: User]
 
     static hasMany = [
             playlists: Playlist,
@@ -28,17 +25,5 @@ class Video {
         title nullable: false, blank: false
         description nullable: true, blank: true
         masterPath nullable: false, blank: false
-        reels nullable: false, minSize: 0
-    }
-
-    void addToReels(Reel reel) {
-        if(!reels) {
-            reels = []
-        }
-        reels.add(reel)
-    }
-
-    void removeFromReels(Reel reel) {
-        reels?.remove(reel)
     }
 }

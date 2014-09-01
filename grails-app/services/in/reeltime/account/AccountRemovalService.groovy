@@ -18,11 +18,11 @@ class AccountRemovalService {
         log.info "Removing tokens associated with user [${username}]"
         tokenRemovalService.removeAllTokensForUser(currentUser)
 
+        log.info "Removing videos for user [${username}]"
+        deleteVideosForUser(currentUser)
+
         log.info "Removing clients for user [${username}]"
         deleteClientsForUser(currentUser)
-
-//        log.info "Removing videos for user [${username}]"
-//        deleteVideosForUser(currentUser)
 
         log.info "Deleting user [${username}]"
         currentUser.delete()

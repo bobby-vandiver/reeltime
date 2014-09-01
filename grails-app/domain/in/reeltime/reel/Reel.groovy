@@ -14,16 +14,10 @@ class Reel {
 
     static belongsTo = [owner: User]
     static hasOne = [audience: Audience]
-    static hasMany = [videos: Video]
 
     static constraints = {
         name nullable: false, blank: false, size: MINIMUM_NAME_LENGTH..MAXIMUM_NAME_LENGTH
         owner nullable: false
         audience unique: true
-        videos nullable: false
-    }
-
-    boolean containsVideo(Video video) {
-        return videos.contains(video)
     }
 }

@@ -12,7 +12,8 @@ class ReelVideoManagementService {
     def videoService
 
     Collection<Video> listVideos(Long reelId) {
-        reelService.loadReel(reelId).videos
+        def reel = reelService.loadReel(reelId)
+        ReelVideo.findAllByReel(reel)?.video ?: []
     }
 
     void addVideo(Long reelId, Long videoId) {
@@ -29,10 +30,10 @@ class ReelVideoManagementService {
             throw new AuthorizationException("Only the owner of a reel can add videos to it")
         }
 
-        reel.addToVideos(video)
-        video.addToReels(reel)
-
         updateReelAndVideo(reel, video)
+
+        // TODO: Guard against duplication
+        new ReelVideo(reel: reel, video: video).save()
     }
 
     void removeVideo(Long reelId, Long videoId) {
@@ -43,19 +44,20 @@ class ReelVideoManagementService {
         if(!reelAuthorizationService.currentUserIsReelOwner(reel)) {
             throw new AuthorizationException("Only the owner of a reel can remove videos from it")
         }
-        else if(!reel.containsVideo(video)) {
+        else if(!reelContainsVideo(reel, video)) {
             throw new VideoNotFoundException("Reel [$reelId] does not contain video [$videoId]")
         }
 
         removeVideoFromReel(reel, video)
     }
 
+    private static boolean reelContainsVideo(Reel reel, Video video) {
+        ReelVideo.findByReelAndVideo(reel, video) != null
+    }
+
     void removeVideoFromAllReels(Video video) {
 
-        def reelsVideoBelongsTo = []
-        video.reels?.each { Reel reel ->
-            reelsVideoBelongsTo << reel
-        }
+        def reelsVideoBelongsTo = ReelVideo.findAllByVideo(video)?.reel ?: []
 
         reelsVideoBelongsTo.each { Reel reel ->
             removeVideoFromReel(reel, video)
@@ -67,10 +69,10 @@ class ReelVideoManagementService {
     }
 
     private void removeVideoFromReel(Reel reel, Video video) {
-        reel.removeFromVideos(video)
-        video.removeFromReels(reel)
-
         updateReelAndVideo(reel, video)
+
+        def reelVideo = ReelVideo.findByReelAndVideo(reel, video)
+        reelVideo.delete()
     }
 
     private void updateReelAndVideo(Reel reel, Video video) {

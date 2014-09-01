@@ -49,16 +49,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         }
 
         then:
-        def fetchedVideo = Video.findById(videoId)
-        fetchedVideo.reels.contains(reel)
-
-        and:
-        def fetchedReel = Reel.findById(reelId)
-        fetchedReel != null
-
-        and:
-        fetchedReel.videos.size() == 1
-        fetchedReel.videos.contains(video)
+        ReelVideo.findByReelAndVideo(reel, video) != null
     }
 
     void "add same video to multiple reels"() {
@@ -81,24 +72,8 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         }
 
         then:
-        def fetchedVideo = Video.findById(videoId)
-        fetchedVideo.reels.contains(reel1)
-        fetchedVideo.reels.contains(reel2)
-
-        def fetchedReel1 = Reel.findById(reel1Id)
-        fetchedReel1 != null
-
-        and:
-        fetchedReel1.videos.size() == 1
-        fetchedReel1.videos.contains(video)
-
-        and:
-        def fetchedReel2 = Reel.findById(reel2Id)
-        fetchedReel2 != null
-
-        and:
-        fetchedReel2.videos.size() == 1
-        fetchedReel2.videos.contains(video)
+        ReelVideo.findByReelAndVideo(reel1, video) != null
+        ReelVideo.findByReelAndVideo(reel2, video) != null
     }
 
     void "only the owner of the reel can add videos to a reel"() {
@@ -232,10 +207,10 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def reel = Reel.findById(reelId)
-        !reel.containsVideo(video)
+        reel != null
 
         and:
-        !video.reels.contains(reel)
+        ReelVideo.findByReelAndVideo(reel, video) == null
     }
 
     void "remove video from all reels"() {
@@ -278,9 +253,10 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         def reel = Reel.findById(reelId)
 
         def list = reelVideoManagementService.listVideos(reelId)
-
         assert list.contains(video) == shouldContain
-        assert video.reels.contains(reel) == shouldContain
+
+        def reelVideo = ReelVideo.findByReelAndVideo(reel, video)
+        assert (reelVideo != null) == shouldContain
     }
 
     @Unroll
@@ -309,7 +285,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         for(int i = 0; i < count; i++) {
             def video = createAndSaveVideo(owner, reel, "test video $i", "path $i")
             videos << video
-            reel.addToVideos(video)
+            new ReelVideo(reel: reel, video: video).save()
         }
         reel.save()
         return videos
@@ -319,7 +295,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         if(!reel) {
             reel = creator.reels[0]
         }
-        new Video(creator: creator, title: title, masterPath: path, reels: [reel], available: true).save()
+        new Video(creator: creator, title: title, masterPath: path, available: true).save()
     }
 
     // TODO: Pull into helper class

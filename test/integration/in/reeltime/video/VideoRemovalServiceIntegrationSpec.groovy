@@ -5,6 +5,7 @@ import in.reeltime.playlist.Playlist
 import in.reeltime.playlist.PlaylistType
 import in.reeltime.playlist.Segment
 import in.reeltime.reel.Reel
+import in.reeltime.reel.ReelVideo
 import in.reeltime.user.User
 import in.reeltime.maintenance.ResourceRemovalTarget
 import test.helper.UserFactory
@@ -40,7 +41,6 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
                 creator: creator,
                 title: 'some video',
                 masterPath: 'something.mp4',
-                reels: [reel]
         )
 
         video.addToPlaylists(playlist)
@@ -75,9 +75,8 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
         Segment.findById(segment2Id) == null
 
         and:
-        def retrievedReel = Reel.findById(reelId)
-        retrievedReel != null
-        !retrievedReel.videos.contains(video)
+        Reel.findById(reelId) != null
+        ReelVideo.findByReelAndVideo(reel, video) == null
 
         and:
         ResourceRemovalTarget.findByBaseAndRelative(inputBase, 'something.mp4') != null

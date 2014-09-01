@@ -278,7 +278,6 @@ class ReelFunctionalSpec extends FunctionalSpec {
         response.json[0].videoId == videoId
     }
 
-    @Ignore("Enable once videos are being properly removed during account removal")
     void "uploaded video is added to another person's reel"() {
         given:
         def otherUserToken = registerNewUserAndGetToken('someone', ['reels-read', 'reels-write'])
