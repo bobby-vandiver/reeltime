@@ -123,6 +123,30 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         e.message == "Video [567801] not found"
     }
 
+    void "throw if adding a video to a reel it already belongs to"() {
+        given:
+        def video = createAndSaveVideo(owner)
+        def videoId = video.id
+
+        and:
+        def reel = reelService.createReelForUser(owner, 'some reel').save()
+        def reelId = reel.id
+
+        and:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelVideoManagementService.addVideo(reelId, videoId)
+        }
+
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelVideoManagementService.addVideo(reelId, videoId)
+        }
+
+        then:
+        def e = thrown(AuthorizationException)
+        e.message == "Cannot add a video to a reel multiple times"
+    }
+
     void "attempt to remove a video from a reel that does not belong to the current user"() {
         given:
         def reelId = owner.reels[0].id

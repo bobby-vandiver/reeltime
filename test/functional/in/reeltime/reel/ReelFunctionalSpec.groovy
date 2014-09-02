@@ -187,6 +187,21 @@ class ReelFunctionalSpec extends FunctionalSpec {
         deleteReel(reelId)
     }
 
+    void "attempt to add video to reel it already belongs to"() {
+        given:
+        def reelId = getUncategorizedReelId(readToken)
+        def videoId = uploadVideo(uploadVideoToken)
+
+        and:
+        def request = requestFactory.addVideoToReel(writeToken, reelId, videoId)
+
+        when:
+        def response = post(request)
+
+        then:
+        assertSingleErrorMessageResponse(response, 403, 'Unauthorized reel operation requested')
+    }
+
     void "list reels"() {
         given:
         def request = requestFactory.listReels(readToken, TEST_USER)
@@ -257,7 +272,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         response.json.size() == 0
     }
 
-    void "add video to reel"() {
+    void "add video to multiple reels"() {
         given:
         def reelId = addReel('add video test reel')
         def videoId = uploadVideo(uploadVideoToken)

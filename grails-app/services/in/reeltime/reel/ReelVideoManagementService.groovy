@@ -29,10 +29,11 @@ class ReelVideoManagementService {
         if(!reelAuthorizationService.currentUserIsReelOwner(reel)) {
             throw new AuthorizationException("Only the owner of a reel can add videos to it")
         }
+        else if(reelContainsVideo(reel, video)) {
+            throw new AuthorizationException("Cannot add a video to a reel multiple times")
+        }
 
         updateReelAndVideo(reel, video)
-
-        // TODO: Guard against duplication
         new ReelVideo(reel: reel, video: video).save()
     }
 
@@ -52,7 +53,9 @@ class ReelVideoManagementService {
     }
 
     private static boolean reelContainsVideo(Reel reel, Video video) {
-        ReelVideo.findByReelAndVideo(reel, video) != null
+
+        Reel.exists(reel?.id) && Video.exists(video?.id) &&
+                ReelVideo.findByReelAndVideo(reel, video) != null
     }
 
     void removeVideoFromAllReels(Video video) {
@@ -70,9 +73,7 @@ class ReelVideoManagementService {
 
     private void removeVideoFromReel(Reel reel, Video video) {
         updateReelAndVideo(reel, video)
-
-        def reelVideo = ReelVideo.findByReelAndVideo(reel, video)
-        reelVideo.delete()
+        ReelVideo.findByReelAndVideo(reel, video).delete()
     }
 
     private void updateReelAndVideo(Reel reel, Video video) {

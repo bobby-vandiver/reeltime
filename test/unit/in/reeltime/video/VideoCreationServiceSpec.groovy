@@ -32,6 +32,7 @@ class VideoCreationServiceSpec extends Specification {
         service.transcoderService = Mock(TranscoderService)
         service.streamMetadataService = streamMetadataService
         service.reelVideoManagementService = Mock(ReelVideoManagementService)
+        service.videoService = Mock(VideoService)
 
         VideoCreationCommand.maxDuration = MAX_DURATION
         service.maxVideoStreamSizeInBytes = MAX_VIDEO_STREAM_SIZE
@@ -83,6 +84,9 @@ class VideoCreationServiceSpec extends Specification {
             validateReelArg(r)
             validateVideoArg(v)
         }
+
+        and:
+        1 * service.videoService.storeVideo(_) >> { Video v -> validateVideoArg(v) }
 
         and:
         video.creator == creator
