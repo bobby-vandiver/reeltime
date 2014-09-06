@@ -47,6 +47,13 @@ class UrlMappings {
             action = [GET: 'status']
         }
 
+/*
+    TODO: Consolidate video operations under one resource
+        "/video/$videoId" (controller: 'videoRemoval') {
+            action = [DELETE: 'remove']
+        }
+*/
+
         "/video/$videoId" (controller: 'playlist') {
             action = [GET: 'getVariantPlaylist']
         }

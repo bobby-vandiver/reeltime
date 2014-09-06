@@ -1,9 +1,11 @@
 import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.UrlMappingsUnitTestMixin
+import spock.lang.Ignore
 import spock.lang.Specification
 import in.reeltime.notification.NotificationController
 import in.reeltime.video.VideoCreationController
+import in.reeltime.video.VideoRemovalController
 import in.reeltime.playlist.PlaylistController
 import in.reeltime.playlist.SegmentController
 import in.reeltime.account.AccountController
@@ -13,9 +15,9 @@ import in.reeltime.reel.AudienceController
 import spock.lang.Unroll
 
 @TestMixin(UrlMappingsUnitTestMixin)
-@Mock([NotificationController, VideoCreationController, PlaylistController,
-        SegmentController, ReelController, AudienceController, AccountController,
-        ApplicationStatusController])
+@Mock([NotificationController, VideoCreationController, VideoRemovalController,
+        PlaylistController, SegmentController, ReelController, AudienceController,
+        AccountController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
 
     @Unroll
@@ -48,6 +50,17 @@ class UrlMappingsSpec extends Specification {
 
         expect:
         assertForwardUrlMapping('/video/1234/status', controller: 'videoCreation', action: 'status')
+    }
+
+    @Ignore("Fix after cleaning up URL mappings")
+    void "test video removal endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'DELETE'
+
+        expect:
+        assertForwardUrlMapping('/video/1234', controller: 'videoRemoval', action: 'remove') {
+            videoId = '1234'
+        }
     }
 
     void "test variant playlist streaming endpoint mapping"() {

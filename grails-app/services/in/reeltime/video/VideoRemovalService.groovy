@@ -13,6 +13,7 @@ class VideoRemovalService {
         removeVideo(video)
     }
 
+    // TODO: Only creator should be able to delete video
     void removeVideo(Video video) {
         def videoId = video.id
 
