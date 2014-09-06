@@ -2,9 +2,16 @@ package in.reeltime.video
 
 class VideoRemovalService {
 
+    def videoService
     def reelVideoManagementService
+
     def resourceRemovalService
     def pathGenerationService
+
+    void removeVideoById(Long videoId) {
+        def video = videoService.loadVideo(videoId)
+        removeVideo(video)
+    }
 
     void removeVideo(Video video) {
         def videoId = video.id
@@ -13,7 +20,7 @@ class VideoRemovalService {
         reelVideoManagementService.removeVideoFromAllReels(video)
 
         log.info "Scheduling removal of master video for video [$videoId]"
-        def masterVideoBase = pathGenerationService.inputBase as String
+        def masterVideoBase = pathGenerationService.inputBase
         resourceRemovalService.scheduleForRemoval(masterVideoBase, video.masterPath)
 
         def playlistAndSegmentBase = pathGenerationService.outputBase

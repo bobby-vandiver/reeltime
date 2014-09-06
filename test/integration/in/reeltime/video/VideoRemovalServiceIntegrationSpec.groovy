@@ -8,6 +8,7 @@ import in.reeltime.reel.Reel
 import in.reeltime.reel.ReelVideo
 import in.reeltime.user.User
 import in.reeltime.maintenance.ResourceRemovalTarget
+import spock.lang.Unroll
 import test.helper.UserFactory
 
 class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
@@ -29,7 +30,8 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
         outputBase = pathGenerationService.outputBase
     }
 
-    void "remove video successfully and schedule resources for removal"() {
+    @Unroll
+    void "remove video by id [#removeById] successfully and schedule resources for removal"() {
         given:
         def playlist = new Playlist()
         playlist.addToSegments(segmentId: 1, uri: 'seg1.ts', duration: '1.0')
@@ -65,7 +67,12 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
         def reelId = reel.id
 
         when:
-        videoRemovalService.removeVideo(video)
+        if(removeById) {
+            videoRemovalService.removeVideoById(videoId)
+        }
+        else {
+            videoRemovalService.removeVideo(video)
+        }
 
         then:
         Video.findById(videoId) == null
@@ -86,5 +93,10 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         ResourceRemovalTarget.findByBaseAndRelative(outputBase, 'variant.m3u8') != null
         ResourceRemovalTarget.findByBaseAndRelative(outputBase, 'media.m3u8') != null
+
+        where:
+        _   |   removeById
+        _   |   false
+        _   |   true
     }
 }
