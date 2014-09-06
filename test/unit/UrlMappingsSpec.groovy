@@ -1,7 +1,6 @@
 import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.UrlMappingsUnitTestMixin
-import spock.lang.Ignore
 import spock.lang.Specification
 import in.reeltime.notification.NotificationController
 import in.reeltime.video.VideoCreationController
@@ -52,7 +51,6 @@ class UrlMappingsSpec extends Specification {
         assertForwardUrlMapping('/video/1234/status', controller: 'videoCreation', action: 'status')
     }
 
-    @Ignore("Fix after cleaning up URL mappings")
     void "test video removal endpoint mapping"() {
         given:
         webRequest.currentRequest.method = 'DELETE'
@@ -68,7 +66,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/video/1234', controller: 'playlist', action: 'getVariantPlaylist') {
+        assertForwardUrlMapping('/playlist/1234', controller: 'playlist', action: 'getVariantPlaylist') {
             videoId = '1234'
         }
     }
@@ -78,7 +76,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/video/12434/949', controller: 'playlist', action: 'getMediaPlaylist') {
+        assertForwardUrlMapping('/playlist/12434/949', controller: 'playlist', action: 'getMediaPlaylist') {
             videoId = '12434'
             playlistId = '949'
         }
@@ -89,7 +87,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/video/124344/5949/8891', controller: 'segment', action: 'getSegment') {
+        assertForwardUrlMapping('/playlist/124344/5949/8891', controller: 'segment', action: 'getSegment') {
             videoId = '124344'
             playlistId = '5949'
             segmentId = '8891'

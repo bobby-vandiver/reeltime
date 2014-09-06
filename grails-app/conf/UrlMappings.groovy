@@ -43,26 +43,23 @@ class UrlMappings {
             action = [POST: 'upload']
         }
 
+        "/video/$videoId" (controller: 'videoRemoval') {
+            action = [DELETE: 'remove']
+        }
+
         "/video/$videoId/status" (controller: 'videoCreation') {
             action = [GET: 'status']
         }
 
-/*
-    TODO: Consolidate video operations under one resource
-        "/video/$videoId" (controller: 'videoRemoval') {
-            action = [DELETE: 'remove']
-        }
-*/
-
-        "/video/$videoId" (controller: 'playlist') {
+        "/playlist/$videoId" (controller: 'playlist') {
             action = [GET: 'getVariantPlaylist']
         }
 
-        "/video/$videoId/$playlistId" (controller: 'playlist') {
+        "/playlist/$videoId/$playlistId" (controller: 'playlist') {
             action = [GET: 'getMediaPlaylist']
         }
 
-        "/video/$videoId/$playlistId/$segmentId" (controller: 'segment') {
+        "/playlist/$videoId/$playlistId/$segmentId" (controller: 'segment') {
             action = [GET: 'getSegment']
         }
 
