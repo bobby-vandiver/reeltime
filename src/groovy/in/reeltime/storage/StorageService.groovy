@@ -7,4 +7,6 @@ interface StorageService {
     boolean exists(String base, String relative)
 
     void store(InputStream inputStream, String base, String relative)
+
+    void delete(String base, String relative)
 }

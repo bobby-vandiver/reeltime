@@ -22,7 +22,6 @@ class LocalFileSystemStorageService implements StorageService {
 
     @Override
     void store(InputStream inputStream, String parent, String child) {
-
         log.debug("Storing input stream to parent [$parent] with child [$child]")
 
         def directory = localFileSystemService.getDirectory(parent, child)
@@ -30,5 +29,15 @@ class LocalFileSystemStorageService implements StorageService {
 
         localFileSystemService.createDirectory(directory)
         localFileSystemService.createFile(directory, filename).withOutputStream { outputStream -> outputStream << inputStream }
+    }
+
+    @Override
+    void delete(String parent, String child) {
+        log.debug("Deleting file with parent [$parent] and child [$child]")
+
+        def directory = localFileSystemService.getDirectory(parent, child)
+        def filename = localFileSystemService.getFilename(child)
+
+        localFileSystemService.deleteFile(directory, filename)
     }
 }

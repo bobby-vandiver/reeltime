@@ -94,4 +94,12 @@ class S3StorageServiceSpec extends Specification {
         then:
         1 * mockS3.putObject(*_) >> { args -> validateArgs(args) }
     }
+
+    void "delete object specified by key in S3 bucket"() {
+        when:
+        service.delete(BUCKET_NAME, KEY)
+
+        then:
+        1 * mockS3.deleteObject(BUCKET_NAME, KEY)
+    }
 }

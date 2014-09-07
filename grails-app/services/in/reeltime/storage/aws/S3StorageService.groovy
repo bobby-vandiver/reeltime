@@ -47,4 +47,12 @@ class S3StorageService implements StorageService {
         def s3 = awsService.createClient(AmazonS3) as AmazonS3
         s3.putObject(bucket, key, binaryStream, metadata)
     }
+
+    @Override
+    void delete(String bucket, String key) {
+        log.debug("Deleting S3 object in bucket [$bucket] with key [$key]")
+
+        def s3 = awsService.createClient(AmazonS3) as AmazonS3
+        s3.deleteObject(bucket, key)
+    }
 }

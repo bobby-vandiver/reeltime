@@ -35,6 +35,12 @@ class LocalFileSystemService {
         return file
     }
 
+    void deleteFile(String directory, String filename) {
+        log.debug("Deleting file [$filename]")
+        def file = new File(directory, filename)
+        file.delete()
+    }
+
     String getAbsolutePathToInputFile(String path) {
         "${inputBasePath}${separator}${path}"
     }
