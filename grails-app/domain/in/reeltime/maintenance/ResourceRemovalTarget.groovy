@@ -2,6 +2,8 @@ package in.reeltime.maintenance
 
 class ResourceRemovalTarget {
 
+    Date dateCreated
+
     String base
     String relative
 
