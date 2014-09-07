@@ -121,6 +121,14 @@ grails.plugin.springsecurity.providerNames = [
         'daoAuthenticationProvider'
 ]
 
+// Database migration configuration
+environments {
+    development {
+        grails.plugin.databasemigration.updateOnStart = true
+        grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
+    }
+}
+
 // The following ReelTime settings must NOT be exposed in an external configuration:
 reeltime {
 
