@@ -2,6 +2,7 @@ package in.reeltime.injection
 
 import org.springframework.context.ApplicationContext
 import in.reeltime.video.VideoCreationCommand
+import in.reeltime.maintenance.ResourceRemovalJob
 import org.springframework.security.authentication.AuthenticationManager
 
 class ConfigInjector {
@@ -10,6 +11,9 @@ class ConfigInjector {
 
         VideoCreationCommand.maxDuration = config.reeltime.metadata.maxDurationInSeconds as int
         enforceReadOnlyStaticField(VideoCreationCommand, 'maxDuration')
+
+        ResourceRemovalJob.numberToRemovePerExecution = config.reeltime.maintenance.numberOfResourcesToRemovePerExecution as int
+        enforceReadOnlyStaticField(ResourceRemovalJob, 'numberToRemovePerExecution')
 
         ctx.videoCreationService.with {
             maxVideoStreamSizeInBytes = config.reeltime.metadata.maxVideoStreamSizeInBytes as int

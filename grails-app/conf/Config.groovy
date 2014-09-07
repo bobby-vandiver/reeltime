@@ -186,6 +186,12 @@ reeltime {
         // How long until an account confirmation code becomes invalid
         confirmationCodeValidityLengthInDays = 7
     }
+
+    // Internal maintenance configuration
+    maintenance {
+        // How many stored resources for the Quartz job to remove per execution
+        numberOfResourcesToRemovePerExecution = 1000
+    }
 }
 
 environments {

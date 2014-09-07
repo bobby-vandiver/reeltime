@@ -107,6 +107,8 @@ grails.project.dependency.resolution = {
         compile ":scaffolding:2.0.3"
         compile ':cache:1.1.6'
 
+        compile ":quartz:1.0.2"
+
         // TODO: Specify the new release once plugin is merged back into main code line
         compile ":spring-security-oauth2-provider:1.0.5-SNAPSHOT"
         compile ":spring-security-core:2.0-RC2"
