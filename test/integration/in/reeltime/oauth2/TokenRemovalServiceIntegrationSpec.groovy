@@ -13,7 +13,7 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
     Random randomNumberGenerator
 
     void setup() {
-        randomNumberGenerator = new Random()
+        randomNumberGenerator = new Random(0)
     }
 
     @Unroll
@@ -133,8 +133,9 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
         def tokenValue = 'ACCESS-TOKEN-TEST' + randomNumberGenerator.nextInt()
         println "Creating access token [$tokenValue] for client [$clientId]"
 
+        def authenticationKey = 'authKey' + randomNumberGenerator.nextInt()
         new AccessToken(username: username, clientId: clientId, value: tokenValue, refreshToken: refreshTokenValue,
-                tokenType: 'test', scope: ['scope'], authentication: [1, 2, 3, 4] as byte[]).save()
+                tokenType: 'test', scope: ['scope'], authenticationKey: authenticationKey, authentication: [1, 2, 3, 4] as byte[]).save()
     }
 
     private RefreshToken createRefreshToken() {

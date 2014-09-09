@@ -65,17 +65,21 @@ class ResponseChecker {
         assert contentType.startsWith(expected)
     }
 
-    void assertAuthError(RestResponse response, int status, String error, String description, String scope = null) {
+    void assertAuthJsonError(RestResponse response, int status, String error, String description) {
+        assertStatusCode(response, status)
+        assertContentType(response, APPLICATION_JSON)
+
+        assert response.json.error == error
+        assert response.json.error_description == description
+    }
+
+    void assertAuthError(RestResponse response, int status, String error, String description) {
         assertStatusCode(response, status)
         assertContentType(response, APPLICATION_JSON)
 
         def wwwAuthenticate = response.headers.get(WWW_AUTHENTICATE)[0]
         assert wwwAuthenticate.contains("error=\"$error\"")
         assert wwwAuthenticate.contains("error_description=\"$description\"")
-
-        if(scope) {
-            assert wwwAuthenticate.contains("scope=\"$scope\"")
-        }
     }
 
     void assertVideoIdInList(JSONElement list, Long videoId) {

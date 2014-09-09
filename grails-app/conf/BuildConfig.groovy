@@ -50,31 +50,12 @@ grails.project.dependency.resolution = {
         mavenLocal()
         mavenCentral()
 
-        // uncomment these (or add new ones) to enable remote dependency resolution from public Maven repositories
-        //mavenRepo "http://snapshots.repository.codehaus.org"
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
-
+        // Repository for Spring Security RC plugin
         mavenRepo "http://repo.spring.io/milestone/"
-
-        mavenRepo "http://ec2-54-85-10-255.compute-1.amazonaws.com/artifactory/repo"
 
         // Repository for disable optimization JAR
         // Source: https://github.com/renataogarcia/disableOptimizationsTransformation/issues/1
         mavenRepo "https://raw.github.com/thecleancoder/mavenrepo/master/"
-    }
-
-    // Load credentials from a properties file
-    // This is a work around for IntelliJ
-    // Jenkins will provide credentials via system properties
-    Properties artifactoryProperties = loadArtifactoryProperties()
-
-    credentials {
-        realm = "Artifactory Realm"
-        host = "ec2-54-85-10-255.compute-1.amazonaws.com"
-        username = System.getProperty('artifactoryUsername') ?: artifactoryProperties.get('username')
-        password = System.getProperty('artifactoryPassword') ?: artifactoryProperties.get('password')
     }
 
     dependencies {
@@ -109,9 +90,8 @@ grails.project.dependency.resolution = {
 
         compile ":quartz:1.0.2"
 
-        // TODO: Specify the new release once plugin is merged back into main code line
-        compile ":spring-security-oauth2-provider:1.0.5-SNAPSHOT"
-        compile ":spring-security-core:2.0-RC2"
+        compile ":spring-security-oauth2-provider:2.0-RC1"
+        compile ":spring-security-core:2.0-RC4"
 
         compile ":codenarc:0.21"
 
@@ -146,15 +126,4 @@ codenarc {
             title = 'ReelTime CodeNarc Report'
         }
     }
-}
-
-private Properties loadArtifactoryProperties() {
-    Properties artifactoryProperties = new Properties()
-    String path = System.getProperty('user.home') + File.separator + '.grails' + File.separator + 'artifactory.properties'
-
-    File file = new File(path)
-    if(file.exists()) {
-        artifactoryProperties.load(new FileInputStream(path))
-    }
-    return artifactoryProperties
 }

@@ -33,7 +33,7 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
         def response = delete(request)
 
         then:
-        assertAuthError(response, 403, 'insufficient_scope', 'Insufficient scope for this resource', 'videos-write')
+        assertAuthJsonError(response, 403, 'access_denied', 'Access is denied')
     }
 
     void "invalid http method for video removal"() {

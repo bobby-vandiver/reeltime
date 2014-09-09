@@ -34,7 +34,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertAuthError(response, 403, 'insufficient_scope', 'Insufficient scope for this resource', 'videos-write')
+        assertAuthJsonError(response, 403, 'access_denied', 'Access is denied')
     }
 
     void "invalid token"() {
