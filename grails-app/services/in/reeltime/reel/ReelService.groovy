@@ -12,7 +12,7 @@ class ReelService {
 
     Reel createReel(String reelName) {
         def audience = new Audience(members: [])
-        new Reel(name: reelName, audience: audience, videos: [])
+        new Reel(name: reelName, audience: audience)
     }
 
     Reel createReelForUser(User owner, String reelName) {
@@ -48,6 +48,8 @@ class ReelService {
         def reel = createReelForUser(currentUser, reelName)
         currentUser.addToReels(reel)
         userService.storeUser(currentUser)
+
+        storeReel(reel)
         return reel
     }
 
