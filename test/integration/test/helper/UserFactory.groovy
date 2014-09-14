@@ -17,8 +17,7 @@ class UserFactory {
 
         def reel = new Reel(
                 name: Reel.UNCATEGORIZED_REEL_NAME,
-                audience: new Audience(members: []),
-                videos: []
+                audience: new Audience(members: [])
         )
 
         new User(username: 'someone', password: 'secret', email: 'someone@test.com')
