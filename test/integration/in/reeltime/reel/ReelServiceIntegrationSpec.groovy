@@ -2,6 +2,7 @@ package in.reeltime.reel
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
+import in.reeltime.activity.CreateReelActivity
 import in.reeltime.user.User
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.UserNotFoundException
@@ -16,6 +17,8 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
 
     def userService
     def clientService
+
+    def activityService
 
     User owner
     User notOwner
@@ -145,6 +148,16 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         and:
         retrieved.reels.contains(existingReel)
         retrieved.reels.contains(newReel)
+
+        and:
+        def activities = activityService.findActivities([retrieved], [])
+        activities.size() == 1
+        activities[0] instanceof CreateReelActivity
+
+        and:
+        def activity = activities[0] as CreateReelActivity
+        activity.user == owner
+        activity.reel == newReel
     }
 
     void "do not allow a user to add a reel with the same name as an existing reel"() {

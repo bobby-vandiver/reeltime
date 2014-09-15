@@ -44,18 +44,33 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         activity.type == ActivityType.AddVideoToReel
     }
 
-    void "delete activity"() {
-        given:
-        def activity = new CreateReelActivity(user: user, reel: reel).save()
-
-        def activityId = activity.id
-        assert UserReelActivity.findById(activityId) != null
-
+    void "no user activities to delete"() {
         when:
-        activityService.deleteActivity(activity)
+        activityService.deleteAllUserActivity(user)
 
         then:
-        UserReelActivity.findById(activityId) == null
+        notThrown(Exception)
+    }
+
+    void "delete all user activity"() {
+        given:
+        def activity1 = new CreateReelActivity(user: user, reel: reel).save()
+        def activity2 = new CreateReelActivity(user: user, reel: reel).save()
+
+        and:
+        def activityId1 = activity1.id
+        assert UserReelActivity.findById(activityId1) != null
+
+        and:
+        def activityId2 = activity2.id
+        assert UserReelActivity.findById(activityId2) != null
+
+        when:
+        activityService.deleteAllUserActivity(user)
+
+        then:
+        UserReelActivity.findById(activityId1) == null
+        UserReelActivity.findById(activityId2) == null
     }
 
     void "empty criteria for activities"() {

@@ -1,10 +1,12 @@
 package in.reeltime.account
 
+import in.reeltime.oauth2.Client
 import in.reeltime.user.User
 
 class AccountRemovalService {
 
     def userService
+    def activityService
     def tokenRemovalService
     def videoRemovalService
 
@@ -17,6 +19,9 @@ class AccountRemovalService {
 
         log.info "Removing tokens associated with user [${username}]"
         tokenRemovalService.removeAllTokensForUser(currentUser)
+
+        log.info "Deleting activity for user [${username}]"
+        activityService.deleteAllUserActivity(currentUser)
 
         log.info "Removing videos for user [${username}]"
         deleteVideosForUser(currentUser)
@@ -39,7 +44,13 @@ class AccountRemovalService {
     }
 
     private static void deleteClientsForUser(User user) {
-        user.clients.each { client ->
+        def clientsToRemove = []
+        clientsToRemove.addAll(user.clients)
+
+        clientsToRemove.each { Client client ->
+            log.debug "Removing client [${client.id}] from user [${user.username}]"
+            user.removeFromClients(client)
+
             log.debug "Deleting client [${client.id}]"
             client.delete()
         }

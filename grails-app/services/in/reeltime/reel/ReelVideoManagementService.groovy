@@ -11,6 +11,9 @@ class ReelVideoManagementService {
 
     def videoService
 
+    def userService
+    def activityService
+
     Collection<Video> listVideos(Long reelId) {
         def reel = reelService.loadReel(reelId)
         ReelVideo.findAllByReel(reel)?.video ?: []
@@ -35,6 +38,9 @@ class ReelVideoManagementService {
 
         updateReelAndVideo(reel, video)
         new ReelVideo(reel: reel, video: video).save()
+
+        def currentUser = userService.currentUser
+        activityService.videoAddedToReel(currentUser, reel, video)
     }
 
     void removeVideo(Long reelId, Long videoId) {

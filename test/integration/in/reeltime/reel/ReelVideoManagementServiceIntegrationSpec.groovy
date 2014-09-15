@@ -2,6 +2,8 @@ package in.reeltime.reel
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
+import in.reeltime.activity.AddVideoToReelActivity
+import in.reeltime.activity.CreateReelActivity
 import in.reeltime.user.User
 import in.reeltime.video.Video
 import in.reeltime.exceptions.ReelNotFoundException
@@ -19,6 +21,8 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
 
     def userService
     def clientService
+
+    def activityService
 
     User owner
     User notOwner
@@ -50,6 +54,17 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         ReelVideo.findByReelAndVideo(reel, video) != null
+
+        and:
+        def activities = activityService.findActivities([], [reel])
+        activities.size() == 1
+        activities[0] instanceof AddVideoToReelActivity
+
+        and:
+        def activity = activities[0] as AddVideoToReelActivity
+        activity.user == owner
+        activity.reel == reel
+        activity.video == video
     }
 
     void "add same video to multiple reels"() {

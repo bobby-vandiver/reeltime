@@ -9,6 +9,7 @@ class ReelService {
 
     def userService
     def reelAuthorizationService
+    def activityService
 
     Reel createReel(String reelName) {
         def audience = new Audience(members: [])
@@ -47,9 +48,11 @@ class ReelService {
 
         def reel = createReelForUser(currentUser, reelName)
         currentUser.addToReels(reel)
-        userService.storeUser(currentUser)
 
+        userService.storeUser(currentUser)
         storeReel(reel)
+
+        activityService.reelCreated(currentUser, reel)
         return reel
     }
 
