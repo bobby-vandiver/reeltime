@@ -16,17 +16,19 @@ class ActivityService {
         new AddVideoToReelActivity(user: user, reel: reel, video: video).save()
     }
 
-    void deleteAllUserActivity(User user) {
-        log.info "Deleting all activity for user [${user.username}]"
-        def activities = UserReelActivity.findAllByUser(user)
-        activities.each { activity ->
-            deleteActivity(activity)
-        }
+    void reelDeleted(User user, Reel reel) {
+        log.info "Reel [${reel.id}] has been been deleted by user [${user.username}]"
+        CreateReelActivity.findByUserAndReel(user, reel)?.delete()
     }
 
-    void deleteActivity(UserReelActivity activity) {
-        log.info "Deleting activity [${activity.id}]"
-        activity.delete()
+    void videoRemovedFromReel(User user, Reel reel, Video video) {
+        log.info "Video [${video.id}] has been removed from reel [${reel.id}] by user [${user.username}]"
+        AddVideoToReelActivity.findByReelAndVideo(reel, video)?.delete()
+    }
+
+    void deleteAllUserActivity(User user) {
+        log.info "Deleting all activity for user [${user.username}]"
+        UserReelActivity.findAllByUser(user)*.delete()
     }
 
     List<UserReelActivity> findActivities(List<User> users, List<Reel> reels) {

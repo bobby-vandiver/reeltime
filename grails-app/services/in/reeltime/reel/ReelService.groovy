@@ -76,7 +76,12 @@ class ReelService {
         else if(reelAuthorizationService.reelNameIsReserved(name)) {
             throw new AuthorizationException("The ${name} reel cannot be deleted")
         }
-        reel.owner.removeFromReels(reel)
+
+        def owner = reel.owner
+        activityService.reelDeleted(owner, reel)
+
+        owner.removeFromReels(reel)
         reel.delete()
+        userService.storeUser(owner)
     }
 }

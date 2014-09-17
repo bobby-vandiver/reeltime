@@ -3,6 +3,7 @@ package in.reeltime.reel
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.video.Video
+import in.reeltime.activity.AddVideoToReelActivity
 
 class ReelVideoManagementService {
 
@@ -79,7 +80,8 @@ class ReelVideoManagementService {
 
     private void removeVideoFromReel(Reel reel, Video video) {
         updateReelAndVideo(reel, video)
-        ReelVideo.findByReelAndVideo(reel, video).delete()
+        ReelVideo.findByReelAndVideo(reel, video)?.delete()
+        activityService.videoRemovedFromReel(reel.owner, reel, video)
     }
 
     private void updateReelAndVideo(Reel reel, Video video) {
