@@ -76,14 +76,6 @@ environments {
 
 log4j = {
 
-    boolean inTestEnvironment = (Environment.currentEnvironment == Environment.TEST)
-    boolean sqlLoggingEnabled = (System.getProperty('ENABLE_SQL_LOGGING') == 'true')
-
-    if(inTestEnvironment && sqlLoggingEnabled) {
-        trace 'org.hibernate.type'
-        debug 'org.hibernate.SQL'
-    }
-
     debug  'in.reeltime',
            'grails.app'
 
