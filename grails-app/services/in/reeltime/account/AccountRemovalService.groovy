@@ -6,7 +6,10 @@ import in.reeltime.user.User
 class AccountRemovalService {
 
     def userService
+
     def activityService
+    def followingService
+
     def tokenRemovalService
     def videoRemovalService
 
@@ -22,6 +25,9 @@ class AccountRemovalService {
 
         log.info "Deleting activity for user [${username}]"
         activityService.deleteAllUserActivity(currentUser)
+
+        log.info "Removing follower/followee relationships for [${username}]"
+        followingService.deleteFollowingForFollower(currentUser)
 
         log.info "Removing videos for user [${username}]"
         deleteVideosForUser(currentUser)

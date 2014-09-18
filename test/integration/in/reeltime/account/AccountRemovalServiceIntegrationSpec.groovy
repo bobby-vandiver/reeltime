@@ -4,6 +4,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
 import in.reeltime.oauth2.Client
+import in.reeltime.user.Following
 
 class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
@@ -33,6 +34,7 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         User.findByUsername(username) == null
+        Following.findByFollower(user) == null
         AccountConfirmation.findByUser(user) == null
 
         and:
