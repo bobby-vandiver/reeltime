@@ -18,35 +18,15 @@ class FollowingSpec extends Specification {
         where:
         _   |   key
         _   |   'follower'
-        _   |   'followees'
-    }
-
-    @Unroll
-    void "allow [#count] followees"() {
-        given:
-        def followees = []
-        count.times { followees << new User() }
-
-        and:
-        def following = new Following(followees: followees)
-
-        expect:
-        following.validate(['followees'])
-
-        where:
-        _   |   count
-        _   |   0
-        _   |   1
-        _   |   2
-        _   |   5
+        _   |   'followee'
     }
 
     void "follower cannot be a followee"() {
         given:
         def follower = new User()
-        def following = new Following(follower: follower, followees: [follower])
+        def following = new Following(follower: follower, followee: follower)
 
         expect:
-        !following.validate(['followees'])
+        !following.validate(['followee'])
     }
 }

@@ -9,7 +9,6 @@ class AccountRegistrationService {
     def userService
     def clientService
 
-    def followingService
     def reelService
 
     def accountConfirmationService
@@ -38,7 +37,6 @@ class AccountRegistrationService {
         def reel = reelService.createReel(UNCATEGORIZED_REEL_NAME)
 
         def user = userService.createAndSaveUser(username, password, email, client, reel)
-        followingService.createFollowingForFollower(user)
 
         sendConfirmationEmail(user, locale)
         new RegistrationResult(clientId: clientId, clientSecret: clientSecret)

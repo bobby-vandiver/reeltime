@@ -27,7 +27,8 @@ class AccountRemovalService {
         activityService.deleteAllUserActivity(currentUser)
 
         log.info "Removing follower/followee relationships for [${username}]"
-        followingService.deleteFollowingForFollower(currentUser)
+        followingService.removeFollowerFromAllFollowings(currentUser)
+        followingService.removeFolloweeFromAllFollowings(currentUser)
 
         log.info "Removing videos for user [${username}]"
         deleteVideosForUser(currentUser)

@@ -5,13 +5,16 @@ import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
 import in.reeltime.oauth2.Client
 import in.reeltime.user.Following
+import test.helper.UserFactory
 
 class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
     def accountRemovalService
     def accountRegistrationService
 
-    void "remove account for current user who has multiple clients"() {
+    def followingService
+
+    void "remove account for current user"() {
         given:
         def username = 'foo'
         def password = 'bar'
@@ -27,6 +30,15 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
         def user = User.findByUsername(username)
         assert user != null
 
+        and:
+        def userToFollow = UserFactory.createUser('someone')
+        def userToBeFollowedBy = UserFactory.createUser('anyone')
+
+        followingService.startFollowingUser(user, userToFollow)
+        followingService.startFollowingUser(userToBeFollowedBy, user)
+
+        assert Following.findAllByFollowerOrFollowee(user, user).size() == 2
+
         when:
         SpringSecurityUtils.doWithAuth(username) {
             accountRemovalService.removeAccountForCurrentUser()
@@ -34,7 +46,7 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         User.findByUsername(username) == null
-        Following.findByFollower(user) == null
+        Following.findByFollowerOrFollowee(user, user) == null
         AccountConfirmation.findByUser(user) == null
 
         and:

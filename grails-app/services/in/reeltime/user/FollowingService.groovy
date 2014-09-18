@@ -2,19 +2,7 @@ package in.reeltime.user
 
 class FollowingService {
 
-    Following createFollowingForFollower(User follower) {
-        log.info "Creating following for follower [${follower.username}]"
-        new Following(follower: follower, followees: []).save()
-    }
-
-    void deleteFollowingForFollower(User follower) {
-        log.info "Deleting following for follower [${follower.username}]"
-        Following.findByFollower(follower).delete()
-    }
-
-    // TODO: Remove user from all followings in which the user is a followee
-
-    void startFollowingUser(User follower, User followee) {
+    Following startFollowingUser(User follower, User followee) {
         log.info "User [${follower.username}] is attempting to follow user [${followee.username}]"
 
         if(follower == followee) {
@@ -22,21 +10,28 @@ class FollowingService {
             throw new IllegalArgumentException(message)
         }
 
-        def following = Following.findByFollower(follower)
-        following.addToFollowees(followee)
-        following.save()
+        new Following(follower: follower, followee: followee).save()
     }
 
     void stopFollowingUser(User follower, User followee) {
         log.info "User [${follower.username}] is attempting to no longer follow user [${followee.username}]"
-        def following = Following.findByFollower(follower)
+        def following = Following.findByFollowerAndFollowee(follower, followee)
 
-        if(!following.followees.contains(followee)) {
+        if(!following) {
             def message = "[${follower.username}] is not following [${followee.username}]"
             throw new IllegalArgumentException(message)
         }
 
-        following.removeFromFollowees(followee)
-        following.save()
+        following.delete()
+    }
+
+    void removeFollowerFromAllFollowings(User follower) {
+        log.info "Removing follower [${follower.username}] from all followings"
+        Following.findAllByFollower(follower)*.delete()
+    }
+
+    void removeFolloweeFromAllFollowings(User followee) {
+        log.info "Removing followee [${followee.username}] from all followings"
+        Following.findAllByFollowee(followee)*.delete()
     }
 }

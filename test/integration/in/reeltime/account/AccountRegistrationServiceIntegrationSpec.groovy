@@ -44,8 +44,7 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
         user.reels[0].name == 'Uncategorized'
 
         and:
-        def following = Following.findByFollower(user)
-        following.followees.size() == 0
+        Following.findAllByFollowerOrFollowee(user, user).size() == 0
 
         and:
         inMemoryMailService.sentMessages.size() == 1

@@ -3,11 +3,10 @@ package in.reeltime.user
 class Following {
 
     User follower
-
-    static hasMany = [followees: User]
+    User followee
 
     static constraints = {
         follower nullable: false
-        followees nullable: false, validator: { val, obj -> !val.contains(obj.follower)}
+        followee nullable: false, validator: { val, obj -> val != obj.follower }
     }
 }
