@@ -1,6 +1,7 @@
 package in.reeltime.user
 
 import grails.test.spock.IntegrationSpec
+import spock.lang.Unroll
 import test.helper.UserFactory
 
 class FollowingServiceIntegrationSpec extends IntegrationSpec {
@@ -53,19 +54,47 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
         e.message == "[${follower.username}] is not following [${followee.username}]"
     }
 
+    @Unroll
+    void "list [#count] users being followed"() {
+        given:
+        def followees = addFolloweesToFollower(count)
+
+        when:
+        def list = followingService.listFolloweesForFollower(follower)
+
+        then:
+        list == followees
+
+        where:
+        _   |   count
+        _   |   0
+        _   |   1
+        _   |   5
+        _   |   10
+    }
+
+    @Unroll
+    void "list [#count] users who are following"() {
+        given:
+        def followers = addFollowersToFollowee(count)
+
+        when:
+        def list = followingService.listFollowersForFollowee(followee)
+
+        then:
+        list == followers
+
+        where:
+        _   |   count
+        _   |   0
+        _   |   1
+        _   |   5
+        _   |   10
+    }
+
     void "remove user from all following to which the user is the follower"() {
         given:
-        def followees = []
-
-        3.times { it ->
-            def followee = UserFactory.createUser('followee' + it)
-            followees << followee
-
-            followingService.startFollowingUser(follower, followee)
-
-            assert Following.findByFollowerAndFollowee(follower, followee) != null
-        }
-
+        def followees = addFolloweesToFollower(3)
         assert followees.size() == 3
 
         when:
@@ -77,9 +106,35 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
 
     void "remove user from all followings to which the user is a followee"() {
         given:
+        def followers = addFollowersToFollowee(3)
+        assert followers.size() == 3
+
+        when:
+        followingService.removeFolloweeFromAllFollowings(followee)
+
+        then:
+        Following.findAllByFollowee(followee).size() == 0
+    }
+
+    private List<User> addFolloweesToFollower(int count) {
+        def followees = []
+
+        count.times { it ->
+            def followee = UserFactory.createUser('followee' + it)
+            followees << followee
+
+            followingService.startFollowingUser(follower, followee)
+
+            assert Following.findByFollowerAndFollowee(follower, followee) != null
+        }
+
+        return followees
+    }
+
+    private List<User> addFollowersToFollowee(int count) {
         def followers = []
 
-        3.times { it ->
+        count.times { it ->
             def follower = UserFactory.createUser('follower' + it)
             followers << follower
 
@@ -88,12 +143,6 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
             assert Following.findByFollowerAndFollowee(follower, followee) != null
         }
 
-        assert followers.size() == 3
-
-        when:
-        followingService.removeFolloweeFromAllFollowings(followee)
-
-        then:
-        Following.findAllByFollowee(followee).size() == 0
+        return followers
     }
 }

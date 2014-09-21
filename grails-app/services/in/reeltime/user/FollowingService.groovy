@@ -25,6 +25,14 @@ class FollowingService {
         following.delete()
     }
 
+    List<User> listFolloweesForFollower(User follower) {
+        Following.findAllByFollower(follower)?.collect { it.followee }
+    }
+
+    List<User> listFollowersForFollowee(User followee) {
+        Following.findAllByFollowee(followee)?.collect { it.follower }
+    }
+
     void removeFollowerFromAllFollowings(User follower) {
         log.info "Removing follower [${follower.username}] from all followings"
         Following.findAllByFollower(follower)*.delete()
