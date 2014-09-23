@@ -1,16 +1,18 @@
-package in.reeltime.user
+package in.reeltime.following
 
 import grails.test.mixin.TestFor
+import in.reeltime.following.UserFollowing
+import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 
-@TestFor(Following)
-class FollowingSpec extends Specification {
+@TestFor(UserFollowing)
+class UserFollowingSpec extends Specification {
 
     @Unroll
     void "[#key] cannot be null"() {
         given:
-        def following = new Following((key): null)
+        def following = new UserFollowing((key): null)
 
         expect:
         !following.validate([key])
@@ -24,7 +26,7 @@ class FollowingSpec extends Specification {
     void "follower cannot be a followee"() {
         given:
         def follower = new User()
-        def following = new Following(follower: follower, followee: follower)
+        def following = new UserFollowing(follower: follower, followee: follower)
 
         expect:
         !following.validate(['followee'])

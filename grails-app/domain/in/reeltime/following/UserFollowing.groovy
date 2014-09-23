@@ -1,6 +1,8 @@
-package in.reeltime.user
+package in.reeltime.following
 
-class Following {
+import in.reeltime.user.User
+
+class UserFollowing {
 
     User follower
     User followee

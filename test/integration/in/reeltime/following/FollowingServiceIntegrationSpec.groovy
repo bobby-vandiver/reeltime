@@ -1,6 +1,7 @@
-package in.reeltime.user
+package in.reeltime.following
 
 import grails.test.spock.IntegrationSpec
+import in.reeltime.user.User
 import spock.lang.Unroll
 import test.helper.UserFactory
 
@@ -42,7 +43,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
         followingService.stopFollowingUser(follower, followee)
 
         then:
-        Following.findByFollowerAndFollowee(follower, followee) == null
+        UserFollowing.findByFollowerAndFollowee(follower, followee) == null
     }
 
     void "attempt to remove user who is not a followee"() {
@@ -101,7 +102,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
         followingService.removeFollowerFromAllFollowings(follower)
 
         then:
-        Following.findAllByFollower(follower).size() == 0
+        UserFollowing.findAllByFollower(follower).size() == 0
     }
 
     void "remove user from all followings to which the user is a followee"() {
@@ -113,7 +114,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
         followingService.removeFolloweeFromAllFollowings(followee)
 
         then:
-        Following.findAllByFollowee(followee).size() == 0
+        UserFollowing.findAllByFollowee(followee).size() == 0
     }
 
     private List<User> addFolloweesToFollower(int count) {
@@ -125,7 +126,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
 
             followingService.startFollowingUser(follower, followee)
 
-            assert Following.findByFollowerAndFollowee(follower, followee) != null
+            assert UserFollowing.findByFollowerAndFollowee(follower, followee) != null
         }
 
         return followees
@@ -140,7 +141,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
 
             followingService.startFollowingUser(follower, followee)
 
-            assert Following.findByFollowerAndFollowee(follower, followee) != null
+            assert UserFollowing.findByFollowerAndFollowee(follower, followee) != null
         }
 
         return followers

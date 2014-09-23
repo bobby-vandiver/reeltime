@@ -1,8 +1,11 @@
-package in.reeltime.user
+package in.reeltime.following
+
+import in.reeltime.following.UserFollowing
+import in.reeltime.user.User
 
 class FollowingService {
 
-    Following startFollowingUser(User follower, User followee) {
+    UserFollowing startFollowingUser(User follower, User followee) {
         log.info "User [${follower.username}] is attempting to follow user [${followee.username}]"
 
         if(follower == followee) {
@@ -10,12 +13,12 @@ class FollowingService {
             throw new IllegalArgumentException(message)
         }
 
-        new Following(follower: follower, followee: followee).save()
+        new UserFollowing(follower: follower, followee: followee).save()
     }
 
     void stopFollowingUser(User follower, User followee) {
         log.info "User [${follower.username}] is attempting to no longer follow user [${followee.username}]"
-        def following = Following.findByFollowerAndFollowee(follower, followee)
+        def following = UserFollowing.findByFollowerAndFollowee(follower, followee)
 
         if(!following) {
             def message = "[${follower.username}] is not following [${followee.username}]"
@@ -26,20 +29,20 @@ class FollowingService {
     }
 
     List<User> listFolloweesForFollower(User follower) {
-        Following.findAllByFollower(follower)?.collect { it.followee }
+        UserFollowing.findAllByFollower(follower)?.collect { it.followee }
     }
 
     List<User> listFollowersForFollowee(User followee) {
-        Following.findAllByFollowee(followee)?.collect { it.follower }
+        UserFollowing.findAllByFollowee(followee)?.collect { it.follower }
     }
 
     void removeFollowerFromAllFollowings(User follower) {
         log.info "Removing follower [${follower.username}] from all followings"
-        Following.findAllByFollower(follower)*.delete()
+        UserFollowing.findAllByFollower(follower)*.delete()
     }
 
     void removeFolloweeFromAllFollowings(User followee) {
         log.info "Removing followee [${followee.username}] from all followings"
-        Following.findAllByFollowee(followee)*.delete()
+        UserFollowing.findAllByFollowee(followee)*.delete()
     }
 }

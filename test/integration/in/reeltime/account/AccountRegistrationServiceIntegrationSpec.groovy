@@ -2,7 +2,7 @@ package in.reeltime.account
 
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
-import in.reeltime.user.Following
+import in.reeltime.following.UserFollowing
 
 class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
 
@@ -44,7 +44,7 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
         user.reels[0].name == 'Uncategorized'
 
         and:
-        Following.findAllByFollowerOrFollowee(user, user).size() == 0
+        UserFollowing.findAllByFollowerOrFollowee(user, user).size() == 0
 
         and:
         inMemoryMailService.sentMessages.size() == 1

@@ -4,7 +4,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
 import in.reeltime.oauth2.Client
-import in.reeltime.user.Following
+import in.reeltime.following.UserFollowing
 import test.helper.UserFactory
 
 class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
@@ -37,7 +37,7 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
         followingService.startFollowingUser(user, userToFollow)
         followingService.startFollowingUser(userToBeFollowedBy, user)
 
-        assert Following.findAllByFollowerOrFollowee(user, user).size() == 2
+        assert UserFollowing.findAllByFollowerOrFollowee(user, user).size() == 2
 
         when:
         SpringSecurityUtils.doWithAuth(username) {
@@ -46,7 +46,7 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         User.findByUsername(username) == null
-        Following.findByFollowerOrFollowee(user, user) == null
+        UserFollowing.findByFollowerOrFollowee(user, user) == null
         AccountConfirmation.findByUser(user) == null
 
         and:
