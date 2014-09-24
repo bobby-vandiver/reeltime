@@ -12,6 +12,12 @@ class UserFollowingService {
             throw new IllegalArgumentException(message)
         }
 
+        if(UserFollowing.findByFollowerAndFollowee(follower, followee)) {
+            def message = "User [${follower.username}] cannot follow user [${followee.username}] multiple times"
+            throw new IllegalArgumentException(message)
+        }
+
+        log.info "User [${follower.username}] is now following user [${followee.username}]"
         new UserFollowing(follower: follower, followee: followee).save()
     }
 
@@ -24,6 +30,7 @@ class UserFollowingService {
             throw new IllegalArgumentException(message)
         }
 
+        log.info "User [${follower.username}] is no longer follow user [${followee.username}]"
         following.delete()
     }
 

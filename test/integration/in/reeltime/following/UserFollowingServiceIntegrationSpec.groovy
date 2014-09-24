@@ -26,6 +26,18 @@ class UserFollowingServiceIntegrationSpec extends IntegrationSpec {
         following.followee == followee
     }
 
+    void "attempt to follow user multiple times"() {
+        given:
+        userFollowingService.startFollowingUser(follower, followee)
+
+        when:
+        userFollowingService.startFollowingUser(follower, followee)
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == "User [${follower.username}] cannot follow user [${followee.username}] multiple times"
+    }
+
     void "attempt to add follower to followees"() {
         when:
         userFollowingService.startFollowingUser(follower, follower)
