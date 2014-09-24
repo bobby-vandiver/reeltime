@@ -1,4 +1,4 @@
-package in.reeltime.following
+package in.reeltime.user
 
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User

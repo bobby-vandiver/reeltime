@@ -2,7 +2,7 @@ package in.reeltime.account
 
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
-import in.reeltime.following.UserFollowing
+import in.reeltime.user.UserFollowing
 
 class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
 

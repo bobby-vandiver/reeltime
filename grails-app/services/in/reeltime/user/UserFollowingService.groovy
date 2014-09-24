@@ -1,6 +1,7 @@
-package in.reeltime.following
+package in.reeltime.user
 
 import in.reeltime.user.User
+import in.reeltime.user.UserFollowing
 
 class UserFollowingService {
 

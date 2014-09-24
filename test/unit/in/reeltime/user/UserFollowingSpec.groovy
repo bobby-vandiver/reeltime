@@ -1,7 +1,7 @@
-package in.reeltime.following
+package in.reeltime.user
 
 import grails.test.mixin.TestFor
-import in.reeltime.following.UserFollowing
+import in.reeltime.user.UserFollowing
 import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
