@@ -41,6 +41,38 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         _   |   50
     }
 
+    @Unroll
+    void "find all reels a user is an audience member of when user belongs to [#count] reels"() {
+        given:
+        def reels = createReels(count)
+        def reelIds = reels*.id
+
+        and:
+        def memberUsername = 'member'
+        def member = createUser(memberUsername, 'clientId')
+
+        and:
+        reelIds.each { reelId ->
+            SpringSecurityUtils.doWithAuth(memberUsername) {
+                audienceService.addMember(reelId)
+            }
+        }
+
+        when:
+        def reelsFollowed = audienceService.listReelsForAudienceMember(member)
+
+        then:
+        reelsFollowed.size() == count
+        reelsFollowed == reels
+
+        where:
+        _   |   count
+        _   |   0
+        _   |   1
+        _   |   5
+        _   |   10
+    }
+
     void "the owner of the reel cannot add themselves to the audience"() {
         given:
         def reel = createReelWithEmptyAudience()
@@ -160,6 +192,15 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
             reel.save()
         }
         return members
+    }
+
+    private List<Reel> createReels(int count) {
+        def reels = []
+        count.times { it ->
+            def user = createUser("someUser$it", "some-client-$it")
+            reels << user.reels[0]
+        }
+        return reels
     }
 
     private Reel createReelWithEmptyAudience() {

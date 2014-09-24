@@ -16,6 +16,11 @@ class AudienceService {
         return reel.audience.members
     }
 
+    Collection<Reel> listReelsForAudienceMember(User user) {
+        def audiences = Audience.findAllByAudienceMember(user)
+        return audiences*.reel
+    }
+
     void addMember(Long reelId) {
         def reel = reelService.loadReel(reelId)
         if(reelAuthorizationService.currentUserIsReelOwner(reel)) {
