@@ -8,7 +8,7 @@ class AccountRemovalService {
     def userService
 
     def activityService
-    def followingService
+    def userFollowingService
 
     def tokenRemovalService
     def videoRemovalService
@@ -27,8 +27,8 @@ class AccountRemovalService {
         activityService.deleteAllUserActivity(currentUser)
 
         log.info "Removing follower/followee relationships for [${username}]"
-        followingService.removeFollowerFromAllFollowings(currentUser)
-        followingService.removeFolloweeFromAllFollowings(currentUser)
+        userFollowingService.removeFollowerFromAllFollowings(currentUser)
+        userFollowingService.removeFolloweeFromAllFollowings(currentUser)
 
         log.info "Removing videos for user [${username}]"
         deleteVideosForUser(currentUser)

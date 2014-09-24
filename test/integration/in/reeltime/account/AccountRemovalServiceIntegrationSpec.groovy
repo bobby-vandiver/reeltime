@@ -12,7 +12,7 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
     def accountRemovalService
     def accountRegistrationService
 
-    def followingService
+    def userFollowingService
 
     void "remove account for current user"() {
         given:
@@ -34,8 +34,8 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
         def userToFollow = UserFactory.createUser('someone')
         def userToBeFollowedBy = UserFactory.createUser('anyone')
 
-        followingService.startFollowingUser(user, userToFollow)
-        followingService.startFollowingUser(userToBeFollowedBy, user)
+        userFollowingService.startFollowingUser(user, userToFollow)
+        userFollowingService.startFollowingUser(userToBeFollowedBy, user)
 
         assert UserFollowing.findAllByFollowerOrFollowee(user, user).size() == 2
 

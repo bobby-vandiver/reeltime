@@ -1,9 +1,8 @@
 package in.reeltime.following
 
-import in.reeltime.following.UserFollowing
 import in.reeltime.user.User
 
-class FollowingService {
+class UserFollowingService {
 
     UserFollowing startFollowingUser(User follower, User followee) {
         log.info "User [${follower.username}] is attempting to follow user [${followee.username}]"

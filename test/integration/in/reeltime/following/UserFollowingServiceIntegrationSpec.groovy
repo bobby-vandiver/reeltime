@@ -5,9 +5,9 @@ import in.reeltime.user.User
 import spock.lang.Unroll
 import test.helper.UserFactory
 
-class FollowingServiceIntegrationSpec extends IntegrationSpec {
+class UserFollowingServiceIntegrationSpec extends IntegrationSpec {
     
-    def followingService
+    def userFollowingService
 
     User follower
     User followee
@@ -19,7 +19,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
 
     void "add user to followees"() {
         when:
-        def following = followingService.startFollowingUser(follower, followee)
+        def following = userFollowingService.startFollowingUser(follower, followee)
 
         then:
         following.follower == follower
@@ -28,7 +28,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
 
     void "attempt to add follower to followees"() {
         when:
-        followingService.startFollowingUser(follower, follower)
+        userFollowingService.startFollowingUser(follower, follower)
 
         then:
         def e = thrown(IllegalArgumentException)
@@ -37,10 +37,10 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
 
     void "remove user from followees"() {
         given:
-        followingService.startFollowingUser(follower, followee)
+        userFollowingService.startFollowingUser(follower, followee)
 
         when:
-        followingService.stopFollowingUser(follower, followee)
+        userFollowingService.stopFollowingUser(follower, followee)
 
         then:
         UserFollowing.findByFollowerAndFollowee(follower, followee) == null
@@ -48,7 +48,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
 
     void "attempt to remove user who is not a followee"() {
         when:
-        followingService.stopFollowingUser(follower, followee)
+        userFollowingService.stopFollowingUser(follower, followee)
 
         then:
         def e = thrown(IllegalArgumentException)
@@ -61,7 +61,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
         def followees = addFolloweesToFollower(count)
 
         when:
-        def list = followingService.listFolloweesForFollower(follower)
+        def list = userFollowingService.listFolloweesForFollower(follower)
 
         then:
         list == followees
@@ -80,7 +80,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
         def followers = addFollowersToFollowee(count)
 
         when:
-        def list = followingService.listFollowersForFollowee(followee)
+        def list = userFollowingService.listFollowersForFollowee(followee)
 
         then:
         list == followers
@@ -99,7 +99,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
         assert followees.size() == 3
 
         when:
-        followingService.removeFollowerFromAllFollowings(follower)
+        userFollowingService.removeFollowerFromAllFollowings(follower)
 
         then:
         UserFollowing.findAllByFollower(follower).size() == 0
@@ -111,7 +111,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
         assert followers.size() == 3
 
         when:
-        followingService.removeFolloweeFromAllFollowings(followee)
+        userFollowingService.removeFolloweeFromAllFollowings(followee)
 
         then:
         UserFollowing.findAllByFollowee(followee).size() == 0
@@ -124,7 +124,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
             def followee = UserFactory.createUser('followee' + it)
             followees << followee
 
-            followingService.startFollowingUser(follower, followee)
+            userFollowingService.startFollowingUser(follower, followee)
 
             assert UserFollowing.findByFollowerAndFollowee(follower, followee) != null
         }
@@ -139,7 +139,7 @@ class FollowingServiceIntegrationSpec extends IntegrationSpec {
             def follower = UserFactory.createUser('follower' + it)
             followers << follower
 
-            followingService.startFollowingUser(follower, followee)
+            userFollowingService.startFollowingUser(follower, followee)
 
             assert UserFollowing.findByFollowerAndFollowee(follower, followee) != null
         }
