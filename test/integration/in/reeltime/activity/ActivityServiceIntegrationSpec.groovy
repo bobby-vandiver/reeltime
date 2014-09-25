@@ -43,6 +43,18 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         activity.type == ActivityType.CreateReel
     }
 
+    void "attempt to add real creation activity multiple times"() {
+        given:
+        activityService.reelCreated(user, reel)
+
+        when:
+        activityService.reelCreated(user, reel)
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == "Reel creation activity already exists"
+    }
+
     void "save video added to reel activity"() {
         when:
         activityService.videoAddedToReel(user, reel, video)
@@ -53,6 +65,18 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
         activity instanceof AddVideoToReelActivity
         activity.type == ActivityType.AddVideoToReel
+    }
+
+    void "attempt to add video added to reel activity multiple times"() {
+        given:
+        activityService.videoAddedToReel(user, reel, video)
+
+        when:
+        activityService.videoAddedToReel(user, reel, video)
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == "Video added to reel activity already exists"
     }
 
     void "no user activities to delete"() {

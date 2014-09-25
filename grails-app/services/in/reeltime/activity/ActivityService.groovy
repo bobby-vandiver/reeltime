@@ -9,11 +9,17 @@ class ActivityService {
     def maxActivitiesPerPage
 
     void reelCreated(User user, Reel reel) {
+        if(CreateReelActivity.findByUserAndReel(user, reel)) {
+            throw new IllegalArgumentException("Reel creation activity already exists")
+        }
         log.info "Reel [${reel.id}] has been created by user [${user.username}]"
         new CreateReelActivity(user: user, reel: reel).save()
     }
 
     void videoAddedToReel(User user, Reel reel, Video video) {
+        if(AddVideoToReelActivity.findByUserAndReelAndVideo(user, reel, video)) {
+            throw new IllegalArgumentException("Video added to reel activity already exists")
+        }
         log.info "Video [${video.id}] has been added to reel [${reel.id}] by user [${user.username}]"
         new AddVideoToReelActivity(user: user, reel: reel, video: video).save()
     }
