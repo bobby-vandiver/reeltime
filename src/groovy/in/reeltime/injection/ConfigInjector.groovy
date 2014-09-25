@@ -63,6 +63,10 @@ class ConfigInjector {
             confirmationCodeValidityLengthInDays = config.reeltime.registration.confirmationCodeValidityLengthInDays
         }
 
+        ctx.activityService.with {
+            maxActivitiesPerPage = config.reeltime.activity.maxActivitiesPerPage
+        }
+
         ctx.userAuthenticationService.with {
             authenticationManager = ctx.getBean('authenticationManager') as AuthenticationManager
         }

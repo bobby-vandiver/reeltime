@@ -197,6 +197,12 @@ reeltime {
         confirmationCodeValidityLengthInDays = 7
     }
 
+    // User activity configuration
+    activity {
+        // Max number of activity results per page
+        maxActivitiesPerPage = 20
+    }
+
     // Internal maintenance configuration
     maintenance {
         // How many stored resources for the Quartz job to remove per execution

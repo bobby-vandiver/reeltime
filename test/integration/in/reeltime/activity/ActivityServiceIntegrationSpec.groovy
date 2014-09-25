@@ -4,6 +4,7 @@ import grails.test.spock.IntegrationSpec
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.video.Video
+import spock.lang.Unroll
 import test.helper.UserFactory
 
 class ActivityServiceIntegrationSpec extends IntegrationSpec {
@@ -14,10 +15,20 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
     Reel reel
     Video video
 
+    static final int TEST_MAX_ACTIVITIES_PER_PAGE = 3
+    int savedMaxActivitiesPerPage
+
     void setup() {
         user = UserFactory.createTestUser()
         reel = user.reels[0]
         video = new Video(creator: user, title: 'title', masterPath: 'masterPath', available: true).save()
+
+        savedMaxActivitiesPerPage = activityService.maxActivitiesPerPage
+        activityService.maxActivitiesPerPage = TEST_MAX_ACTIVITIES_PER_PAGE
+    }
+
+    void cleanup() {
+        activityService.maxActivitiesPerPage = savedMaxActivitiesPerPage
     }
 
     void "save reel creation activity"() {
@@ -104,7 +115,51 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         def list = activityService.findActivities(users, reels)
         assert list.size() == 2
 
-        assert list[0].type == ActivityType.CreateReel
-        assert list[1].type == ActivityType.AddVideoToReel
+        assert list[0].type == ActivityType.AddVideoToReel
+        assert list[1].type == ActivityType.CreateReel
+    }
+
+    void "list first page of activity if no page is specified"() {
+        given:
+        def secondPage = createActivityPage()
+        def firstPage = createActivityPage()
+
+        when:
+        def list = activityService.findActivities([user], [reel])
+
+        then:
+        list.size() == TEST_MAX_ACTIVITIES_PER_PAGE
+
+        and:
+        list == firstPage
+        list != secondPage
+    }
+
+    void "specify the page of activity to list"() {
+        given:
+        def thirdPage = createActivityPage()
+        def secondPage = createActivityPage()
+        def firstPage = createActivityPage()
+
+        when:
+        def list = activityService.findActivities([user], [reel], 2)
+
+        then:
+        list.size() == TEST_MAX_ACTIVITIES_PER_PAGE
+
+        and:
+        list != firstPage
+        list == secondPage
+        list != thirdPage
+    }
+
+    private List<UserReelActivity> createActivityPage() {
+        List<UserReelActivity> activities = []
+        TEST_MAX_ACTIVITIES_PER_PAGE.times {
+            activities << new CreateReelActivity(user: user, reel: reel).save(validate: false)
+            sleep(2 * 1000)
+        }
+        activities.sort { a, b -> b.dateCreated <=> a.dateCreated }
+        return activities
     }
 }

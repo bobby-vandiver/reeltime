@@ -6,6 +6,8 @@ import in.reeltime.video.Video
 
 class ActivityService {
 
+    def maxActivitiesPerPage
+
     void reelCreated(User user, Reel reel) {
         log.info "Reel [${reel.id}] has been created by user [${user.username}]"
         new CreateReelActivity(user: user, reel: reel).save()
@@ -31,7 +33,9 @@ class ActivityService {
         UserReelActivity.findAllByUser(user)*.delete()
     }
 
-    List<UserReelActivity> findActivities(List<User> users, List<Reel> reels) {
-        UserReelActivity.findAllByUserInListOrReelInList(users, reels)
+    List<UserReelActivity> findActivities(List<User> users, List<Reel> reels, Integer pageNumber = null) {
+        def offset = pageNumber ? (pageNumber - 1) * maxActivitiesPerPage : 0
+        def queryParams = [max: maxActivitiesPerPage, offset: offset, sort: 'dateCreated', order: 'desc']
+        UserReelActivity.findAllByUserInListOrReelInList(users, reels, queryParams)
     }
 }
