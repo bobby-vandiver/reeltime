@@ -16,7 +16,7 @@ class AudienceService {
         return reel.audience.members
     }
 
-    Collection<Reel> listReelsForAudienceMember(User user) {
+    List<Reel> listReelsForAudienceMember(User user) {
         def audiences = Audience.findAllByAudienceMember(user)
         return audiences*.reel
     }
