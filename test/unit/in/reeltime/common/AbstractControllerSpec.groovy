@@ -7,6 +7,8 @@ import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 
 abstract class AbstractControllerSpec extends Specification {
 
+    protected final String TEST_MESSAGE = 'this is a test'
+
     protected Object getJsonResponse(GrailsMockHttpServletResponse response) {
         new JsonSlurper().parseText(response.contentAsString)
     }

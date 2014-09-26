@@ -10,7 +10,7 @@ abstract class UserReelActivity {
 
     Date dateCreated
 
-    protected abstract ActivityType getType()
+    abstract ActivityType getType()
 
     static transients = ['type']
 
