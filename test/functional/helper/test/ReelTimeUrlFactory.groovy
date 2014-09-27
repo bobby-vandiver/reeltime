@@ -28,6 +28,10 @@ public class ReelTimeUrlFactory {
         getUrlForResource('account')
     }
 
+    String getNewsfeedUrl() {
+        getUrlForResource('newsfeed')
+    }
+
     String getUploadUrl() {
         getUrlForResource('video')
     }

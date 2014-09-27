@@ -34,7 +34,7 @@ class ResponseChecker {
 
                 // There's some weirdness with the json accessor on the RestResponse returning
                 // null despite the HTTP response containing valid JSON
-                if(method.toLowerCase() != 'put') {
+                if(method.toLowerCase() != 'put' && method.toLowerCase() != 'post') {
                     assert response.json.error == 'unauthorized'
                     assert response.json.error_description == 'Full authentication is required to access this resource'
                 }
