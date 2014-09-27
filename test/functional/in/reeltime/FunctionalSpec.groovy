@@ -30,6 +30,16 @@ abstract class FunctionalSpec extends Specification {
 
     protected static final String TEST_CLIENT_NAME = 'test-client-name'
 
+    protected static final List<String> ALL_SCOPES = [
+        'account-read', 'account-write',
+        'audiences-read', 'audiences-write',
+        'reels-read', 'reels-write',
+        'videos-read', 'videos-write'
+    ]
+
+    protected static final String CREATE_REEL_ACTIVITY_TYPE = 'create-reel'
+    protected static final String ADD_VIDEO_TO_REEL_ACTIVITY_TYPE = 'add-video-to-reel'
+
     protected testClientId
     protected testClientSecret
 

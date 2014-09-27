@@ -45,12 +45,21 @@ class ReelTimeClient {
         if(response.status != 401) {
             Assert.fail("The token associated with the deleted account is still valid! Status: ${response.status}")
         }
-
     }
 
-    long uploadVideo(String token) {
+    JSONElement newsfeed(String token) {
+        def request = requestFactory.newsfeed(token)
+        def response = get(request)
+
+        if(response.status != 200) {
+            Assert.fail("Failed to retrieve newsfeed. Status code: ${response.status}. JSON: ${response.json}")
+        }
+        return response.json
+    }
+
+    // TODO: Expose method to specify reel
+    long uploadVideo(String token, String title = 'minimum-viable-video') {
         def reel = 'Uncategorized'
-        def title = 'minimum-viable-video'
         def video = new File('test/files/small.mp4')
 
         def request = requestFactory.uploadVideo(token, title, reel, video)
