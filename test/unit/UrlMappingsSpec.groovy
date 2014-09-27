@@ -11,12 +11,13 @@ import in.reeltime.account.AccountController
 import in.reeltime.status.ApplicationStatusController
 import in.reeltime.reel.ReelController
 import in.reeltime.reel.AudienceController
+import in.reeltime.activity.NewsfeedController
 import spock.lang.Unroll
 
 @TestMixin(UrlMappingsUnitTestMixin)
 @Mock([NotificationController, VideoCreationController, VideoRemovalController,
         PlaylistController, SegmentController, ReelController, AudienceController,
-        AccountController, ApplicationStatusController])
+        AccountController, NewsfeedController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
 
     @Unroll
@@ -220,5 +221,13 @@ class UrlMappingsSpec extends Specification {
 
         expect:
         assertForwardUrlMapping('/available', controller: 'applicationStatus', action: 'available')
+    }
+
+    void "test newsfeed mapping"() {
+        given:
+        webRequest.currentRequest.method = 'GET'
+
+        expect:
+        assertForwardUrlMapping('/newsfeed', controller: 'newsfeed', action: 'listRecentActivity')
     }
 }

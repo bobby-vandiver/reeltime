@@ -23,6 +23,10 @@ class UrlMappings {
             action = [POST:  'confirm']
         }
 
+        "/newsfeed" (controller: 'newsfeed') {
+            action = [GET: 'listRecentActivity']
+        }
+
         "/transcoder/notification/completed" (controller: 'notification') {
             action = [POST: 'completed']
         }
