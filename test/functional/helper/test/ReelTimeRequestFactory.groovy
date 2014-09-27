@@ -48,6 +48,17 @@ class ReelTimeRequestFactory {
         new RestRequest(url: url, token: token)
     }
 
+    RestRequest addReel(String token, String reelName) {
+        new RestRequest(url: urlFactory.addReelUrl, token: token, customizer: {
+            name = reelName
+        })
+    }
+
+    RestRequest deleteReel(String token, Long reelId) {
+        def url = urlFactory.getReelUrl(reelId)
+        new RestRequest(url: url, token: token)
+    }
+
     RestRequest addVideoToReel(String token, Long reelId, Long vid) {
         def url = urlFactory.getReelUrl(reelId)
         new RestRequest(url: url, token: token, customizer: {

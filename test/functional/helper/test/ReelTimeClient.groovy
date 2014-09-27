@@ -95,6 +95,25 @@ class ReelTimeClient {
         return uncategorizedReel.reelId
     }
 
+    Long addReel(String reelName, String token) {
+        def request = requestFactory.addReel(token, reelName)
+        def response = post(request)
+
+        if(response.status != 201) {
+            Assert.fail("Failed to add reel [$reelName]. Status: ${response.status} JSON: ${response.json}")
+        }
+        return response.json.reelId
+    }
+
+    void deleteReel(Long reelId, String token) {
+        def request = requestFactory.deleteReel(token, reelId)
+        def response = delete(request)
+
+        if(response.status != 200) {
+            Assert.fail("Failed to delete reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
+        }
+    }
+
     void addVideoToReel(Long reelId, Long videoId, String token) {
         def request = requestFactory.addVideoToReel(token, reelId, videoId)
 

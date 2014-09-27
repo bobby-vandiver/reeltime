@@ -170,7 +170,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "only reel owner can delete reel"() {
         given:
-        def reelId = addReel('only owner can delete')
+        def reelId = reelTimeClient.addReel('only owner can delete', writeToken)
         def otherUserToken = registerNewUserAndGetToken('otherUser', 'reels-write')
 
         and:
@@ -184,7 +184,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         responseChecker.assertSingleErrorMessageResponse(response, 403, 'Unauthorized reel operation requested')
 
         cleanup:
-        deleteReel(reelId)
+        reelTimeClient.deleteReel(reelId, writeToken)
     }
 
     void "attempt to add video to reel it already belongs to"() {
@@ -243,7 +243,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "delete a reel"() {
         given:
-        def reelId = addReel('reel to delete')
+        def reelId = reelTimeClient.addReel('reel to delete', writeToken)
 
         and:
         def deleteReelUrl = urlFactory.getReelUrl(reelId)
@@ -274,7 +274,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "add video to multiple reels"() {
         given:
-        def reelId = addReel('add video test reel')
+        def reelId = reelTimeClient.addReel('add video test reel', writeToken)
         def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
 
         and:
@@ -311,7 +311,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "remove video from reel"() {
         given:
-        def reelId = addReel('remove video test reel')
+        def reelId = reelTimeClient.addReel('remove video test reel', writeToken)
         def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
 
         and:
@@ -330,27 +330,5 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
         and:
         reelTimeClient.listVideosInReel(reelId, readToken).size() == 0
-    }
-
-    private Long addReel(String reelName) {
-        def request = new RestRequest(url: urlFactory.addReelUrl, token: writeToken, customizer: {
-            name = reelName
-        })
-
-        def response = post(request)
-        if(response.status != 201) {
-            Assert.fail("Failed to add reel [$reelName]. Status: ${response.status} JSON: ${response.json}")
-        }
-        return response.json.reelId
-    }
-
-    private void deleteReel(Long reelId) {
-        def deleteReelUrl = urlFactory.getReelUrl(reelId)
-        def request = new RestRequest(url: deleteReelUrl, token: writeToken)
-
-        def response = delete(request)
-        if(response.status != 200) {
-            Assert.fail("Failed to delete reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
-        }
     }
 }
