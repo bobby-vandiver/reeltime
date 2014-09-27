@@ -23,7 +23,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertAuthError(response, 401, 'unauthorized', 'Full authentication is required to access this resource')
+        responseChecker.assertAuthError(response, 401, 'unauthorized', 'Full authentication is required to access this resource')
     }
 
     void "token does not have upload scope"() {
@@ -34,7 +34,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertAuthJsonError(response, 403, 'access_denied', 'Access is denied')
+        responseChecker.assertAuthJsonError(response, 403, 'access_denied', 'Access is denied')
     }
 
     void "invalid token"() {
@@ -45,12 +45,12 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertAuthError(response, 401, 'invalid_token', "Invalid access token: $invalidToken")
+        responseChecker.assertAuthError(response, 401, 'invalid_token', "Invalid access token: $invalidToken")
     }
 
     void "invalid http method for upload"() {
         expect:
-        assertInvalidHttpMethods(uploadUrl, ['get', 'put', 'delete'], uploadToken)
+        responseChecker.assertInvalidHttpMethods(urlFactory.uploadUrl, ['get', 'put', 'delete'], uploadToken)
     }
 
     void "all params are missing"() {
@@ -68,7 +68,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertMultipleErrorMessagesResponse(response, 400, expectedErrors)
+        responseChecker.assertMultipleErrorMessagesResponse(response, 400, expectedErrors)
     }
 
     void "video param is missing"() {
@@ -82,7 +82,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, '[video] is required')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[video] is required')
     }
 
     void "title param is missing"() {
@@ -96,7 +96,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, '[title] is required')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[title] is required')
     }
 
     void "reel param is missing"() {
@@ -110,7 +110,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, '[reel] is required')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[reel] is required')
     }
 
     void "unknown reel specified"() {
@@ -125,7 +125,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, '[reel] is unknown')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[reel] is unknown')
     }
 
     void "submitted video contains only aac stream"() {
@@ -140,7 +140,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, '[video] must contain an h264 video stream')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[video] must contain an h264 video stream')
     }
 
     void "submitted video does not contain either h264 or aac streams"() {
@@ -158,7 +158,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertMultipleErrorMessagesResponse(response, 400, expected)
+        responseChecker.assertMultipleErrorMessagesResponse(response, 400, expected)
     }
 
     void "submitted video exceeds max length"() {
@@ -173,15 +173,15 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, '[video] exceeds max length of 2 minutes')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[video] exceeds max length of 2 minutes')
     }
 
     void "invalid http method for status"() {
         given:
-        def videoId = uploadVideo(uploadToken)
+        def videoId = reelTimeClient.uploadVideo(uploadToken)
 
         expect:
-        assertInvalidHttpMethods(getStatusUrl(videoId), ['post', 'put', 'delete'], uploadToken)
+        responseChecker.assertInvalidHttpMethods(urlFactory.getStatusUrl(videoId), ['post', 'put', 'delete'], uploadToken)
     }
 
     void "cannot check status of unknown video"() {
@@ -197,7 +197,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "cannot check status if not the creator"() {
         given:
-        def videoId = uploadVideo(uploadToken)
+        def videoId = reelTimeClient.uploadVideo(uploadToken)
         def differentUserToken = registerNewUserAndGetToken('notTheCreator', 'videos-write')
 
         and:
@@ -211,11 +211,11 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
     }
 
     private RestRequest createUploadRequest(String token = null, Closure params = null) {
-        new RestRequest(url: uploadUrl, token: token, isMultiPart: params != null, customizer: params)
+        new RestRequest(url: urlFactory.uploadUrl, token: token, isMultiPart: params != null, customizer: params)
     }
 
     private RestRequest createStatusRequest(Long videoId, String token) {
-        def statusUrl = getStatusUrl(videoId)
+        def statusUrl = urlFactory.getStatusUrl(videoId)
         new RestRequest(url: statusUrl, token: token)
     }
 }

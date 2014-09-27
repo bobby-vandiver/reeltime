@@ -7,7 +7,7 @@ class HealthCheckFunctionalSpec extends FunctionalSpec {
 
     void "health check endpoint is accessible without authentication"() {
         given:
-        def request = new RestRequest(url: healthCheckUrl)
+        def request = new RestRequest(url: urlFactory.healthCheckUrl)
 
         when:
         def response = get(request)

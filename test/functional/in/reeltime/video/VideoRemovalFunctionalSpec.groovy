@@ -22,7 +22,7 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
         def response = delete(request)
 
         then:
-        assertAuthError(response, 401, 'unauthorized', 'Full authentication is required to access this resource')
+        responseChecker.assertAuthError(response, 401, 'unauthorized', 'Full authentication is required to access this resource')
     }
 
     void "token must grant write access"() {
@@ -33,7 +33,7 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
         def response = delete(request)
 
         then:
-        assertAuthJsonError(response, 403, 'access_denied', 'Access is denied')
+        responseChecker.assertAuthJsonError(response, 403, 'access_denied', 'Access is denied')
     }
 
     void "invalid http method for video removal"() {
@@ -41,7 +41,7 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
         def deleteUrl = urlFactory.getDeleteVideoUrl(1243)
 
         expect:
-        assertInvalidHttpMethods(deleteUrl, ['get', 'put', 'post'], videosWriteToken)
+        responseChecker.assertInvalidHttpMethods(deleteUrl, ['get', 'put', 'post'], videosWriteToken)
     }
 
     void "videoId param is missing"() {
@@ -52,15 +52,15 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
         def response = delete(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, '[videoId] is required')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[videoId] is required')
     }
 
     void "successfully delete video"() {
         given:
-        def uncategorizedReelId = getUncategorizedReelId(reelsReadToken)
-        def videoId = uploadVideo(videosWriteToken)
+        def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(reelsReadToken)
+        def videoId = reelTimeClient.uploadVideo(videosWriteToken)
 
-        def beforeList = listVideosInReel(uncategorizedReelId, reelsReadToken)
+        def beforeList = reelTimeClient.listVideosInReel(uncategorizedReelId, reelsReadToken)
         responseChecker.assertVideoIdInList(beforeList, videoId)
 
         and:
@@ -73,7 +73,7 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
         response.status == 200
 
         and:
-        def afterList = listVideosInReel(uncategorizedReelId, reelsReadToken)
+        def afterList = reelTimeClient.listVideosInReel(uncategorizedReelId, reelsReadToken)
         responseChecker.assertVideoIdNotInList(afterList, videoId)
     }
 }

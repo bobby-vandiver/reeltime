@@ -28,7 +28,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "invalid http methods #methods for [#resource]"() {
         expect:
-        assertInvalidHttpMethods(getUrlForResource(resource), methods, token)
+        responseChecker.assertInvalidHttpMethods(urlFactory.getUrlForResource(resource), methods, token)
 
         where:
         resource            |   methods
@@ -41,7 +41,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     void "use token to access [#resource] via [#httpMethod] requiring write access [#useReadToken]"() {
         given:
         def tokenToUse = useReadToken ? readToken : writeToken
-        def request = new RestRequest(url: getUrlForResource(resource), token: tokenToUse)
+        def request = new RestRequest(url: urlFactory.getUrlForResource(resource), token: tokenToUse)
 
         when:
         def response = "$httpMethod"(request)
@@ -61,25 +61,25 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "missing reel name when adding a reel"() {
         given:
-        def request = new RestRequest(url: addReelUrl, token: writeToken)
+        def request = new RestRequest(url: urlFactory.addReelUrl, token: writeToken)
 
         when:
         def response = post(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, '[name] is required')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[name] is required')
     }
 
     @Unroll
     void "invalid reelId in [#resource] when performing a [#httpMethod]"() {
         given:
-        def request = new RestRequest(url: getUrlForResource(resource), token: token)
+        def request = new RestRequest(url: urlFactory.getUrlForResource(resource), token: token)
 
         when:
         def response = "$httpMethod"(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, '[reelId] is required')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[reelId] is required')
 
         where:
         resource                |   httpMethod
@@ -91,17 +91,17 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "invalid videoId when removing video from reel"() {
         given:
-        def reelId = getUncategorizedReelId(readToken)
+        def reelId = reelTimeClient.getUncategorizedReelId(readToken)
 
         and:
-        def removeVideoUrl = getRemoveVideoFromReelUrl(reelId, videoId)
+        def removeVideoUrl = urlFactory.getRemoveVideoFromReelUrl(reelId, videoId)
         def request = new RestRequest(url: removeVideoUrl, token: writeToken)
 
         when:
         def response = delete(request)
 
         then:
-        assertSingleErrorMessageResponse(response, statusCode, message)
+        responseChecker.assertSingleErrorMessageResponse(response, statusCode, message)
 
         where:
         videoId         |   statusCode  |   message
@@ -111,33 +111,33 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "missing videoId when adding video to reel"() {
         given:
-        def uncategorizedReelId = getUncategorizedReelId(readToken)
+        def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(readToken)
 
         and:
-        def addVideoToReelUrl = getReelUrl(uncategorizedReelId)
+        def addVideoToReelUrl = urlFactory.getReelUrl(uncategorizedReelId)
         def request = new RestRequest(url: addVideoToReelUrl, token: writeToken)
 
         when:
         def response = post(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, '[videoId] is required')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[videoId] is required')
     }
 
     void "attempt to list reels for an unknown user"() {
         given:
-        def request = new RestRequest(url: getReelsListUrl('unknown-user'), token: readToken)
+        def request = new RestRequest(url: urlFactory.getReelsListUrl('unknown-user'), token: readToken)
 
         when:
         def response = get(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 404, 'Requested user was not found')
+        responseChecker.assertSingleErrorMessageResponse(response, 404, 'Requested user was not found')
     }
 
     void "attempt to add another uncategorized reel"() {
         given:
-        def request = new RestRequest(url: addReelUrl, token: writeToken, customizer: {
+        def request = new RestRequest(url: urlFactory.addReelUrl, token: writeToken, customizer: {
             name = 'Uncategorized'
         })
 
@@ -145,13 +145,13 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, 'Requested reel name is not allowed')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, 'Requested reel name is not allowed')
     }
 
     @Unroll
     void "attempt to add a reel with a reel name [#reelName] of invalid length"() {
         given:
-        def request = new RestRequest(url: addReelUrl, token: writeToken, customizer: {
+        def request = new RestRequest(url: urlFactory.addReelUrl, token: writeToken, customizer: {
             name = reelName
         })
 
@@ -159,7 +159,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 400, 'Requested reel name is not allowed')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, 'Requested reel name is not allowed')
 
         where:
         _   |   reelName
@@ -174,14 +174,14 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def otherUserToken = registerNewUserAndGetToken('otherUser', 'reels-write')
 
         and:
-        def deleteReelUrl = getReelUrl(reelId)
+        def deleteReelUrl = urlFactory.getReelUrl(reelId)
         def request = new RestRequest(url: deleteReelUrl, token: otherUserToken)
 
         when:
         def response = delete(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 403, 'Unauthorized reel operation requested')
+        responseChecker.assertSingleErrorMessageResponse(response, 403, 'Unauthorized reel operation requested')
 
         cleanup:
         deleteReel(reelId)
@@ -189,8 +189,8 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "attempt to add video to reel it already belongs to"() {
         given:
-        def reelId = getUncategorizedReelId(readToken)
-        def videoId = uploadVideo(uploadVideoToken)
+        def reelId = reelTimeClient.getUncategorizedReelId(readToken)
+        def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
 
         and:
         def request = requestFactory.addVideoToReel(writeToken, reelId, videoId)
@@ -199,7 +199,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        assertSingleErrorMessageResponse(response, 403, 'Unauthorized reel operation requested')
+        responseChecker.assertSingleErrorMessageResponse(response, 403, 'Unauthorized reel operation requested')
     }
 
     void "list reels"() {
@@ -220,10 +220,10 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "add a new reel"() {
         given:
-        def uncategorizedReelId = getUncategorizedReelId(readToken)
+        def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(readToken)
 
         and:
-        def request = new RestRequest(url: addReelUrl, token: writeToken, customizer: {
+        def request = new RestRequest(url: urlFactory.addReelUrl, token: writeToken, customizer: {
             name = 'some new reel'
         })
 
@@ -246,7 +246,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def reelId = addReel('reel to delete')
 
         and:
-        def deleteReelUrl = getReelUrl(reelId)
+        def deleteReelUrl = urlFactory.getReelUrl(reelId)
         def request = new RestRequest(url: deleteReelUrl, token: writeToken)
 
         when:
@@ -258,10 +258,10 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "list videos in reel"() {
         given:
-        def reelId = getUncategorizedReelId(readToken)
+        def reelId = reelTimeClient.getUncategorizedReelId(readToken)
 
         and:
-        def listVideosUrl = getReelUrl(reelId)
+        def listVideosUrl = urlFactory.getReelUrl(reelId)
         def request = new RestRequest(url: listVideosUrl, token: readToken)
 
         when:
@@ -275,13 +275,13 @@ class ReelFunctionalSpec extends FunctionalSpec {
     void "add video to multiple reels"() {
         given:
         def reelId = addReel('add video test reel')
-        def videoId = uploadVideo(uploadVideoToken)
+        def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
 
         and:
-        addVideoToReel(reelId, videoId, writeToken)
+        reelTimeClient.addVideoToReel(reelId, videoId, writeToken)
 
         and:
-        def listVideosUrl = getReelUrl(reelId)
+        def listVideosUrl = urlFactory.getReelUrl(reelId)
         def request = new RestRequest(url: listVideosUrl, token: readToken)
 
         when:
@@ -298,28 +298,28 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def otherUserToken = registerNewUserAndGetToken('someone', ['reels-read', 'reels-write'])
 
         and:
-        def reelId = getUncategorizedReelId(otherUserToken, 'someone')
-        def videoId = uploadVideo(uploadVideoToken)
+        def reelId = reelTimeClient.getUncategorizedReelId(otherUserToken, 'someone')
+        def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
 
         when:
-        addVideoToReel(reelId, videoId, otherUserToken)
+        reelTimeClient.addVideoToReel(reelId, videoId, otherUserToken)
 
         then:
-        def list = listVideosInReel(reelId, otherUserToken)
-        assertVideoIdInList(list, videoId)
+        def list = reelTimeClient.listVideosInReel(reelId, otherUserToken)
+        responseChecker.assertVideoIdInList(list, videoId)
     }
 
     void "remove video from reel"() {
         given:
         def reelId = addReel('remove video test reel')
-        def videoId = uploadVideo(uploadVideoToken)
+        def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
 
         and:
-        addVideoToReel(reelId, videoId, writeToken)
-        assert listVideosInReel(reelId, readToken).size() == 1
+        reelTimeClient.addVideoToReel(reelId, videoId, writeToken)
+        assert reelTimeClient.listVideosInReel(reelId, readToken).size() == 1
 
         and:
-        def removeVideoUrl = getRemoveVideoFromReelUrl(reelId, videoId)
+        def removeVideoUrl = urlFactory.getRemoveVideoFromReelUrl(reelId, videoId)
         def request = new RestRequest(url: removeVideoUrl, token: writeToken)
 
         when:
@@ -329,11 +329,11 @@ class ReelFunctionalSpec extends FunctionalSpec {
         response.status == 200
 
         and:
-        listVideosInReel(reelId, readToken).size() == 0
+        reelTimeClient.listVideosInReel(reelId, readToken).size() == 0
     }
 
     private Long addReel(String reelName) {
-        def request = new RestRequest(url: addReelUrl, token: writeToken, customizer: {
+        def request = new RestRequest(url: urlFactory.addReelUrl, token: writeToken, customizer: {
             name = reelName
         })
 
@@ -345,7 +345,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     }
 
     private void deleteReel(Long reelId) {
-        def deleteReelUrl = getReelUrl(reelId)
+        def deleteReelUrl = urlFactory.getReelUrl(reelId)
         def request = new RestRequest(url: deleteReelUrl, token: writeToken)
 
         def response = delete(request)

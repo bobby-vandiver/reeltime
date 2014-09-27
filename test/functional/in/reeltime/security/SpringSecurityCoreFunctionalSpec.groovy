@@ -9,13 +9,13 @@ class SpringSecurityCoreFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "cannot access the form login regardless of params"() {
         given:
-        def request = new RestRequest(url: springSecurityCheckUrl, customizer: params)
+        def request = new RestRequest(url: urlFactory.springSecurityCheckUrl, customizer: params)
 
         when:
         def response = post(request)
 
         then:
-        assertAuthError(response, 401, 'unauthorized', 'Full authentication is required to access this resource')
+        responseChecker.assertAuthError(response, 401, 'unauthorized', 'Full authentication is required to access this resource')
 
         where:
         _   |   params
@@ -26,7 +26,7 @@ class SpringSecurityCoreFunctionalSpec extends FunctionalSpec {
     void "including a token makes no difference"() {
         given:
         def token = getAccessTokenWithScopeForTestUser('account-read')
-        def request = new RestRequest(url: springSecurityCheckUrl, token: token)
+        def request = new RestRequest(url: urlFactory.springSecurityCheckUrl, token: token)
 
         when:
         def response = post(request)

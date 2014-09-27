@@ -16,7 +16,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "invalid http methods for register endpoint"() {
         expect:
-        assertInvalidHttpMethods(registerUrl, ['get', 'put', 'delete'])
+        responseChecker.assertInvalidHttpMethods(urlFactory.registerUrl, ['get', 'put', 'delete'])
     }
 
     void "register a new user"() {
@@ -141,12 +141,12 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
     void "invalid http methods for verify endpoint"() {
         expect:
-        assertInvalidHttpMethods(verifyUrl, ['get', 'put', 'delete'], token)
+        responseChecker.assertInvalidHttpMethods(urlFactory.verifyUrl, ['get', 'put', 'delete'], token)
     }
 
     void "register client with bad credentials"() {
         given:
-        def request = new RestRequest(url: registerClientUrl, customizer: {
+        def request = new RestRequest(url: urlFactory.registerClientUrl, customizer: {
             username = 'user'
             password = 'pass'
             client_name = 'client'
@@ -164,7 +164,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "register client with invalid params username [#user], password [#pass], client_name [#client]"() {
         given:
-        def request = new RestRequest(url: registerClientUrl, customizer: {
+        def request = new RestRequest(url: urlFactory.registerClientUrl, customizer: {
             username = user
             password = pass
             client_name = client
@@ -192,12 +192,12 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
     void "invalid http methods for register client endpoint"() {
         expect:
-        assertInvalidHttpMethods(registerClientUrl, ['get', 'put', 'delete'])
+        responseChecker.assertInvalidHttpMethods(urlFactory.registerClientUrl, ['get', 'put', 'delete'])
     }
 
     void "register a new client for an existing user"() {
         given:
-        def request = new RestRequest(url: registerClientUrl, customizer: {
+        def request = new RestRequest(url: urlFactory.registerClientUrl, customizer: {
             username = TEST_USER
             password = TEST_PASSWORD
             client_name = 'some new client'
@@ -258,6 +258,6 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     }
 
     private RestRequest createRegisterRequest(Closure params = null) {
-        new RestRequest(url: registerUrl, customizer: params)
+        new RestRequest(url: urlFactory.registerUrl, customizer: params)
     }
 }

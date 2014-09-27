@@ -18,16 +18,11 @@ abstract class FunctionalSpec extends Specification {
     @Delegate
     protected AuthorizationAwareRestClient restClient
 
-    @Delegate
     protected ReelTimeClient reelTimeClient
 
-    @Delegate
     protected ReelTimeRequestFactory requestFactory
-
-    @Delegate
     protected ReelTimeUrlFactory urlFactory
 
-    @Delegate
     protected ResponseChecker responseChecker
 
     protected static final String TEST_USER = 'bob'
@@ -71,7 +66,7 @@ abstract class FunctionalSpec extends Specification {
         def request = createAccessTokenRequest(username, clientId, clientSecret, ['account-write'])
 
         def token = getAccessTokenWithScope(request)
-        removeAccount(token)
+        reelTimeClient.removeAccount(token)
     }
 
     protected RestResponse registerUser(String username) {

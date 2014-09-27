@@ -38,23 +38,23 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "successful upload polls for status"() {
         given:
-        def videoId = uploadVideo(uploadToken)
+        def videoId = reelTimeClient.uploadVideo(uploadToken)
 
         expect:
-        pollForCreationComplete(videoId, uploadToken, MAX_POLL_COUNT, STATUS_RETRY_DELAY_IN_MILLIS) == 201
+        reelTimeClient.pollForCreationComplete(videoId, uploadToken, MAX_POLL_COUNT, STATUS_RETRY_DELAY_IN_MILLIS) == 201
     }
 
     void "uploaded video is added to the specified reel"() {
         given:
-        def reelId = getUncategorizedReelId(reelsReadToken)
-        def videoId = uploadVideo(uploadToken)
+        def reelId = reelTimeClient.getUncategorizedReelId(reelsReadToken)
+        def videoId = reelTimeClient.uploadVideo(uploadToken)
 
         expect:
-        def list = listVideosInReel(reelId, reelsReadToken)
-        assertVideoIdInList(list, videoId)
+        def list = reelTimeClient.listVideosInReel(reelId, reelsReadToken)
+        responseChecker.assertVideoIdInList(list, videoId)
     }
 
     private RestRequest createUploadRequest(String token = null, Closure params = null) {
-        new RestRequest(url: uploadUrl, token: token, isMultiPart: params != null, customizer: params)
+        new RestRequest(url: urlFactory.uploadUrl, token: token, isMultiPart: params != null, customizer: params)
     }
 }
