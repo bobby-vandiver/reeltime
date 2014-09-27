@@ -36,10 +36,13 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
     void "user is following a single reel"() {
         given:
         def someUserToken = registerNewUserAndGetToken('someone', ALL_SCOPES)
-        def videoId = reelTimeClient.uploadVideo(someUserToken)
+        def videoId = reelTimeClient.uploadVideo(someUserToken, 'some video')
 
         def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(someUserToken, 'someone')
         def reelId = reelTimeClient.addReel('some reel', someUserToken)
+
+        and:
+        reelTimeClient.addAudienceMember(reelId, testUserToken)
 
         when:
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
@@ -62,7 +65,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[1].reel.name == 'some reel'
 
         newsfeed.activities[1].video.videoId == videoId
-        newsfeed.activities[1].video.title == 'minimum-viable-video'
+        newsfeed.activities[1].video.title == 'some video'
     }
 
     void "user is following multiple reels"() {
