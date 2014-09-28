@@ -68,7 +68,10 @@ class AccountRemovalService {
     }
 
     private void deleteVideosForUser(User user) {
-        user.videos.each { video ->
+        def videosToRemove = []
+        videosToRemove.addAll(user.videos)
+
+        videosToRemove.each { video ->
             log.debug "Removing video [${video.id}]"
             videoRemovalService.removeVideo(video)
         }

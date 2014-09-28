@@ -2,8 +2,6 @@ package in.reeltime.video
 
 import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
-import org.codehaus.groovy.grails.web.json.JSONElement
-import org.codehaus.groovy.grails.web.json.JSONObject
 
 class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
 
@@ -38,7 +36,7 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "successful upload polls for status"() {
         given:
-        def videoId = reelTimeClient.uploadVideo(uploadToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(uploadToken)
 
         expect:
         reelTimeClient.pollForCreationComplete(uploadToken, videoId, MAX_POLL_COUNT, STATUS_RETRY_DELAY_IN_MILLIS) == 201
@@ -47,7 +45,7 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
     void "uploaded video is added to the specified reel"() {
         given:
         def reelId = reelTimeClient.getUncategorizedReelId(reelsReadToken)
-        def videoId = reelTimeClient.uploadVideo(uploadToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(uploadToken)
 
         expect:
         def list = reelTimeClient.listVideosInReel(reelsReadToken, reelId)

@@ -74,9 +74,11 @@ class ReelTimeClient {
         }
     }
 
-    // TODO: Expose method to specify reel
-    long uploadVideo(String token, String title = 'minimum-viable-video') {
-        def reel = 'Uncategorized'
+    Long uploadVideoToUncategorizedReel(String token, String title = 'minimum-viable-video') {
+        uploadVideoToReel(token, 'Uncategorized', title)
+    }
+
+    Long uploadVideoToReel(String token, String reel, String title) {
         def video = new File('test/files/small.mp4')
 
         def request = requestFactory.uploadVideo(token, title, reel, video)

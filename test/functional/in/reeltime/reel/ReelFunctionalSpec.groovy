@@ -2,9 +2,6 @@ package in.reeltime.reel
 
 import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
-import junit.framework.Assert
-import org.codehaus.groovy.grails.web.json.JSONElement
-import spock.lang.Ignore
 import spock.lang.Unroll
 
 class ReelFunctionalSpec extends FunctionalSpec {
@@ -190,7 +187,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     void "attempt to add video to reel it already belongs to"() {
         given:
         def reelId = reelTimeClient.getUncategorizedReelId(readToken)
-        def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(uploadVideoToken)
 
         and:
         def request = requestFactory.addVideoToReel(writeToken, reelId, videoId)
@@ -275,7 +272,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     void "add video to multiple reels"() {
         given:
         def reelId = reelTimeClient.addReel(writeToken, 'add video test reel')
-        def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(uploadVideoToken)
 
         and:
         reelTimeClient.addVideoToReel(writeToken, reelId, videoId)
@@ -299,7 +296,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
         and:
         def reelId = reelTimeClient.getUncategorizedReelId(otherUserToken, 'someone')
-        def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(uploadVideoToken)
 
         when:
         reelTimeClient.addVideoToReel(otherUserToken, reelId, videoId)
@@ -312,7 +309,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     void "remove video from reel"() {
         given:
         def reelId = reelTimeClient.addReel(writeToken, 'remove video test reel')
-        def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(uploadVideoToken)
 
         and:
         reelTimeClient.addVideoToReel(writeToken, reelId, videoId)

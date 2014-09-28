@@ -58,7 +58,7 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
     void "successfully delete video"() {
         given:
         def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(reelsReadToken)
-        def videoId = reelTimeClient.uploadVideo(videosWriteToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(videosWriteToken)
 
         def beforeList = reelTimeClient.listVideosInReel(reelsReadToken, uncategorizedReelId)
         responseChecker.assertVideoIdInList(beforeList, videoId)

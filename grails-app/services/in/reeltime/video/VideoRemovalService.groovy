@@ -8,6 +8,8 @@ class VideoRemovalService {
     def resourceRemovalService
     def pathGenerationService
 
+    def userService
+
     void removeVideoById(Long videoId) {
         def video = videoService.loadVideo(videoId)
         removeVideo(video)
@@ -37,6 +39,12 @@ class VideoRemovalService {
                 resourceRemovalService.scheduleForRemoval(playlistAndSegmentBase, segment.uri)
             }
         }
+
+        def creator = video.creator
+
+        log.info "Removing video [$videoId] from creator [${creator.username}]"
+        creator.removeFromVideos(video)
+        userService.storeUser(creator)
 
         log.info "Deleting video [$videoId]"
         video.delete()

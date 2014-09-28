@@ -178,7 +178,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "invalid http method for status"() {
         given:
-        def videoId = reelTimeClient.uploadVideo(uploadToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(uploadToken)
 
         expect:
         responseChecker.assertInvalidHttpMethods(urlFactory.getStatusUrl(videoId), ['post', 'put', 'delete'], uploadToken)
@@ -197,7 +197,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "cannot check status if not the creator"() {
         given:
-        def videoId = reelTimeClient.uploadVideo(uploadToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(uploadToken)
         def differentUserToken = registerNewUserAndGetToken('notTheCreator', 'videos-write')
 
         and:
