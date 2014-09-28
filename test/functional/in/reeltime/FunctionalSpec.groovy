@@ -34,6 +34,7 @@ abstract class FunctionalSpec extends Specification {
         'account-read', 'account-write',
         'audiences-read', 'audiences-write',
         'reels-read', 'reels-write',
+        'users-read', 'users-write',
         'videos-read', 'videos-write'
     ]
 

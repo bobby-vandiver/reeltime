@@ -38,9 +38,9 @@ class ClientServiceIntegrationSpec extends IntegrationSpec {
     }
 
     private static void assertScopes(Collection<String> scopes) {
-        assert scopes.size() == 8
+        assert scopes.size() == 10
 
-        ['account', 'audiences', 'reels', 'videos'].each { resource ->
+        ['account', 'audiences', 'reels', 'users', 'videos'].each { resource ->
             String readScope = resource + '-read'
             String writeScope = resource + '-write'
 

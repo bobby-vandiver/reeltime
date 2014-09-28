@@ -13,7 +13,7 @@ class NewsfeedController extends AbstractController {
 
     static allowedMethods = [listRecentActivity: 'GET']
 
-    @Secured(["#oauth2.isUser()"])
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('users-read') and #oauth2.hasScope('audiences-read')"])
     def listRecentActivity(Integer page) {
         int pageNumber = (page != null) ? page : 1
 

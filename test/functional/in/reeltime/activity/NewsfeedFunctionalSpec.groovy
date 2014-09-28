@@ -18,6 +18,26 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         responseChecker.assertInvalidHttpMethods(urlFactory.newsfeedUrl, ['post', 'put', 'delete'])
     }
 
+    @Unroll
+    void "invalid token scopes for newsfeed: #scopes"() {
+        given:
+        def token = getAccessTokenWithScopesForTestUser(scopes)
+        def request = requestFactory.newsfeed(token)
+
+        when:
+        def response = get(request)
+
+        then:
+        responseChecker.assertAuthJsonError(response, 403, 'access_denied', 'Access is denied')
+
+        where:
+        _   |   scopes
+        _   |   ['users-read']
+        _   |   ['audiences-read']
+        _   |   ['users-read', 'audiences-write']
+        _   |   ['users-write', 'audiences-read']
+    }
+
     void "new user should have no activity because they are not following anything"() {
         given:
         def someUserToken = registerNewUserAndGetToken('someone', ALL_SCOPES)

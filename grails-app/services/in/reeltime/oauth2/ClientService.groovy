@@ -26,7 +26,7 @@ class ClientService {
 
     private static Collection<String> createScopesList() {
         def scopes = []
-        ['account', 'audiences', 'reels', 'videos'].each { resource ->
+        ['account', 'audiences', 'reels', 'users', 'videos'].each { resource ->
             scopes << "$resource-read"
             scopes << "$resource-write"
         }
