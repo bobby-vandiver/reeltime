@@ -1,7 +1,6 @@
 package in.reeltime.user
 
 import grails.test.spock.IntegrationSpec
-import in.reeltime.user.User
 import spock.lang.Unroll
 import test.helper.UserFactory
 
