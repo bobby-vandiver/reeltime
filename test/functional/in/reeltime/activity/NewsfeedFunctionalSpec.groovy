@@ -48,18 +48,12 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
 
     void "user is following a single reel"() {
         given:
-        def username = 'username'
-        def reelName = 'some reel'
-        def videoTitle = 'some video'
+        def someUserToken = registerNewUserAndGetToken('someone', ALL_SCOPES)
 
-        and:
-        def someUserToken = registerNewUserAndGetToken(username, ALL_SCOPES)
+        def reelId = reelTimeClient.addReel(someUserToken, 'some reel')
+        def videoId = reelTimeClient.uploadVideoToReel(someUserToken, 'some reel', 'some video')
 
-        def reelId = reelTimeClient.addReel(someUserToken, reelName)
-        def videoId = reelTimeClient.uploadVideoToReel(someUserToken, reelName, videoTitle)
-
-        def additionalVideoTitle = 'another video'
-        def additionalVideoId = reelTimeClient.uploadVideoToReel(someUserToken, reelName, additionalVideoTitle)
+        def additionalVideoId = reelTimeClient.uploadVideoToReel(someUserToken, 'some reel', 'another video')
 
         and:
         reelTimeClient.addReel(someUserToken, 'not followed')
@@ -75,30 +69,30 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
 
         and:
         newsfeed.activities[0].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[0].user.username == username
+        newsfeed.activities[0].user.username == 'someone'
 
         newsfeed.activities[0].reel.reelId == reelId
-        newsfeed.activities[0].reel.name == reelName
+        newsfeed.activities[0].reel.name == 'some reel'
 
         newsfeed.activities[0].video.videoId == additionalVideoId
-        newsfeed.activities[0].video.title == additionalVideoTitle
+        newsfeed.activities[0].video.title == 'another video'
 
         and:
         newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[1].user.username == username
+        newsfeed.activities[1].user.username == 'someone'
 
         newsfeed.activities[1].reel.reelId == reelId
-        newsfeed.activities[1].reel.name == reelName
+        newsfeed.activities[1].reel.name == 'some reel'
 
         newsfeed.activities[1].video.videoId == videoId
-        newsfeed.activities[1].video.title == videoTitle
+        newsfeed.activities[1].video.title == 'some video'
 
         and:
         newsfeed.activities[2].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[2].user.username == username
+        newsfeed.activities[2].user.username == 'someone'
 
         newsfeed.activities[2].reel.reelId == reelId
-        newsfeed.activities[2].reel.name == reelName
+        newsfeed.activities[2].reel.name == 'some reel'
     }
 
     void "user is following multiple reels"() {
@@ -118,20 +112,15 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
 
     void "user is following a user and one of the followed user's reels -- overlapping activities are only reported once"() {
         given:
-        def username = 'username'
-        def reelName = 'some reel'
-        def videoTitle = 'some video'
+        def someUserToken = registerNewUserAndGetToken('someone', ALL_SCOPES)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(someUserToken, 'some video')
 
-        and:
-        def someUserToken = registerNewUserAndGetToken(username, ALL_SCOPES)
-        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(someUserToken, videoTitle)
-
-        def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(someUserToken, username)
-        def reelId = reelTimeClient.addReel(someUserToken, reelName)
+        def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(someUserToken, 'someone')
+        def reelId = reelTimeClient.addReel(someUserToken, 'some reel')
 
         and:
         reelTimeClient.addAudienceMember(testUserToken, reelId)
-        reelTimeClient.followUser(testUserToken, username)
+        reelTimeClient.followUser(testUserToken, 'someone')
 
         when:
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
@@ -141,19 +130,19 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
 
         and:
         newsfeed.activities[0].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[0].user.username == username
+        newsfeed.activities[0].user.username == 'someone'
 
         newsfeed.activities[0].reel.reelId == reelId
-        newsfeed.activities[0].reel.name == reelName
+        newsfeed.activities[0].reel.name == 'some reel'
 
         and:
         newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[1].user.username == username
+        newsfeed.activities[1].user.username == 'someone'
 
         newsfeed.activities[1].reel.reelId == uncategorizedReelId
         newsfeed.activities[1].reel.name == 'Uncategorized'
 
         newsfeed.activities[1].video.videoId == videoId
-        newsfeed.activities[1].video.title == videoTitle
+        newsfeed.activities[1].video.title == 'some video'
     }
 }
