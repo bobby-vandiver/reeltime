@@ -10,6 +10,8 @@ class UserFollowingController extends AbstractController {
     def userService
     def userFollowingService
 
+    static allowedMethods = [followUser: 'POST', unfollowUser: 'DELETE']
+
     def followUser(String username) {
         handleSingleParamRequest(username, 'following.username.required') {
             def currentUser = userService.currentUser

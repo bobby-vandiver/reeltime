@@ -12,12 +12,13 @@ import in.reeltime.status.ApplicationStatusController
 import in.reeltime.reel.ReelController
 import in.reeltime.reel.AudienceController
 import in.reeltime.activity.NewsfeedController
+import in.reeltime.user.UserFollowingController
 import spock.lang.Unroll
 
 @TestMixin(UrlMappingsUnitTestMixin)
 @Mock([NotificationController, VideoCreationController, VideoRemovalController,
         PlaylistController, SegmentController, ReelController, AudienceController,
-        AccountController, NewsfeedController, ApplicationStatusController])
+        AccountController, NewsfeedController, UserFollowingController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
 
     @Unroll
@@ -229,5 +230,21 @@ class UrlMappingsSpec extends Specification {
 
         expect:
         assertForwardUrlMapping('/newsfeed', controller: 'newsfeed', action: 'listRecentActivity')
+    }
+
+    @Unroll
+    void "test follow user mapping for http method [#httpMethod] to action [#actionName]"() {
+        given:
+        webRequest.currentRequest.method = httpMethod
+
+        expect:
+        assertForwardUrlMapping('/user/bob/follow', controller: 'userFollowing', action: actionName) {
+            username = 'bob'
+        }
+
+        where:
+        httpMethod  |   actionName
+        'POST'      |   'followUser'
+        'DELETE'    |   'unfollowUser'
     }
 }

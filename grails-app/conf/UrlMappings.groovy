@@ -71,6 +71,10 @@ class UrlMappings {
             action = [GET: 'listReels']
         }
 
+        "/user/$username/follow" (controller: 'userFollowing') {
+            action = [POST: 'followUser', DELETE: 'unfollowUser']
+        }
+
         "/reel" (controller: 'reel') {
             action = [POST: 'addReel']
         }
