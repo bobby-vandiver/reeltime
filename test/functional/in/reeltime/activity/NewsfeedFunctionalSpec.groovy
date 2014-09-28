@@ -334,6 +334,18 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[3].reel.name == 'some reel'
     }
 
+    void "user is following a user who hasn't done anything"() {
+        given:
+        registerNewUserAndGetToken('someone', ALL_SCOPES)
+        reelTimeClient.followUser(testUserToken, 'someone')
+
+        when:
+        def newsfeed = reelTimeClient.newsfeed(testUserToken)
+
+        then:
+        newsfeed.activities.size() == 0
+    }
+
     void "user is following a user and one of the followed user's reels -- overlapping activities are only reported once"() {
         given:
         def someUserToken = registerNewUserAndGetToken('someone', ALL_SCOPES)
@@ -341,6 +353,10 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
 
         def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(someUserToken, 'someone')
         def reelId = reelTimeClient.addReel(someUserToken, 'some reel')
+
+        and:
+        def nobodyToken = registerNewUserAndGetToken('nobody', ALL_SCOPES)
+        reelTimeClient.addReel(nobodyToken, 'excluded')
 
         and:
         reelTimeClient.addAudienceMember(testUserToken, reelId)
