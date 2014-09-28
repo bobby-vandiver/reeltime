@@ -88,7 +88,7 @@ class ReelTimeClient {
         return response.json.videoId
     }
 
-    int pollForCreationComplete(long videoId, String uploadToken,
+    int pollForCreationComplete(String uploadToken, long videoId,
               int maxPollCount = DEFAULT_MAX_POLL_COUNT, long retryDelayMillis = DEFAULT_RETRY_DELAY_IN_MILLIS) {
 
         def request = requestFactory.videoStatus(uploadToken, videoId)
@@ -121,7 +121,7 @@ class ReelTimeClient {
         return uncategorizedReel.reelId
     }
 
-    Long addReel(String reelName, String token) {
+    Long addReel(String token, String reelName) {
         def request = requestFactory.addReel(token, reelName)
         def response = post(request)
 
@@ -131,7 +131,7 @@ class ReelTimeClient {
         return response.json.reelId
     }
 
-    void deleteReel(Long reelId, String token) {
+    void deleteReel(String token, Long reelId) {
         def request = requestFactory.deleteReel(token, reelId)
         def response = delete(request)
 
@@ -140,7 +140,7 @@ class ReelTimeClient {
         }
     }
 
-    void addVideoToReel(Long reelId, Long videoId, String token) {
+    void addVideoToReel(String token, Long reelId, Long videoId) {
         def request = requestFactory.addVideoToReel(token, reelId, videoId)
 
         def response = post(request)
@@ -149,7 +149,7 @@ class ReelTimeClient {
         }
     }
 
-    JSONElement listVideosInReel(Long reelId, String token) {
+    JSONElement listVideosInReel(String token, Long reelId) {
         def request = requestFactory.listVideosInReel(token, reelId)
 
         def response = get(request)
@@ -159,7 +159,7 @@ class ReelTimeClient {
         return response.json
     }
 
-    JSONElement listAudienceMembers(Long reelId, String token) {
+    JSONElement listAudienceMembers(String token, Long reelId) {
         def request = requestFactory.listAudienceMembers(token, reelId)
 
         def response = get(request)
@@ -169,7 +169,7 @@ class ReelTimeClient {
         return response.json
     }
 
-    void addAudienceMember(Long reelId, String token) {
+    void addAudienceMember(String token, Long reelId) {
         def request = requestFactory.addAudienceMember(token, reelId)
 
         def response = post(request)
@@ -178,7 +178,7 @@ class ReelTimeClient {
         }
     }
 
-    void removeAudienceMember(Long reelId, String token) {
+    void removeAudienceMember(String token, Long reelId) {
         def request = requestFactory.removeAudienceMember(token, reelId)
 
         def response = delete(request)

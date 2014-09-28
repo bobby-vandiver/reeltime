@@ -60,7 +60,7 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
         def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(reelsReadToken)
         def videoId = reelTimeClient.uploadVideo(videosWriteToken)
 
-        def beforeList = reelTimeClient.listVideosInReel(uncategorizedReelId, reelsReadToken)
+        def beforeList = reelTimeClient.listVideosInReel(reelsReadToken, uncategorizedReelId)
         responseChecker.assertVideoIdInList(beforeList, videoId)
 
         and:
@@ -73,7 +73,7 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
         response.status == 200
 
         and:
-        def afterList = reelTimeClient.listVideosInReel(uncategorizedReelId, reelsReadToken)
+        def afterList = reelTimeClient.listVideosInReel(reelsReadToken, uncategorizedReelId)
         responseChecker.assertVideoIdNotInList(afterList, videoId)
     }
 }

@@ -170,7 +170,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "only reel owner can delete reel"() {
         given:
-        def reelId = reelTimeClient.addReel('only owner can delete', writeToken)
+        def reelId = reelTimeClient.addReel(writeToken, 'only owner can delete')
         def otherUserToken = registerNewUserAndGetToken('otherUser', 'reels-write')
 
         and:
@@ -184,7 +184,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         responseChecker.assertSingleErrorMessageResponse(response, 403, 'Unauthorized reel operation requested')
 
         cleanup:
-        reelTimeClient.deleteReel(reelId, writeToken)
+        reelTimeClient.deleteReel(writeToken, reelId)
     }
 
     void "attempt to add video to reel it already belongs to"() {
@@ -243,7 +243,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "delete a reel"() {
         given:
-        def reelId = reelTimeClient.addReel('reel to delete', writeToken)
+        def reelId = reelTimeClient.addReel(writeToken, 'reel to delete')
 
         and:
         def deleteReelUrl = urlFactory.getReelUrl(reelId)
@@ -274,11 +274,11 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "add video to multiple reels"() {
         given:
-        def reelId = reelTimeClient.addReel('add video test reel', writeToken)
+        def reelId = reelTimeClient.addReel(writeToken, 'add video test reel')
         def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
 
         and:
-        reelTimeClient.addVideoToReel(reelId, videoId, writeToken)
+        reelTimeClient.addVideoToReel(writeToken, reelId, videoId)
 
         and:
         def listVideosUrl = urlFactory.getReelUrl(reelId)
@@ -302,21 +302,21 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
 
         when:
-        reelTimeClient.addVideoToReel(reelId, videoId, otherUserToken)
+        reelTimeClient.addVideoToReel(otherUserToken, reelId, videoId)
 
         then:
-        def list = reelTimeClient.listVideosInReel(reelId, otherUserToken)
+        def list = reelTimeClient.listVideosInReel(otherUserToken, reelId)
         responseChecker.assertVideoIdInList(list, videoId)
     }
 
     void "remove video from reel"() {
         given:
-        def reelId = reelTimeClient.addReel('remove video test reel', writeToken)
+        def reelId = reelTimeClient.addReel(writeToken, 'remove video test reel')
         def videoId = reelTimeClient.uploadVideo(uploadVideoToken)
 
         and:
-        reelTimeClient.addVideoToReel(reelId, videoId, writeToken)
-        assert reelTimeClient.listVideosInReel(reelId, readToken).size() == 1
+        reelTimeClient.addVideoToReel(writeToken, reelId, videoId)
+        assert reelTimeClient.listVideosInReel(readToken, reelId).size() == 1
 
         and:
         def removeVideoUrl = urlFactory.getRemoveVideoFromReelUrl(reelId, videoId)
@@ -329,6 +329,6 @@ class ReelFunctionalSpec extends FunctionalSpec {
         response.status == 200
 
         and:
-        reelTimeClient.listVideosInReel(reelId, readToken).size() == 0
+        reelTimeClient.listVideosInReel(readToken, reelId).size() == 0
     }
 }

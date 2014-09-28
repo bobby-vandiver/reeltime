@@ -41,7 +41,7 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
         def videoId = reelTimeClient.uploadVideo(uploadToken)
 
         expect:
-        reelTimeClient.pollForCreationComplete(videoId, uploadToken, MAX_POLL_COUNT, STATUS_RETRY_DELAY_IN_MILLIS) == 201
+        reelTimeClient.pollForCreationComplete(uploadToken, videoId, MAX_POLL_COUNT, STATUS_RETRY_DELAY_IN_MILLIS) == 201
     }
 
     void "uploaded video is added to the specified reel"() {
@@ -50,7 +50,7 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
         def videoId = reelTimeClient.uploadVideo(uploadToken)
 
         expect:
-        def list = reelTimeClient.listVideosInReel(reelId, reelsReadToken)
+        def list = reelTimeClient.listVideosInReel(reelsReadToken, reelId)
         responseChecker.assertVideoIdInList(list, videoId)
     }
 

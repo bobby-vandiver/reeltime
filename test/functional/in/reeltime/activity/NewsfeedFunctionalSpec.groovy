@@ -70,10 +70,10 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         def videoId = reelTimeClient.uploadVideo(someUserToken, 'some video')
 
         def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(someUserToken, 'someone')
-        def reelId = reelTimeClient.addReel('some reel', someUserToken)
+        def reelId = reelTimeClient.addReel(someUserToken, 'some reel')
 
         and:
-        reelTimeClient.addAudienceMember(reelId, testUserToken)
+        reelTimeClient.addAudienceMember(testUserToken, reelId)
         reelTimeClient.followUser(testUserToken, 'someone')
 
         when:
