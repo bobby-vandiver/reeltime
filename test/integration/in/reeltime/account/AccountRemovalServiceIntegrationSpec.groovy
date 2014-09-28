@@ -6,12 +6,14 @@ import in.reeltime.user.User
 import in.reeltime.oauth2.Client
 import in.reeltime.user.UserFollowing
 import test.helper.UserFactory
+import in.reeltime.reel.Audience
 
 class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
     def accountRemovalService
     def accountRegistrationService
 
+    def audienceService
     def userFollowingService
 
     void "remove account for current user"() {
@@ -39,6 +41,16 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         assert UserFollowing.findAllByFollowerOrFollowee(user, user).size() == 2
 
+        and:
+        def reelOwner = UserFactory.createUser('ownsReel')
+        def reelId = reelOwner.reels[0].id
+
+        SpringSecurityUtils.doWithAuth(username) {
+            audienceService.addMember(reelId)
+        }
+
+        assert Audience.findAllByAudienceMember(user).size() == 1
+
         when:
         SpringSecurityUtils.doWithAuth(username) {
             accountRemovalService.removeAccountForCurrentUser()
@@ -46,8 +58,11 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         User.findByUsername(username) == null
-        UserFollowing.findByFollowerOrFollowee(user, user) == null
         AccountConfirmation.findByUser(user) == null
+
+        and:
+        UserFollowing.findByFollowerOrFollowee(user, user) == null
+        Audience.findAllByAudienceMember(user).size() == 0
 
         and:
         Client.findByClientNameAndClientId(firstClientName, firstClientId) == null

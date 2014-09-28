@@ -8,6 +8,7 @@ class AccountRemovalService {
     def userService
 
     def activityService
+    def audienceService
     def userFollowingService
 
     def tokenRemovalService
@@ -29,6 +30,9 @@ class AccountRemovalService {
         log.info "Removing follower/followee relationships for [${username}]"
         userFollowingService.removeFollowerFromAllFollowings(currentUser)
         userFollowingService.removeFolloweeFromAllFollowings(currentUser)
+
+        log.info "Remove user [${username}] as an audience member from all reels"
+        audienceService.removeMemberFromAllAudiences(currentUser)
 
         log.info "Removing videos for user [${username}]"
         deleteVideosForUser(currentUser)

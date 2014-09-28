@@ -2,7 +2,6 @@ package helper.test
 
 import grails.plugins.rest.client.RestResponse
 import helper.rest.AuthorizationAwareRestClient
-import helper.rest.RestRequest
 import junit.framework.Assert
 import org.codehaus.groovy.grails.web.json.JSONElement
 
@@ -55,6 +54,24 @@ class ReelTimeClient {
             Assert.fail("Failed to retrieve newsfeed. Status code: ${response.status}. JSON: ${response.json}")
         }
         return response.json
+    }
+
+    void followUser(String token, String username) {
+        def request = requestFactory.followUser(token, username)
+        def response = post(request)
+
+        if(response.status != 201) {
+            Assert.fail("Failed to follow user: $username. Status code: ${response.status}. JSON: ${response.json}")
+        }
+    }
+
+    void unfollowUser(String token, String username) {
+        def request = requestFactory.unfollowUser(token, username)
+        def response = delete(request)
+
+        if(response.status != 200) {
+            Assert.fail("Failed to unfollow user: $username. Status code: ${response.status}. JSON: ${response.json}")
+        }
     }
 
     // TODO: Expose method to specify reel

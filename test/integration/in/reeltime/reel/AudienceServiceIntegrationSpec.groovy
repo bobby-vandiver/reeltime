@@ -73,6 +73,40 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         _   |   10
     }
 
+    @Unroll
+    void "remove user as an audience member from all reels when the user is an audience member of [#count] reels"() {
+        given:
+        def reels = createReels(count)
+        def reelIds = reels*.id
+
+        and:
+        def memberUsername = 'member'
+        def member = createUser(memberUsername, 'clientId')
+
+        and:
+        reelIds.each { reelId ->
+            SpringSecurityUtils.doWithAuth(memberUsername) {
+                audienceService.addMember(reelId)
+            }
+        }
+
+        when:
+        audienceService.removeMemberFromAllAudiences(member)
+
+        then:
+        Audience.findAllByAudienceMember(member).size() == 0
+
+        and:
+        assertReelsExist(reelIds)
+
+        where:
+        _   |   count
+        _   |   0
+        _   |   1
+        _   |   5
+        _   |   10
+    }
+
     void "the owner of the reel cannot add themselves to the audience"() {
         given:
         def reel = createReelWithEmptyAudience()
@@ -218,5 +252,11 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
                 .addToClients(client)
                 .addToReels(reel)
                 .save()
+    }
+
+    private static void assertReelsExist(Collection<Long> reelIds) {
+        reelIds.each { reelId ->
+            assert Reel.findById(reelId) != null
+        }
     }
 }

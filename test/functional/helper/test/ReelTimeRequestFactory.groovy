@@ -27,6 +27,19 @@ class ReelTimeRequestFactory {
         new RestRequest(url: urlFactory.newsfeedUrl, token: token)
     }
 
+    RestRequest followUser(String token, String username) {
+        followUserRequest(token, username)
+    }
+
+    RestRequest unfollowUser(String token, String username) {
+        followUserRequest(token, username)
+    }
+
+    private RestRequest followUserRequest(String token, String username) {
+        def url = urlFactory.getFollowUrl(username)
+        new RestRequest(url: url, token: token)
+    }
+
     RestRequest uploadVideo(String token, String videoTitle, String reelName, File videoFile) {
         new RestRequest(url: urlFactory.uploadUrl, token: token, isMultiPart: true, customizer: {
             title = videoTitle
