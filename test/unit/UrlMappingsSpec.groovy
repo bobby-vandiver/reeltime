@@ -247,4 +247,20 @@ class UrlMappingsSpec extends Specification {
         'POST'      |   'followUser'
         'DELETE'    |   'unfollowUser'
     }
+
+    @Unroll
+    void "test [#resource] user mapping to action [#actionName]"() {
+        given:
+        webRequest.currentRequest.method = 'GET'
+
+        expect:
+        assertForwardUrlMapping("/user/bob/$resource", controller: 'userFollowing', action: actionName) {
+            username = 'bob'
+        }
+
+        where:
+        resource    |   actionName
+        'followers' |   'listFollowers'
+        'followees' |   'listFollowees'
+    }
 }

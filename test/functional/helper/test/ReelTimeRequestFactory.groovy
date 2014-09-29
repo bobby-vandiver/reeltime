@@ -40,6 +40,16 @@ class ReelTimeRequestFactory {
         new RestRequest(url: url, token: token)
     }
 
+    RestRequest listFollowers(String token, String username) {
+        def url = urlFactory.getListFollowersUrl(username)
+        new RestRequest(url: url, token: token)
+    }
+
+    RestRequest listFollowees(String token, String username) {
+        def url = urlFactory.getListFolloweesUrl(username)
+        new RestRequest(url: url, token: token)
+    }
+
     RestRequest uploadVideo(String token, String videoTitle, String reelName, File videoFile) {
         new RestRequest(url: urlFactory.uploadUrl, token: token, isMultiPart: true, customizer: {
             title = videoTitle

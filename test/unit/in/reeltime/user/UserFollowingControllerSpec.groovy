@@ -81,6 +81,8 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         _   |   actionName
         _   |   'followUser'
         _   |   'unfollowUser'
+        _   |   'listFollowers'
+        _   |   'listFollowees'
     }
 
     @Unroll
@@ -102,6 +104,8 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         _   |   actionName
         _   |   'followUser'
         _   |   'unfollowUser'
+        _   |   'listFollowers'
+        _   |   'listFollowees'
     }
 
     @Unroll
@@ -127,5 +131,49 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         actionName      |   methodName
         'followUser'    |   'startFollowingUser'
         'unfollowUser'  |   'stopFollowingUser'
+    }
+
+    void "list followers for specified user"() {
+        given:
+        params.username = 'followee'
+
+        when:
+        controller.listFollowers()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        def json = getJsonResponse(response)
+        json.size() == 1
+
+        and:
+        json[0].username == follower.username
+
+        and:
+        1 * userService.loadUser('followee') >> followee
+        1 * userFollowingService.listFollowersForFollowee(followee) >> [follower]
+    }
+
+    void "list followees for specified user"() {
+        given:
+        params.username = 'follower'
+
+        when:
+        controller.listFollowees()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        def json = getJsonResponse(response)
+        json.size() == 1
+
+        and:
+        json[0].username == followee.username
+
+        and:
+        1 * userService.loadUser('follower') >> follower
+        1 * userFollowingService.listFolloweesForFollower(follower) >> [followee]
     }
 }

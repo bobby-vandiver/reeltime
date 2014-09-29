@@ -56,6 +56,14 @@ public class ReelTimeUrlFactory {
         getUrlForResource("/user/$username/follow")
     }
 
+    String getListFollowersUrl(username) {
+        getUrlForResource("/user/$username/followers")
+    }
+
+    String getListFolloweesUrl(username) {
+        getUrlForResource("/user/$username/followees")
+    }
+
     String getAddReelUrl() {
         getUrlForResource('reel')
     }

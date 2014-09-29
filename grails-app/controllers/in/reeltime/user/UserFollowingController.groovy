@@ -5,13 +5,18 @@ import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.UserNotFoundException
 
 import static javax.servlet.http.HttpServletResponse.*
+import static in.reeltime.common.ListMarshaller.marshallUsersList
+import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 
 class UserFollowingController extends AbstractController {
 
     def userService
     def userFollowingService
 
-    static allowedMethods = [followUser: 'POST', unfollowUser: 'DELETE']
+    static allowedMethods = [
+            followUser: 'POST', unfollowUser: 'DELETE',
+            listFollowers: 'GET', listFollowees: 'GET'
+    ]
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('users-write')"])
     def followUser(String username) {
@@ -32,6 +37,30 @@ class UserFollowingController extends AbstractController {
 
             userFollowingService.stopFollowingUser(currentUser, userToUnfollow)
             render(status: SC_OK)
+        }
+    }
+
+    @Secured(["#oauth2.hasScope('users-read')"])
+    def listFollowers(String username) {
+        handleSingleParamRequest(username, 'following.username.required') {
+            def user = userService.loadUser(username)
+            def followers = userFollowingService.listFollowersForFollowee(user)
+
+            render(status: SC_OK, contentType: APPLICATION_JSON) {
+                marshallUsersList(followers)
+            }
+        }
+    }
+
+    @Secured(["#oauth2.hasScope('users-read')"])
+    def listFollowees(String username) {
+        handleSingleParamRequest(username, 'following.username.required') {
+            def user = userService.loadUser(username)
+            def followees = userFollowingService.listFolloweesForFollower(user)
+
+            render(status: SC_OK, contentType: APPLICATION_JSON) {
+                marshallUsersList(followees)
+            }
         }
     }
 

@@ -74,6 +74,26 @@ class ReelTimeClient {
         }
     }
 
+    JSONElement listFollowers(String token, String username) {
+        def request = requestFactory.listFollowers(token, username)
+        def response = get(request)
+
+        if(response.status != 200) {
+            Assert.fail("Failed to list followers for: $username. Status code: ${response.status}. JSON: ${response.json}")
+        }
+        return response.json
+    }
+
+    JSONElement listFollowees(String token, String username) {
+        def request = requestFactory.listFollowees(token, username)
+        def response = get(request)
+
+        if(response.status != 200) {
+            Assert.fail("Failed to list followees for: $username. Status code: ${response.status}. JSON: ${response.json}")
+        }
+        return response.json
+    }
+
     Long uploadVideoToUncategorizedReel(String token, String title = 'minimum-viable-video') {
         uploadVideoToReel(token, 'Uncategorized', title)
     }
