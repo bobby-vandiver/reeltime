@@ -26,6 +26,7 @@ class UserSpec extends Specification {
         null            |   false
         ''              |   false
         'a'             |   false
+        'a b'           |   false
         '!a'            |   false
         '!ab'           |   false
         'w' * 14 + '!'  |   false
@@ -36,6 +37,39 @@ class UserSpec extends Specification {
         'abcdef'        |   true
         'Ab2C01faqWZ'   |   true
         'r' * 15        |   true
+    }
+
+    @Unroll
+    void "display name [#displayName] is valid [#valid]"() {
+        given:
+        def user = new User(displayName: displayName)
+
+        expect:
+        user.validate(['displayName']) == valid
+
+        where:
+        displayName             |   valid
+        null                    |   false
+        ''                      |   false
+        ' '                     |   false
+        'a'                     |   false
+        ' a'                    |   false
+        'a '                    |   false
+        '!a'                    |   false
+        '!ab'                   |   false
+        'w' * 19 + '!'          |   false
+        'r' * 21                |   false
+
+        'xy'                    |   true
+        'a b'                   |   true
+        'abcde'                 |   true
+        'abcdef'                |   true
+        'Ab2C01faqWZ'           |   true
+        '123  bbq taco'         |   true
+        '  word'                |   true
+        'name   '               |   true
+        'r' * 20                |   true
+        'a' + ' ' * 18 + 'b'    |   true
     }
 
     @Unroll

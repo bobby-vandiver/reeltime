@@ -9,6 +9,7 @@ class User {
 
 	transient springSecurityService
 
+    String displayName
 	String email
 	String username
 	String password
@@ -23,7 +24,8 @@ class User {
 	static transients = ['springSecurityService']
 
 	static constraints = {
-		email blank: false, nullable: false, email: true
+        displayName blank: false, nullable: false, matches: /^\w{1}[\w ]{0,18}?\w{1}$/
+        email blank: false, nullable: false, email: true
 		username blank: false, nullable: false, matches: /^\w{2,15}$/, unique: true
 		password blank: false, nullable: false
         clients nullable: false, minSize: 1
