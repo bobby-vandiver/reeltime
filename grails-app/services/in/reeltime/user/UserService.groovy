@@ -17,8 +17,9 @@ class UserService {
         springSecurityService.currentUser as User
     }
 
-    User createAndSaveUser(String username, String password, String email, Client client, Reel reel) {
-        new User(username: username, password: password, email: email)
+    User createAndSaveUser(String username, String password, String displayName,
+                           String email, Client client, Reel reel) {
+        new User(username: username, password: password, displayName: displayName, email: email)
                 .addToClients(client)
                 .addToReels(reel)
                 .save()

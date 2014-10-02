@@ -66,10 +66,22 @@ class UserSpec extends Specification {
         'abcdef'                |   true
         'Ab2C01faqWZ'           |   true
         '123  bbq taco'         |   true
-        '  word'                |   true
-        'name   '               |   true
         'r' * 20                |   true
         'a' + ' ' * 18 + 'b'    |   true
+    }
+
+    @Unroll
+    void "leading and trailing whitespace are trimmed during data binding"() {
+        given:
+        def user = new User(displayName: displayName)
+
+        expect:
+        user.validate(['displayName'])
+
+        where:
+        _   |   displayName
+        _   |   '  word'
+        _   |   'name  '
     }
 
     @Unroll

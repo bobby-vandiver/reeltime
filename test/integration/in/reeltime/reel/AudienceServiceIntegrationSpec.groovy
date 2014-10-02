@@ -6,10 +6,10 @@ import in.reeltime.oauth2.Client
 import in.reeltime.user.User
 import in.reeltime.exceptions.AuthorizationException
 import spock.lang.Unroll
+import test.helper.UserFactory
 
 class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
-    def reelService
     def audienceService
 
     @Unroll
@@ -49,7 +49,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def memberUsername = 'member'
-        def member = createUser(memberUsername, 'clientId')
+        def member = UserFactory.createUser(memberUsername)
 
         and:
         reelIds.each { reelId ->
@@ -81,7 +81,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def memberUsername = 'member'
-        def member = createUser(memberUsername, 'clientId')
+        def member = UserFactory.createUser(memberUsername)
 
         and:
         reelIds.each { reelId ->
@@ -136,7 +136,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def memberUsername = 'member'
-        def member = createUser(memberUsername, 'clientId')
+        def member = UserFactory.createUser(memberUsername)
 
         when:
         SpringSecurityUtils.doWithAuth(memberUsername) {
@@ -156,7 +156,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def memberUsername = 'member'
-        createUser(memberUsername, 'clientId')
+        UserFactory.createUser(memberUsername)
 
         and:
         SpringSecurityUtils.doWithAuth(memberUsername) {
@@ -183,11 +183,11 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def memberUsername = 'member'
-        def member = createUser(memberUsername, 'clientId')
+        def member = UserFactory.createUser(memberUsername)
 
         and:
         def notMemberUsername = 'notMember'
-        def notMember = createUser(notMemberUsername, 'anotherClientId')
+        def notMember = UserFactory.createUser(notMemberUsername)
 
         and:
         SpringSecurityUtils.doWithAuth(memberUsername) {
@@ -219,7 +219,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         def members = []
 
         for(int i = 0; i < count; i++) {
-            def member = createUser("member$i", "clientId$i")
+            def member = UserFactory.createUser("member$i")
             members.add(member)
 
             reel.audience.addToMembers(member)
@@ -231,27 +231,17 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
     private List<Reel> createReels(int count) {
         def reels = []
         count.times { it ->
-            def user = createUser("someUser$it", "some-client-$it")
+            def user = UserFactory.createUser("someUser$it")
             reels << user.reels[0]
         }
         return reels
     }
 
     private Reel createReelWithEmptyAudience() {
-        def user = createUser('foo', 'bar')
+        def user = UserFactory.createUser('foo')
         def reel = user.reels[0]
         assert reel.id > 0
         return reel
-    }
-
-    private User createUser(String username, String clientId) {
-        def client = new Client(clientId: clientId, clientSecret: 'secret', clientName: 'name').save()
-        def reel = reelService.createReel(Reel.UNCATEGORIZED_REEL_NAME)
-
-        new User(username: "$username", password: 'password', email: "$username@test.com")
-                .addToClients(client)
-                .addToReels(reel)
-                .save()
     }
 
     private static void assertReelsExist(Collection<Long> reelIds) {

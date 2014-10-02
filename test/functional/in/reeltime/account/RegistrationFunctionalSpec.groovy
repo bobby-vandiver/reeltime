@@ -25,6 +25,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
             email = 'someone@somewhere.com'
             username = 'newUser'
             password = 'n3wP4s$w0rd!'
+            display_name = 'new user'
             client_name = 'newClient'
         }
 
@@ -60,6 +61,9 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
         then:
         token != null
+
+        cleanup:
+        reelTimeClient.removeAccount(token)
     }
 
     void "username is not available"() {
@@ -72,6 +76,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
             email = 'email@test.com'
             username = name
             password = 'password'
+            display_name = 'display'
             client_name = 'client'
         }
 
@@ -85,12 +90,13 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     }
 
     @Unroll
-    void "invalid params email [#emailAddress], username [#user], password [#pass], client_name [#client]"() {
+    void "invalid params email [#emailAddress], username [#user], password [#pass], display_name [#display], client_name [#client]"() {
         given:
         def request = createRegisterRequest {
             email = emailAddress
             username = user
             password = pass
+            display_name = display
             client_name = client
         }
 
@@ -103,22 +109,28 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         response.json.errors[0] == message
 
         where:
-        emailAddress        |   user     | pass     | client     | message
-        ''                  |   'user'   | 'secret' | 'client'   | '[email] is required'
-        null                |   'user'   | 'secret' | 'client'   | '[email] is required'
-        'test@'             |   'user'   | 'secret' | 'client'   | '[email] is not a valid e-mail address'
+        emailAddress        |   user     | pass     |   display     |   client     |    message
+        ''                  |   'user'   | 'secret' |   'display'   |   'client'   |    '[email] is required'
+        null                |   'user'   | 'secret' |   'display'   |   'client'   |    '[email] is required'
+        'test@'             |   'user'   | 'secret' |   'display'   |   'client'   |    '[email] is not a valid e-mail address'
 
-        'test@reeltime.in'  |   'user'   | 'secret' | ''         | '[client_name] is required'
-        'test@reeltime.in'  |   'user'   | 'secret' | null       | '[client_name] is required'
+        'test@reeltime.in'  |   'user'   | 'secret' |   'display'   |   ''         |    '[client_name] is required'
+        'test@reeltime.in'  |   'user'   | 'secret' |   'display'   |   null       |    '[client_name] is required'
 
-        'test@reeltime.in'  |   ''       | 'secret' | 'client'   | '[username] is required'
-        'test@reeltime.in'  |   null     | 'secret' | 'client'   | '[username] is required'
-        'test@reeltime.in'  |   'a'      | 'secret' | 'client'   | '[username] must be 2-15 alphanumeric characters long'
-        'test@reeltime.in'  |   '1234a!' | 'secret' | 'client'   | '[username] must be 2-15 alphanumeric characters long'
+        'test@reeltime.in'  |   'user'   | 'secret' |   ''          |   'client'   |    '[display_name] is required'
+        'test@reeltime.in'  |   'user'   | 'secret' |   null        |   'client'   |    '[display_name] is required'
+        'test@reeltime.in'  |   'user'   | 'secret' |   'a'         |   'client'   |    '[display_name] must be 2-20 alphanumeric or space characters long'
+        'test@reeltime.in'  |   'user'   | 'secret' |   'a' * 21    |   'client'   |    '[display_name] must be 2-20 alphanumeric or space characters long'
 
-        'test@reeltime.in'  |   'user'   | ''       | 'client'   | '[password] is required'
-        'test@reeltime.in'  |   'user'   | null     | 'client'   | '[password] is required'
-        'test@reeltime.in'  |   'user'   | 'short'  | 'client'   | '[password] must be at least 6 characters long'
+
+        'test@reeltime.in'  |   ''       | 'secret' |   'display'   |   'client'   |    '[username] is required'
+        'test@reeltime.in'  |   null     | 'secret' |   'display'   |   'client'   |    '[username] is required'
+        'test@reeltime.in'  |   'a'      | 'secret' |   'display'   |   'client'   |    '[username] must be 2-15 alphanumeric characters long'
+        'test@reeltime.in'  |   '1234a!' | 'secret' |   'display'   |   'client'   |    '[username] must be 2-15 alphanumeric characters long'
+
+        'test@reeltime.in'  |   'user'   | ''       |   'display'   |   'client'   |    '[password] is required'
+        'test@reeltime.in'  |   'user'   | null     |   'display'   |   'client'   |    '[password] is required'
+        'test@reeltime.in'  |   'user'   | 'short'  |   'display'   |   'client'   |    '[password] must be at least 6 characters long'
     }
 
     void "missing all params"() {
@@ -130,10 +142,11 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
         then:
         response.status == 400
-        response.json.errors.size() == 4
+        response.json.errors.size() == 5
 
         and:
         response.json.errors.contains('[client_name] is required')
+        response.json.errors.contains('[display_name] is required')
         response.json.errors.contains('[username] is required')
         response.json.errors.contains('[password] is required')
         response.json.errors.contains('[email] is required')

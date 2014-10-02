@@ -7,6 +7,8 @@ import in.reeltime.reel.Reel
 
 class User {
 
+    static final DISPLAY_NAME_REGEX = /^\w{1}[\w ]{0,18}?\w{1}$/
+
 	transient springSecurityService
 
     String displayName
@@ -24,7 +26,7 @@ class User {
 	static transients = ['springSecurityService']
 
 	static constraints = {
-        displayName blank: false, nullable: false, matches: /^\w{1}[\w ]{0,18}?\w{1}$/
+        displayName blank: false, nullable: false, matches: DISPLAY_NAME_REGEX
         email blank: false, nullable: false, email: true
 		username blank: false, nullable: false, matches: /^\w{2,15}$/, unique: true
 		password blank: false, nullable: false

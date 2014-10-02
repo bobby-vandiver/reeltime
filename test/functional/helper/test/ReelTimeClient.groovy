@@ -23,7 +23,8 @@ class ReelTimeClient {
 
     RestResponse registerUser(String username, String password, String clientName) {
         def email = username + '@test.com'
-        def request = requestFactory.registerUser(username, password, email, clientName)
+        def displayName = username
+        def request = requestFactory.registerUser(username, password, displayName, email, clientName)
 
         def response = post(request)
         if(response.status != 201) {

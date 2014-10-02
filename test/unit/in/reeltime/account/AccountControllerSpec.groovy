@@ -47,6 +47,8 @@ class AccountControllerSpec extends AbstractControllerSpec {
         def username = 'foo'
         def password = 'secret'
 
+        def displayName = 'foo bar'
+
         def email = 'foo@test.com'
         def clientName = 'something'
 
@@ -60,6 +62,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
         and:
         params.username = username
         params.password = password
+        params.display_name = displayName
         params.email = email
         params.client_name = clientName
 
@@ -67,6 +70,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
         def registrationCommandValidator = { AccountRegistrationCommand command, Locale locale ->
             assert command.username == username
             assert command.password == password
+            assert command.display_name == displayName
             assert command.email == email
             assert command.client_name == clientName
             assert locale == request.locale
@@ -95,6 +99,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
         given:
         params.username = 'foo'
         params.password = 'secret'
+        params.display_name = 'foo bar'
         params.email = 'foo@test.com'
         params.client_name = 'something'
 

@@ -71,7 +71,7 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
     private RegistrationResult registerNewUser(String username, String password, String clientName) {
         def command = new AccountRegistrationCommand(username: username, password: password,
-                email: "$username@test.com", client_name: clientName)
+                display_name: username, email: "$username@test.com", client_name: clientName)
 
         accountRegistrationService.registerUserAndClient(command, Locale.ENGLISH)
     }

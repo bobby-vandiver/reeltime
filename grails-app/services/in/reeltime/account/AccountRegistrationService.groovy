@@ -28,6 +28,7 @@ class AccountRegistrationService {
         def username = command.username
         def password = command.password
         def email = command.email
+        def displayName = command.display_name
         def clientName = command.client_name
 
         def clientId = clientService.generateClientId()
@@ -36,7 +37,7 @@ class AccountRegistrationService {
         def client = clientService.createAndSaveClient(clientName, clientId, clientSecret)
         def reel = reelService.createReel(UNCATEGORIZED_REEL_NAME)
 
-        def user = userService.createAndSaveUser(username, password, email, client, reel)
+        def user = userService.createAndSaveUser(username, password, displayName, email, client, reel)
 
         sendConfirmationEmail(user, locale)
         new RegistrationResult(clientId: clientId, clientSecret: clientSecret)

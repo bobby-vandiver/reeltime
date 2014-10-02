@@ -121,9 +121,9 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
 
     private static User createUser(String username, String clientId) {
         def client = Client.findByClientId(clientId)
-        def reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME, videos: [], audience: new Audience(members: []))
+        def reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME, audience: new Audience(members: []))
 
-        new User(username: username, password: 'secret', email: "$username@test.com")
+        new User(username: username, password: 'secret', displayName: username, email: "$username@test.com")
                 .addToClients(client)
                 .addToReels(reel)
                 .save()

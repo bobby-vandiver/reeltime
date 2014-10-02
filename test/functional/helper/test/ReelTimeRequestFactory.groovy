@@ -10,11 +10,12 @@ class ReelTimeRequestFactory {
         this.urlFactory = urlFactory
     }
 
-    RestRequest registerUser(String name, String pass, String emailAddress, String client) {
+    RestRequest registerUser(String name, String pass, String display, String emailAddress, String client) {
         new RestRequest(url: urlFactory.registerUrl, customizer: {
             email = emailAddress
             username = name
             password = pass
+            display_name = display
             client_name = client
         })
     }

@@ -8,6 +8,7 @@ class AccountRegistrationCommand {
 
     def userService
 
+    String display_name
     String email
     String username
     String password
@@ -16,6 +17,7 @@ class AccountRegistrationCommand {
     static constraints = {
         importFrom User, include: ['email', 'username', 'password']
 
+        display_name blank: false, nullable: false, matches: User.DISPLAY_NAME_REGEX
         username validator: usernameMustBeAvailable
         password minSize: 6
         client_name blank: false, nullable: false

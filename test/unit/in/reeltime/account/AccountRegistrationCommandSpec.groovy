@@ -58,6 +58,57 @@ class AccountRegistrationCommandSpec extends Specification {
     }
 
     @Unroll
+    void "display name [#displayName] is valid [#valid] -- inherited from User domain class"() {
+        given:
+        def command = new AccountRegistrationCommand(display_name: displayName)
+
+        expect:
+        command.validate(['display_name']) == valid
+
+        and:
+        command.errors.getFieldError('display_name')?.code == code
+
+        where:
+        displayName             |   valid   |   code
+        null                    |   false   |   'nullable'
+        ''                      |   false   |   'blank'
+        ' '                     |   false   |   'blank'
+        'a'                     |   false   |   'matches.invalid'
+        ' a'                    |   false   |   'matches.invalid'
+        'a '                    |   false   |   'matches.invalid'
+        '!a'                    |   false   |   'matches.invalid'
+        '!ab'                   |   false   |   'matches.invalid'
+        'w' * 19 + '!'          |   false   |   'matches.invalid'
+        'r' * 21                |   false   |   'matches.invalid'
+
+        'xy'                    |   true    |   null
+        'a b'                   |   true    |   null
+        'abcde'                 |   true    |   null
+        'abcdef'                |   true    |   null
+        'Ab2C01faqWZ'           |   true    |   null
+        '123  bbq taco'         |   true    |   null
+        'r' * 20                |   true    |   null
+        'a' + ' ' * 18 + 'b'    |   true    |   null
+    }
+
+    @Unroll
+    void "leading and trailing whitespace are NOT trimmed during data binding -- differs from User domain class"() {
+        given:
+        def command = new AccountRegistrationCommand(display_name: displayName)
+
+        expect:
+        !command.validate(['display_name'])
+
+        and:
+        command.errors.getFieldError('display_name')?.code == 'matches.invalid'
+
+        where:
+        _   |   displayName
+        _   |   '  word'
+        _   |   'name  '
+    }
+
+    @Unroll
     void "password [#password] is valid [#valid] -- inherited from User domain class"() {
         given:
         def command = new AccountRegistrationCommand(password: password)

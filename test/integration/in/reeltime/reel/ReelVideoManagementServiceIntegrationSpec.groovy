@@ -11,6 +11,7 @@ import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.exceptions.AuthorizationException
 import spock.lang.Ignore
 import spock.lang.Unroll
+import test.helper.UserFactory
 
 import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
@@ -28,13 +29,8 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
     User notOwner
 
     void setup() {
-        def ownerRequiredReel = reelService.createReel(UNCATEGORIZED_REEL_NAME)
-        def ownerClient = clientService.createAndSaveClient('cname1', 'cid1', 'secret')
-        owner = userService.createAndSaveUser('theOwner', 'password', 'someone@test.com', ownerClient, ownerRequiredReel)
-
-        def nowOwnerRequiredReel = reelService.createReel(UNCATEGORIZED_REEL_NAME)
-        def notOwnerClient = clientService.createAndSaveClient('cname2', 'cid2', 'secret')
-        notOwner = userService.createAndSaveUser('notTheOwner', 'password', 'nobody@test.com', notOwnerClient, nowOwnerRequiredReel)
+        owner = UserFactory.createUser('theOwner')
+        notOwner = UserFactory.createUser('notTheOwner')
     }
 
     @Unroll

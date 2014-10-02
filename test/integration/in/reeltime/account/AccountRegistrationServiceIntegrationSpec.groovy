@@ -3,6 +3,7 @@ package in.reeltime.account
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
 import in.reeltime.user.UserFollowing
+import test.helper.UserFactory
 
 class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
 
@@ -22,11 +23,12 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
         def email = 'foo@test.com'
         def username = 'foo'
         def password = 'bar'
+        def displayName = 'foo bar'
         def clientName = 'something'
 
         and:
         def command = new AccountRegistrationCommand(username: username, password: password,
-                email: email, client_name: clientName)
+                display_name: displayName, email: email, client_name: clientName)
 
         when:
         def result = accountRegistrationService.registerUserAndClient(command, Locale.ENGLISH)
@@ -60,13 +62,10 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
     void "register a new client for an existing user"() {
         given:
         def username = 'foo'
-        def password = 'bar'
+        def newUser = UserFactory.createUser(username)
 
-        def firstClientName = 'first one'
-        def secondClientName = 'second one'
-
-        and:
-        registerNewUser(username, password, firstClientName)
+        def firstClientName = newUser.clients[0].clientName
+        def secondClientName = firstClientName + 'a'
 
         when:
         def result = accountRegistrationService.registerClientForExistingUser(username, secondClientName)
@@ -83,12 +82,5 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
         user.clients.size() == 2
         user.clients.find { it.clientName == firstClientName } != null
         user.clients.find { it.clientName == secondClientName } != null
-    }
-
-    private RegistrationResult registerNewUser(String username, String password, String clientName) {
-        def command = new AccountRegistrationCommand(username: username, password: password,
-                email: "$username@test.com", client_name: clientName)
-
-        accountRegistrationService.registerUserAndClient(command, Locale.ENGLISH)
     }
 }

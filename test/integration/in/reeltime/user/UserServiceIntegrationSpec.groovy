@@ -15,13 +15,20 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
     void setup() {
         client = new Client(clientName: 'test-name', clientId: 'test-id').save()
-        reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME, audience: new Audience(), videos: [])
+        reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME, audience: new Audience())
     }
 
     void "user exists"() {
         given:
         def existingUsername = 'foo'
-        def existingUser = new User(username: existingUsername, password: 'unknown', email: "$existingUsername@test.com").save(validate: false)
+
+        def existingUser = new User(
+                username: existingUsername,
+                password: 'unknown',
+                displayName: existingUsername,
+                email: "$existingUsername@test.com"
+        ).save(validate: false)
+
         assert existingUser.id
 
         expect:
@@ -38,16 +45,20 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         def email = 'foo@test.com'
         def username = 'foo'
         def password = 'bar'
+        def displayName = 'foo bar'
 
         when:
-        def user = userService.createAndSaveUser(username, password, email, client, reel)
+        def user = userService.createAndSaveUser(username, password, displayName, email, client, reel)
 
         then:
         user.id > 0
 
         and:
         user.username == username
-        user.password != password
+        user.displayName == displayName
+
+        and:
+        passwordIsEncrypted(user, password)
 
         and:
         user.clients.size() == 1
@@ -56,6 +67,10 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         and:
         user.reels.size() == 1
         user.reels.contains(reel)
+    }
+
+    private static void passwordIsEncrypted(User user, String password) {
+        assert user.password != password
     }
 
     void "load an unknown user"() {
@@ -70,7 +85,13 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
     void "load an existing user"() {
         given:
         def username = 'exists'
-        new User(username: username, password: 'unknown', email: "$username@test.com").save(validate: false)
+
+        new User(
+                username: username,
+                password: 'unknown',
+                displayName: username,
+                email: "$username@test.com"
+        ).save(validate: false)
 
         when:
         def user = userService.loadUser(username)
@@ -93,6 +114,6 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
     }
 
     private User createAndSaveValidUser(String username) {
-        userService.createAndSaveUser(username, 'bar', "username@test.com", client, reel)
+        userService.createAndSaveUser(username, 'bar', 'some user', "username@test.com", client, reel)
     }
 }
