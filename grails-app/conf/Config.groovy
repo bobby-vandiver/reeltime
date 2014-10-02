@@ -118,6 +118,8 @@ grails.plugin.springsecurity.oauthProvider.authorizationCodeLookup.className = '
 grails.plugin.springsecurity.oauthProvider.accessTokenLookup.className = 'in.reeltime.oauth2.AccessToken'
 grails.plugin.springsecurity.oauthProvider.refreshTokenLookup.className = 'in.reeltime.oauth2.RefreshToken'
 
+grails.plugin.springsecurity.oauthProvider.realmName = 'ReelTime'
+
 grails.plugin.springsecurity.providerNames = [
         'clientCredentialsAuthenticationProvider',
         'daoAuthenticationProvider'

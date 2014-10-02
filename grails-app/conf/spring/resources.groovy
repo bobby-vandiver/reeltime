@@ -1,13 +1,10 @@
 import grails.util.Environment
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler
-import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint
 
 beans = {
 
-    // Entire application is secured by OAuth2
-    authenticationEntryPoint(OAuth2AuthenticationEntryPoint) {
-        realmName = 'ReelTime'
-    }
+    // Entire application is secured by OAuth2 -- reuse the bean defined by OAuth2 plugin
+    authenticationEntryPoint { it.parent = ref('oauth2AuthenticationEntryPoint') }
     accessDeniedHandler(OAuth2AccessDeniedHandler)
 
     String environmentName = Environment.currentEnvironment.name
