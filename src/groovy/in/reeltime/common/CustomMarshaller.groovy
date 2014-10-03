@@ -4,6 +4,8 @@ package in.reeltime.common
 // https://jira.grails.org/browse/GRAILS-11116
 class CustomMarshaller {
 
+    private CustomMarshallerRegistrar registrar = new CustomMarshallerRegistrar()
+
     Object marshall(Object obj) {
 
         if(obj instanceof Collection) {
@@ -25,11 +27,11 @@ class CustomMarshaller {
         }
 
         def clazz = data.class
-        if(!hasMarshallerAvailable(clazz)) {
+        if(!registrar.hasMarshallerAvailable(clazz)) {
             throw new IllegalArgumentException("Unsupported class [${clazz}]")
         }
 
-        def marshaller = CustomMarshallerRegistrar.marshallers.get(data.class)
+        def marshaller = registrar.getMarshaller(clazz)
         def map = marshaller(data)
         return marshallNestedObjects(map)
     }
@@ -37,7 +39,7 @@ class CustomMarshaller {
     private Map marshallNestedObjects(Map map) {
         def resolvedMap = [:]
         map.each { key, value ->
-            if(hasMarshallerAvailable(value.class)) {
+            if(registrar.hasMarshallerAvailable(value.class)) {
                 def newValue = marshall(value)
                 resolvedMap.put(key, newValue)
             }
@@ -46,9 +48,5 @@ class CustomMarshaller {
             }
         }
         return resolvedMap
-    }
-
-    private boolean hasMarshallerAvailable(Class clazz) {
-        return CustomMarshallerRegistrar.marshallers.containsKey(clazz)
     }
 }

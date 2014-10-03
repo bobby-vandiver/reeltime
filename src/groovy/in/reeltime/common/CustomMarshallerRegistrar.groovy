@@ -10,8 +10,7 @@ import in.reeltime.account.RegistrationResult
 
 class CustomMarshallerRegistrar {
 
-    // TODO: Make this a read only private field when PostConstruct is re-enabled
-    static final Map<Class, Closure> marshallers = [
+    private final Map<Class, Closure> marshallers = [
 
         (RegistrationResult): { result ->
             return [client_id: result.clientId, client_secret: result.clientSecret]
@@ -37,6 +36,20 @@ class CustomMarshallerRegistrar {
             return [type: 'add-video-to-reel', user: activity.user, reel: activity.reel, video: activity.video]
         }
     ]
+
+    boolean hasMarshallerAvailable(Class objectClass) {
+        return getMarshaller(objectClass) != null
+    }
+
+    Closure getMarshaller(Class objectClass) {
+        Closure marshallerToUse = null
+        marshallers.each { clazz, marshaller ->
+            if(clazz.isAssignableFrom(objectClass)) {
+                marshallerToUse = marshaller
+            }
+        }
+        return marshallerToUse
+    }
 
     // TODO: Re-enable PostConstruct when GRAILS-11116 is resolved
     // @PostConstruct

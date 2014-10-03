@@ -30,8 +30,9 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
 
         then:
         response.status == 202
-        response.json.size() == 1
+        response.json.size() == 2
         response.json.videoId > 0
+        response.json.title == 'minimum-viable-video'
     }
 
     void "successful upload polls for status"() {

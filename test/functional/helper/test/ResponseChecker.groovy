@@ -92,10 +92,9 @@ class ResponseChecker {
 
     private boolean videoIsInList(JSONElement list, Long videoId) {
         boolean found = false
-        JSONObject expected = [videoId: videoId]
 
         list.each { elem ->
-            if(elem == expected) {
+            if(elem?.videoId == videoId) {
                 found = true
             }
         }
