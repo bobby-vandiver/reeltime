@@ -2,6 +2,7 @@ package in.reeltime.user
 
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
+import in.reeltime.common.CustomMarshaller
 import in.reeltime.exceptions.UserNotFoundException
 
 import static javax.servlet.http.HttpServletResponse.*
@@ -44,7 +45,7 @@ class UserFollowingController extends AbstractController {
         handleSingleParamRequest(username, 'following.username.required') {
             def user = userService.loadUser(username)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                userFollowingService.listFollowersForFollowee(user)
+                marshall(userFollowingService.listFollowersForFollowee(user))
             }
         }
     }
@@ -54,7 +55,7 @@ class UserFollowingController extends AbstractController {
         handleSingleParamRequest(username, 'following.username.required') {
             def user = userService.loadUser(username)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                userFollowingService.listFolloweesForFollower(user)
+                marshall(userFollowingService.listFolloweesForFollower(user))
             }
         }
     }

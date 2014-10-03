@@ -7,6 +7,9 @@ abstract class AbstractController {
 
     def localizedMessageService
 
+    @Delegate
+    final CustomMarshaller customMarshaller = new CustomMarshaller()
+
     protected void exceptionErrorMessageResponse(Exception e, String messageCode, int statusCode) {
         def exceptionClassName = e.class.simpleName
         log.warn("Handling $exceptionClassName: ", e)

@@ -26,7 +26,7 @@ class ReelController extends AbstractController {
         log.debug "Listing reels for user [$username]"
         handleSingleParamRequest(username, 'reel.username.required') {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                reelService.listReels(username)
+                marshall(reelService.listReels(username))
             }
         }
     }
@@ -36,7 +36,7 @@ class ReelController extends AbstractController {
         log.debug "Adding reel [$name]"
         handleSingleParamRequest(name, 'reel.name.required') {
             render(status: SC_CREATED, contentType: APPLICATION_JSON) {
-                reelService.addReel(name)
+                marshall(reelService.addReel(name))
             }
         }
     }
@@ -55,7 +55,7 @@ class ReelController extends AbstractController {
         log.debug "Listing videos in reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                reelVideoManagementService.listVideos(reelId)
+                marshall(reelVideoManagementService.listVideos(reelId))
             }
         }
     }

@@ -18,7 +18,7 @@ class NewsfeedController extends AbstractController {
 
         if(pageNumberIsValid(pageNumber)) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                [activities: newsfeedService.listRecentActivity(pageNumber)]
+                [activities: marshall(newsfeedService.listRecentActivity(pageNumber))]
             }
         }
         else {

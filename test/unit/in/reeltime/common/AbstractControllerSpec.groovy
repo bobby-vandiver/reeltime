@@ -10,7 +10,8 @@ abstract class AbstractControllerSpec extends Specification {
     protected final String TEST_MESSAGE = 'this is a test'
 
     void setup() {
-        new CustomMarshallerRegistrar().registerMarshallers()
+        // TODO: Re-enable when GRAILS-11116 is resolved
+        // new CustomMarshallerRegistrar().registerMarshallers()
     }
 
     protected Object getJsonResponse(GrailsMockHttpServletResponse response) {

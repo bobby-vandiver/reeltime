@@ -20,7 +20,7 @@ class AccountController extends AbstractController {
 
         if(!command.hasErrors()) {
             render(status: SC_CREATED, contentType: APPLICATION_JSON) {
-                accountRegistrationService.registerUserAndClient(command, request.locale)
+                marshall(accountRegistrationService.registerUserAndClient(command, request.locale))
             }
         }
         else {
@@ -33,7 +33,7 @@ class AccountController extends AbstractController {
 
         if(!command.hasErrors()) {
             render(status: SC_CREATED, contentType: APPLICATION_JSON) {
-                accountRegistrationService.registerClientForExistingUser(command.username, command.client_name)
+                marshall(accountRegistrationService.registerClientForExistingUser(command.username, command.client_name))
             }
         }
         else {

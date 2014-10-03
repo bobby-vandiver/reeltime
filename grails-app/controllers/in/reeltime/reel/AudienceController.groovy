@@ -19,7 +19,7 @@ class AudienceController extends AbstractController {
         log.debug "List audience members for reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                audienceService.listMembers(reelId)
+                marshall(audienceService.listMembers(reelId))
             }
         }
     }

@@ -7,35 +7,42 @@ import in.reeltime.video.Video
 import in.reeltime.activity.CreateReelActivity
 import in.reeltime.activity.AddVideoToReelActivity
 import in.reeltime.account.RegistrationResult
-import javax.annotation.PostConstruct
 
 class CustomMarshallerRegistrar {
 
-    @PostConstruct
-    void registerMarshallers() {
+    // TODO: Make this a read only private field when PostConstruct is re-enabled
+    static final Map<Class, Closure> marshallers = [
 
-        JSON.registerObjectMarshaller(RegistrationResult) { result ->
+        (RegistrationResult): { result ->
             return [client_id: result.clientId, client_secret: result.clientSecret]
-        }
+        },
 
-        JSON.registerObjectMarshaller(User) { user ->
+        (User): { user ->
             return [username: user.username]
-        }
+        },
 
-        JSON.registerObjectMarshaller(Reel) { reel ->
+        (Reel): { reel ->
             return [reelId: reel.id, name: reel.name]
-        }
+        },
 
-        JSON.registerObjectMarshaller(Video) { video ->
+        (Video): { video ->
             return [videoId: video.id, title: video.title]
-        }
+        },
 
-        JSON.registerObjectMarshaller(CreateReelActivity) { activity ->
+        (CreateReelActivity): { activity ->
             return [type: 'create-reel', user: activity.user, reel: activity.reel]
-        }
+        },
 
-        JSON.registerObjectMarshaller(AddVideoToReelActivity) { activity ->
+        (AddVideoToReelActivity): { activity ->
             return [type: 'add-video-to-reel', user: activity.user, reel: activity.reel, video: activity.video]
+        }
+    ]
+
+    // TODO: Re-enable PostConstruct when GRAILS-11116 is resolved
+    // @PostConstruct
+    void registerMarshallers() {
+        marshallers.each { clazz, marshaller ->
+            JSON.registerObjectMarshaller(clazz, marshaller)
         }
     }
 }

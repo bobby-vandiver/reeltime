@@ -23,7 +23,7 @@ class VideoCreationController extends AbstractController {
 
         if(videoCreationService.allowCreation(command)) {
             render(status: SC_ACCEPTED, contentType: APPLICATION_JSON) {
-                videoCreationService.createVideo(command)
+                marshall(videoCreationService.createVideo(command))
             }
         }
         else {
