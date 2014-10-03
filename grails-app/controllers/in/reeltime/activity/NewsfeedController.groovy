@@ -5,7 +5,6 @@ import in.reeltime.common.AbstractController
 
 import static javax.servlet.http.HttpServletResponse.*
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
-import static in.reeltime.common.ListMarshaller.marshallUserReelActivityList
 
 class NewsfeedController extends AbstractController {
 
@@ -18,9 +17,8 @@ class NewsfeedController extends AbstractController {
         int pageNumber = (page != null) ? page : 1
 
         if(pageNumberIsValid(pageNumber)) {
-            def activities = newsfeedService.listRecentActivity(pageNumber)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                [activities: marshallUserReelActivityList(activities)]
+                [activities: newsfeedService.listRecentActivity(pageNumber)]
             }
         }
         else {

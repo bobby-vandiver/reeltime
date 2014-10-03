@@ -9,6 +9,10 @@ abstract class AbstractControllerSpec extends Specification {
 
     protected final String TEST_MESSAGE = 'this is a test'
 
+    void setup() {
+        new CustomMarshallerRegistrar().registerMarshallers()
+    }
+
     protected Object getJsonResponse(GrailsMockHttpServletResponse response) {
         new JsonSlurper().parseText(response.contentAsString)
     }

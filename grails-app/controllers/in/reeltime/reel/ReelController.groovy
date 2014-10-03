@@ -8,7 +8,6 @@ import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
 
-import static in.reeltime.common.ListMarshaller.*
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.*
 
@@ -26,9 +25,8 @@ class ReelController extends AbstractController {
     def listReels(String username) {
         log.debug "Listing reels for user [$username]"
         handleSingleParamRequest(username, 'reel.username.required') {
-            def reels = reelService.listReels(username)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshallReelList(reels)
+                reelService.listReels(username)
             }
         }
     }
@@ -37,9 +35,8 @@ class ReelController extends AbstractController {
     def addReel(String name) {
         log.debug "Adding reel [$name]"
         handleSingleParamRequest(name, 'reel.name.required') {
-            def reel = reelService.addReel(name)
             render(status: SC_CREATED, contentType: APPLICATION_JSON) {
-                [reelId: reel.id, name: reel.name]
+                reelService.addReel(name)
             }
         }
     }
@@ -57,9 +54,8 @@ class ReelController extends AbstractController {
     def listVideos(Long reelId) {
         log.debug "Listing videos in reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {
-            def videos = reelVideoManagementService.listVideos(reelId)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshallVideoList(videos)
+                reelVideoManagementService.listVideos(reelId)
             }
         }
     }

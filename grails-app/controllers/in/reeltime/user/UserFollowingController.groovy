@@ -5,7 +5,6 @@ import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.UserNotFoundException
 
 import static javax.servlet.http.HttpServletResponse.*
-import static in.reeltime.common.ListMarshaller.marshallUsersList
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 
 class UserFollowingController extends AbstractController {
@@ -44,10 +43,8 @@ class UserFollowingController extends AbstractController {
     def listFollowers(String username) {
         handleSingleParamRequest(username, 'following.username.required') {
             def user = userService.loadUser(username)
-            def followers = userFollowingService.listFollowersForFollowee(user)
-
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshallUsersList(followers)
+                userFollowingService.listFollowersForFollowee(user)
             }
         }
     }
@@ -56,10 +53,8 @@ class UserFollowingController extends AbstractController {
     def listFollowees(String username) {
         handleSingleParamRequest(username, 'following.username.required') {
             def user = userService.loadUser(username)
-            def followees = userFollowingService.listFolloweesForFollower(user)
-
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshallUsersList(followees)
+                userFollowingService.listFolloweesForFollower(user)
             }
         }
     }

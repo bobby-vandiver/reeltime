@@ -5,7 +5,6 @@ import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ReelNotFoundException
 
-import static in.reeltime.common.ListMarshaller.*
 import static in.reeltime.common.ContentTypes.*
 import static javax.servlet.http.HttpServletResponse.*
 
@@ -19,9 +18,8 @@ class AudienceController extends AbstractController {
     def listMembers(Long reelId) {
         log.debug "List audience members for reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {
-            def members = audienceService.listMembers(reelId)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshallUsersList(members)
+                audienceService.listMembers(reelId)
             }
         }
     }

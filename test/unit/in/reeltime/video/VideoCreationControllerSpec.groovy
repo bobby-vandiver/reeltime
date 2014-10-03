@@ -53,7 +53,7 @@ class VideoCreationControllerSpec extends AbstractControllerSpec {
             assert command.creator == currentUser
             assert command.title == title
             assert command.videoStream.bytes == videoData
-            return new Video().save(validate: false)
+            return new Video(title: title).save(validate: false)
         }
 
         def allowCommand = { VideoCreationCommand command ->
@@ -74,7 +74,11 @@ class VideoCreationControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = new JsonSlurper().parseText(response.contentAsString)
+        json.size() == 2
+
+        and:
         json.videoId > 0
+        json.title == title
     }
 
     @Unroll

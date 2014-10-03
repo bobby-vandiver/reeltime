@@ -22,9 +22,8 @@ class VideoCreationController extends AbstractController {
         bindAdditionalData(command)
 
         if(videoCreationService.allowCreation(command)) {
-            def video = videoCreationService.createVideo(command)
             render(status: SC_ACCEPTED, contentType: APPLICATION_JSON) {
-                [videoId: video.id]
+                videoCreationService.createVideo(command)
             }
         }
         else {

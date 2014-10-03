@@ -19,9 +19,8 @@ class AccountController extends AbstractController {
     def register(AccountRegistrationCommand command) {
 
         if(!command.hasErrors()) {
-            def result = accountRegistrationService.registerUserAndClient(command, request.locale)
             render(status: SC_CREATED, contentType: APPLICATION_JSON) {
-                [client_id: result.clientId, client_secret: result.clientSecret]
+                accountRegistrationService.registerUserAndClient(command, request.locale)
             }
         }
         else {
@@ -33,9 +32,8 @@ class AccountController extends AbstractController {
     def registerClient(ClientRegistrationCommand command) {
 
         if(!command.hasErrors()) {
-            def result = accountRegistrationService.registerClientForExistingUser(command.username, command.client_name)
             render(status: SC_CREATED, contentType: APPLICATION_JSON) {
-                [client_id: result.clientId, client_secret: result.clientSecret]
+                accountRegistrationService.registerClientForExistingUser(command.username, command.client_name)
             }
         }
         else {

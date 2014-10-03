@@ -247,7 +247,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     void "video list contains only one video"() {
         given:
-        def video = new Video().save(validate: false)
+        def video = new Video(title: 'one').save(validate: false)
         assert video.id > 0
 
         and:
@@ -264,8 +264,9 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json.size() == 1
 
         and:
-        json[0].size() == 1
+        json[0].size() == 2
         json[0].videoId == video.id
+        json[0].title == 'one'
 
         and:
         1 * reelVideoManagementService.listVideos(1234) >> [video]
@@ -273,11 +274,11 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     void "video list contains multiple videos"() {
         given:
-        def video1 = new Video().save(validate: false)
+        def video1 = new Video(title: 'first').save(validate: false)
         assert video1.id > 0
 
         and:
-        def video2 = new Video().save(validate: false)
+        def video2 = new Video(title: 'second').save(validate: false)
         assert video2.id > 0
 
         and:
@@ -294,12 +295,14 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json.size() == 2
 
         and:
-        json[0].size() == 1
+        json[0].size() == 2
         json[0].videoId == video1.id
+        json[0].title == 'first'
 
         and:
-        json[1].size() == 1
+        json[1].size() == 2
         json[1].videoId == video2.id
+        json[1].title == 'second'
 
         and:
         1 * reelVideoManagementService.listVideos(1234) >> [video1, video2]
