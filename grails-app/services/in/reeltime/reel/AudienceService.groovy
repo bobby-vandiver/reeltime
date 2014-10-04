@@ -17,8 +17,8 @@ class AudienceService {
         return reel.audience.members
     }
 
-    List<Reel> listReelsForAudienceMember(User user) {
-        def audiences = Audience.findAllByAudienceMember(user)
+    List<Reel> listReelsForAudienceMember(User member) {
+        def audiences = Audience.findAllByAudienceMember(member)
         return audiences*.reel
     }
 
@@ -48,18 +48,18 @@ class AudienceService {
         removeMemberFromAudience(currentUser, audience)
     }
 
-    void removeMemberFromAllAudiences(User user) {
-        def audiences = Audience.findAllByAudienceMember(user)
+    void removeMemberFromAllAudiences(User member) {
+        def audiences = Audience.findAllByAudienceMember(member)
 
         audiences.each { audience ->
-            removeMemberFromAudience(user, audience)
+            removeMemberFromAudience(member, audience)
         }
     }
 
-    private void removeMemberFromAudience(User user, Audience audience) {
-        audience.removeFromMembers(user)
+    private void removeMemberFromAudience(User member, Audience audience) {
+        audience.removeFromMembers(member)
         storeAudience(audience)
-        activityService.userLeftAudience(user, audience)
+        activityService.userLeftAudience(member, audience)
     }
 
     void storeAudience(Audience audience) {
