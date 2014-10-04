@@ -39,6 +39,7 @@ abstract class FunctionalSpec extends Specification {
     ]
 
     protected static final String CREATE_REEL_ACTIVITY_TYPE = 'create-reel'
+    protected static final String JOIN_REEL_AUDIENCE_ACTIVITY_TYPE = 'join-reel-audience'
     protected static final String ADD_VIDEO_TO_REEL_ACTIVITY_TYPE = 'add-video-to-reel'
 
     protected testClientId

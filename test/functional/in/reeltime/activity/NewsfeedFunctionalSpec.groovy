@@ -65,17 +65,14 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
 
         then:
-        newsfeed.activities.size() == 3
+        newsfeed.activities.size() == 4
 
         and:
-        newsfeed.activities[0].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[0].user.username == 'someone'
+        newsfeed.activities[0].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
+        newsfeed.activities[0].user.username == TEST_USER
 
         newsfeed.activities[0].reel.reelId == reelId
         newsfeed.activities[0].reel.name == 'some reel'
-
-        newsfeed.activities[0].video.videoId == additionalVideoId
-        newsfeed.activities[0].video.title == 'another video'
 
         and:
         newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
@@ -84,15 +81,25 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[1].reel.reelId == reelId
         newsfeed.activities[1].reel.name == 'some reel'
 
-        newsfeed.activities[1].video.videoId == videoId
-        newsfeed.activities[1].video.title == 'some video'
+        newsfeed.activities[1].video.videoId == additionalVideoId
+        newsfeed.activities[1].video.title == 'another video'
 
         and:
-        newsfeed.activities[2].type == CREATE_REEL_ACTIVITY_TYPE
+        newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[2].user.username == 'someone'
 
         newsfeed.activities[2].reel.reelId == reelId
         newsfeed.activities[2].reel.name == 'some reel'
+
+        newsfeed.activities[2].video.videoId == videoId
+        newsfeed.activities[2].video.title == 'some video'
+
+        and:
+        newsfeed.activities[3].type == CREATE_REEL_ACTIVITY_TYPE
+        newsfeed.activities[3].user.username == 'someone'
+
+        newsfeed.activities[3].reel.reelId == reelId
+        newsfeed.activities[3].reel.name == 'some reel'
     }
 
     void "user is following multiple reels"() {
@@ -117,41 +124,55 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
 
         then:
-        newsfeed.activities.size() == 4
+        newsfeed.activities.size() == 6
 
         and:
-        newsfeed.activities[0].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[0].user.username == 'someone'
+        newsfeed.activities[0].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
+        newsfeed.activities[0].user.username == TEST_USER
 
-        newsfeed.activities[0].reel.reelId == someReelId
-        newsfeed.activities[0].reel.name == 'some reel'
-
-        newsfeed.activities[0].video.videoId == someVideoId
-        newsfeed.activities[0].video.title == 'some video'
+        newsfeed.activities[0].reel.reelId == anyReelId
+        newsfeed.activities[0].reel.name == 'any reel'
 
         and:
-        newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[1].user.username == 'anyone'
+        newsfeed.activities[1].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
+        newsfeed.activities[1].user.username == TEST_USER
 
-        newsfeed.activities[1].reel.reelId == anyReelId
-        newsfeed.activities[1].reel.name == 'any reel'
-
-        newsfeed.activities[1].video.videoId == anyVideoId
-        newsfeed.activities[1].video.title == 'any video'
+        newsfeed.activities[1].reel.reelId == someReelId
+        newsfeed.activities[1].reel.name == 'some reel'
 
         and:
-        newsfeed.activities[2].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[2].user.username == 'anyone'
+        newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
+        newsfeed.activities[2].user.username == 'someone'
 
-        newsfeed.activities[2].reel.reelId == anyReelId
-        newsfeed.activities[2].reel.name == 'any reel'
+        newsfeed.activities[2].reel.reelId == someReelId
+        newsfeed.activities[2].reel.name == 'some reel'
+
+        newsfeed.activities[2].video.videoId == someVideoId
+        newsfeed.activities[2].video.title == 'some video'
 
         and:
-        newsfeed.activities[3].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[3].user.username == 'someone'
+        newsfeed.activities[3].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
+        newsfeed.activities[3].user.username == 'anyone'
 
-        newsfeed.activities[3].reel.reelId == someReelId
-        newsfeed.activities[3].reel.name == 'some reel'
+        newsfeed.activities[3].reel.reelId == anyReelId
+        newsfeed.activities[3].reel.name == 'any reel'
+
+        newsfeed.activities[3].video.videoId == anyVideoId
+        newsfeed.activities[3].video.title == 'any video'
+
+        and:
+        newsfeed.activities[4].type == CREATE_REEL_ACTIVITY_TYPE
+        newsfeed.activities[4].user.username == 'anyone'
+
+        newsfeed.activities[4].reel.reelId == anyReelId
+        newsfeed.activities[4].reel.name == 'any reel'
+
+        and:
+        newsfeed.activities[5].type == CREATE_REEL_ACTIVITY_TYPE
+        newsfeed.activities[5].user.username == 'someone'
+
+        newsfeed.activities[5].reel.reelId == someReelId
+        newsfeed.activities[5].reel.name == 'some reel'
     }
 
     void "user is following a single user"() {
@@ -297,41 +318,50 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
 
         then:
-        newsfeed.activities.size() == 4
+
+
+        newsfeed.activities.size() == 5
 
         and:
-        newsfeed.activities[0].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[0].user.username == 'someone'
+        newsfeed.activities[0].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
+        newsfeed.activities[0].user.username == TEST_USER
 
         newsfeed.activities[0].reel.reelId == someReelId
         newsfeed.activities[0].reel.name == 'some reel'
 
-        newsfeed.activities[0].video.videoId == someVideoId
-        newsfeed.activities[0].video.title == 'some video'
-
         and:
         newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[1].user.username == 'anyone'
+        newsfeed.activities[1].user.username == 'someone'
 
-        newsfeed.activities[1].reel.reelId == anyReelId
-        newsfeed.activities[1].reel.name == 'any reel'
+        newsfeed.activities[1].reel.reelId == someReelId
+        newsfeed.activities[1].reel.name == 'some reel'
 
-        newsfeed.activities[1].video.videoId == anyVideoId
-        newsfeed.activities[1].video.title == 'any video'
+        newsfeed.activities[1].video.videoId == someVideoId
+        newsfeed.activities[1].video.title == 'some video'
 
         and:
-        newsfeed.activities[2].type == CREATE_REEL_ACTIVITY_TYPE
+        newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[2].user.username == 'anyone'
 
         newsfeed.activities[2].reel.reelId == anyReelId
         newsfeed.activities[2].reel.name == 'any reel'
 
+        newsfeed.activities[2].video.videoId == anyVideoId
+        newsfeed.activities[2].video.title == 'any video'
+
         and:
         newsfeed.activities[3].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[3].user.username == 'someone'
+        newsfeed.activities[3].user.username == 'anyone'
 
-        newsfeed.activities[3].reel.reelId == someReelId
-        newsfeed.activities[3].reel.name == 'some reel'
+        newsfeed.activities[3].reel.reelId == anyReelId
+        newsfeed.activities[3].reel.name == 'any reel'
+
+        and:
+        newsfeed.activities[4].type == CREATE_REEL_ACTIVITY_TYPE
+        newsfeed.activities[4].user.username == 'someone'
+
+        newsfeed.activities[4].reel.reelId == someReelId
+        newsfeed.activities[4].reel.name == 'some reel'
     }
 
     void "user is following a user who hasn't done anything"() {
@@ -366,23 +396,30 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
 
         then:
-        newsfeed.activities.size() == 2
+        newsfeed.activities.size() == 3
 
         and:
-        newsfeed.activities[0].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[0].user.username == 'someone'
+        newsfeed.activities[0].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
+        newsfeed.activities[0].user.username == TEST_USER
 
         newsfeed.activities[0].reel.reelId == reelId
         newsfeed.activities[0].reel.name == 'some reel'
 
         and:
-        newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
+        newsfeed.activities[1].type == CREATE_REEL_ACTIVITY_TYPE
         newsfeed.activities[1].user.username == 'someone'
 
-        newsfeed.activities[1].reel.reelId == uncategorizedReelId
-        newsfeed.activities[1].reel.name == 'Uncategorized'
+        newsfeed.activities[1].reel.reelId == reelId
+        newsfeed.activities[1].reel.name == 'some reel'
 
-        newsfeed.activities[1].video.videoId == videoId
-        newsfeed.activities[1].video.title == 'some video'
+        and:
+        newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
+        newsfeed.activities[2].user.username == 'someone'
+
+        newsfeed.activities[2].reel.reelId == uncategorizedReelId
+        newsfeed.activities[2].reel.name == 'Uncategorized'
+
+        newsfeed.activities[2].video.videoId == videoId
+        newsfeed.activities[2].video.title == 'some video'
     }
 }

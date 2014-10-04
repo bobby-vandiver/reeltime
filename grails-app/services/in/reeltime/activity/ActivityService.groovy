@@ -1,5 +1,6 @@
 package in.reeltime.activity
 
+import in.reeltime.reel.Audience
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.video.Video
@@ -21,7 +22,8 @@ class ActivityService {
         UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.CreateReel)?.delete()
     }
 
-    void userJoinedAudience(User user, Reel reel) {
+    void userJoinedAudience(User user, Audience audience) {
+        def reel = audience.reel
         if(UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience)) {
             throw new IllegalArgumentException("Join reel audience activity already exists")
         }
@@ -29,7 +31,8 @@ class ActivityService {
         new UserReelActivity(user: user, reel: reel, type: ActivityType.JoinReelAudience).save()
     }
 
-    void userLeftAudience(User user, Reel reel) {
+    void userLeftAudience(User user, Audience audience) {
+        def reel = audience.reel
         log.info "User [${user.username}] has left the audience for reel [${reel.id}]"
         UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience)?.delete()
     }

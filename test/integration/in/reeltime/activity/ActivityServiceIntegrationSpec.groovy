@@ -66,7 +66,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
     void "save join reel audience activity"() {
         when:
-        activityService.userJoinedAudience(user, reel)
+        activityService.userJoinedAudience(user, reel.audience)
 
         then:
         def activity = UserReelActivity.findByUserAndReel(user, reel)
@@ -77,10 +77,10 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
     void "attempt to add join reel audience activity multiple times"() {
         given:
-        activityService.userJoinedAudience(user, reel)
+        activityService.userJoinedAudience(user, reel.audience)
 
         when:
-        activityService.userJoinedAudience(user, reel)
+        activityService.userJoinedAudience(user, reel.audience)
 
         then:
         def e = thrown(IllegalArgumentException)
@@ -89,10 +89,10 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
     void "delete join reel audience activity"() {
         given:
-        activityService.userJoinedAudience(user, reel)
+        activityService.userJoinedAudience(user, reel.audience)
 
         when:
-        activityService.userLeftAudience(user, reel)
+        activityService.userLeftAudience(user, reel.audience)
 
         then:
         UserReelActivity.findByUserAndReel(user, reel) == null

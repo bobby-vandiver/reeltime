@@ -42,6 +42,7 @@ class CustomMarshallerRegistrar {
 
     private final Map<ActivityType, String> activityTypes = [
             (ActivityType.CreateReel): 'create-reel',
+            (ActivityType.JoinReelAudience): 'join-reel-audience',
             (ActivityType.AddVideoToReel): 'add-video-to-reel'
     ]
 

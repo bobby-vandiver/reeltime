@@ -10,6 +10,7 @@ class AudienceService {
     def reelAuthorizationService
 
     def userService
+    def activityService
 
     Collection<User> listMembers(Long reelId) {
         def reel = reelService.loadReel(reelId)
@@ -27,8 +28,12 @@ class AudienceService {
             throw new AuthorizationException("Owner of a reel cannot be a member of the reel's audience")
         }
         def currentUser = userService.currentUser
-        reel.audience.addToMembers(currentUser)
-        reelService.storeReel(reel)
+        def audience = reel.audience
+
+        audience.addToMembers(currentUser)
+        storeAudience(audience)
+
+        activityService.userJoinedAudience(currentUser, audience)
     }
 
     void removeMember(Long reelId) {
@@ -40,17 +45,21 @@ class AudienceService {
             def message = "Current user [${currentUser.username}] is not a member of the audience for reel [$reelId]"
             throw new AuthorizationException(message)
         }
-        audience.removeFromMembers(currentUser)
-        reelService.storeReel(reel)
+        removeMemberFromAudience(currentUser, audience)
     }
 
     void removeMemberFromAllAudiences(User user) {
         def audiences = Audience.findAllByAudienceMember(user)
 
         audiences.each { audience ->
-            audience.removeFromMembers(user)
-            storeAudience(audience)
+            removeMemberFromAudience(user, audience)
         }
+    }
+
+    private void removeMemberFromAudience(User user, Audience audience) {
+        audience.removeFromMembers(user)
+        storeAudience(audience)
+        activityService.userLeftAudience(user, audience)
     }
 
     void storeAudience(Audience audience) {

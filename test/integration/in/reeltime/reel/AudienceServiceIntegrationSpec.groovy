@@ -2,15 +2,16 @@ package in.reeltime.reel
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
-import in.reeltime.oauth2.Client
 import in.reeltime.user.User
 import in.reeltime.exceptions.AuthorizationException
 import spock.lang.Unroll
 import test.helper.UserFactory
+import in.reeltime.activity.ActivityType
 
 class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
     def audienceService
+    def activityService
 
     @Unroll
     void "list audience with [#count] members"() {
@@ -147,6 +148,14 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         def audience = Audience.findByReel(reel)
         audience.members.size() == 1
         audience.members.contains(member)
+
+        and:
+        def activities = activityService.findActivities([member], [])
+        activities.size() == 1
+
+        activities[0].type == ActivityType.JoinReelAudience
+        activities[0].user == member
+        activities[0].reel == reel
     }
 
     void "the current user can remove themselves from an audience they are a member of"() {
@@ -156,7 +165,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def memberUsername = 'member'
-        UserFactory.createUser(memberUsername)
+        def member = UserFactory.createUser(memberUsername)
 
         and:
         SpringSecurityUtils.doWithAuth(memberUsername) {
@@ -174,6 +183,10 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         then:
         def audience = Audience.findByReel(reel)
         audience.members.size() == 0
+
+        and:
+        def activities = activityService.findActivities([member], [])
+        activities.size() == 0
     }
 
     void "the current user cannot remove themselves if they are not a member of the audience"() {
