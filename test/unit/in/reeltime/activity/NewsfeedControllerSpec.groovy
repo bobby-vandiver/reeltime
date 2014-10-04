@@ -99,7 +99,7 @@ class NewsfeedControllerSpec extends AbstractControllerSpec {
         and:
         json.activities[0].size() == 4
 
-        json.activities[0].type == ActivityType.AddVideoToReel.toString()
+        json.activities[0].type == 'add-video-to-reel'
         json.activities[0].user.username == 'someone'
 
         json.activities[0].reel.reelId == reelId
@@ -111,7 +111,7 @@ class NewsfeedControllerSpec extends AbstractControllerSpec {
         and:
         json.activities[1].size() == 3
 
-        json.activities[1].type == ActivityType.CreateReel.toString()
+        json.activities[1].type == 'create-reel'
         json.activities[1].user.username == 'someone'
 
         json.activities[1].reel.reelId == reelId

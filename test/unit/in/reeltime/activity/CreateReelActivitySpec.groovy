@@ -14,12 +14,4 @@ class CreateReelActivitySpec extends Specification {
         expect:
         activity instanceof UserReelActivity
     }
-
-    void "test activity type"() {
-        given:
-        def activity = new CreateReelActivity()
-
-        expect:
-        activity.type == ActivityType.CreateReel
-    }
 }

@@ -40,7 +40,6 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         activity != null
 
         activity instanceof CreateReelActivity
-        activity.type == ActivityType.CreateReel
     }
 
     void "attempt to add real creation activity multiple times"() {
@@ -64,7 +63,6 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         activity != null
 
         activity instanceof AddVideoToReelActivity
-        activity.type == ActivityType.AddVideoToReel
     }
 
     void "attempt to add video added to reel activity multiple times"() {
@@ -139,8 +137,8 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         def list = activityService.findActivities(users, reels)
         assert list.size() == 2
 
-        assert list[0].type == ActivityType.AddVideoToReel
-        assert list[1].type == ActivityType.CreateReel
+        assert list[0].class == AddVideoToReelActivity
+        assert list[1].class == CreateReelActivity
     }
 
     void "list first page of activity if no page is specified"() {

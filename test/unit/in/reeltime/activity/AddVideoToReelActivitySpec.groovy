@@ -21,12 +21,4 @@ class AddVideoToReelActivitySpec extends Specification {
         expect:
         !activity.validate(['video'])
     }
-
-    void "test activity type"() {
-        given:
-        def activity = new AddVideoToReelActivity()
-
-        expect:
-        activity.type == ActivityType.AddVideoToReel
-    }
 }

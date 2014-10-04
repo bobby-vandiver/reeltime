@@ -10,10 +10,6 @@ abstract class UserReelActivity {
 
     Date dateCreated
 
-    abstract ActivityType getType()
-
-    static transients = ['type']
-
     static constraints = {
         user nullable: false
         reel nullable: false
