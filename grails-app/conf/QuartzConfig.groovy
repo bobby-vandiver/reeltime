@@ -30,7 +30,7 @@ jdbcProps = {
     plugin.shutdownhook.cleanShutdown = true
 }
 
-// TODO: Quartz plugin must be loaded after Liquibase changesets are run to ensure QRTZ tables exist
+// Starting the Quartz scheduler is handled in BootStrap ensure the QRTZ tables have been created by Liquibase
 environments {
     test {
         quartz {
@@ -40,14 +40,16 @@ environments {
     }
     development {
         quartz {
-            autoStartup = true
-            jdbcStore = false
+            autoStartup = false
+            jdbcStore = true
+
+            props(jdbcProps)
         }
     }
     production {
         quartz {
+            autoStartup = false
             jdbcStore = true
-            autoStartup = true
 
             props(jdbcProps)
         }
