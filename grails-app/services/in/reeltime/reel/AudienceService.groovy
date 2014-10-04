@@ -22,7 +22,7 @@ class AudienceService {
         return audiences*.reel
     }
 
-    void addMember(Long reelId) {
+    void addCurrentUserToAudience(Long reelId) {
         def reel = reelService.loadReel(reelId)
         if(reelAuthorizationService.currentUserIsReelOwner(reel)) {
             throw new AuthorizationException("Owner of a reel cannot be a member of the reel's audience")
@@ -36,7 +36,7 @@ class AudienceService {
         activityService.userJoinedAudience(currentUser, audience)
     }
 
-    void removeMember(Long reelId) {
+    void removeCurrentUserFromAudience(Long reelId) {
         def reel = reelService.loadReel(reelId)
         def audience = reel.audience
 

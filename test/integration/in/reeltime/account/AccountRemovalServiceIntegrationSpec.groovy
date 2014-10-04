@@ -46,7 +46,7 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
         def reelId = reelOwner.reels[0].id
 
         SpringSecurityUtils.doWithAuth(username) {
-            audienceService.addMember(reelId)
+            audienceService.addCurrentUserToAudience(reelId)
         }
 
         assert Audience.findAllByAudienceMember(user).size() == 1

@@ -28,7 +28,7 @@ class AudienceController extends AbstractController {
     def addMember(Long reelId) {
         log.debug "Add audience member for reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {
-            audienceService.addMember(reelId)
+            audienceService.addCurrentUserToAudience(reelId)
             render(status: SC_CREATED)
         }
     }
@@ -37,7 +37,7 @@ class AudienceController extends AbstractController {
     def removeMember(Long reelId) {
         log.debug "Remove audience member for reel [$reelId]"
         handleSingleParamRequest(reelId, 'reel.id.required') {
-            audienceService.removeMember(reelId)
+            audienceService.removeCurrentUserFromAudience(reelId)
             render(status: SC_OK)
         }
     }

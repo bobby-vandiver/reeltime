@@ -55,7 +55,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         and:
         reelIds.each { reelId ->
             SpringSecurityUtils.doWithAuth(memberUsername) {
-                audienceService.addMember(reelId)
+                audienceService.addCurrentUserToAudience(reelId)
             }
         }
 
@@ -87,7 +87,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         and:
         reelIds.each { reelId ->
             SpringSecurityUtils.doWithAuth(memberUsername) {
-                audienceService.addMember(reelId)
+                audienceService.addCurrentUserToAudience(reelId)
             }
         }
 
@@ -118,7 +118,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         when:
         SpringSecurityUtils.doWithAuth(ownerUsername) {
-            audienceService.addMember(reelId)
+            audienceService.addCurrentUserToAudience(reelId)
         }
 
         then:
@@ -141,7 +141,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         when:
         SpringSecurityUtils.doWithAuth(memberUsername) {
-            audienceService.addMember(reelId)
+            audienceService.addCurrentUserToAudience(reelId)
         }
 
         then:
@@ -169,7 +169,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         SpringSecurityUtils.doWithAuth(memberUsername) {
-            audienceService.addMember(reelId)
+            audienceService.addCurrentUserToAudience(reelId)
         }
 
         and:
@@ -177,7 +177,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         when:
         SpringSecurityUtils.doWithAuth(memberUsername) {
-            audienceService.removeMember(reelId)
+            audienceService.removeCurrentUserFromAudience(reelId)
         }
 
         then:
@@ -204,7 +204,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         SpringSecurityUtils.doWithAuth(memberUsername) {
-            audienceService.addMember(reelId)
+            audienceService.addCurrentUserToAudience(reelId)
         }
 
         and:
@@ -212,7 +212,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         when:
         SpringSecurityUtils.doWithAuth(notMemberUsername) {
-            audienceService.removeMember(reelId)
+            audienceService.removeCurrentUserFromAudience(reelId)
         }
 
         then:

@@ -80,7 +80,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         assertErrorMessageResponse(response, 404, message)
 
         and:
-        1 * audienceService.addMember(reelId) >> { throw new ReelNotFoundException('TEST') }
+        1 * audienceService.addCurrentUserToAudience(reelId) >> { throw new ReelNotFoundException('TEST') }
         1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> message
     }
 
@@ -95,7 +95,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         assertErrorMessageResponse(response, 404, message)
 
         and:
-        1 * audienceService.removeMember(reelId) >> { throw new ReelNotFoundException('TEST') }
+        1 * audienceService.removeCurrentUserFromAudience(reelId) >> { throw new ReelNotFoundException('TEST') }
         1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> message
     }
 
@@ -110,7 +110,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         assertErrorMessageResponse(response, 403, message)
 
         and:
-        1 * audienceService.removeMember(reelId) >> { throw new AuthorizationException('TEST') }
+        1 * audienceService.removeCurrentUserFromAudience(reelId) >> { throw new AuthorizationException('TEST') }
         1 * localizedMessageService.getMessage('audience.unauthorized', request.locale) >> message
     }
 
@@ -184,7 +184,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         response.contentLength == 0
 
         and:
-        1 * audienceService.addMember(reelId)
+        1 * audienceService.addCurrentUserToAudience(reelId)
     }
 
     void "remove audience member"() {
@@ -196,6 +196,6 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         response.contentLength == 0
 
         and:
-        1 * audienceService.removeMember(reelId)
+        1 * audienceService.removeCurrentUserFromAudience(reelId)
     }
 }
