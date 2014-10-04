@@ -53,6 +53,51 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         e.message == "Reel creation activity already exists"
     }
 
+    void "delete create reel activity"() {
+        given:
+        activityService.reelCreated(user, reel)
+
+        when:
+        activityService.reelDeleted(user, reel)
+
+        then:
+        UserReelActivity.findByUserAndReel(user, reel) == null
+    }
+
+    void "save join reel audience activity"() {
+        when:
+        activityService.userJoinedAudience(user, reel)
+
+        then:
+        def activity = UserReelActivity.findByUserAndReel(user, reel)
+        activity != null
+
+        activity.type == ActivityType.JoinReelAudience
+    }
+
+    void "attempt to add join reel audience activity multiple times"() {
+        given:
+        activityService.userJoinedAudience(user, reel)
+
+        when:
+        activityService.userJoinedAudience(user, reel)
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == "Join reel audience activity already exists"
+    }
+
+    void "delete join reel audience activity"() {
+        given:
+        activityService.userJoinedAudience(user, reel)
+
+        when:
+        activityService.userLeftAudience(user, reel)
+
+        then:
+        UserReelActivity.findByUserAndReel(user, reel) == null
+    }
+
     void "save video added to reel activity"() {
         when:
         activityService.videoAddedToReel(user, reel, video)
@@ -74,6 +119,17 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         then:
         def e = thrown(IllegalArgumentException)
         e.message == "Video added to reel activity already exists"
+    }
+
+    void "delete add video to reel activity"() {
+        given:
+        activityService.videoAddedToReel(user, reel, video)
+
+        when:
+        activityService.videoRemovedFromReel(user, reel, video)
+
+        then:
+        UserReelActivity.findByUserAndReel(user, reel) == null
     }
 
     void "no user activities to delete"() {

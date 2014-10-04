@@ -16,17 +16,30 @@ class ActivityService {
         new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel).save()
     }
 
+    void reelDeleted(User user, Reel reel) {
+        log.info "Reel [${reel.id}] has been been deleted by user [${user.username}]"
+        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.CreateReel)?.delete()
+    }
+
+    void userJoinedAudience(User user, Reel reel) {
+        if(UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience)) {
+            throw new IllegalArgumentException("Join reel audience activity already exists")
+        }
+        log.info "User [${user.username}] has joined the audience for reel [${reel.id}]"
+        new UserReelActivity(user: user, reel: reel, type: ActivityType.JoinReelAudience).save()
+    }
+
+    void userLeftAudience(User user, Reel reel) {
+        log.info "User [${user.username}] has left the audience for reel [${reel.id}]"
+        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience)?.delete()
+    }
+
     void videoAddedToReel(User user, Reel reel, Video video) {
         if(UserReelVideoActivity.findByUserAndReelAndVideo(user, reel, video)) {
             throw new IllegalArgumentException("Video added to reel activity already exists")
         }
         log.info "Video [${video.id}] has been added to reel [${reel.id}] by user [${user.username}]"
         new UserReelVideoActivity(user: user, reel: reel, video: video, type: ActivityType.AddVideoToReel).save()
-    }
-
-    void reelDeleted(User user, Reel reel) {
-        log.info "Reel [${reel.id}] has been been deleted by user [${user.username}]"
-        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.CreateReel)?.delete()
     }
 
     void videoRemovedFromReel(User user, Reel reel, Video video) {
