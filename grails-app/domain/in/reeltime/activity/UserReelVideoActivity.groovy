@@ -2,7 +2,7 @@ package in.reeltime.activity
 
 import in.reeltime.video.Video
 
-class AddVideoToReelActivity extends UserReelActivity {
+class UserReelVideoActivity extends UserReelActivity {
 
     Video video
 

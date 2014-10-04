@@ -2,18 +2,14 @@ package in.reeltime.reel
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
-import in.reeltime.activity.AddVideoToReelActivity
-import in.reeltime.activity.CreateReelActivity
+import in.reeltime.activity.UserReelVideoActivity
 import in.reeltime.user.User
 import in.reeltime.video.Video
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.exceptions.AuthorizationException
-import spock.lang.Ignore
 import spock.lang.Unroll
 import test.helper.UserFactory
-
-import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
 class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
 
@@ -54,10 +50,10 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         and:
         def activities = activityService.findActivities([], [reel])
         activities.size() == 1
-        activities[0] instanceof AddVideoToReelActivity
+        activities[0] instanceof UserReelVideoActivity
 
         and:
-        def activity = activities[0] as AddVideoToReelActivity
+        def activity = activities[0] as UserReelVideoActivity
         activity.user == owner
         activity.reel == reel
         activity.video == video

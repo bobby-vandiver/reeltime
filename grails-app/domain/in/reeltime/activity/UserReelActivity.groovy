@@ -3,15 +3,11 @@ package in.reeltime.activity
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
 
-abstract class UserReelActivity {
+class UserReelActivity extends UserActivity {
 
-    User user
     Reel reel
 
-    Date dateCreated
-
     static constraints = {
-        user nullable: false
         reel nullable: false
     }
 }

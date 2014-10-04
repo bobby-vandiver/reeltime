@@ -4,7 +4,6 @@ import grails.test.spock.IntegrationSpec
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.video.Video
-import spock.lang.Unroll
 import test.helper.UserFactory
 
 class ActivityServiceIntegrationSpec extends IntegrationSpec {
@@ -39,7 +38,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         def activity = UserReelActivity.findByUserAndReel(user, reel)
         activity != null
 
-        activity instanceof CreateReelActivity
+        activity.type == ActivityType.CreateReel
     }
 
     void "attempt to add real creation activity multiple times"() {
@@ -62,7 +61,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         def activity = UserReelActivity.findByUserAndReel(user, reel)
         activity != null
 
-        activity instanceof AddVideoToReelActivity
+        activity instanceof UserReelVideoActivity
     }
 
     void "attempt to add video added to reel activity multiple times"() {
@@ -87,8 +86,8 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
     void "delete all user activity"() {
         given:
-        def activity1 = new CreateReelActivity(user: user, reel: reel).save()
-        def activity2 = new CreateReelActivity(user: user, reel: reel).save()
+        def activity1 = new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel).save()
+        def activity2 = new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel).save()
 
         and:
         def activityId1 = activity1.id
@@ -137,8 +136,8 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         def list = activityService.findActivities(users, reels)
         assert list.size() == 2
 
-        assert list[0].class == AddVideoToReelActivity
-        assert list[1].class == CreateReelActivity
+        assert list[0].type == ActivityType.AddVideoToReel
+        assert list[1].type == ActivityType.CreateReel
     }
 
     void "list first page of activity if no page is specified"() {
@@ -178,7 +177,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
     private List<UserReelActivity> createActivityPage() {
         List<UserReelActivity> activities = []
         TEST_MAX_ACTIVITIES_PER_PAGE.times {
-            activities << new CreateReelActivity(user: user, reel: reel).save(validate: false)
+            activities << new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel).save(validate: false)
             sleep(2 * 1000)
         }
         activities.sort { a, b -> b.dateCreated <=> a.dateCreated }
