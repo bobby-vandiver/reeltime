@@ -12,6 +12,8 @@ class Reel {
 
     String name
 
+    static searchable = true
+
     static belongsTo = [owner: User]
     static hasOne = [audience: Audience]
 
