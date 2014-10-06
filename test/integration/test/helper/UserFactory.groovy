@@ -11,7 +11,7 @@ class UserFactory {
         createUser('someone')
     }
 
-    static User createUser(String username) {
+    static User createUser(String username, String displayName = null) {
 
         def client = new Client(
                 clientName: username + '-client-name',
@@ -24,7 +24,11 @@ class UserFactory {
                 audience: new Audience(members: [])
         )
 
-        new User(username: username, password: 'secret', displayName: "$username display", email: "$username@test.com")
+        if(!displayName) {
+            displayName = "$username display"
+        }
+
+        new User(username: username, password: 'secret', displayName: displayName, email: "$username@test.com")
                 .addToClients(client)
                 .addToReels(reel)
                 .save()

@@ -21,7 +21,9 @@ class User {
 	boolean accountLocked
 	boolean passwordExpired
 
-    static searchable = true
+    static searchable = {
+        only = ['displayName', 'username']
+    }
 
     static hasMany = [videos: Video, clients: Client, reels: Reel]
 

@@ -12,7 +12,9 @@ class Reel {
 
     String name
 
-    static searchable = true
+    static searchable = {
+        only = ['name']
+    }
 
     static belongsTo = [owner: User]
     static hasOne = [audience: Audience]
