@@ -26,8 +26,8 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         controller.userFollowingService = userFollowingService
         controller.localizedMessageService = localizedMessageService
 
-        follower = new User(username: 'follower')
-        followee = new User(username: 'followee')
+        follower = new User(username: 'follower', displayName: 'follower display')
+        followee = new User(username: 'followee', displayName: 'followee display')
     }
 
     void "current user begins following a user"() {

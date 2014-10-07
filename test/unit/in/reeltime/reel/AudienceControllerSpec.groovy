@@ -130,7 +130,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
 
     void "only one member in the audience"() {
         given:
-        def member = new User(username: 'member')
+        def member = new User(username: 'member', displayName: 'member display')
 
         when:
         controller.listMembers(reelId)
@@ -143,16 +143,17 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         json.size() == 1
 
         and:
-        json[0].size() == 1
+        json[0].size() == 2
         json[0].username == 'member'
+        json[0].display_name == 'member display'
 
         1 * audienceService.listMembers(reelId) >> [member]
     }
 
     void "multiple members in the audience"() {
         given:
-        def member1 = new User(username: 'member1')
-        def member2 = new User(username: 'member2')
+        def member1 = new User(username: 'member1', displayName: 'member1 display')
+        def member2 = new User(username: 'member2', displayName: 'member2 display')
 
         when:
         controller.listMembers(reelId)
@@ -165,12 +166,14 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         json.size() == 2
 
         and:
-        json[0].size() == 1
+        json[0].size() == 2
         json[0].username == 'member1'
+        json[0].display_name == 'member1 display'
 
         and:
-        json[1].size() == 1
+        json[1].size() == 2
         json[1].username == 'member2'
+        json[1].display_name == 'member2 display'
 
         1 * audienceService.listMembers(reelId) >> [member1, member2]
     }

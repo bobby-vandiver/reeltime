@@ -43,6 +43,41 @@ class SearchControllerSpec extends AbstractControllerSpec {
         1 * userSearchService.search('something', 1) >> new SearchResult<User>(results: [], query: 'something')
     }
 
+    void "search for user returns results"() {
+        given:
+        params.type = 'user'
+        params.query = 'something'
+
+        and:
+        def user1 = new User(username: 'user1', displayName: 'display1')
+        def user2 = new User(username: 'user2', displayName: 'display2')
+
+        def users = [user1, user2]
+
+        when:
+        controller.search()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        def json = getJsonResponse(response)
+
+        def results = json.results
+        results.size() == 2
+
+        and:
+        results[0].username == 'user1'
+        results[0].display_name == 'display1'
+
+        and:
+        results[1].username == 'user2'
+        results[1].display_name == 'display2'
+
+        and:
+        1 * userSearchService.search('something', 1) >> new SearchResult<User>(results: users, query: 'something')
+    }
+
     void "no video results for type video"() {
         given:
         params.type = 'video'

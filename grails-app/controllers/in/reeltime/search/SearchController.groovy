@@ -2,6 +2,7 @@ package in.reeltime.search
 
 import in.reeltime.common.AbstractController
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_OK
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 
@@ -13,9 +14,14 @@ class SearchController extends AbstractController {
 
     def search(SearchCommand command) {
 
-        def searchService = getSearchServiceForType(command.type)
-        render(status: SC_OK, contentType: APPLICATION_JSON) {
-            searchService.search(command.query, command.page)
+        if(!command.hasErrors()) {
+            def searchService = getSearchServiceForType(command.type)
+            render(status: SC_OK, contentType: APPLICATION_JSON) {
+                marshall(searchService.search(command.query, command.page))
+            }
+        }
+        else {
+            commandErrorMessageResponse(command, SC_BAD_REQUEST)
         }
     }
 

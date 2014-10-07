@@ -42,6 +42,7 @@ class UserFollowingFunctionalSpec extends FunctionalSpec {
 
         and:
         followees[0].username == 'followee'
+        followees[0].display_name == 'followee'
 
         and:
         def followers = reelTimeClient.listFollowers(followerToken, 'followee')
@@ -49,6 +50,7 @@ class UserFollowingFunctionalSpec extends FunctionalSpec {
 
         and:
         followers[0].username == 'follower'
+        followers[0].display_name == 'follower'
     }
 
     void "stop following a user"() {

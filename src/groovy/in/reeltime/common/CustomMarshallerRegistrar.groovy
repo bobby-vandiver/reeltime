@@ -19,7 +19,7 @@ class CustomMarshallerRegistrar {
         },
 
         (User): { user ->
-            return [username: user.username]
+            return [username: user.username, display_name: user.displayName]
         },
 
         (Reel): { reel ->
@@ -60,7 +60,7 @@ class CustomMarshallerRegistrar {
     }
 
     boolean hasMarshallerAvailable(Class objectClass) {
-        return getMarshaller(objectClass) != null
+        return objectClass != null && getMarshaller(objectClass) != null
     }
 
     Closure getMarshaller(Class objectClass) {

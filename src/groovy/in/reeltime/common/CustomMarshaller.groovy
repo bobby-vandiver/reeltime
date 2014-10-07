@@ -7,6 +7,7 @@ class CustomMarshaller {
     private CustomMarshallerRegistrar registrar = new CustomMarshallerRegistrar()
 
     Object marshall(Object obj) {
+        def clazz = obj?.class
 
         if(obj instanceof Collection) {
             def list = []
@@ -18,35 +19,20 @@ class CustomMarshaller {
             }
             return list
         }
-        return marshallData(obj)
-    }
-
-    private Map marshallData(Object data) {
-        if(!data) {
-            return [:]
-        }
-
-        def clazz = data.class
-        if(!registrar.hasMarshallerAvailable(clazz)) {
-            throw new IllegalArgumentException("Unsupported class [${clazz}]")
-        }
-
-        def marshaller = registrar.getMarshaller(clazz)
-        def map = marshaller(data)
-        return marshallNestedObjects(map)
-    }
-
-    private Map marshallNestedObjects(Map map) {
-        def resolvedMap = [:]
-        map.each { key, value ->
-            if(registrar.hasMarshallerAvailable(value.class)) {
-                def newValue = marshall(value)
-                resolvedMap.put(key, newValue)
+        else if(obj instanceof Map) {
+            def map = [:]
+            obj.each { key, value ->
+                map.put(key, marshall(value))
             }
-            else {
-                resolvedMap.put(key, value)
-            }
+            return map
         }
-        return resolvedMap
+        else if(registrar.hasMarshallerAvailable(clazz)) {
+            def marshaller = registrar.getMarshaller(clazz)
+            def data = marshaller(obj)
+            return marshall(data)
+        }
+        else {
+            return obj
+        }
     }
 }
