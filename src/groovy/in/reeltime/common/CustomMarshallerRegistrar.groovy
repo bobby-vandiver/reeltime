@@ -8,7 +8,6 @@ import in.reeltime.reel.Reel
 import in.reeltime.video.Video
 import in.reeltime.activity.UserReelVideoActivity
 import in.reeltime.account.RegistrationResult
-import in.reeltime.search.SearchResult
 
 class CustomMarshallerRegistrar {
 
@@ -38,11 +37,6 @@ class CustomMarshallerRegistrar {
         (UserReelVideoActivity): { activity ->
             def type = convertActivityType(activity.type)
             return [type: type, user: activity.user, reel: activity.reel, video: activity.video]
-        },
-
-
-        (SearchResult): { result ->
-            return [results: result.results]
         }
     ]
 

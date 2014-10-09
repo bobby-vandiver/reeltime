@@ -92,7 +92,6 @@ grails.project.dependency.resolution = {
         compile ':cache:1.1.6'
 
         compile ":quartz:1.0.2"
-        compile ":searchable:0.6.9"
 
         compile ":spring-security-oauth2-provider:2.0-RC1"
         compile ":spring-security-core:2.0-RC4"
