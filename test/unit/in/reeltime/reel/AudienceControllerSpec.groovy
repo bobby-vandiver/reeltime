@@ -12,16 +12,12 @@ import spock.lang.Unroll
 class AudienceControllerSpec extends AbstractControllerSpec {
 
     AudienceService audienceService
-    LocalizedMessageService localizedMessageService
 
     Long reelId
 
     void setup() {
         audienceService = Mock(AudienceService)
-        localizedMessageService = Mock(LocalizedMessageService)
-
         controller.audienceService = audienceService
-        controller.localizedMessageService = localizedMessageService
 
         reelId = 1234
         params.reelId = reelId

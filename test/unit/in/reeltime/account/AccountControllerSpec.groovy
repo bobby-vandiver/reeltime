@@ -22,20 +22,16 @@ class AccountControllerSpec extends AbstractControllerSpec {
 
     AccountRegistrationService accountRegistrationService
     AccountConfirmationService accountConfirmationService
-
     AccountRemovalService accountRemovalService
-    LocalizedMessageService localizedMessageService
 
     void setup() {
         accountRegistrationService = Mock(AccountRegistrationService)
         accountConfirmationService = Mock(AccountConfirmationService)
         accountRemovalService = Mock(AccountRemovalService)
-        localizedMessageService = Mock(LocalizedMessageService)
 
         controller.accountRegistrationService = accountRegistrationService
         controller.accountConfirmationService = accountConfirmationService
         controller.accountRemovalService = accountRemovalService
-        controller.localizedMessageService = localizedMessageService
 
         defineBeans {
             userService(UserService)

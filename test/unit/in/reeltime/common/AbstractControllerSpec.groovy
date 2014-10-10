@@ -1,15 +1,21 @@
 package in.reeltime.common
 
 import groovy.json.JsonSlurper
+import in.reeltime.message.LocalizedMessageService
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 
 abstract class AbstractControllerSpec extends Specification {
 
+    protected LocalizedMessageService localizedMessageService
+
     protected final String TEST_MESSAGE = 'this is a test'
 
     void setup() {
+        localizedMessageService = Mock(LocalizedMessageService)
+        controller.localizedMessageService = localizedMessageService
+
         // TODO: Re-enable when GRAILS-11116 is resolved
         // new CustomMarshallerRegistrar().registerMarshallers()
     }

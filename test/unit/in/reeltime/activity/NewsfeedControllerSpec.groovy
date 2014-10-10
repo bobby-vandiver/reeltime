@@ -14,14 +14,10 @@ import spock.lang.Unroll
 class NewsfeedControllerSpec extends AbstractControllerSpec {
 
     NewsfeedService newsfeedService
-    LocalizedMessageService localizedMessageService
 
     void setup() {
         newsfeedService = Mock(NewsfeedService)
-        localizedMessageService = Mock(LocalizedMessageService)
-
         controller.newsfeedService = newsfeedService
-        controller.localizedMessageService = localizedMessageService
     }
 
     void "page should be 1 if not included in request"() {

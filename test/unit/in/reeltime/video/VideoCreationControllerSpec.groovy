@@ -22,8 +22,6 @@ class VideoCreationControllerSpec extends AbstractControllerSpec {
     VideoService videoService
     VideoCreationService videoCreationService
 
-    LocalizedMessageService localizedMessageService
-
     void setup() {
         currentUser = new User(username: 'bob')
         controller.springSecurityService = Stub(SpringSecurityService) {
@@ -32,11 +30,9 @@ class VideoCreationControllerSpec extends AbstractControllerSpec {
 
         videoService = Mock(VideoService)
         videoCreationService = Mock(VideoCreationService)
-        localizedMessageService = Mock(LocalizedMessageService)
 
         controller.videoService = videoService
         controller.videoCreationService = videoCreationService
-        controller.localizedMessageService = localizedMessageService
     }
 
     void "return 202 and video id after video has been uploaded with minimum params"() {

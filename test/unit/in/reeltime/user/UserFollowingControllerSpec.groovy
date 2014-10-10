@@ -12,19 +12,15 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
     UserService userService
     UserFollowingService userFollowingService
 
-    LocalizedMessageService localizedMessageService
-
     User follower
     User followee
 
     def setup() {
         userService = Mock(UserService)
         userFollowingService = Mock(UserFollowingService)
-        localizedMessageService = Mock(LocalizedMessageService)
 
         controller.userService = userService
         controller.userFollowingService = userFollowingService
-        controller.localizedMessageService = localizedMessageService
 
         follower = new User(username: 'follower', displayName: 'follower display')
         followee = new User(username: 'followee', displayName: 'followee display')

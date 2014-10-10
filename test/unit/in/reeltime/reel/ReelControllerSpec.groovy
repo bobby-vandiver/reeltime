@@ -19,16 +19,12 @@ class ReelControllerSpec extends AbstractControllerSpec {
     ReelService reelService
     ReelVideoManagementService reelVideoManagementService
 
-    LocalizedMessageService localizedMessageService
-
     void setup() {
         reelService = Mock(ReelService)
         reelVideoManagementService = Mock(ReelVideoManagementService)
-        localizedMessageService = Mock(LocalizedMessageService)
 
         controller.reelService = reelService
         controller.reelVideoManagementService = reelVideoManagementService
-        controller.localizedMessageService = localizedMessageService
     }
 
     void "empty reels list"() {

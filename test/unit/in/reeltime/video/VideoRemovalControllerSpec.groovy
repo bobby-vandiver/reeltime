@@ -11,14 +11,10 @@ import spock.lang.Unroll
 class VideoRemovalControllerSpec extends AbstractControllerSpec {
 
     VideoRemovalService videoRemovalService
-    LocalizedMessageService localizedMessageService
 
     void setup() {
         videoRemovalService = Mock(VideoRemovalService)
-        localizedMessageService = Mock(LocalizedMessageService)
-
         controller.videoRemovalService = videoRemovalService
-        controller.localizedMessageService = localizedMessageService
     }
 
     void "pass videoId to service for removal"() {
