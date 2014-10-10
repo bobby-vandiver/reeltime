@@ -31,20 +31,5 @@ class SearchCommandSpec extends Specification {
         'query' |   null        |   false   |   'nullable'
         'query' |   ''          |   false   |   'blank'
         'query' |   'some word' |   true    |   null
-
-        'page'  |   null        |   false   |   'nullable'
-        'page'  |   -1          |   false   |   'min.notmet'
-        'page'  |   0           |   false   |   'min.notmet'
-        'page'  |   1           |   true    |   null
-        'page'  |   42          |   true    |   null
-    }
-
-    void "request first page if page not specified"() {
-        given:
-        def command = new SearchCommand()
-
-        expect:
-        command.page == 1
-        command.validate(['page'])
     }
 }
