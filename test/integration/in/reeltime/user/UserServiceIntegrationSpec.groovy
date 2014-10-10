@@ -5,6 +5,7 @@ import in.reeltime.oauth2.Client
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.reel.Audience
 import in.reeltime.reel.Reel
+import test.helper.UserFactory
 
 class UserServiceIntegrationSpec extends IntegrationSpec {
 
@@ -102,7 +103,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
     void "update user"() {
         given:
-        def user = createAndSaveValidUser('foo')
+        def user = UserFactory.createUser('foo')
         assert !User.findByUsername('foo').accountExpired
 
         when:
@@ -111,9 +112,5 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         User.findByUsername('foo').accountExpired
-    }
-
-    private User createAndSaveValidUser(String username) {
-        userService.createAndSaveUser(username, 'bar', 'some user', "username@test.com", client, reel)
     }
 }
