@@ -67,6 +67,10 @@ class UrlMappings {
             action = [GET: 'getSegment']
         }
 
+        "/users" (controller: 'user') {
+            action = [GET: 'listUsers']
+        }
+
         "/user/$username/reels" (controller: 'reel') {
             action = [GET: 'listReels']
         }
