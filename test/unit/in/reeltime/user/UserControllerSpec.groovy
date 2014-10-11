@@ -18,7 +18,7 @@ class UserControllerSpec extends AbstractControllerSpec {
         controller.listUsers()
 
         then:
-        1 * userService.listUsers(1)
+        1 * userService.listUsers(1) >> []
     }
 
     void "list users"() {

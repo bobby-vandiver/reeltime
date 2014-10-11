@@ -27,7 +27,8 @@ class AuthorizationAwareRestClient {
     }
 
     private RestResponse doRequest(String method, RestRequest request) {
-        restClient."$method"(request.url) {
+        def url = attachQueryParams(request.url, request.queryParams)
+        restClient."$method"(url) {
             if(request.token) {
                 header AUTHORIZATION, "Bearer ${request.token}"
             }
@@ -39,5 +40,12 @@ class AuthorizationAwareRestClient {
                 request.customizer()
             }
         }
+    }
+
+    private String attachQueryParams(String url, Map<String, Object> queryParams) {
+        if(queryParams.isEmpty()) {
+            return url
+        }
+        return url + '?' + queryParams.collect { it }.join('&')
     }
 }

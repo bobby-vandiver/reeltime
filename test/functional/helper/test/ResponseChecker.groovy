@@ -83,18 +83,22 @@ class ResponseChecker {
     }
 
     void assertVideoIdInList(JSONElement list, Long videoId) {
-        assert videoIsInList(list, videoId)
+        assert elementIsInList(list, 'videoId', videoId)
     }
 
     void assertVideoIdNotInList(JSONElement list, Long videoId) {
-        assert !videoIsInList(list, videoId)
+        assert !elementIsInList(list, 'videoId', videoId)
     }
 
-    private boolean videoIsInList(JSONElement list, Long videoId) {
+    void assertUsernameInList(JSONElement list, String username) {
+        assert elementIsInList(list, 'username', username)
+    }
+
+    private boolean elementIsInList(JSONElement list, String key, Object value) {
         boolean found = false
 
         list.each { elem ->
-            if(elem?.videoId == videoId) {
+            if(elem?."$key" == value) {
                 found = true
             }
         }
