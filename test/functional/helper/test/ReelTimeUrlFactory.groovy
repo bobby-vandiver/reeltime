@@ -48,6 +48,11 @@ public class ReelTimeUrlFactory {
         getUrlForResource("transcoder/notification/$action")
     }
 
+    String getListUsersUrl(page = null) {
+        String query = page != null ? "?page=$page" : ''
+        getUrlForResource("/users$query")
+    }
+
     String getReelsListUrl(username) {
         getUrlForResource("/user/$username/reels")
     }

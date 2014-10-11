@@ -2,8 +2,6 @@ package in.reeltime.user
 
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
-import spock.lang.Ignore
-import spock.lang.Specification
 
 @TestFor(UserController)
 class UserControllerSpec extends AbstractControllerSpec {
@@ -13,21 +11,6 @@ class UserControllerSpec extends AbstractControllerSpec {
     void setup() {
         userService = Mock(UserService)
         controller.userService = userService
-    }
-
-    @Ignore("This should be a functional test to avoid convoluted mocking")
-    void "invalid page requested"() {
-        given:
-        params.page = 0
-
-        when:
-        controller.listUsers()
-
-        then:
-        assertErrorMessageResponse(response, 400, TEST_MESSAGE)
-
-        and:
-        1 * localizedMessageService.getMessage('pagedListCommand.page.min.notmet', request.locale) >> TEST_MESSAGE
     }
 
     void "use page 1 if page param is omitted"() {

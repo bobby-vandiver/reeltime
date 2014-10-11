@@ -57,6 +57,16 @@ class ReelTimeClient {
         return response.json
     }
 
+    JSONElement listUsers(String token, Integer page = null) {
+        def request = requestFactory.listUsers(token, page)
+        def response = get(request)
+
+        if(response.status != 200) {
+            Assert.fail("Failed to retrieve list of users. Status code: ${response.status}. JSON: ${response.json}")
+        }
+        return response.json
+    }
+
     void followUser(String token, String username) {
         def request = requestFactory.followUser(token, username)
         def response = post(request)

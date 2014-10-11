@@ -28,6 +28,11 @@ class ReelTimeRequestFactory {
         new RestRequest(url: urlFactory.newsfeedUrl, token: token)
     }
 
+    RestRequest listUsers(String token, Integer page) {
+        def url = urlFactory.getListUsersUrl(page)
+        new RestRequest(url: url, token: token)
+    }
+
     RestRequest followUser(String token, String username) {
         followUserRequest(token, username)
     }
