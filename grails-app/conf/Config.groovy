@@ -205,6 +205,12 @@ reeltime {
         maxActivitiesPerPage = 20
     }
 
+    // General browsing configuration
+    browse {
+        // Max number of results per page
+        maxResultsPerPage = 10
+    }
+
     // Internal maintenance configuration
     maintenance {
         // How many stored resources for the Quartz job to remove per execution
