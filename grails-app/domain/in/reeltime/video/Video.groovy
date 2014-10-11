@@ -13,10 +13,6 @@ class Video {
     String masterPath
     boolean available
 
-    static searchable = {
-        only = ['title']
-    }
-
     static belongsTo = [creator: User]
 
     static hasMany = [

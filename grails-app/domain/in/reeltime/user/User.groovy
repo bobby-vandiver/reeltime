@@ -21,10 +21,6 @@ class User {
 	boolean accountLocked
 	boolean passwordExpired
 
-    static searchable = {
-        only = ['displayName', 'username']
-    }
-
     static hasMany = [videos: Video, clients: Client, reels: Reel]
 
 	static transients = ['springSecurityService']
