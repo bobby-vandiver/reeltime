@@ -13,6 +13,8 @@ class Video {
     String masterPath
     boolean available
 
+    Date dateCreated
+
     static belongsTo = [creator: User]
 
     static hasMany = [

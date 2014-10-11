@@ -5,7 +5,9 @@ import in.reeltime.user.User
 
 class VideoService {
 
+    // TODO: Get current user from the userService
     def springSecurityService
+    def maxVideosPerPage
 
     boolean currentUserIsVideoCreator(Long videoId) {
         def currentUser = springSecurityService.currentUser as User
@@ -14,6 +16,11 @@ class VideoService {
 
     boolean videoExists(Long videoId) {
         Video.findById(videoId) != null
+    }
+
+    List<Video> listVideos(int page) {
+        int offset = (page - 1) * maxVideosPerPage
+        Video.findAllByAvailable(true, [max: maxVideosPerPage, offset: offset, sort: 'dateCreated'])
     }
 
     Video loadVideo(Long videoId) {
