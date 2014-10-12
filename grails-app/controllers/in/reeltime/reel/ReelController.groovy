@@ -17,12 +17,12 @@ class ReelController extends AbstractController {
     def reelVideoManagementService
 
     static allowedMethods = [
-            listReels: 'GET', addReel: 'POST', deleteReel: 'DELETE',
+            listUserReels: 'GET', addReel: 'POST', deleteReel: 'DELETE',
             listVideos: 'GET', addVideo: 'POST', removeVideo: 'DELETE'
     ]
 
     @Secured(["#oauth2.hasScope('reels-read')"])
-    def listReels(String username) {
+    def listUserReels(String username) {
         log.debug "Listing reels for user [$username]"
         handleSingleParamRequest(username, 'reel.username.required') {
             render(status: SC_OK, contentType: APPLICATION_JSON) {

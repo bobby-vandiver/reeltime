@@ -31,7 +31,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         params.username = 'bob'
 
         when:
-        controller.listReels()
+        controller.listUserReels()
 
         then:
         assertStatusCodeAndContentType(response, 200)
@@ -53,7 +53,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         params.username = 'bob'
 
         when:
-        controller.listReels()
+        controller.listUserReels()
 
         then:
         assertStatusCodeAndContentType(response, 200)
@@ -84,7 +84,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         params.username = 'bob'
 
         when:
-        controller.listReels()
+        controller.listUserReels()
 
         then:
         assertStatusCodeAndContentType(response, 200)
@@ -116,7 +116,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         def message = 'unknown username'
 
         when:
-        controller.listReels()
+        controller.listUserReels()
 
         then:
         assertErrorMessageResponse(response, 404, message)
@@ -341,8 +341,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         where:
         paramName   |   paramValue  |   actionName      |   code
-        'username'  |   null        |   'listReels'     |   'reel.username.required'
-        'username'  |   ''          |   'listReels'     |   'reel.username.required'
+        'username'  |   null        |   'listUserReels' |   'reel.username.required'
+        'username'  |   ''          |   'listUserReels' |   'reel.username.required'
         'name'      |   null        |   'addReel'       |   'reel.name.required'
         'name'      |   ''          |   'addReel'       |   'reel.name.required'
         'reelId'    |   null        |   'deleteReel'    |   'reel.id.required'

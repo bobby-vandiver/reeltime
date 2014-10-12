@@ -103,7 +103,7 @@ class UrlMappingsSpec extends Specification {
         given:
         webRequest.currentRequest.method = 'GET'
 
-        assertForwardUrlMapping('/user/bob/reels', controller: 'reel', action: 'listReels') {
+        assertForwardUrlMapping('/user/bob/reels', controller: 'reel', action: 'listUserReels') {
             username = 'bob'
         }
     }

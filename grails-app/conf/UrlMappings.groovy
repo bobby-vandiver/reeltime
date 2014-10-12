@@ -76,7 +76,7 @@ class UrlMappings {
         }
 
         "/user/$username/reels" (controller: 'reel') {
-            action = [GET: 'listReels']
+            action = [GET: 'listUserReels']
         }
 
         "/user/$username/follow" (controller: 'userFollowing') {
