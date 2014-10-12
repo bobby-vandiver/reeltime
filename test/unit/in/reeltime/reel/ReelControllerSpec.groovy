@@ -8,7 +8,6 @@ import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
-import in.reeltime.message.LocalizedMessageService
 import in.reeltime.video.Video
 import spock.lang.Unroll
 
@@ -42,7 +41,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json.size() == 0
 
         and:
-        1 * reelService.listReels('bob') >> []
+        1 * reelService.listReelsByUsername('bob') >> []
     }
 
     void "reels list contains only one reel"() {
@@ -69,7 +68,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json[0].name == 'foo'
 
         and:
-        1 * reelService.listReels('bob') >> [reel]
+        1 * reelService.listReelsByUsername('bob') >> [reel]
     }
 
     void "reels list contains multiple reels"() {
@@ -105,7 +104,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json[1].name == 'bar'
 
         and:
-        1 * reelService.listReels('bob') >> [reel1, reel2]
+        1 * reelService.listReelsByUsername('bob') >> [reel1, reel2]
     }
 
     void "cannot list reels for unknown user"() {
@@ -123,7 +122,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         assertErrorMessageResponse(response, 404, message)
 
         and:
-        1 * reelService.listReels(username) >> { throw new UserNotFoundException('TEST') }
+        1 * reelService.listReelsByUsername(username) >> { throw new UserNotFoundException('TEST') }
         1 * localizedMessageService.getMessage('reel.unknown.username', request.locale) >> message
     }
 

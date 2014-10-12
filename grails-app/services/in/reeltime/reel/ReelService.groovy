@@ -11,6 +11,8 @@ class ReelService {
     def reelAuthorizationService
     def activityService
 
+    def maxReelsPerPage
+
     Reel createReel(String reelName) {
         def audience = new Audience(members: [])
         new Reel(name: reelName, audience: audience)
@@ -34,7 +36,7 @@ class ReelService {
         reel.save()
     }
 
-    Collection<Reel> listReels(String username) {
+    Collection<Reel> listReelsByUsername(String username) {
         userService.loadUser(username).reels
     }
 

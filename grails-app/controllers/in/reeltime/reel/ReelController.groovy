@@ -26,7 +26,7 @@ class ReelController extends AbstractController {
         log.debug "Listing reels for user [$username]"
         handleSingleParamRequest(username, 'reel.username.required') {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(reelService.listReels(username))
+                marshall(reelService.listReelsByUsername(username))
             }
         }
     }

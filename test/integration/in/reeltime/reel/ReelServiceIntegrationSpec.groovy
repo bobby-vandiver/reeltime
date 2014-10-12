@@ -20,9 +20,19 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
     User owner
     User notOwner
 
+    static final int TEST_MAX_REELS_PER_PAGE = 3
+    int savedMaxReelsPerPage
+
     void setup() {
         owner = UserFactory.createUser('theOwner')
         notOwner = UserFactory.createUser('notTheOwner')
+
+        savedMaxReelsPerPage = reelService.maxReelsPerPage
+        reelService.maxReelsPerPage = TEST_MAX_REELS_PER_PAGE
+    }
+
+    void cleanup() {
+        reelService.maxReelsPerPage = savedMaxReelsPerPage
     }
 
     void "create reel"() {
@@ -91,7 +101,7 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
 
     void "cannot list reels for an unknown user"() {
         when:
-        reelService.listReels('nobody')
+        reelService.listReelsByUsername('nobody')
 
         then:
         thrown(UserNotFoundException)
@@ -103,7 +113,7 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         def reels = createReels(owner, count)
 
         when:
-        def list = reelService.listReels(owner.username)
+        def list = reelService.listReelsByUsername(owner.username)
 
         then:
         assertListsContainSameElements(list, reels)
@@ -209,6 +219,31 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         _   |   'c' * 26
     }
 
+//    void "list reels by page"() {
+//        given:
+//        def ownerUncategorizedReel = owner.reels[0]
+//        def notOwnerUncategorizedReel = notOwner.reels[0]
+//
+//        and:
+//        def someReel = ReelFactory.createReel(owner, 'some reel')
+//        def anotherReel = ReelFactory.createReel(owner, 'another reel')
+//
+//        when:
+//        def pageOne = reelService.listReels(1)
+//
+//        then:
+//        pageOne.size() == TEST_MAX_REELS_PER_PAGE
+//
+//        and:
+//        pageOne[0] == ownerUncategorizedReel
+//        pageOne[1] == notOwnerUncategorizedReel
+//        pageOne[2] == someReel
+//
+//        when:
+//        def pageTwo = reelService.listReels()
+//
+//    }
+//
     private Collection<Reel> createReels(User owner, int count) {
         def reels = owner.reels
         def initialCount = reels.size()
