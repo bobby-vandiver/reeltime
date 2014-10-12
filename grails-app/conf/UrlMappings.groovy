@@ -91,6 +91,10 @@ class UrlMappings {
             action = [GET: 'listFollowees']
         }
 
+        "/reels" (controller: 'reel') {
+            action = [GET: 'listReels']
+        }
+
         "/reel" (controller: 'reel') {
             action = [POST: 'addReel']
         }

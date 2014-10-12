@@ -279,5 +279,6 @@ class UrlMappingsSpec extends Specification {
         url         |   controller  |   action
         '/users'    |   'user'      |   'listUsers'
         '/videos'   |   'video'     |   'listVideos'
+        '/reels'    |   'reel'      |   'listReels'
     }
 }

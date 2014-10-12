@@ -154,7 +154,7 @@ class ReelTimeClient {
 
     // TODO: Update existing invocations to specify username
     Long getUncategorizedReelId(String token, String username = 'bob') {
-        def request = requestFactory.listReels(token, username)
+        def request = requestFactory.listReelsForUser(token, username)
         def response = get(request)
 
         if(response.status != 200) {
@@ -162,6 +162,16 @@ class ReelTimeClient {
         }
         def uncategorizedReel = response.json.find { it.name == 'Uncategorized' }
         return uncategorizedReel.reelId
+    }
+
+    JSONElement listReels(String token, Integer page = null) {
+        def request = requestFactory.listReels(token, page)
+        def response = get(request)
+
+        if(response.status != 200) {
+            Assert.fail("Failed to retrieve list of reels. Status code: ${response.status}. JSON: ${response.json}")
+        }
+        return response.json
     }
 
     Long addReel(String token, String reelName) {

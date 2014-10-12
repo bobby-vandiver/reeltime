@@ -29,6 +29,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
         where:
         resource            |   methods
+        'reels'             |   ['post', 'put', 'delete']
         'reel'              |   ['get', 'put', 'delete']
         'reel/1234'         |   ['put']
         'reel/1234/5678'    |   ['get', 'put', 'post']
@@ -201,7 +202,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "list reels"() {
         given:
-        def request = requestFactory.listReels(readToken, TEST_USER)
+        def request = requestFactory.listReelsForUser(readToken, TEST_USER)
 
         when:
         def response = get(request)
@@ -327,5 +328,55 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
         and:
         reelTimeClient.listVideosInReel(readToken, reelId).size() == 0
+    }
+
+    @Unroll
+    void "invalid page [#page] requested"() {
+        given:
+        def request = new RestRequest(url: urlFactory.listReelsUrl, token: token, queryParams: [page: page])
+
+        when:
+        def response = get(request)
+
+        then:
+        responseChecker.assertSingleErrorMessageResponse(response, 400, message)
+
+        where:
+        page    |   message
+        -1      |   '[page] must be a positive number'
+        0       |   '[page] must be a positive number'
+        'abc'   |   '[page] is invalid'
+    }
+
+    void "multiple users with different reels"() {
+        given:
+        def otherToken = registerNewUserAndGetToken('other', ['reels-read', 'reels-write'])
+        def someToken = registerNewUserAndGetToken('some', ['reels-read', 'reels-write'])
+
+        and:
+        def firstId = reelTimeClient.addReel(token, 'first')
+        def secondId = reelTimeClient.addReel(otherToken, 'second')
+        def thirdId = reelTimeClient.addReel(token, 'third')
+        def fourthId = reelTimeClient.addReel(someToken, 'fourth')
+
+        and:
+        def otherUncategorizedId = reelTimeClient.getUncategorizedReelId(otherToken, 'other')
+        def someUncategorizedId = reelTimeClient.getUncategorizedReelId(someToken, 'some')
+        def uncategorizedId = reelTimeClient.getUncategorizedReelId(token)
+
+        when:
+        def list = reelTimeClient.listReels(readToken)
+
+        then:
+        list.size() == 7
+
+        and:
+        responseChecker.assertReelIdInList(list, firstId)
+        responseChecker.assertReelIdInList(list, secondId)
+        responseChecker.assertReelIdInList(list, thirdId)
+        responseChecker.assertReelIdInList(list, fourthId)
+        responseChecker.assertReelIdInList(list, otherUncategorizedId)
+        responseChecker.assertReelIdInList(list, someUncategorizedId)
+        responseChecker.assertReelIdInList(list, uncategorizedId)
     }
 }

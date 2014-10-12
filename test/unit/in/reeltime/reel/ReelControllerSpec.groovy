@@ -26,6 +26,39 @@ class ReelControllerSpec extends AbstractControllerSpec {
         controller.reelVideoManagementService = reelVideoManagementService
     }
 
+    void "use page 1 if page param is omitted"() {
+        when:
+        controller.listReels()
+
+        then:
+        1 * reelService.listReels(1) >> []
+    }
+
+    void "list reels"() {
+        given:
+        params.page = 3
+
+        and:
+        def reel = new Reel(name: 'foo').save(validate: false)
+
+        when:
+        controller.listReels()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        def json = getJsonResponse(response)
+        json.size() == 1
+
+        and:
+        json[0].reelId == reel.id
+        json[0].name == 'foo'
+
+        and:
+        1 * reelService.listReels(3) >> [reel]
+    }
+
     void "empty reels list"() {
         given:
         params.username = 'bob'

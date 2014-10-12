@@ -79,7 +79,11 @@ class ReelTimeRequestFactory {
         new RestRequest(url: url, token: token)
     }
 
-    RestRequest listReels(String token, String username) {
+    RestRequest listReels(String token, Integer pageNumber) {
+        paginatedListRequest(token, pageNumber, urlFactory.listReelsUrl)
+    }
+
+    RestRequest listReelsForUser(String token, String username) {
         def url = urlFactory.getReelsListUrl(username)
         new RestRequest(url: url, token: token)
     }

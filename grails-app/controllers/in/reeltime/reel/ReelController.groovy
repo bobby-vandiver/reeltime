@@ -7,6 +7,7 @@ import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
+import in.reeltime.search.PagedListCommand
 
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.*
@@ -17,9 +18,23 @@ class ReelController extends AbstractController {
     def reelVideoManagementService
 
     static allowedMethods = [
+            listReels: 'GET',
             listUserReels: 'GET', addReel: 'POST', deleteReel: 'DELETE',
             listVideos: 'GET', addVideo: 'POST', removeVideo: 'DELETE'
     ]
+
+    @Secured(["#oauth2.hasScope('reels-read')"])
+    def listReels(PagedListCommand command) {
+
+        if(!command.hasErrors()) {
+            render(status: SC_OK, contentType: APPLICATION_JSON) {
+                marshall(reelService.listReels(command.page))
+            }
+        }
+        else {
+            commandErrorMessageResponse(command, SC_BAD_REQUEST)
+        }
+    }
 
     @Secured(["#oauth2.hasScope('reels-read')"])
     def listUserReels(String username) {
