@@ -8,6 +8,8 @@ import in.reeltime.user.User
 class ReelService {
 
     def userService
+    def userAuthenticationService
+
     def reelAuthorizationService
     def activityService
 
@@ -48,7 +50,7 @@ class ReelService {
     Reel addReel(String reelName) {
         validateReelName(reelName)
 
-        def currentUser = userService.currentUser
+        def currentUser = userAuthenticationService.currentUser
         if(currentUser.hasReel(reelName)) {
             throw new InvalidReelNameException("Reel named [$reelName] already exists")
         }

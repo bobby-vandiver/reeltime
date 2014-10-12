@@ -7,7 +7,12 @@ import org.springframework.security.core.AuthenticationException
 
 class UserAuthenticationService {
 
+    def springSecurityService
     AuthenticationManager authenticationManager
+
+    User getCurrentUser() {
+        springSecurityService.currentUser as User
+    }
 
     @Transactional(readOnly = true)
     boolean authenticate(String username, String password) {

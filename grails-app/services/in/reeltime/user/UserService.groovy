@@ -7,7 +7,6 @@ import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
 class UserService {
 
-    def springSecurityService
     def maxUsersPerPage
 
     boolean userExists(String username) {
@@ -17,10 +16,6 @@ class UserService {
     List<User> listUsers(int page) {
         int offset = (page - 1) * maxUsersPerPage
         User.list(max: maxUsersPerPage, offset: offset, sort: 'username')
-    }
-
-    User getCurrentUser() {
-        springSecurityService.currentUser as User
     }
 
     User createAndSaveUser(String username, String password, String displayName,

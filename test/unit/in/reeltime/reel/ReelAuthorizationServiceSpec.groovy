@@ -2,21 +2,21 @@ package in.reeltime.reel
 
 import grails.test.mixin.TestFor
 import in.reeltime.user.User
-import in.reeltime.user.UserService
+import in.reeltime.user.UserAuthenticationService
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(ReelAuthorizationService)
 class ReelAuthorizationServiceSpec extends Specification {
 
-    UserService userService
+    UserAuthenticationService userAuthenticationService
 
     User owner
     User notOwner
 
     void setup() {
-        userService = Mock(UserService)
-        service.userService = userService
+        userAuthenticationService = Mock(UserAuthenticationService)
+        service.userAuthenticationService = userAuthenticationService
 
         owner = new User(username:'owner')
         notOwner = new User(username:'notOwner')
@@ -71,7 +71,7 @@ class ReelAuthorizationServiceSpec extends Specification {
         !result
 
         and:
-        userService.currentUser >> notOwner
+        userAuthenticationService.currentUser >> notOwner
     }
 
     void "reel owner is the current user"() {
@@ -85,6 +85,6 @@ class ReelAuthorizationServiceSpec extends Specification {
         result
 
         and:
-        userService.currentUser >> owner
+        userAuthenticationService.currentUser >> owner
     }
 }

@@ -4,7 +4,7 @@ import static in.reeltime.reel.Reel.*
 
 class ReelAuthorizationService {
 
-    def userService
+    def userAuthenticationService
 
     boolean reelNameIsReserved(String reelName) {
         return reelName?.toLowerCase() == UNCATEGORIZED_REEL_NAME.toLowerCase()
@@ -16,6 +16,6 @@ class ReelAuthorizationService {
     }
 
     boolean currentUserIsReelOwner(Reel reel) {
-        return reel.owner == userService.currentUser
+        return reel.owner == userAuthenticationService.currentUser
     }
 }

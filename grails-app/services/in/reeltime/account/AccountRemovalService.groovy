@@ -5,7 +5,7 @@ import in.reeltime.user.User
 
 class AccountRemovalService {
 
-    def userService
+    def userAuthenticationService
 
     def activityService
     def audienceService
@@ -15,7 +15,7 @@ class AccountRemovalService {
     def videoRemovalService
 
     void removeAccountForCurrentUser() {
-        def currentUser = userService.currentUser
+        def currentUser = userAuthenticationService.currentUser
         def username = currentUser.username
 
         log.info "Removing confirmation codes for user [${username}]"

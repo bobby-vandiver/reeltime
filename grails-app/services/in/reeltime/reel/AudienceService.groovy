@@ -9,7 +9,7 @@ class AudienceService {
     def reelService
     def reelAuthorizationService
 
-    def userService
+    def userAuthenticationService
     def activityService
 
     Collection<User> listMembers(Long reelId) {
@@ -27,7 +27,7 @@ class AudienceService {
         if(reelAuthorizationService.currentUserIsReelOwner(reel)) {
             throw new AuthorizationException("Owner of a reel cannot be a member of the reel's audience")
         }
-        def currentUser = userService.currentUser
+        def currentUser = userAuthenticationService.currentUser
         def audience = reel.audience
 
         audience.addToMembers(currentUser)
@@ -40,7 +40,7 @@ class AudienceService {
         def reel = reelService.loadReel(reelId)
         def audience = reel.audience
 
-        def currentUser = userService.currentUser
+        def currentUser = userAuthenticationService.currentUser
         if(!audience.hasMember(currentUser)) {
             def message = "Current user [${currentUser.username}] is not a member of the audience for reel [$reelId]"
             throw new AuthorizationException(message)

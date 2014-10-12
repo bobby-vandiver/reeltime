@@ -11,6 +11,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
 
     UserService userService
     UserFollowingService userFollowingService
+    UserAuthenticationService userAuthenticationService
 
     User follower
     User followee
@@ -18,9 +19,11 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
     def setup() {
         userService = Mock(UserService)
         userFollowingService = Mock(UserFollowingService)
+        userAuthenticationService = Mock(UserAuthenticationService)
 
         controller.userService = userService
         controller.userFollowingService = userFollowingService
+        controller.userAuthenticationService = userAuthenticationService
 
         follower = new User(username: 'follower', displayName: 'follower display')
         followee = new User(username: 'followee', displayName: 'followee display')
@@ -37,7 +40,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         assertStatusCodeOnlyResponse(response, 201)
 
         and:
-        1 * userService.currentUser >> follower
+        1 * userAuthenticationService.currentUser >> follower
         1 * userService.loadUser('followee') >> followee
 
         and:
@@ -55,7 +58,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         assertStatusCodeOnlyResponse(response, 200)
 
         and:
-        1 * userService.currentUser >> follower
+        1 * userAuthenticationService.currentUser >> follower
         1 * userService.loadUser('followee') >> followee
 
         and:
@@ -116,7 +119,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         assertErrorMessageResponse(response, 400, TEST_MESSAGE)
 
         and:
-        1 * userService.currentUser >> follower
+        1 * userAuthenticationService.currentUser >> follower
         1 * userService.loadUser('followee') >> followee
 
         and:
