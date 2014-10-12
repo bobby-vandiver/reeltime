@@ -11,6 +11,7 @@ class Reel {
     static final MAXIMUM_NAME_LENGTH = 25
 
     String name
+    Date dateCreated
 
     static belongsTo = [owner: User]
     static hasOne = [audience: Audience]

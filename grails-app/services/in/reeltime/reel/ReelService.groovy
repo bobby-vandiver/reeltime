@@ -36,6 +36,11 @@ class ReelService {
         reel.save()
     }
 
+    List<Reel> listReels(int page) {
+        int offset = (page - 1) * maxReelsPerPage
+        Reel.list(max: maxReelsPerPage, offset: offset, sort: 'dateCreated')
+    }
+
     Collection<Reel> listReelsByUsername(String username) {
         userService.loadUser(username).reels
     }

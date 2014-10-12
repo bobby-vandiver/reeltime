@@ -7,6 +7,7 @@ import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.exceptions.InvalidReelNameException
 import spock.lang.Unroll
+import test.helper.ReelFactory
 import test.helper.UserFactory
 import in.reeltime.activity.ActivityType
 
@@ -219,31 +220,36 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         _   |   'c' * 26
     }
 
-//    void "list reels by page"() {
-//        given:
-//        def ownerUncategorizedReel = owner.reels[0]
-//        def notOwnerUncategorizedReel = notOwner.reels[0]
-//
-//        and:
-//        def someReel = ReelFactory.createReel(owner, 'some reel')
-//        def anotherReel = ReelFactory.createReel(owner, 'another reel')
-//
-//        when:
-//        def pageOne = reelService.listReels(1)
-//
-//        then:
-//        pageOne.size() == TEST_MAX_REELS_PER_PAGE
-//
-//        and:
-//        pageOne[0] == ownerUncategorizedReel
-//        pageOne[1] == notOwnerUncategorizedReel
-//        pageOne[2] == someReel
-//
-//        when:
-//        def pageTwo = reelService.listReels()
-//
-//    }
-//
+    void "list reels by page"() {
+        given:
+        def ownerUncategorizedReel = owner.reels[0]
+        def notOwnerUncategorizedReel = notOwner.reels[0]
+
+        and:
+        def someReel = ReelFactory.createReel(owner, 'some reel')
+        def anotherReel = ReelFactory.createReel(owner, 'another reel')
+
+        when:
+        def pageOne = reelService.listReels(1)
+
+        then:
+        pageOne.size() == TEST_MAX_REELS_PER_PAGE
+
+        and:
+        pageOne[0] == ownerUncategorizedReel
+        pageOne[1] == notOwnerUncategorizedReel
+        pageOne[2] == someReel
+
+        when:
+        def pageTwo = reelService.listReels(2)
+
+        then:
+        pageTwo.size() == 1
+
+        and:
+        pageTwo[0] == anotherReel
+    }
+
     private Collection<Reel> createReels(User owner, int count) {
         def reels = owner.reels
         def initialCount = reels.size()
