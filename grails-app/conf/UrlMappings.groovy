@@ -43,6 +43,10 @@ class UrlMappings {
             action = [POST: 'error']
         }
 
+        "/videos" (controller: 'video') {
+            action = [GET: 'listVideos']
+        }
+
         "/video" (controller: 'videoCreation') {
             action = [POST: 'upload']
         }

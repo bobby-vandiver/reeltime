@@ -29,7 +29,7 @@ class ReelTimeRequestFactory {
     }
 
     RestRequest listUsers(String token, Integer pageNumber) {
-        new RestRequest(url: urlFactory.listUsersUrl, token: token, queryParams: [page: pageNumber ?: 1])
+        paginatedListRequest(token, pageNumber, urlFactory.listUsersUrl)
     }
 
     RestRequest followUser(String token, String username) {
@@ -53,6 +53,10 @@ class ReelTimeRequestFactory {
     RestRequest listFollowees(String token, String username) {
         def url = urlFactory.getListFolloweesUrl(username)
         new RestRequest(url: url, token: token)
+    }
+
+    RestRequest listVideos(String token, Integer pageNumber) {
+        paginatedListRequest(token, pageNumber, urlFactory.listVideosUrl)
     }
 
     RestRequest uploadVideo(String token, String videoTitle, String reelName, File videoFile) {
@@ -118,5 +122,9 @@ class ReelTimeRequestFactory {
     private RestRequest audienceRequest(String token, Long reelId) {
         def url = urlFactory.getAudienceUrl(reelId)
         new RestRequest(url: url, token: token)
+    }
+
+    private RestRequest paginatedListRequest(String token, Integer pageNumber, String url) {
+        new RestRequest(url: url, token: token, queryParams: [page: pageNumber ?: 1])
     }
 }

@@ -105,6 +105,16 @@ class ReelTimeClient {
         return response.json
     }
 
+    JSONElement listVideos(String token, Integer page = null) {
+        def request = requestFactory.listVideos(token, page)
+        def response = get(request)
+
+        if(response.status != 200) {
+            Assert.fail("Failed to retrieve list of videos. Status code: ${response.status}. JSON: ${response.json}")
+        }
+        return response.json
+    }
+
     Long uploadVideoToUncategorizedReel(String token, String title = 'minimum-viable-video') {
         uploadVideoToReel(token, 'Uncategorized', title)
     }

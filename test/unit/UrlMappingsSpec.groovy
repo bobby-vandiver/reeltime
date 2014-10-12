@@ -5,6 +5,7 @@ import spock.lang.Specification
 import in.reeltime.notification.NotificationController
 import in.reeltime.video.VideoCreationController
 import in.reeltime.video.VideoRemovalController
+import in.reeltime.video.VideoController
 import in.reeltime.playlist.PlaylistController
 import in.reeltime.playlist.SegmentController
 import in.reeltime.account.AccountController
@@ -17,10 +18,10 @@ import in.reeltime.user.UserFollowingController
 import spock.lang.Unroll
 
 @TestMixin(UrlMappingsUnitTestMixin)
-@Mock([NotificationController, VideoCreationController, VideoRemovalController,
+@Mock([VideoCreationController, VideoRemovalController, VideoController,
         PlaylistController, SegmentController, ReelController, AudienceController,
         AccountController, NewsfeedController, UserController, UserFollowingController,
-        ApplicationStatusController])
+        NotificationController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
 
     @Unroll
@@ -266,11 +267,17 @@ class UrlMappingsSpec extends Specification {
         'followees' |   'listFollowees'
     }
 
-    void "test list users mapping"() {
+    @Unroll
+    void "test list [#url] url maps to controller [#controller] action [#action]"() {
         given:
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/users', controller: 'user', action: 'listUsers')
+        assertForwardUrlMapping(url, controller: controller, action: action)
+
+        where:
+        url         |   controller  |   action
+        '/users'    |   'user'      |   'listUsers'
+        '/videos'   |   'video'     |   'listVideos'
     }
 }
