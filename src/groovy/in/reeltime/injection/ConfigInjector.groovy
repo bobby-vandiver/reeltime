@@ -55,6 +55,10 @@ class ConfigInjector {
             outputBase = config.reeltime.storage.output
         }
 
+        ctx.accountManagementService.with {
+            fromAddress = config.reeltime.registration.fromAddress
+        }
+
         ctx.accountRegistrationService.with {
             fromAddress = config.reeltime.registration.fromAddress
         }
