@@ -56,7 +56,19 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
         message.subject == 'Please Verify Your ReelTime Account'
         message.to == email
         message.from == 'registration@reeltime.in'
-        message.body.startsWith("Hello $username, please enter the following code on your registered device:")
+
+        and:
+        def messageRegex = /Hello (\w+), please enter the following code on your registered device: ([a-zA-z0-9]{8})/
+
+        def matcher = (message.body =~ messageRegex)
+        matcher.matches()
+
+        and:
+        matcher[0][1] == username
+        def sentCode = matcher[0][2] as String
+
+        def confirmationCode = AccountCode.findByUser(user)
+        confirmationCode.isCodeCorrect(sentCode)
     }
 
     void "register a new client for an existing user"() {

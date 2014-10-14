@@ -10,7 +10,6 @@ class AccountConfirmationService {
     def userService
     def userAuthenticationService
 
-    def accountCodeService
     def confirmationCodeValidityLengthInDays
 
     void confirmAccount(String code) {
@@ -19,11 +18,8 @@ class AccountConfirmationService {
         def accountConfirmation = findAccountConfirmationForUser(currentUser)
         checkExpiration(accountConfirmation, currentUser)
 
-        def hash = accountConfirmation.code
-        def salt = accountConfirmation.salt
-
-        if(!accountCodeService.accountCodeIsCorrect(code, hash, salt)) {
-            throw new ConfirmationException("The confirmation code [$code] is not correct")
+        if(!accountConfirmation.isCodeCorrect(code)) {
+            throw new ConfirmationException("The confirmation code is not correct")
         }
         verifyUser(currentUser)
         accountConfirmation.delete()

@@ -2,6 +2,8 @@ package in.reeltime.account
 
 import in.reeltime.user.User
 
+import java.security.MessageDigest
+
 class AccountCode {
 
     User user
@@ -16,5 +18,26 @@ class AccountCode {
         code blank: false, nullable: false
         salt nullable: false, size: 8..8
         type nullable: false
+    }
+
+    def beforeInsert() {
+        code = hashAndSaltCode(code, salt)
+    }
+
+    def beforeUpdate() {
+        if(isDirty('code')) {
+            code = hashAndSaltCode(code, salt)
+        }
+    }
+
+    boolean isCodeCorrect(String plainTextCode) {
+        hashAndSaltCode(plainTextCode, salt) == code
+    }
+
+    private static String hashAndSaltCode(String code, byte[] salt) {
+        MessageDigest messageDigest = MessageDigest.getInstance('SHA-256')
+        messageDigest.update(code.getBytes('utf-8'))
+        messageDigest.update(salt)
+        messageDigest.digest().toString()
     }
 }

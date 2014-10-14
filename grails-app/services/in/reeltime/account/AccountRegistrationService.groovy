@@ -48,8 +48,7 @@ class AccountRegistrationService {
         def code = securityService.generateSecret(CONFIRMATION_CODE_LENGTH, ALLOWED_CHARACTERS)
         def salt = securityService.generateSalt(SALT_LENGTH)
 
-        def hashedCode = accountCodeService.hashAccountCode(code, salt)
-        new AccountCode(user: user, code: hashedCode, salt: salt, type: AccountCodeType.AccountConfirmation).save()
+        new AccountCode(user: user, code: code, salt: salt, type: AccountCodeType.AccountConfirmation).save()
 
         def localizedSubject = localizedMessageService.getMessage('registration.email.subject', locale)
         def localizedMessage = localizedMessageService.getMessage('registration.email.message', locale, [user.username, code])

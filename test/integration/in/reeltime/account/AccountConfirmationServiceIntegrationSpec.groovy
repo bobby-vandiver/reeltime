@@ -9,7 +9,6 @@ import test.helper.UserFactory
 class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
 
     def accountConfirmationService
-    def accountCodeService
 
     User user
     int savedConfirmationCodeValidityLengthInDays
@@ -58,7 +57,7 @@ class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         def e = thrown(ConfirmationException)
-        e.message == "The confirmation code [$invalidCode] is not correct"
+        e.message == "The confirmation code is not correct"
 
         and:
         !user.verified
@@ -146,10 +145,9 @@ class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
         AccountCode.findById(accountConfirmationId)
     }
 
-    private AccountCode createAccountConfirmation(User user, String rawCode) {
+    private static AccountCode createAccountConfirmation(User user, String rawCode) {
         def salt = 'z14aflaa'.bytes
-        def hashedCode = accountCodeService.hashAccountCode(rawCode, salt)
-        new AccountCode(user: user, code: hashedCode, salt: salt,
+        new AccountCode(user: user, code: rawCode, salt: salt,
                 type: AccountCodeType.AccountConfirmation).save(flush: true)
     }
 
