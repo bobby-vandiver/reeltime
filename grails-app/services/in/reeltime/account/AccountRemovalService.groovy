@@ -47,7 +47,7 @@ class AccountRemovalService {
     }
 
     private static void deleteConfirmationCodesForUser(User user) {
-        def confirmationCodes = AccountConfirmation.findAllByUser(user)
+        def confirmationCodes = AccountCode.findAllByUser(user)
         confirmationCodes.each { code ->
             log.debug "Deleting account confirmation code [${code.id}]"
             code.delete()

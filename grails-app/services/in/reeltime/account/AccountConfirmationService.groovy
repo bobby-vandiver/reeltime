@@ -8,11 +8,13 @@ import java.security.MessageDigest
 class AccountConfirmationService {
 
     def userService
-    def springSecurityService
+    def userAuthenticationService
+
+    def accountCodeService
     def confirmationCodeValidityLengthInDays
 
     void confirmAccount(String code) {
-        def currentUser = springSecurityService.currentUser as User
+        def currentUser = userAuthenticationService.currentUser
 
         def accountConfirmation = findAccountConfirmationForUser(currentUser)
         checkExpiration(accountConfirmation, currentUser)
@@ -20,22 +22,22 @@ class AccountConfirmationService {
         def hash = accountConfirmation.code
         def salt = accountConfirmation.salt
 
-        if(!confirmationCodeIsCorrect(code, hash, salt)) {
+        if(!accountCodeService.accountCodeIsCorrect(code, hash, salt)) {
             throw new ConfirmationException("The confirmation code [$code] is not correct")
         }
         verifyUser(currentUser)
         accountConfirmation.delete()
     }
 
-    private static AccountConfirmation findAccountConfirmationForUser(User user) {
-        def accountConfirmation = AccountConfirmation.findByUser(user)
+    private static AccountCode findAccountConfirmationForUser(User user) {
+        def accountConfirmation = AccountCode.findByUser(user)
         if(!accountConfirmation) {
             throw new ConfirmationException("The confirmation code is not associated with user [${user.username}]")
         }
         return accountConfirmation
     }
 
-    private void checkExpiration(AccountConfirmation accountConfirmation, User user) {
+    private void checkExpiration(AccountCode accountConfirmation, User user) {
         def dateCreated = accountConfirmation.dateCreated
         if(confirmationCodeHasExpired(dateCreated)) {
             accountConfirmation.delete()
@@ -52,16 +54,5 @@ class AccountConfirmationService {
     private void verifyUser(User user) {
         user.verified = true
         userService.storeUser(user)
-    }
-
-    private boolean confirmationCodeIsCorrect(String rawCode, String storedCode, byte[] salt) {
-        hashConfirmationCode(rawCode, salt) == storedCode
-    }
-
-    String hashConfirmationCode(String code, byte[] salt) {
-        MessageDigest messageDigest = MessageDigest.getInstance('SHA-256')
-        messageDigest.update(code.getBytes('utf-8'))
-        messageDigest.update(salt)
-        messageDigest.digest().toString()
     }
 }

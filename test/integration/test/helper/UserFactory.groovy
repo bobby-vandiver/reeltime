@@ -12,6 +12,9 @@ class UserFactory {
     }
 
     static User createUser(String username, String displayName = null) {
+        if(!displayName) {
+            displayName = "$username display"
+        }
         createUser(username, 'secret', displayName, "$username@test.com")
     }
 

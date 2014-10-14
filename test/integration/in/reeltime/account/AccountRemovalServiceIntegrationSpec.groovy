@@ -58,7 +58,7 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         User.findByUsername(username) == null
-        AccountConfirmation.findByUser(user) == null
+        AccountCode.findByUser(user) == null
 
         and:
         UserFollowing.findByFollowerOrFollowee(user, user) == null

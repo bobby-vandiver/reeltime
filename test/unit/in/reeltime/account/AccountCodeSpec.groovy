@@ -7,38 +7,36 @@ import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 
-@TestFor(AccountConfirmation)
+@TestFor(AccountCode)
 @Mock([User])
-class AccountConfirmationSpec extends Specification {
+class AccountCodeSpec extends Specification {
 
     void "user cannot be null"() {
         given:
-        def accountConfirmation = new AccountConfirmation(user: null)
+        def accountCode = new AccountCode(user: null)
 
         expect:
-        !accountConfirmation.validate(['user'])
+        !accountCode.validate(['user'])
     }
 
     void "user is required"() {
         given:
         def user = new User(username: 'foo', password: 'bar')
-        user.springSecurityService = Stub(SpringSecurityService)
-        user.save(validate: false)
 
         and:
-        def accountConfirmation = new AccountConfirmation(user: user)
+        def accountCode = new AccountCode(user: user)
 
         expect:
-        accountConfirmation.validate(['user'])
+        accountCode.validate(['user'])
     }
 
     @Unroll
     void "code [#code] is valid [#valid]"() {
         given:
-        def accountConfirmation = new AccountConfirmation(code: code)
+        def accountCode = new AccountCode(code: code)
 
         expect:
-        accountConfirmation.validate(['code']) == valid
+        accountCode.validate(['code']) == valid
 
         where:
         code        |   valid
@@ -50,10 +48,10 @@ class AccountConfirmationSpec extends Specification {
     @Unroll
     void "salt [#salt] is valid [#valid]"() {
         given:
-        def accountConfirmation = new AccountConfirmation(salt: salt?.bytes)
+        def accountCode = new AccountCode(salt: salt?.bytes)
 
         expect:
-        accountConfirmation.validate(['salt']) == valid
+        accountCode.validate(['salt']) == valid
 
         where:
         salt        |   valid
@@ -62,5 +60,20 @@ class AccountConfirmationSpec extends Specification {
         '1234abc'   |   false
         '1234abcd'  |   true
         '1234abcde' |   false
+    }
+
+    @Unroll
+    void "type [#type] is valid [#valid]"() {
+        given:
+        def accountCode = new AccountCode(type: type)
+
+        expect:
+        accountCode.validate(['type']) == valid
+
+        where:
+        type                                    |   valid
+        null                                    |   false
+        AccountCodeType.AccountConfirmation     |   true
+        AccountCodeType.ResetPassword           |   true
     }
 }
