@@ -34,6 +34,12 @@ class AccountCode {
         hashAndSaltCode(plainTextCode, salt) == code
     }
 
+    boolean checkExpirationInDays(int validityLengthInDays) {
+        Calendar calendar = Calendar.instance
+        calendar.add(Calendar.DAY_OF_MONTH, -1 * validityLengthInDays)
+        return dateCreated.time < calendar.timeInMillis
+    }
+
     private static String hashAndSaltCode(String code, byte[] salt) {
         MessageDigest messageDigest = MessageDigest.getInstance('SHA-256')
         messageDigest.update(code.getBytes('utf-8'))

@@ -26,7 +26,7 @@ class AccountConfirmationService {
     }
 
     private static AccountCode findAccountConfirmationForUser(User user) {
-        def accountConfirmation = AccountCode.findByUser(user)
+        def accountConfirmation = AccountCode.findByUserAndType(user, AccountCodeType.AccountConfirmation)
         if(!accountConfirmation) {
             throw new ConfirmationException("The confirmation code is not associated with user [${user.username}]")
         }
@@ -34,17 +34,10 @@ class AccountConfirmationService {
     }
 
     private void checkExpiration(AccountCode accountConfirmation, User user) {
-        def dateCreated = accountConfirmation.dateCreated
-        if(confirmationCodeHasExpired(dateCreated)) {
+        if(accountConfirmation.checkExpirationInDays(confirmationCodeValidityLengthInDays as int)) {
             accountConfirmation.delete()
             throw new ConfirmationException("The confirmation code for user [${user.username}] has expired")
         }
-    }
-
-    private boolean confirmationCodeHasExpired(Date dateCreated) {
-        Calendar calendar = Calendar.instance
-        calendar.add(Calendar.DAY_OF_MONTH, -1 * confirmationCodeValidityLengthInDays as int)
-        return dateCreated.time < calendar.timeInMillis
     }
 
     private void verifyUser(User user) {
