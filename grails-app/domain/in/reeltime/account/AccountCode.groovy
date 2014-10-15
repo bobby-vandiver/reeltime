@@ -34,9 +34,17 @@ class AccountCode {
         hashAndSaltCode(plainTextCode, salt) == code
     }
 
-    boolean checkExpirationInDays(int validityLengthInDays) {
+    boolean hasExpiredInDays(int validityLengthInDays) {
+        hasExpired(Calendar.DAY_OF_MONTH, validityLengthInDays)
+    }
+
+    boolean hasExpiredInMinutes(int validityLengthInMinutes) {
+        hasExpired(Calendar.MINUTE, validityLengthInMinutes)
+    }
+
+    private hasExpired(int field, int amount) {
         Calendar calendar = Calendar.instance
-        calendar.add(Calendar.DAY_OF_MONTH, -1 * validityLengthInDays)
+        calendar.add(field, -1 * amount)
         return dateCreated.time < calendar.timeInMillis
     }
 

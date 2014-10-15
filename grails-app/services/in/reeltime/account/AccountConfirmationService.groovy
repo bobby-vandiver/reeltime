@@ -3,8 +3,6 @@ package in.reeltime.account
 import in.reeltime.exceptions.ConfirmationException
 import in.reeltime.user.User
 
-import java.security.MessageDigest
-
 class AccountConfirmationService {
 
     def userService
@@ -34,12 +32,13 @@ class AccountConfirmationService {
     }
 
     private void checkExpiration(AccountCode accountConfirmation, User user) {
-        if(accountConfirmation.checkExpirationInDays(confirmationCodeValidityLengthInDays as int)) {
+        if(accountConfirmation.hasExpiredInDays(confirmationCodeValidityLengthInDays as int)) {
             accountConfirmation.delete()
             throw new ConfirmationException("The confirmation code for user [${user.username}] has expired")
         }
     }
 
+    // TODO: Move to AccountManagementService
     private void verifyUser(User user) {
         user.verified = true
         userService.storeUser(user)

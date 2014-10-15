@@ -10,18 +10,12 @@ class AccountRegistrationService {
     def clientService
 
     def reelService
-
-    def accountCodeService
-    def securityService
+    def accountCodeGenerationService
 
     def localizedMessageService
     def mailService
 
     def fromAddress
-
-    protected static final SALT_LENGTH = 8
-    protected static final CONFIRMATION_CODE_LENGTH = 8
-    protected static final ALLOWED_CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
     RegistrationResult registerUserAndClient(AccountRegistrationCommand command, Locale locale) {
 
@@ -43,12 +37,10 @@ class AccountRegistrationService {
         new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
     }
 
+    // TODO: Move this to AccountConfirmationService
     private void sendConfirmationEmail(User user, Locale locale) {
 
-        def code = securityService.generateSecret(CONFIRMATION_CODE_LENGTH, ALLOWED_CHARACTERS)
-        def salt = securityService.generateSalt(SALT_LENGTH)
-
-        new AccountCode(user: user, code: code, salt: salt, type: AccountCodeType.AccountConfirmation).save()
+        def code = accountCodeGenerationService.generateAccountConfirmationCode(user)
 
         def localizedSubject = localizedMessageService.getMessage('registration.email.subject', locale)
         def localizedMessage = localizedMessageService.getMessage('registration.email.message', locale, [user.username, code])
