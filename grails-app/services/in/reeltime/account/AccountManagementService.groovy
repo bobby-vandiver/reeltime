@@ -15,4 +15,9 @@ class AccountManagementService {
         user.displayName = displayName
         userService.storeUser(user)
     }
+
+    void verifyUser(User user) {
+        user.verified = true
+        userService.storeUser(user)
+    }
 }

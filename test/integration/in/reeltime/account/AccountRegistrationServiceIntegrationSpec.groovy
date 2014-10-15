@@ -55,7 +55,7 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
         def message = inMemoryMailService.sentMessages[0]
         message.subject == 'Please Verify Your ReelTime Account'
         message.to == email
-        message.from == 'registration@reeltime.in'
+        message.from == 'noreply@reeltime.in'
 
         and:
         def messageRegex = /Hello (\w+), please enter the following code on your registered device: ([a-zA-z0-9]{8})/

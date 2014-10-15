@@ -71,7 +71,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         def message = inMemoryMailService.sentMessages[0]
         message.subject == 'ReelTime Password Reset'
         message.to == EMAIL
-        message.from == 'registration@reeltime.in'
+        message.from == 'noreply@reeltime.in'
 
         and:
         def messageRegex = /Hello (\w+), please enter the following code when prompted to reset your password: ([a-zA-z0-9]{8})/

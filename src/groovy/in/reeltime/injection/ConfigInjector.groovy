@@ -55,17 +55,14 @@ class ConfigInjector {
             outputBase = config.reeltime.storage.output
         }
 
-        ctx.accountRegistrationService.with {
-            fromAddress = config.reeltime.registration.fromAddress
-        }
-
         ctx.accountConfirmationService.with {
-            confirmationCodeValidityLengthInDays = config.reeltime.registration.confirmationCodeValidityLengthInDays
+            fromAddress = config.reeltime.accountManagement.fromAddress
+            confirmationCodeValidityLengthInDays = config.reeltime.accountManagement.confirmationCodeValidityLengthInDays
         }
 
         ctx.resetPasswordService.with {
-            fromAddress = config.reeltime.registration.fromAddress
-            resetPasswordCodeValidityLengthInMins = config.reeltime.registration.resetPasswordCodeValidityLengthInMins
+            fromAddress = config.reeltime.accountManagement.fromAddress
+            resetPasswordCodeValidityLengthInMins = config.reeltime.accountManagement.resetPasswordCodeValidityLengthInMins
         }
 
         ctx.activityService.with {

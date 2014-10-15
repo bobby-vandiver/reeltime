@@ -5,42 +5,47 @@ import in.reeltime.user.User
 
 class AccountConfirmationService {
 
-    def userService
+    def accountManagementService
+    def accountCodeGenerationService
+
     def userAuthenticationService
 
+    def localizedMessageService
+    def mailService
+
+    def fromAddress
     def confirmationCodeValidityLengthInDays
 
+    void sendConfirmationEmail(User user, Locale locale) {
+        def code = accountCodeGenerationService.generateAccountConfirmationCode(user)
+
+        def localizedSubject = localizedMessageService.getMessage('registration.email.subject', locale)
+        def localizedMessage = localizedMessageService.getMessage('registration.email.message', locale, [user.username, code])
+
+        mailService.sendMail(user.email, fromAddress, localizedSubject, localizedMessage)
+    }
+
     void confirmAccount(String code) {
+
         def currentUser = userAuthenticationService.currentUser
+        def accountConfirmation = AccountCode.findByUserAndType(currentUser, AccountCodeType.AccountConfirmation)
 
-        def accountConfirmation = findAccountConfirmationForUser(currentUser)
-        checkExpiration(accountConfirmation, currentUser)
+        def username = currentUser.username
 
+        if(!accountConfirmation) {
+            throw new ConfirmationException("The confirmation code is not associated with user [${username}]")
+        }
         if(!accountConfirmation.isCodeCorrect(code)) {
             throw new ConfirmationException("The confirmation code is not correct")
         }
-        verifyUser(currentUser)
-        accountConfirmation.delete()
-    }
-
-    private static AccountCode findAccountConfirmationForUser(User user) {
-        def accountConfirmation = AccountCode.findByUserAndType(user, AccountCodeType.AccountConfirmation)
-        if(!accountConfirmation) {
-            throw new ConfirmationException("The confirmation code is not associated with user [${user.username}]")
+        try {
+            if (accountConfirmation.hasExpiredInDays(confirmationCodeValidityLengthInDays as int)) {
+                throw new ConfirmationException("The confirmation code for user [${username}] has expired")
+            }
+            accountManagementService.verifyUser(currentUser)
         }
-        return accountConfirmation
-    }
-
-    private void checkExpiration(AccountCode accountConfirmation, User user) {
-        if(accountConfirmation.hasExpiredInDays(confirmationCodeValidityLengthInDays as int)) {
+        finally {
             accountConfirmation.delete()
-            throw new ConfirmationException("The confirmation code for user [${user.username}] has expired")
         }
-    }
-
-    // TODO: Move to AccountManagementService
-    private void verifyUser(User user) {
-        user.verified = true
-        userService.storeUser(user)
     }
 }

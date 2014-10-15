@@ -190,11 +190,10 @@ reeltime {
         maxVideoStreamSizeInBytes = 30 * 1024 * 1024
     }
 
-    // TODO: Rename this to something more generic than registration
-    // Account registration configuration
-    registration {
+    // Account management configuration
+    accountManagement {
         // The address to appear in emails
-        fromAddress = 'registration@reeltime.in'
+        fromAddress = 'noreply@reeltime.in'
 
         // How long until an account confirmation code becomes invalid
         confirmationCodeValidityLengthInDays = 7

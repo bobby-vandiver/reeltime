@@ -1,7 +1,5 @@
 package in.reeltime.account
 
-import in.reeltime.user.User
-
 import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
 class AccountRegistrationService {
@@ -10,12 +8,7 @@ class AccountRegistrationService {
     def clientService
 
     def reelService
-    def accountCodeGenerationService
-
-    def localizedMessageService
-    def mailService
-
-    def fromAddress
+    def accountConfirmationService
 
     RegistrationResult registerUserAndClient(AccountRegistrationCommand command, Locale locale) {
 
@@ -33,19 +26,8 @@ class AccountRegistrationService {
 
         def user = userService.createAndSaveUser(username, password, displayName, email, client, reel)
 
-        sendConfirmationEmail(user, locale)
+        accountConfirmationService.sendConfirmationEmail(user, locale)
         new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
-    }
-
-    // TODO: Move this to AccountConfirmationService
-    private void sendConfirmationEmail(User user, Locale locale) {
-
-        def code = accountCodeGenerationService.generateAccountConfirmationCode(user)
-
-        def localizedSubject = localizedMessageService.getMessage('registration.email.subject', locale)
-        def localizedMessage = localizedMessageService.getMessage('registration.email.message', locale, [user.username, code])
-
-        mailService.sendMail(user.email, fromAddress, localizedSubject, localizedMessage)
     }
 
     RegistrationResult registerClientForExistingUser(String username, String clientName) {
