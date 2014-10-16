@@ -1,5 +1,6 @@
 package in.reeltime.account
 
+import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ConfirmationException
 import in.reeltime.user.User
 
@@ -28,14 +29,16 @@ class AccountConfirmationService {
     void confirmAccount(String code) {
 
         def currentUser = userAuthenticationService.currentUser
-        def accountConfirmation = AccountCode.findByUserAndType(currentUser, AccountCodeType.AccountConfirmation)
+        def accountConfirmationCodes = AccountCode.findAllByUserAndType(currentUser, AccountCodeType.AccountConfirmation)
 
         def username = currentUser.username
 
-        if(!accountConfirmation) {
-            throw new ConfirmationException("The confirmation code is not associated with user [${username}]")
+        if(!accountConfirmationCodes) {
+            throw new AuthorizationException("The confirmation code is not associated with user [${username}]")
         }
-        if(!accountConfirmation.isCodeCorrect(code)) {
+
+        def accountConfirmation = accountConfirmationCodes.find { it.isCodeCorrect(code) }
+        if(!accountConfirmation) {
             throw new ConfirmationException("The confirmation code is not correct")
         }
         try {

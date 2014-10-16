@@ -3,6 +3,7 @@ package in.reeltime.account
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
+import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ConfirmationException
 import test.helper.UserFactory
 
@@ -117,7 +118,7 @@ class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
         }
 
         then:
-        def e = thrown(ConfirmationException)
+        def e = thrown(AuthorizationException)
         e.message == 'The confirmation code is not associated with user [current]'
 
         and:
@@ -135,7 +136,7 @@ class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
         }
 
         then:
-        def e = thrown(ConfirmationException)
+        def e = thrown(AuthorizationException)
         e.message == 'The confirmation code is not associated with user [current]'
 
         and:
@@ -143,6 +144,26 @@ class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         AccountCode.findById(accountConfirmationId)
+    }
+
+    void "current user has multiple confirmation code -- only remove the valid one on confirmation"() {
+        given:
+        def anotherConfirmationId = createAccountConfirmation(user, RAW_CONFIRMATION_CODE.reverse()).id
+        def accountConfirmationId = createAccountConfirmation(user, RAW_CONFIRMATION_CODE).id
+
+        when:
+        SpringSecurityUtils.doWithAuth(user.username) {
+            accountConfirmationService.confirmAccount(RAW_CONFIRMATION_CODE)
+        }
+
+        then:
+        user.verified
+
+        and:
+        !AccountCode.findById(accountConfirmationId)
+
+        and:
+        AccountCode.findById(anotherConfirmationId)
     }
 
     private static AccountCode createAccountConfirmation(User user, String rawCode) {

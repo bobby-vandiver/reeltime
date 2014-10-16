@@ -30,13 +30,14 @@ class ResetPasswordService {
     void resetPassword(String username, String newPassword, String code) {
 
         def user = userService.loadUser(username)
-        def resetPasswordCode = AccountCode.findByUserAndType(user, AccountCodeType.ResetPassword)
+        def resetPasswordCodes = AccountCode.findAllByUserAndType(user, AccountCodeType.ResetPassword)
 
-        if(!resetPasswordCode) {
-            // TODO: Need to log something about the attempt to reset the password!
-            throw new ResetPasswordException("The user has not requested a password reset")
+        if(!resetPasswordCodes) {
+            throw new AuthorizationException("The user has not requested a password reset")
         }
-        if(!resetPasswordCode.isCodeCorrect(code)) {
+
+        def resetPasswordCode = resetPasswordCodes.find { it.isCodeCorrect(code) }
+        if(!resetPasswordCode) {
             throw new ResetPasswordException("The reset password code is not correct")
         }
         try {

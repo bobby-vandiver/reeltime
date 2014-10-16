@@ -126,7 +126,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         resetPasswordService.resetPassword(USERNAME, NEW_PASSWORD, RAW_RESET_PASSWORD_CODE)
 
         then:
-        def e = thrown(ResetPasswordException)
+        def e = thrown(AuthorizationException)
         e.message == "The user has not requested a password reset"
     }
 
@@ -165,6 +165,24 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         !AccountCode.findById(resetPasswordCodeId)
+    }
+
+    void "multiple reset password code only removes the one valid"() {
+        given:
+        def anotherCodeId = createResetPasswordCode(user, RAW_RESET_PASSWORD_CODE.reverse()).id
+        def resetPasswordCodeId = createResetPasswordCode(user, RAW_RESET_PASSWORD_CODE).id
+
+        when:
+        resetPasswordService.resetPassword(USERNAME, NEW_PASSWORD, RAW_RESET_PASSWORD_CODE)
+
+        then:
+        userAuthenticationService.authenticate(USERNAME, NEW_PASSWORD)
+
+        and:
+        !AccountCode.findById(resetPasswordCodeId)
+
+        and:
+        AccountCode.findById(anotherCodeId)
     }
 
     private static AccountCode createResetPasswordCode(User user, String rawCode) {
