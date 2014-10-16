@@ -44,4 +44,12 @@ class AccountManagementServiceIntegrationSpec extends IntegrationSpec {
         then:
         user.displayName == newDisplayName
     }
+
+    void "verify user"() {
+        when:
+        accountManagementService.verifyUser(user)
+
+        then:
+        user.verified
+    }
 }
