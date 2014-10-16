@@ -2,6 +2,7 @@ package in.reeltime.account
 
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
+import in.reeltime.oauth2.Client
 import test.helper.UserFactory
 
 class AccountManagementServiceIntegrationSpec extends IntegrationSpec {
@@ -51,5 +52,19 @@ class AccountManagementServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         user.verified
+    }
+
+    void "revoke client for user"() {
+        given:
+        def clientId = user.clients[0].clientId
+
+        when:
+        accountManagementService.revokeClient(user, clientId)
+
+        then:
+        user.clients.size() == 0
+
+        and:
+        Client.findByClientId(clientId) == null
     }
 }

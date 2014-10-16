@@ -20,4 +20,14 @@ class AccountManagementService {
         user.verified = true
         userService.storeUser(user)
     }
+
+    void revokeClient(User user, String clientId) {
+        def client = user.clients.find {
+            it.clientId == clientId
+        }
+        user.clients.remove(client)
+        client.delete()
+
+        userService.storeUser(user)
+    }
 }

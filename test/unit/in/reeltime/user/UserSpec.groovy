@@ -124,7 +124,7 @@ class UserSpec extends Specification {
 
         where:
         count   |   valid
-        0       |   false
+        0       |   true
         1       |   true
         2       |   true
         3       |   true
