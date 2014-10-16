@@ -6,7 +6,14 @@ class TokenRemovalService {
 
     void removeAllTokensForUser(User user) {
         def clientIds = collectClientIdsForUser(user)
+        removeAllTokens(user, clientIds)
+    }
 
+    void removeAllTokensForClient(Client client) {
+        removeAllTokens(null, [client.clientId])
+    }
+
+    private static void removeAllTokens(User user, Collection<String> clientIds) {
         def accessTokens = findAccessTokens(user, clientIds)
         def refreshTokens = findRefreshTokensFromAccessTokens(accessTokens)
 
@@ -26,9 +33,9 @@ class TokenRemovalService {
     }
 
     private static Collection<AccessToken> findAccessTokens(User user, Collection<String> clientIds) {
-        AccessToken.findAll {
-            username == user.username || clientIds.contains(clientId)
-        }
+        def userTokens = user ? AccessToken.findAll { username == user.username } : []
+        def clientTokens = AccessToken.findAll { clientIds.contains(clientId) }
+        return userTokens + clientTokens
     }
 
     private static Collection<RefreshToken> findRefreshTokensFromAccessTokens(Collection<AccessToken> accessTokens) {

@@ -56,6 +56,44 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
         5           |   10                  |   8
     }
 
+    @Unroll
+    void "remove all tokens associated with the specified client - [#accessTokenCount] access tokens and [#refreshTokenCount] refresh tokens"() {
+        given:
+        def username = 'someone'
+        def clientId = 'someClientId'
+
+        and:
+        def client = createClient(clientId)
+        def user = createUser(username, clientId)
+
+        and:
+        def tokenIds = createAccessTokensAndRefreshTokens(username, [clientId], accessTokenCount, refreshTokenCount)
+
+        when:
+        tokenRemovalService.removeAllTokensForClient(client)
+
+        then:
+        assertAccessTokensAndRefreshTokensAreDeleted(tokenIds)
+
+        where:
+        accessTokenCount    |   refreshTokenCount
+        1                   |   0
+        1                   |   1
+        2                   |   0
+        2                   |   1
+        2                   |   2
+        1                   |   0
+        1                   |   1
+        2                   |   0
+        2                   |   1
+        2                   |   2
+        1                   |   0
+        1                   |   1
+        10                  |   0
+        10                  |   5
+        10                  |   8
+    }
+
     private Map createAccessTokensAndRefreshTokens(String username, Collection<String> clientIds,
                                                           int accessTokenCount, int refreshTokenCount) {
         if(refreshTokenCount > accessTokenCount) {

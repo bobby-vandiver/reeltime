@@ -6,6 +6,7 @@ import in.reeltime.user.User
 class AccountManagementService {
 
     def userService
+    def tokenRemovalService
 
     void changePassword(User user, String password) {
         user.password = password
@@ -29,6 +30,8 @@ class AccountManagementService {
         if(!client) {
             throw new AuthorizationException("Cannot revoke unknown client")
         }
+
+        tokenRemovalService.removeAllTokensForClient(client)
         user.clients.remove(client)
         client.delete()
 
