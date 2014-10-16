@@ -9,7 +9,7 @@ import test.helper.UserFactory
 class AccountManagementServiceIntegrationSpec extends IntegrationSpec {
 
     def accountManagementService
-    def userAuthenticationService
+    def authenticationService
 
     User user
 
@@ -30,10 +30,10 @@ class AccountManagementServiceIntegrationSpec extends IntegrationSpec {
         accountManagementService.changePassword(user, newPassword)
 
         then:
-        !userAuthenticationService.authenticate(USERNAME, PASSWORD)
+        !authenticationService.authenticateUser(USERNAME, PASSWORD)
 
         and:
-        userAuthenticationService.authenticate(USERNAME, newPassword)
+        authenticationService.authenticateUser(USERNAME, newPassword)
     }
 
     void "change display name"() {

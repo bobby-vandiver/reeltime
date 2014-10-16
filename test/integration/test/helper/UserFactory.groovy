@@ -17,12 +17,18 @@ class UserFactory {
         }
         createUser(username, 'secret', displayName, "$username@test.com")
     }
-
     static User createUser(String username, String password, String displayName, String email) {
+        def clientId = username + 'test-client-id'
+        def clientSecret = username + 'test-client-secret'
+        createUser(username, password, displayName, email, clientId, clientSecret)
+    }
+
+    static User createUser(String username, String password, String displayName, String email,
+                           String clientId, String clientSecret) {
         def client = new Client(
                 clientName: username + '-client-name',
-                clientId: username + 'test-client-id',
-                clientSecret: username + 'test-client-secret'
+                clientId: clientId,
+                clientSecret: clientSecret
         ).save()
 
         def reel = new Reel(

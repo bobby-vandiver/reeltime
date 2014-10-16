@@ -2,7 +2,6 @@ package in.reeltime.user
 
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
-import in.reeltime.common.CustomMarshaller
 import in.reeltime.exceptions.UserNotFoundException
 
 import static javax.servlet.http.HttpServletResponse.*
@@ -12,7 +11,7 @@ class UserFollowingController extends AbstractController {
 
     def userService
     def userFollowingService
-    def userAuthenticationService
+    def authenticationService
 
     static allowedMethods = [
             followUser: 'POST', unfollowUser: 'DELETE',
@@ -22,7 +21,7 @@ class UserFollowingController extends AbstractController {
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('users-write')"])
     def followUser(String username) {
         handleSingleParamRequest(username, 'following.username.required') {
-            def currentUser = userAuthenticationService.currentUser
+            def currentUser = authenticationService.currentUser
             def userToFollow = userService.loadUser(username)
 
             userFollowingService.startFollowingUser(currentUser, userToFollow)
@@ -33,7 +32,7 @@ class UserFollowingController extends AbstractController {
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('users-write')"])
     def unfollowUser(String username) {
         handleSingleParamRequest(username, 'following.username.required') {
-            def currentUser = userAuthenticationService.currentUser
+            def currentUser = authenticationService.currentUser
             def userToUnfollow = userService.loadUser(username)
 
             userFollowingService.stopFollowingUser(currentUser, userToUnfollow)

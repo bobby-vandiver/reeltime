@@ -4,7 +4,7 @@ import grails.test.mixin.TestFor
 import in.reeltime.reel.AudienceService
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
-import in.reeltime.user.UserAuthenticationService
+import in.reeltime.security.AuthenticationService
 import in.reeltime.user.UserFollowingService
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -16,7 +16,7 @@ class NewsfeedServiceSpec extends Specification {
     AudienceService audienceService
 
     UserFollowingService userFollowingService
-    UserAuthenticationService userAuthenticationService
+    AuthenticationService authenticationService
 
     User follower
     Reel reel
@@ -37,14 +37,14 @@ class NewsfeedServiceSpec extends Specification {
         audienceService = Mock(AudienceService)
         userFollowingService = Mock(UserFollowingService)
 
-        userAuthenticationService = Stub(UserAuthenticationService) {
+        authenticationService = Stub(AuthenticationService) {
             getCurrentUser() >> follower
         }
 
         service.activityService = activityService
         service.audienceService = audienceService
         service.userFollowingService = userFollowingService
-        service.userAuthenticationService = userAuthenticationService
+        service.authenticationService = authenticationService
     }
 
     @Unroll

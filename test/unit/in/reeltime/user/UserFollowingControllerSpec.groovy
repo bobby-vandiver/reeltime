@@ -3,7 +3,7 @@ package in.reeltime.user
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.UserNotFoundException
-import in.reeltime.message.LocalizedMessageService
+import in.reeltime.security.AuthenticationService
 import spock.lang.Unroll
 
 @TestFor(UserFollowingController)
@@ -11,7 +11,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
 
     UserService userService
     UserFollowingService userFollowingService
-    UserAuthenticationService userAuthenticationService
+    AuthenticationService authenticationService
 
     User follower
     User followee
@@ -19,11 +19,11 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
     def setup() {
         userService = Mock(UserService)
         userFollowingService = Mock(UserFollowingService)
-        userAuthenticationService = Mock(UserAuthenticationService)
+        authenticationService = Mock(AuthenticationService)
 
         controller.userService = userService
         controller.userFollowingService = userFollowingService
-        controller.userAuthenticationService = userAuthenticationService
+        controller.authenticationService = authenticationService
 
         follower = new User(username: 'follower', displayName: 'follower display')
         followee = new User(username: 'followee', displayName: 'followee display')
@@ -40,7 +40,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         assertStatusCodeOnlyResponse(response, 201)
 
         and:
-        1 * userAuthenticationService.currentUser >> follower
+        1 * authenticationService.currentUser >> follower
         1 * userService.loadUser('followee') >> followee
 
         and:
@@ -58,7 +58,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         assertStatusCodeOnlyResponse(response, 200)
 
         and:
-        1 * userAuthenticationService.currentUser >> follower
+        1 * authenticationService.currentUser >> follower
         1 * userService.loadUser('followee') >> followee
 
         and:
@@ -119,7 +119,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         assertErrorMessageResponse(response, 400, TEST_MESSAGE)
 
         and:
-        1 * userAuthenticationService.currentUser >> follower
+        1 * authenticationService.currentUser >> follower
         1 * userService.loadUser('followee') >> followee
 
         and:

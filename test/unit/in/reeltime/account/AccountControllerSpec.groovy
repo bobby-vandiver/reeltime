@@ -6,10 +6,9 @@ import groovy.json.JsonSlurper
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.RegistrationException
 import in.reeltime.exceptions.ConfirmationException
-import in.reeltime.message.LocalizedMessageService
 import in.reeltime.user.User
 import in.reeltime.user.UserService
-import in.reeltime.user.UserAuthenticationService
+import in.reeltime.security.AuthenticationService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.transaction.PlatformTransactionManager
@@ -154,11 +153,11 @@ class AccountControllerSpec extends AbstractControllerSpec {
 
     private void stubUserAuthenticationService(boolean authenticated) {
         defineBeans {
-            userAuthenticationService(UserAuthenticationService)
+            authenticationService(AuthenticationService)
         }
-        def userAuthenticationService = grailsApplication.mainContext.getBean('userAuthenticationService')
+        def authenticationService = grailsApplication.mainContext.getBean('authenticationService')
 
-        userAuthenticationService.authenticationManager = Stub(AuthenticationManager) {
+        authenticationService.authenticationManager = Stub(AuthenticationManager) {
             authenticate(_) >> {
                 if(!authenticated) {
                     throw new BadCredentialsException('TEST')
@@ -168,7 +167,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
 
         // Workaround for GRAILS-10538 per comment by Aaron Long:
         // Source: https://jira.grails.org/browse/GRAILS-10538
-        userAuthenticationService.transactionManager = Mock(PlatformTransactionManager) {
+        authenticationService.transactionManager = Mock(PlatformTransactionManager) {
             getTransaction(_) >> Mock(TransactionStatus)
         }
     }

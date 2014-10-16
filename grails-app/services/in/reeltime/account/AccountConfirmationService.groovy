@@ -9,7 +9,7 @@ class AccountConfirmationService {
     def accountManagementService
     def accountCodeGenerationService
 
-    def userAuthenticationService
+    def authenticationService
 
     def localizedMessageService
     def mailService
@@ -28,7 +28,7 @@ class AccountConfirmationService {
 
     void confirmAccount(String code) {
 
-        def currentUser = userAuthenticationService.currentUser
+        def currentUser = authenticationService.currentUser
         def accountConfirmationCodes = AccountCode.findAllByUserAndType(currentUser, AccountCodeType.AccountConfirmation)
 
         def username = currentUser.username

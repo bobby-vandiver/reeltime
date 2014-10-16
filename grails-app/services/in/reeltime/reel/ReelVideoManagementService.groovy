@@ -11,7 +11,7 @@ class ReelVideoManagementService {
 
     def videoService
 
-    def userAuthenticationService
+    def authenticationService
     def activityService
 
     Collection<Video> listVideos(Long reelId) {
@@ -39,7 +39,7 @@ class ReelVideoManagementService {
         updateReelAndVideo(reel, video)
         new ReelVideo(reel: reel, video: video).save()
 
-        def currentUser = userAuthenticationService.currentUser
+        def currentUser = authenticationService.currentUser
         activityService.videoAddedToReel(currentUser, reel, video)
     }
 

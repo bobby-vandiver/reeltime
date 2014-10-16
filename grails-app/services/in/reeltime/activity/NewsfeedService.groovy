@@ -6,13 +6,13 @@ class NewsfeedService {
     def audienceService
 
     def userFollowingService
-    def userAuthenticationService
+    def authenticationService
 
     private static final MIN_PAGE_NUMBER = 1
 
     List<UserReelActivity> listRecentActivity(int pageNumber) {
         validatePageNumber(pageNumber)
-        def currentUser = userAuthenticationService.currentUser
+        def currentUser = authenticationService.currentUser
 
         def reelsFollowed = audienceService.listReelsForAudienceMember(currentUser)
         def usersFollowed = userFollowingService.listFolloweesForFollower(currentUser)

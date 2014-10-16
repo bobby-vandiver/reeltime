@@ -10,7 +10,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
 
     def resetPasswordService
 
-    def userAuthenticationService
+    def authenticationService
     def inMemoryMailService
 
     User user
@@ -53,7 +53,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         e.message == "Cannot reset a password if the account has not been verified"
 
         and:
-        userAuthenticationService.authenticate(USERNAME, PASSWORD)
+        authenticationService.authenticateUser(USERNAME, PASSWORD)
     }
 
     void "send reset password email for verified account"() {
@@ -95,8 +95,8 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         resetPasswordService.resetPassword(USERNAME, NEW_PASSWORD, RAW_RESET_PASSWORD_CODE)
 
         then:
-        userAuthenticationService.authenticate(USERNAME, NEW_PASSWORD)
-        !userAuthenticationService.authenticate(USERNAME, PASSWORD)
+        authenticationService.authenticateUser(USERNAME, NEW_PASSWORD)
+        !authenticationService.authenticateUser(USERNAME, PASSWORD)
 
         and:
         !AccountCode.findById(resetPasswordCodeId)
@@ -115,7 +115,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         e.message == "The reset password code is not correct"
 
         and:
-        !userAuthenticationService.authenticate(USERNAME, NEW_PASSWORD)
+        !authenticationService.authenticateUser(USERNAME, NEW_PASSWORD)
 
         and:
         AccountCode.findById(resetPasswordCodeId)
@@ -142,7 +142,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         resetPasswordService.resetPassword(USERNAME, NEW_PASSWORD, RAW_RESET_PASSWORD_CODE)
 
         then:
-        userAuthenticationService.authenticate(USERNAME, NEW_PASSWORD)
+        authenticationService.authenticateUser(USERNAME, NEW_PASSWORD)
 
         and:
         !AccountCode.findById(resetPasswordCodeId)
@@ -176,7 +176,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         resetPasswordService.resetPassword(USERNAME, NEW_PASSWORD, RAW_RESET_PASSWORD_CODE)
 
         then:
-        userAuthenticationService.authenticate(USERNAME, NEW_PASSWORD)
+        authenticationService.authenticateUser(USERNAME, NEW_PASSWORD)
 
         and:
         !AccountCode.findById(resetPasswordCodeId)

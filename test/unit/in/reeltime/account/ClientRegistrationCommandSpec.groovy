@@ -2,7 +2,7 @@ package in.reeltime.account
 
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import in.reeltime.user.UserAuthenticationService
+import in.reeltime.security.AuthenticationService
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -13,8 +13,8 @@ class ClientRegistrationCommandSpec extends Specification {
     void "username and password are authentic [#valid]"() {
         given:
         def command = new ClientRegistrationCommand(username: 'foo', password: 'bar')
-        command.userAuthenticationService = Mock(UserAuthenticationService) {
-            authenticate('foo', 'bar') >> valid
+        command.authenticationService = Mock(AuthenticationService) {
+            authenticateUser('foo', 'bar') >> valid
         }
 
         expect:
@@ -33,8 +33,8 @@ class ClientRegistrationCommandSpec extends Specification {
     void "username [#username] is valid [#valid]"() {
         given:
         def command = new ClientRegistrationCommand(username: username)
-        command.userAuthenticationService = Stub(UserAuthenticationService) {
-            authenticate(_, _) >> true
+        command.authenticationService = Stub(AuthenticationService) {
+            authenticateUser(_, _) >> true
         }
 
         expect:

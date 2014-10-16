@@ -5,7 +5,7 @@ import grails.validation.Validateable
 @Validateable
 class ClientRegistrationCommand {
 
-    def userAuthenticationService
+    def authenticationService
 
     String username
     String password
@@ -26,7 +26,7 @@ class ClientRegistrationCommand {
         if(!username || !password) {
             return true
         }
-        else if(!obj.userAuthenticationService.authenticate(username, password)) {
+        else if(!obj.authenticationService.authenticateUser(username, password)) {
             return 'unauthenticated'
         }
     }
