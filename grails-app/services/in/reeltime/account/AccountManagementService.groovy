@@ -1,5 +1,6 @@
 package in.reeltime.account
 
+import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.user.User
 
 class AccountManagementService {
@@ -24,6 +25,9 @@ class AccountManagementService {
     void revokeClient(User user, String clientId) {
         def client = user.clients.find {
             it.clientId == clientId
+        }
+        if(!client) {
+            throw new AuthorizationException("Cannot revoke unknown client")
         }
         user.clients.remove(client)
         client.delete()
