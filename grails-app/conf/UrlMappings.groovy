@@ -118,5 +118,13 @@ class UrlMappings {
         "/reel/$reelId/audience" (controller: 'audience') {
             action = [GET: 'listMembers', POST: 'addMember', DELETE: 'removeMember']
         }
+
+        "/internal/$username/confirm" (controller: 'developmentOnlyAccount') {
+            action = [POST: 'confirmAccountForUser']
+        }
+
+        "/internal/$username/password" (controller: 'developmentOnlyAccount') {
+            action = [POST: 'resetPasswordForUser']
+        }
     }
 }

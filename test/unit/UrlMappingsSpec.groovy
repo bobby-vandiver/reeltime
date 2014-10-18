@@ -10,6 +10,7 @@ import in.reeltime.playlist.PlaylistController
 import in.reeltime.playlist.SegmentController
 import in.reeltime.account.AccountController
 import in.reeltime.account.ResetPasswordController
+import in.reeltime.account.DevelopmentOnlyAccountController
 import in.reeltime.status.ApplicationStatusController
 import in.reeltime.reel.ReelController
 import in.reeltime.reel.AudienceController
@@ -21,7 +22,7 @@ import spock.lang.Unroll
 @TestMixin(UrlMappingsUnitTestMixin)
 @Mock([VideoCreationController, VideoRemovalController, VideoController,
         PlaylistController, SegmentController, ReelController, AudienceController,
-        AccountController, ResetPasswordController, NewsfeedController,
+        AccountController, ResetPasswordController, DevelopmentOnlyAccountController, NewsfeedController,
         UserController, UserFollowingController,
         NotificationController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
@@ -285,5 +286,21 @@ class UrlMappingsSpec extends Specification {
         '/reels'                    |   'GET'       |   'reel'          |   'listReels'
         '/account/password/email'   |   'POST'      |   'resetPassword' |   'sendEmail'
         '/account/password/reset'   |   'POST'      |   'resetPassword' |   'resetPassword'
+    }
+
+    @Unroll
+    void "internal development only url [#url] maps to controller [#controller] action [#action]"() {
+        given:
+        webRequest.currentRequest.method = httpMethod
+
+        expect:
+        assertForwardUrlMapping(url, controller: controller, action: action) {
+            username = 'bob'
+        }
+
+        where:
+        url                         |   httpMethod  |   controller                  |   action
+        '/internal/bob/confirm'     |   'POST'      |   'developmentOnlyAccount'    |   'confirmAccountForUser'
+        '/internal/bob/password'    |   'POST'      |   'developmentOnlyAccount'    |   'resetPasswordForUser'
     }
 }

@@ -46,7 +46,7 @@ class ResetPasswordControllerIntegrationSpec extends AbstractControllerIntegrati
         assertStatusCodeOnlyResponse(controller.response, 200)
 
         and:
-        assertResetCodeHasBeenRemoved()
+        assertResetCodeHasBeenRemoved(user)
     }
 
     void "unable to authenticate previously registered client"() {
@@ -60,7 +60,7 @@ class ResetPasswordControllerIntegrationSpec extends AbstractControllerIntegrati
         assertStatusCodeOnlyResponse(controller.response, 401)
 
         and:
-        assertResetCodeIsAvailable()
+        assertResetCodeIsAvailable(user)
     }
 
     void "previously registered client is not associated with the user"() {
@@ -78,7 +78,7 @@ class ResetPasswordControllerIntegrationSpec extends AbstractControllerIntegrati
         assertStatusCodeOnlyResponse(controller.response, 403)
 
         and:
-        assertResetCodeIsAvailable()
+        assertResetCodeIsAvailable(user)
     }
 
     void "param fails validation for previously registered client"() {
@@ -92,7 +92,7 @@ class ResetPasswordControllerIntegrationSpec extends AbstractControllerIntegrati
         assertResponseHasErrors(controller.response, 400)
 
         and:
-        assertResetCodeIsAvailable()
+        assertResetCodeIsAvailable(user)
     }
 
     void "successfully reset for a new client"() {
@@ -106,7 +106,7 @@ class ResetPasswordControllerIntegrationSpec extends AbstractControllerIntegrati
         assertStatusCodeOnlyResponse(controller.response, 200)
 
         and:
-        assertResetCodeHasBeenRemoved()
+        assertResetCodeHasBeenRemoved(user)
     }
 
     void "param fails validation for new client"() {
@@ -120,15 +120,7 @@ class ResetPasswordControllerIntegrationSpec extends AbstractControllerIntegrati
         assertResponseHasErrors(controller.response, 400)
 
         and:
-        assertResetCodeIsAvailable()
-    }
-
-    private void assertResetCodeHasBeenRemoved() {
-        assert AccountCode.findByUserAndType(user, AccountCodeType.ResetPassword) == null
-    }
-
-    private void assertResetCodeIsAvailable() {
-        assert AccountCode.findByUserAndType(user, AccountCodeType.ResetPassword) != null
+        assertResetCodeIsAvailable(user)
     }
 
     private void setupParamsForPreviouslyRegisteredClient(Map overrides = [:]) {
