@@ -8,11 +8,6 @@ import in.reeltime.exceptions.RegistrationException
 import in.reeltime.exceptions.ConfirmationException
 import in.reeltime.user.User
 import in.reeltime.user.UserService
-import in.reeltime.security.AuthenticationService
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.transaction.TransactionStatus
 import spock.lang.Unroll
 
 @TestFor(AccountController)
@@ -126,7 +121,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
         def registrationResult = new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
 
         and:
-        stubUserAuthenticationService(true)
+        stubAuthenticationService(true)
 
         and:
         params.username = username
@@ -149,27 +144,6 @@ class AccountControllerSpec extends AbstractControllerSpec {
 
         and:
         1 * accountRegistrationService.registerClientForExistingUser(username, clientName) >> registrationResult
-    }
-
-    private void stubUserAuthenticationService(boolean authenticated) {
-        defineBeans {
-            authenticationService(AuthenticationService)
-        }
-        def authenticationService = grailsApplication.mainContext.getBean('authenticationService')
-
-        authenticationService.authenticationManager = Stub(AuthenticationManager) {
-            authenticate(_) >> {
-                if(!authenticated) {
-                    throw new BadCredentialsException('TEST')
-                }
-            }
-        }
-
-        // Workaround for GRAILS-10538 per comment by Aaron Long:
-        // Source: https://jira.grails.org/browse/GRAILS-10538
-        authenticationService.transactionManager = Mock(PlatformTransactionManager) {
-            getTransaction(_) >> Mock(TransactionStatus)
-        }
     }
 
     @Unroll
@@ -225,7 +199,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
 
         and:
         1 * accountConfirmationService.confirmAccount(_) >> { throw new ConfirmationException('TEST') }
-        1 * localizedMessageService.getMessage('registration.confirmation.code.error', request.locale) >> message
+        1 * localizedMessageService.getMessagbe('registration.confirmation.code.error', request.locale) >> message
     }
 
     void "remove account"() {
