@@ -23,6 +23,14 @@ class UrlMappings {
             action = [POST:  'confirm']
         }
 
+        "/account/password/email" (controller: 'resetPassword') {
+            action = [POST: 'sendEmail']
+        }
+
+        "/account/password/reset" (controller: 'resetPassword') {
+            action = [POST: 'resetPassword']
+        }
+
         "/newsfeed" (controller: 'newsfeed') {
             action = [GET: 'listRecentActivity']
         }

@@ -9,6 +9,7 @@ import in.reeltime.video.VideoController
 import in.reeltime.playlist.PlaylistController
 import in.reeltime.playlist.SegmentController
 import in.reeltime.account.AccountController
+import in.reeltime.account.ResetPasswordController
 import in.reeltime.status.ApplicationStatusController
 import in.reeltime.reel.ReelController
 import in.reeltime.reel.AudienceController
@@ -20,7 +21,8 @@ import spock.lang.Unroll
 @TestMixin(UrlMappingsUnitTestMixin)
 @Mock([VideoCreationController, VideoRemovalController, VideoController,
         PlaylistController, SegmentController, ReelController, AudienceController,
-        AccountController, NewsfeedController, UserController, UserFollowingController,
+        AccountController, ResetPasswordController, NewsfeedController,
+        UserController, UserFollowingController,
         NotificationController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
 
@@ -267,18 +269,21 @@ class UrlMappingsSpec extends Specification {
         'followees' |   'listFollowees'
     }
 
+    // TODO: Consolidate the above simple tests into this one
     @Unroll
-    void "test list [#url] url maps to controller [#controller] action [#action]"() {
+    void "http method [#httpMethod] on [#url] url maps to controller [#controller] action [#action]"() {
         given:
-        webRequest.currentRequest.method = 'GET'
+        webRequest.currentRequest.method = httpMethod
 
         expect:
         assertForwardUrlMapping(url, controller: controller, action: action)
 
         where:
-        url         |   controller  |   action
-        '/users'    |   'user'      |   'listUsers'
-        '/videos'   |   'video'     |   'listVideos'
-        '/reels'    |   'reel'      |   'listReels'
+        url                         |   httpMethod  |   controller      |   action
+        '/users'                    |   'GET'       |   'user'          |   'listUsers'
+        '/videos'                   |   'GET'       |   'video'         |   'listVideos'
+        '/reels'                    |   'GET'       |   'reel'          |   'listReels'
+        '/account/password/email'   |   'POST'      |   'resetPassword' |   'sendEmail'
+        '/account/password/reset'   |   'POST'      |   'resetPassword' |   'resetPassword'
     }
 }
