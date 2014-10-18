@@ -27,10 +27,6 @@ class ResetPasswordCommandSpec extends Specification {
         'username'              |   ''          |   false   |   'blank'
         'username'              |   'xy'        |   true    |   null
 
-        'new_password'          |   null        |   false   |   'nullable'
-        'new_password'          |   ''          |   false   |   'blank'
-        'new_password'          |   'xy'        |   true    |   null
-
         'code'                  |   null        |   false   |   'nullable'
         'code'                  |   ''          |   false   |   'blank'
         'code'                  |   'xy'        |   true    |   null
@@ -38,6 +34,29 @@ class ResetPasswordCommandSpec extends Specification {
         'client_is_registered'  |   null        |   false   |   'nullable'
         'client_is_registered'  |   true        |   true    |   null
         'client_is_registered'  |   false       |   true    |   null
+    }
+
+    @Unroll
+    void "new password [#password] is valid [#valid] -- same as User domain class"() {
+        given:
+        def command = new ResetPasswordCommand(new_password: password)
+
+        expect:
+        command.validate(['new_password']) == valid
+
+        and:
+        command.errors.getFieldError('new_password')?.code == code
+
+        where:
+        password                    |   valid   |   code
+        null                        |   false   |   'nullable'
+        ''                          |   false   |   'blank'
+        'a'                         |   false   |   'minSize.notmet'
+        'short'                     |   false   |   'minSize.notmet'
+        'abcdef'                    |   true    |   null
+        '!4ad#A'                    |   true    |   null
+        'ABCAf1304z'                |   true    |   null
+        '!#@$%^&*()-_=+][\\|<>/?'   |   true    |   null
     }
 
     @Unroll

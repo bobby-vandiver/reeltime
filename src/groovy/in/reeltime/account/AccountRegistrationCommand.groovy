@@ -19,7 +19,7 @@ class AccountRegistrationCommand {
 
         display_name blank: false, nullable: false, matches: User.DISPLAY_NAME_REGEX
         username validator: usernameMustBeAvailable
-        password minSize: 6
+        password minSize: User.PASSWORD_MIN_SIZE
         client_name blank: false, nullable: false
     }
 

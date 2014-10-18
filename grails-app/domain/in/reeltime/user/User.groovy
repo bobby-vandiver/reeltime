@@ -8,6 +8,7 @@ import in.reeltime.reel.Reel
 class User {
 
     static final DISPLAY_NAME_REGEX = /^\w{1}[\w ]{0,18}?\w{1}$/
+    static final PASSWORD_MIN_SIZE = 6
 
 	transient springSecurityService
 
