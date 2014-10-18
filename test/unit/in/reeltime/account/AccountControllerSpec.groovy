@@ -199,7 +199,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
 
         and:
         1 * accountConfirmationService.confirmAccount(_) >> { throw new ConfirmationException('TEST') }
-        1 * localizedMessageService.getMessagbe('registration.confirmation.code.error', request.locale) >> message
+        1 * localizedMessageService.getMessage('registration.confirmation.code.error', request.locale) >> message
     }
 
     void "remove account"() {

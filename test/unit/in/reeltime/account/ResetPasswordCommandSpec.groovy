@@ -2,9 +2,12 @@ package in.reeltime.account
 
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
+import in.reeltime.oauth2.Client
+import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 import in.reeltime.security.AuthenticationService
+import in.reeltime.user.UserService
 
 @TestMixin(GrailsUnitTestMixin)
 class ResetPasswordCommandSpec extends Specification {
@@ -59,30 +62,82 @@ class ResetPasswordCommandSpec extends Specification {
         '!#@$%^&*()-_=+][\\|<>/?'   |   true    |   null
     }
 
-    @Unroll
-    void "key [#key] with value [#value] is valid [#valid] when client is registered"() {
+    void "client_id [#clientId] is valid [#valid] when client is registered"() {
         given:
-        def command = new ResetPasswordCommand(client_is_registered: true, (key): value)
+        def command = new ResetPasswordCommand(client_is_registered: true, client_id: clientId)
+
+        and:
+        stubAuthenticationService(command)
+        stubUserService(command, clientId)
+
+        expect:
+        command.validate(['client_id']) == valid
+
+        and:
+        command.errors.getFieldError('client_id')?.code == code
+
+        where:
+        clientId    |   valid   |   code
+        null        |   false   |   'nullable'
+        ''          |   false   |   'blank'
+        'xy'        |   true    |   null
+    }
+
+    @Unroll
+    void "key [#key] - registered client does not belong to specified user"() {
+        given:
+        def command = new ResetPasswordCommand(client_is_registered: true, client_id: 'real', client_secret: 'secret')
+
+        and:
+        stubAuthenticationService(command)
+        stubUserService(command, 'fake')
+
+        expect:
+        !command.validate([key])
+
+        and:
+        command.errors.getFieldError(key)?.code == 'unauthorized'
+
+        where:
+        _   |   key
+        _   |   'client_id'
+        _   |   'client_secret'
+    }
+
+    void "client_secret [#clientSecret] is valid [#valid] when client is registered"() {
+        given:
+        def command = new ResetPasswordCommand(client_is_registered: true, client_id: 'ignore', client_secret: clientSecret)
+
+        and:
+        stubAuthenticationService(command)
+        stubUserService(command, 'ignore')
+
+        expect:
+        command.validate(['client_secret']) == valid
+
+        and:
+        command.errors.getFieldError('client_secret')?.code == code
+
+        where:
+        clientSecret    |   valid   |   code
+        null            |   false   |   'nullable'
+        ''              |   false   |   'blank'
+        'xy'            |   true    |   null
+    }
+
+    private stubAuthenticationService(ResetPasswordCommand command) {
         command.authenticationService = Stub(AuthenticationService) {
             authenticateClient(_, _) >> true
         }
+    }
 
-        expect:
-        command.validate([key]) == valid
+    private stubUserService(ResetPasswordCommand command, String clientId) {
+        def client = new Client(clientId: clientId)
+        def user = new User(clients: [client])
 
-        and:
-        command.errors.getFieldError(key)?.code == code
-
-        where:
-        key             |   value       |   valid   |   code
-
-        'client_id'     |   null        |   false   |   'nullable'
-        'client_id'     |   ''          |   false   |   'blank'
-        'client_id'     |   'xy'        |   true    |   null
-
-        'client_secret' |   null        |   false   |   'nullable'
-        'client_secret' |   ''          |   false   |   'blank'
-        'client_secret' |   'xy'        |   true    |   null
+        command.userService = Stub(UserService) {
+            loadUser(_) >> user
+        }
     }
 
     @Unroll
@@ -92,6 +147,7 @@ class ResetPasswordCommandSpec extends Specification {
         command.authenticationService = Stub(AuthenticationService) {
             authenticateClient('buzz', 'bazz') >> valid
         }
+        stubUserService(command, 'buzz')
 
         expect:
         command.validate(['client_id']) == valid
