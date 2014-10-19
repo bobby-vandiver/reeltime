@@ -7,6 +7,7 @@ import in.reeltime.reel.Reel
 
 class User {
 
+    static final USERNAME_REGEX = /^\w{2,15}$/
     static final DISPLAY_NAME_REGEX = /^\w{1}[\w ]{0,18}?\w{1}$/
     static final PASSWORD_MIN_SIZE = 6
 
@@ -29,7 +30,7 @@ class User {
 	static constraints = {
         displayName blank: false, nullable: false, matches: DISPLAY_NAME_REGEX
         email blank: false, nullable: false, email: true
-		username blank: false, nullable: false, matches: /^\w{2,15}$/, unique: true
+		username blank: false, nullable: false, matches: USERNAME_REGEX, unique: true
 		password blank: false, nullable: false
         clients nullable: false
         reels nullable: false, minSize: 1, validator: reelsValidator
