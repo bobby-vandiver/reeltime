@@ -150,7 +150,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
         1 * accountRegistrationService.registerClientForExistingUser(username, clientName) >> registrationResult
     }
 
-    protected void stubAuthenticationService(boolean authenticated) {
+    private void stubAuthenticationService(boolean authenticated) {
         defineBeans {
             authenticationService(AuthenticationService)
         }
