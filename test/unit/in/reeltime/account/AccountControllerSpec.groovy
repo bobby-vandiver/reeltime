@@ -5,10 +5,17 @@ import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.RegistrationException
-import in.reeltime.exceptions.ConfirmationException
 import in.reeltime.user.User
 import in.reeltime.user.UserService
-import spock.lang.Unroll
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionStatus
+import in.reeltime.security.AuthenticationService
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionStatus
 
 @TestFor(AccountController)
 @Mock([User])
@@ -141,6 +148,27 @@ class AccountControllerSpec extends AbstractControllerSpec {
 
         and:
         1 * accountRegistrationService.registerClientForExistingUser(username, clientName) >> registrationResult
+    }
+
+    protected void stubAuthenticationService(boolean authenticated) {
+        defineBeans {
+            authenticationService(AuthenticationService)
+        }
+        def authenticationService = grailsApplication.mainContext.getBean('authenticationService')
+
+        authenticationService.authenticationManager = Stub(AuthenticationManager) {
+            authenticate(_) >> {
+                if(!authenticated) {
+                    throw new BadCredentialsException('TEST')
+                }
+            }
+        }
+
+        // Workaround for GRAILS-10538 per comment by Aaron Long:
+        // Source: https://jira.grails.org/browse/GRAILS-10538
+        authenticationService.transactionManager = Mock(PlatformTransactionManager) {
+            getTransaction(_) >> Mock(TransactionStatus)
+        }
     }
 
     void "remove account"() {
