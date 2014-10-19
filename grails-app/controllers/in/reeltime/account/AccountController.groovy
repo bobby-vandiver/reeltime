@@ -10,10 +10,9 @@ import static javax.servlet.http.HttpServletResponse.*
 class AccountController extends AbstractController {
 
     def accountRegistrationService
-    def accountConfirmationService
     def accountRemovalService
 
-    static allowedMethods = [register: 'POST', registerClient: 'POST', confirm: 'POST']
+    static allowedMethods = [register: 'POST', registerClient: 'POST']
 
     @Secured(["permitAll"])
     def register(AccountRegistrationCommand command) {
@@ -42,18 +41,6 @@ class AccountController extends AbstractController {
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-write')"])
-    def confirm(String code) {
-
-        if(code) {
-            accountConfirmationService.confirmAccount(code)
-            render(status: SC_OK)
-        }
-        else {
-            errorMessageResponse('registration.confirmation.code.required', SC_BAD_REQUEST)
-        }
-    }
-
-    @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-write')"])
     def removeAccount() {
         accountRemovalService.removeAccountForCurrentUser()
         render(status: SC_OK)
@@ -61,9 +48,5 @@ class AccountController extends AbstractController {
 
     def handleRegistrationException(RegistrationException e) {
         exceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
-    }
-
-    def handleConfirmationException(ConfirmationException e) {
-        exceptionErrorMessageResponse(e, 'registration.confirmation.code.error', SC_BAD_REQUEST)
     }
 }

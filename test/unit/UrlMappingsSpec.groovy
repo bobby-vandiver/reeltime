@@ -9,6 +9,7 @@ import in.reeltime.video.VideoController
 import in.reeltime.playlist.PlaylistController
 import in.reeltime.playlist.SegmentController
 import in.reeltime.account.AccountController
+import in.reeltime.account.AccountConfirmationController
 import in.reeltime.account.ResetPasswordController
 import in.reeltime.account.DevelopmentOnlyAccountController
 import in.reeltime.status.ApplicationStatusController
@@ -22,9 +23,9 @@ import spock.lang.Unroll
 @TestMixin(UrlMappingsUnitTestMixin)
 @Mock([VideoCreationController, VideoRemovalController, VideoController,
         PlaylistController, SegmentController, ReelController, AudienceController,
-        AccountController, ResetPasswordController, DevelopmentOnlyAccountController, NewsfeedController,
+        AccountController, AccountConfirmationController, ResetPasswordController, NewsfeedController,
         UserController, UserFollowingController,
-        NotificationController, ApplicationStatusController])
+        DevelopmentOnlyAccountController, NotificationController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
 
     @Unroll
@@ -206,14 +207,6 @@ class UrlMappingsSpec extends Specification {
         assertForwardUrlMapping('/account/client', controller: 'account', action: 'registerClient')
     }
 
-    void "test confirmation endpoint mapping"() {
-        given:
-        webRequest.currentRequest.method = 'POST'
-
-        expect:
-        assertForwardUrlMapping('/account/confirm', controller: 'account', action: 'confirm')
-    }
-
     void "test remove account endpoint mapping"() {
         given:
         webRequest.currentRequest.method = 'DELETE'
@@ -280,12 +273,13 @@ class UrlMappingsSpec extends Specification {
         assertForwardUrlMapping(url, controller: controller, action: action)
 
         where:
-        url                         |   httpMethod  |   controller      |   action
-        '/users'                    |   'GET'       |   'user'          |   'listUsers'
-        '/videos'                   |   'GET'       |   'video'         |   'listVideos'
-        '/reels'                    |   'GET'       |   'reel'          |   'listReels'
-        '/account/password/email'   |   'POST'      |   'resetPassword' |   'sendEmail'
-        '/account/password/reset'   |   'POST'      |   'resetPassword' |   'resetPassword'
+        url                         |   httpMethod  |   controller              |   action
+        '/users'                    |   'GET'       |   'user'                  |   'listUsers'
+        '/videos'                   |   'GET'       |   'video'                 |   'listVideos'
+        '/reels'                    |   'GET'       |   'reel'                  |   'listReels'
+        '/account/confirm'          |   'POST'      |   'accountConfirmation'   |   'confirmAccount'
+        '/account/password/email'   |   'POST'      |   'resetPassword'         |   'sendEmail'
+        '/account/password/reset'   |   'POST'      |   'resetPassword'         |   'resetPassword'
     }
 
     @Unroll
