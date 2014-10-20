@@ -3,10 +3,13 @@ package in.reeltime.account
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import static javax.servlet.http.HttpServletResponse.*
+import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 
 class ResetPasswordController extends AbstractController {
 
     def resetPasswordService
+    def accountRegistrationService
+
     def userService
     def authenticationService
 
@@ -21,7 +24,6 @@ class ResetPasswordController extends AbstractController {
         }
     }
 
-    // TODO: Handle new client registration
     @Secured(["permitAll"])
     def resetPassword(ResetPasswordCommand command) {
 
@@ -30,7 +32,15 @@ class ResetPasswordController extends AbstractController {
 
         if(!command.hasErrors()) {
             resetPasswordService.resetPassword(command.username, command.new_password, command.code)
-            render(status: SC_OK)
+
+            if(command.isRegisteredClient()) {
+                render(status: SC_OK)
+            }
+            else {
+                render(status: SC_OK, contentType: APPLICATION_JSON) {
+                    marshall(accountRegistrationService.registerClientForExistingUser(command.username, command.client_name))
+                }
+            }
         }
         else if(command.isRegisteredClient() && (hasClientIdErrors || hasClientSecretErrors) ) {
             render(status: command.registeredClientIsAuthentic() ? SC_FORBIDDEN : SC_UNAUTHORIZED)

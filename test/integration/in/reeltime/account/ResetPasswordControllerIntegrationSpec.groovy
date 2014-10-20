@@ -103,7 +103,18 @@ class ResetPasswordControllerIntegrationSpec extends AbstractControllerIntegrati
         controller.resetPassword()
 
         then:
-        assertStatusCodeOnlyResponse(controller.response, 200)
+        assertStatusCodeAndContentType(controller.response, 200)
+
+        and:
+        def json = getJsonResponse(controller.response)
+        json.size() == 2
+
+        and:
+        def clientId = json.client_id
+        def clientSecret = json.client_secret
+
+        authenticationService.authenticateClient(clientId, clientSecret)
+        user.clients.find { it.clientId == clientId } != null
 
         and:
         assertResetCodeHasBeenRemoved(user)

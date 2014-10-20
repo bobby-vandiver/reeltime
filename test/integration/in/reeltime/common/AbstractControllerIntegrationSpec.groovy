@@ -13,7 +13,7 @@ import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 // a way to share helper classes between unit and integration tests
 class AbstractControllerIntegrationSpec extends IntegrationSpec {
 
-    protected Object getJsonResponse(GrailsMockHttpServletResponse response) {
+    protected Map getJsonResponse(GrailsMockHttpServletResponse response) {
         new JsonSlurper().parseText(response.contentAsString)
     }
 
