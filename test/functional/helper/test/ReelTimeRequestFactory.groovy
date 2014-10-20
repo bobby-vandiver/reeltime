@@ -24,6 +24,46 @@ class ReelTimeRequestFactory {
         new RestRequest(url: urlFactory.removeAccountUrl, token: token)
     }
 
+    RestRequest sendResetPasswordEmail(String name) {
+        new RestRequest(url: urlFactory.registerUrl, customizer: {
+            username = name
+        })
+    }
+
+    RestRequest resetPasswordForRegisteredClient(String name, String pass, String resetCode,
+                                                 String clientId, String clientSecret) {
+        new RestRequest(url: urlFactory.resetPasswordUrl, customizer: {
+            username = name
+            new_password = pass
+            code = resetCode
+            client_is_registered = true
+            client_id = clientId
+            client_secret = clientSecret
+        })
+    }
+
+    RestRequest resetPasswordForNewClient(String name, String pass, String resetCode, String clientName) {
+        new RestRequest(url: urlFactory.resetPasswordUrl, customizer: {
+            username = name
+            new_password = pass
+            code = resetCode
+            client_is_registered = false
+            client_name = clientName
+        })
+    }
+
+    RestRequest confirmAccountForUser(String token, String username) {
+        def url = urlFactory.getInternalConfirmAccountUrl(username)
+        new RestRequest(url: url, token: token)
+    }
+
+    RestRequest resetPasswordForUser(String token, String username, String password) {
+        def url = urlFactory.getInternalResetPasswordUrl(username)
+        new RestRequest(url: url, token: token, customizer: {
+            new_password = password
+        })
+    }
+
     RestRequest newsfeed(String token) {
         new RestRequest(url: urlFactory.newsfeedUrl, token: token)
     }

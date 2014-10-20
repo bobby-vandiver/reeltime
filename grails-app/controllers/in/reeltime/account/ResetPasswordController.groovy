@@ -21,6 +21,7 @@ class ResetPasswordController extends AbstractController {
         }
     }
 
+    // TODO: Handle new client registration
     @Secured(["permitAll"])
     def resetPassword(ResetPasswordCommand command) {
 

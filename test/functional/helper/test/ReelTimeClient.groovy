@@ -47,6 +47,53 @@ class ReelTimeClient {
         }
     }
 
+    void sendResetPasswordEmail(String username) {
+        def request = requestFactory.sendResetPasswordEmail(username)
+        def response = post(request)
+
+        if(response != 200) {
+            Assert.fail(getFailureText(response, "Failed to send reset password email."))
+        }
+    }
+
+    void resetPasswordForRegisteredClient(String username, String newPassword, String resetCode,
+                                          String clientId, String clientSecret) {
+        def request = requestFactory.resetPasswordForRegisteredClient(username, newPassword, resetCode, clientId, clientSecret)
+        def response = post(request)
+
+        if(response != 200) {
+            Assert.fail(getFailureText(response, "Failed to reset password for registered client."))
+        }
+    }
+
+    RestResponse resetPasswordForNewClient(String username, String newPassword, String resetCode, String clientName) {
+        def request = requestFactory.resetPasswordForNewClient(username, newPassword, resetCode, clientName)
+        def response = post(request)
+
+        if(response != 200) {
+            Assert.fail(getFailureText(response, "Failed to reset password for new client."))
+        }
+        return response
+    }
+
+    void confirmAccountForUser(String token, String username) {
+        def request = requestFactory.confirmAccountForUser(token, username)
+        def response = post(request)
+
+        if(response != 200) {
+            Assert.fail(getFailureText(response, "Failed to confirm account on user's behalf."))
+        }
+    }
+
+    void resetPasswordForUser(String token, String username, String newPassword) {
+        def request = requestFactory.resetPasswordForUser(token, username, newPassword)
+        def response = post(request)
+
+        if(response != 200) {
+            Assert.fail(getFailureText(response, "Failed to reset password on user's behalf."))
+        }
+    }
+
     JSONElement newsfeed(String token) {
         def request = requestFactory.newsfeed(token)
         def response = get(request)
@@ -238,5 +285,12 @@ class ReelTimeClient {
         if(response.status != 200) {
             Assert.fail("Failed to remove audience member for reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
         }
+    }
+
+    private static getFailureText(RestResponse response, String message) {
+        message + ' ' + getStatusAndJsonText(response)
+    }
+    private static getStatusAndJsonText(RestResponse response) {
+        "Status code: ${response.status}. JSON: ${response.json}"
     }
 }
