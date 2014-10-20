@@ -1,6 +1,7 @@
 package in.reeltime.account
 
 import in.reeltime.common.AbstractControllerIntegrationSpec
+import in.reeltime.exceptions.RegistrationException
 import in.reeltime.user.User
 import test.helper.ClientFactory
 import test.helper.UserFactory

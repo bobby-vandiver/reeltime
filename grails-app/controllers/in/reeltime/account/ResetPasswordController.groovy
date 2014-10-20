@@ -3,6 +3,7 @@ package in.reeltime.account
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.exceptions.RegistrationException
 import in.reeltime.exceptions.UserNotFoundException
 
 import static javax.servlet.http.HttpServletResponse.*
@@ -11,7 +12,6 @@ import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 class ResetPasswordController extends AbstractController {
 
     def resetPasswordService
-    def accountRegistrationService
 
     def userService
     def authenticationService
@@ -29,31 +29,52 @@ class ResetPasswordController extends AbstractController {
 
     @Secured(["permitAll"])
     def resetPassword(ResetPasswordCommand command) {
-
-        def hasClientIdErrors = command.errors.hasFieldErrors('client_id')
-        def hasClientSecretErrors = command.errors.hasFieldErrors('client_secret')
-
-        if(!command.hasErrors()) {
-            resetPasswordService.resetPassword(command.username, command.new_password, command.code)
-
-            if(command.isRegisteredClient()) {
-                render(status: SC_OK)
-            }
-            else {
-                render(status: SC_OK, contentType: APPLICATION_JSON) {
-                    marshall(accountRegistrationService.registerClientForExistingUser(command.username, command.client_name))
-                }
-            }
-        }
-        else if(command.isRegisteredClient() && (hasClientIdErrors || hasClientSecretErrors) ) {
-            commandErrorMessageResponse(command, command.registeredClientIsAuthentic() ? SC_FORBIDDEN : SC_UNAUTHORIZED)
+        if(command.isRegisteredClient()) {
+            resetPasswordForRegisteredClient(command)
         }
         else {
-            commandErrorMessageResponse(command, SC_BAD_REQUEST)
+            resetPasswordForNewClient(command)
+        }
+    }
+
+    private def resetPasswordForRegisteredClient(ResetPasswordCommand command) {
+
+        if(!command.hasErrors()) {
+            resetPasswordService.resetPasswordForRegisteredClient(command.username, command.new_password, command.code)
+            render(status: SC_OK)
+        }
+        else {
+            int status = SC_BAD_REQUEST
+
+            boolean hasClientIdErrors = command.errors.hasFieldErrors('client_id')
+            boolean hasClientSecretErrors = command.errors.hasFieldErrors('client_secret')
+
+            if(hasClientIdErrors || hasClientSecretErrors) {
+                status = command.registeredClientIsAuthentic() ? SC_FORBIDDEN : SC_UNAUTHORIZED
+            }
+            commandErrorMessageResponse(command, status)
+        }
+    }
+
+    private def resetPasswordForNewClient(ResetPasswordCommand command) {
+        handleCommandRequest(command) {
+            String username = command.username
+            String newPassword = command.new_password
+
+            String code = command.code
+            String clientName = command.client_name
+
+            render(status: SC_OK, contentType: APPLICATION_JSON) {
+                marshall(resetPasswordService.resetPasswordForNewClient(username, newPassword, code, clientName))
+            }
         }
     }
 
     def handleAuthorizationException(AuthorizationException e) {
         exceptionStatusCodeOnlyResponse(e, SC_FORBIDDEN)
+    }
+
+    def handleRegistrationException(RegistrationException e) {
+        exceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
     }
 }

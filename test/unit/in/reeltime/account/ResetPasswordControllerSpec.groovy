@@ -2,6 +2,7 @@ package in.reeltime.account
 
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
+import in.reeltime.exceptions.RegistrationException
 import in.reeltime.security.AuthenticationService
 import in.reeltime.user.User
 import in.reeltime.user.UserService
@@ -59,5 +60,24 @@ class ResetPasswordControllerSpec extends AbstractControllerSpec {
         _   |   username
         _   |   null
         _   |   ''
+    }
+
+    void "registration exception is thrown when resetting password and registering new client"() {
+        given:
+        params.username = 'foo'
+        params.new_password = 'secret'
+        params.code = 'reset'
+        params.client_is_registered = false
+        params.client_name = 'something'
+
+        when:
+        controller.resetPassword()
+
+        then:
+        assertErrorMessageResponse(response, 503, TEST_MESSAGE)
+
+        and:
+        1 * resetPasswordService.resetPasswordForNewClient(_, _, _, _) >> { throw new RegistrationException('TEST') }
+        1 * localizedMessageService.getMessage('registration.internal.error', request.locale) >> TEST_MESSAGE
     }
 }

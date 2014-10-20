@@ -7,7 +7,9 @@ import in.reeltime.user.User
 class ResetPasswordService {
 
     def userService
+
     def accountCodeGenerationService
+    def accountRegistrationService
 
     def localizedMessageService
     def mailService
@@ -25,6 +27,15 @@ class ResetPasswordService {
         def localizedMessage = localizedMessageService.getMessage('account.password.reset.email.message', locale, [user.username, code])
 
         mailService.sendMail(user.email, fromAddress, localizedSubject, localizedMessage)
+    }
+
+    void resetPasswordForRegisteredClient(String username, String newPassword, String code) {
+        resetPassword(username, newPassword, code)
+    }
+
+    RegistrationResult resetPasswordForNewClient(String username, String newPassword, String code, String clientName) {
+        resetPassword(username, newPassword, code)
+        accountRegistrationService.registerClientForExistingUser(username, clientName)
     }
 
     void resetPassword(String username, String newPassword, String code) {
