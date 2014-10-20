@@ -7,15 +7,18 @@ import static javax.servlet.http.HttpServletResponse.*
 class ResetPasswordController extends AbstractController {
 
     def resetPasswordService
+    def userService
     def authenticationService
 
     static allowedMethods = [sendEmail: 'POST', resetPassword: 'POST']
 
     @Secured(["permitAll"])
-    def sendEmail() {
-        def currentUser = authenticationService.currentUser
-        resetPasswordService.sendResetPasswordEmail(currentUser, request.locale)
-        render(status: SC_OK)
+    def sendEmail(String username) {
+        handleSingleParamRequest(username, 'account.reset.password.email.username.required') {
+            def user = userService.loadUser(username)
+            resetPasswordService.sendResetPasswordEmail(user, request.locale)
+            render(status: SC_OK)
+        }
     }
 
     @Secured(["permitAll"])
