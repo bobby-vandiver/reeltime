@@ -25,7 +25,7 @@ class ReelTimeRequestFactory {
     }
 
     RestRequest sendResetPasswordEmail(String name) {
-        new RestRequest(url: urlFactory.registerUrl, customizer: {
+        new RestRequest(url: urlFactory.sendResetPasswordEmailUrl, customizer: {
             username = name
         })
     }

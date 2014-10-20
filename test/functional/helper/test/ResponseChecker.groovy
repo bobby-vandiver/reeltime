@@ -4,7 +4,6 @@ import grails.plugins.rest.client.RestResponse
 import helper.rest.AuthorizationAwareRestClient
 import helper.rest.RestRequest
 import org.codehaus.groovy.grails.web.json.JSONElement
-import org.codehaus.groovy.grails.web.json.JSONObject
 
 import static helper.rest.HttpContentTypes.APPLICATION_JSON
 import static helper.rest.HttpHeaders.CONTENT_TYPE
@@ -54,6 +53,12 @@ class ResponseChecker {
         expectedErrors.each {
             assert response.json.errors.contains(it)
         }
+    }
+
+    void assertErrorMessageInResponse(RestResponse response, int expectedStatus, String expectedMessage) {
+        assertStatusCode(response, expectedStatus)
+        assertContentType(response, APPLICATION_JSON)
+        assert response.json.errors.contains(expectedMessage)
     }
 
     void assertStatusCode(RestResponse response, int expected) {

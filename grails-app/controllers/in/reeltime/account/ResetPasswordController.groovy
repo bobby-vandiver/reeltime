@@ -2,6 +2,9 @@ package in.reeltime.account
 
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
+import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.exceptions.UserNotFoundException
+
 import static javax.servlet.http.HttpServletResponse.*
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 
@@ -43,10 +46,14 @@ class ResetPasswordController extends AbstractController {
             }
         }
         else if(command.isRegisteredClient() && (hasClientIdErrors || hasClientSecretErrors) ) {
-            render(status: command.registeredClientIsAuthentic() ? SC_FORBIDDEN : SC_UNAUTHORIZED)
+            commandErrorMessageResponse(command, command.registeredClientIsAuthentic() ? SC_FORBIDDEN : SC_UNAUTHORIZED)
         }
         else {
             commandErrorMessageResponse(command, SC_BAD_REQUEST)
         }
+    }
+
+    def handleAuthorizationException(AuthorizationException e) {
+        exceptionStatusCodeOnlyResponse(e, SC_FORBIDDEN)
     }
 }

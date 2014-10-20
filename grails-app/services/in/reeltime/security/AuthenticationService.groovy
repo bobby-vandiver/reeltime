@@ -33,7 +33,7 @@ class AuthenticationService {
             return true
         }
         catch(AuthenticationException e) {
-            log.warn("Failed to authenticate principal [$principal]", e)
+            log.warn("Failed to authenticate principal [$principal]: ${e.message}")
             return false
         }
     }

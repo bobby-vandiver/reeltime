@@ -1,6 +1,7 @@
 package in.reeltime.account
 
 import grails.validation.Validateable
+import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.user.User
 
 @Validateable
@@ -51,8 +52,14 @@ class ResetPasswordCommand {
             return 'unauthenticated'
         }
 
-        def user = obj.userService.loadUser(obj.username)
-        def userHasClient = user.clients.find { it.clientId == clientId }  != null
+        boolean userHasClient
+        try {
+            def user = obj.userService.loadUser(obj.username)
+            userHasClient = user.clients.find { it.clientId == clientId }  != null
+        }
+        catch(UserNotFoundException e) {
+            userHasClient = false
+        }
 
         if(!userHasClient) {
             return 'unauthorized'

@@ -11,10 +11,18 @@ abstract class AbstractController {
     final CustomMarshaller customMarshaller = new CustomMarshaller()
 
     protected void exceptionErrorMessageResponse(Exception e, String messageCode, int statusCode) {
+        logException(e)
+        errorMessageResponse(messageCode, statusCode)
+    }
+
+    protected void exceptionStatusCodeOnlyResponse(Exception e, int statusCode) {
+        logException(e)
+        render(status: statusCode)
+    }
+
+    private void logException(Exception e) {
         def exceptionClassName = e.class.simpleName
         log.warn("Handling $exceptionClassName: ", e)
-
-        errorMessageResponse(messageCode, statusCode)
     }
 
     protected void errorMessageResponse(String messageCode, int statusCode) {
