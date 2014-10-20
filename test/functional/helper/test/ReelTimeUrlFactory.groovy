@@ -24,6 +24,22 @@ public class ReelTimeUrlFactory {
         getUrlForResource("account/confirm")
     }
 
+    String getSendResetPasswordEmailUrl() {
+        getUrlForResource('account/password/email')
+    }
+
+    String getResetPasswordUrl() {
+        getUrlForResource('account/password/reset')
+    }
+
+    String getInternalConfirmAccountUrl(username) {
+        getUrlForResource("internal/$username/confirm")
+    }
+
+    String getInternalResetPasswordUrl(username) {
+        getUrlForResource("internal/$username/password")
+    }
+
     String getRemoveAccountUrl () {
         getUrlForResource('account')
     }
