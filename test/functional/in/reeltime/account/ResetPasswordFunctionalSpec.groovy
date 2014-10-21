@@ -190,4 +190,58 @@ class ResetPasswordFunctionalSpec extends FunctionalSpec {
         then:
         responseChecker.assertMultipleErrorMessagesResponse(response, 400, expectedErrors)
     }
+
+    @Unroll
+    void "reset password errors for new client -- new_password [#newPassword], code [#code]"() {
+        given:
+        def request = requestFactory.resetPasswordForNewClient(USERNAME, newPassword, code, 'new client')
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertErrorMessageInResponse(response, 400, message)
+
+        where:
+        newPassword     |   code        |   message
+        null            |   'reset'     |   '[new_password] is required'
+        ''              |   'reset'     |   '[new_password] is required'
+        'abcde'         |   'reset'     |   '[new_password] must be at least 6 characters long'
+        'secret'        |   null        |   '[code] is required'
+        'secret'        |   ''          |   '[code] is required'
+    }
+
+    @Unroll
+    void "reset password errors for new client -- username [#username]"() {
+        given:
+        def request = requestFactory.resetPasswordForNewClient(username, 'secret', 'reset', 'new client')
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertErrorMessageInResponse(response, 400, message)
+
+        where:
+        username    |   message
+        null        |   '[username] is required'
+        ''          |   '[username] is required'
+    }
+
+    @Unroll
+    void "reset password errors for new client -- client_name [#clientName]"() {
+        given:
+        def request = requestFactory.resetPasswordForNewClient(USERNAME, 'secret', 'reset', clientName)
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertErrorMessageInResponse(response, 400, message)
+
+        where:
+        clientName  |   message
+        null        |   '[client_name] is required'
+        ''          |   '[client_name] is required'
+    }
 }
