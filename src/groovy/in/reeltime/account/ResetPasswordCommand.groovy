@@ -45,6 +45,7 @@ class ResetPasswordCommand {
             return 'blank'
         }
 
+        // TODO: This validation should be attached to only one of the fields so errors aren't reported multiple times
         def clientId = obj.client_id
         def clientSecret = obj.client_secret
 

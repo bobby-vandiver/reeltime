@@ -58,7 +58,7 @@ class ResetPasswordControllerIntegrationSpec extends AbstractControllerIntegrati
         controller.resetPassword()
 
         then:
-        assertStatusCodeOnlyResponse(controller.response, 401)
+        assertResponseHasErrors(controller.response, 400)
 
         and:
         assertResetCodeIsAvailable(user)
@@ -76,7 +76,7 @@ class ResetPasswordControllerIntegrationSpec extends AbstractControllerIntegrati
         controller.resetPassword()
 
         then:
-        assertStatusCodeOnlyResponse(controller.response, 403)
+        assertResponseHasErrors(controller.response, 400)
 
         and:
         assertResetCodeIsAvailable(user)

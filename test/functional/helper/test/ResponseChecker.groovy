@@ -61,6 +61,11 @@ class ResponseChecker {
         assert response.json.errors.contains(expectedMessage)
     }
 
+    void assertNoErrorMessages(RestResponse response, int expectedStatus) {
+        assertStatusCode(response, expectedStatus)
+        assert response.json == null
+    }
+
     void assertStatusCode(RestResponse response, int expected) {
         assert response.status == expected
     }

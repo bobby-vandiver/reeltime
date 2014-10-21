@@ -1,5 +1,6 @@
 package in.reeltime.account
 
+import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
 import spock.lang.Unroll
 
@@ -59,6 +60,7 @@ class ResetPasswordFunctionalSpec extends FunctionalSpec {
         newPassword     |   code        |   message
         null            |   'reset'     |   '[new_password] is required'
         ''              |   'reset'     |   '[new_password] is required'
+        'abcde'         |   'reset'     |   '[new_password] must be at least 6 characters long'
         'secret'        |   null        |   '[code] is required'
         'secret'        |   ''          |   '[code] is required'
     }
@@ -72,12 +74,31 @@ class ResetPasswordFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        responseChecker.assertErrorMessageInResponse(response, 403, message)
+        responseChecker.assertErrorMessageInResponse(response, 400, message)
 
         where:
         username    |   message
         null        |   '[username] is required'
         ''          |   '[username] is required'
+    }
+
+    @Unroll
+    void "reset password errors for registered client -- client_id [#id], client_secret [#secret]"() {
+        given:
+        def request = requestFactory.resetPasswordForRegisteredClient(USERNAME, 'secret', 'reset', id, secret)
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertErrorMessageInResponse(response, 400, message)
+
+        where:
+        id       |   secret     |   message
+        null     |   'shh'      |   '[client_id] is required'
+        ''       |   'shh'      |   '[client_id] is required'
+        'secret' |   null       |   '[client_secret] is required'
+        'secret' |   ''         |   '[client_secret] is required'
     }
 
     void "attempt to reset password for user with registered client who has not requested a reset"() {
@@ -88,6 +109,85 @@ class ResetPasswordFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        responseChecker.assertStatusCode(response, 403)
+        responseChecker.assertNoErrorMessages(response, 403)
+    }
+
+    void "authentic client not associated with user"() {
+        given:
+        registerUser('other')
+
+        and:
+        def request = requestFactory.resetPasswordForRegisteredClient('other', 'secret', 'reset', clientId, clientSecret)
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertErrorMessageInResponse(response, 400, 'Forbidden request')
+    }
+
+    void "invalid credentials for client"() {
+        given:
+        def request = requestFactory.resetPasswordForRegisteredClient(USERNAME, 'secret', 'reset', clientId, clientSecret + 'a')
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertErrorMessageInResponse(response, 400, 'Invalid credentials')
+    }
+
+    void "client_is_registered is missing"() {
+        given:
+        def request = new RestRequest(url: urlFactory.resetPasswordUrl)
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertErrorMessageInResponse(response, 400, '[client_is_registered] is required')
+    }
+
+    void "registered client missing all params"() {
+        given:
+        def expectedErrors = [
+                '[username] is required',
+                '[new_password] is required',
+                '[code] is required',
+                '[client_id] is required',
+                '[client_secret] is required'
+        ]
+
+        and:
+        def request = new RestRequest(url: urlFactory.resetPasswordUrl, customizer: {
+            client_is_registered = true
+        })
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertMultipleErrorMessagesResponse(response, 400, expectedErrors)
+    }
+
+    void "new client missing all params"() {
+        given:
+        def expectedErrors = [
+                '[username] is required',
+                '[new_password] is required',
+                '[code] is required',
+                '[client_name] is required'
+        ]
+
+        and:
+        def request = new RestRequest(url: urlFactory.resetPasswordUrl, customizer: {
+            client_is_registered = false
+        })
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertMultipleErrorMessagesResponse(response, 400, expectedErrors)
     }
 }

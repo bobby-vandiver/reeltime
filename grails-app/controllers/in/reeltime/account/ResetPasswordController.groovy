@@ -38,21 +38,9 @@ class ResetPasswordController extends AbstractController {
     }
 
     private def resetPasswordForRegisteredClient(ResetPasswordCommand command) {
-
-        if(!command.hasErrors()) {
+        handleCommandRequest(command) {
             resetPasswordService.resetPasswordForRegisteredClient(command.username, command.new_password, command.code)
             render(status: SC_OK)
-        }
-        else {
-            int status = SC_BAD_REQUEST
-
-            boolean hasClientIdErrors = command.errors.hasFieldErrors('client_id')
-            boolean hasClientSecretErrors = command.errors.hasFieldErrors('client_secret')
-
-            if(hasClientIdErrors || hasClientSecretErrors) {
-                status = command.registeredClientIsAuthentic() ? SC_FORBIDDEN : SC_UNAUTHORIZED
-            }
-            commandErrorMessageResponse(command, status)
         }
     }
 

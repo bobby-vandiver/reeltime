@@ -24,7 +24,7 @@ class AbstractControllerIntegrationSpec extends IntegrationSpec {
 
     protected void assertStatusCodeOnlyResponse(GrailsMockHttpServletResponse response, int statusCode) {
         assert response.status == statusCode
-        assert response.contentLength == 0
+        assert response.contentAsByteArray.size() == 0
     }
 
     protected void assertResponseHasErrors(GrailsMockHttpServletResponse response, int statusCode) {
@@ -32,7 +32,7 @@ class AbstractControllerIntegrationSpec extends IntegrationSpec {
 
         def json = new JsonSlurper().parseText(response.contentAsString) as Map
         assert json.size() == 1
-        assert json.errors.size() == 1
+        assert json.errors.size() >= 1
     }
 
     protected void assertResetCodeHasBeenRemoved(User user) {
