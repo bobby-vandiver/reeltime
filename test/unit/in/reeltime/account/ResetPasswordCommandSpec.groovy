@@ -83,8 +83,7 @@ class ResetPasswordCommandSpec extends Specification {
         'xy'        |   true    |   null
     }
 
-    @Unroll
-    void "key [#key] - registered client does not belong to specified user"() {
+    void "registered client does not belong to specified user"() {
         given:
         def command = new ResetPasswordCommand(client_is_registered: true, client_id: 'real', client_secret: 'secret')
 
@@ -93,15 +92,10 @@ class ResetPasswordCommandSpec extends Specification {
         stubUserService(command, 'fake')
 
         expect:
-        !command.validate([key])
+        !command.validate(['client_id'])
 
         and:
-        command.errors.getFieldError(key)?.code == 'unauthorized'
-
-        where:
-        _   |   key
-        _   |   'client_id'
-        _   |   'client_secret'
+        command.errors.getFieldError('client_id')?.code == 'unauthorized'
     }
 
     void "client_secret [#clientSecret] is valid [#valid] when client is registered"() {
@@ -154,8 +148,8 @@ class ResetPasswordCommandSpec extends Specification {
         command.errors.getFieldError('client_id')?.code == code
 
         and:
-        command.validate(['client_secret']) == valid
-        command.errors.getFieldError('client_secret')?.code == code
+        command.validate(['client_secret'])
+        command.errors.getFieldError('client_secret')?.code == null
 
         and:
         command.registeredClientIsAuthentic() == valid

@@ -29,7 +29,7 @@ class ResetPasswordCommand {
         client_is_registered nullable: false
 
         client_id nullable: true, validator: registeredClientValidator
-        client_secret nullable: true, validator: registeredClientValidator
+        client_secret nullable: true, validator: clientSecretValidator
 
         client_name nullable: true, validator: registerNewClientValidator
     }
@@ -45,7 +45,8 @@ class ResetPasswordCommand {
             return 'blank'
         }
 
-        // TODO: This validation should be attached to only one of the fields so errors aren't reported multiple times
+        // The following validation is performed only for client_id to ensure
+        // no duplicate errors are reported
         def clientId = obj.client_id
         def clientSecret = obj.client_secret
 
@@ -64,6 +65,18 @@ class ResetPasswordCommand {
 
         if(!userHasClient) {
             return 'unauthorized'
+        }
+    }
+
+    private static Closure clientSecretValidator = { val, obj ->
+        if(!obj.client_is_registered) {
+            return true
+        }
+        else if(val == null) {
+            return 'nullable'
+        }
+        else if(val == '') {
+            return 'blank'
         }
     }
 

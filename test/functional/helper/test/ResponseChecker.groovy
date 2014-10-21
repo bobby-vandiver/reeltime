@@ -58,7 +58,9 @@ class ResponseChecker {
     void assertErrorMessageInResponse(RestResponse response, int expectedStatus, String expectedMessage) {
         assertStatusCode(response, expectedStatus)
         assertContentType(response, APPLICATION_JSON)
-        assert response.json.errors.contains(expectedMessage)
+
+        def matches = response.json.errors.findAll { it == expectedMessage }
+        assert matches.size() == 1
     }
 
     void assertNoErrorMessages(RestResponse response, int expectedStatus) {
