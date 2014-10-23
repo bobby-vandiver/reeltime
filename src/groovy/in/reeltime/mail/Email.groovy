@@ -1,6 +1,6 @@
-package in.reeltime.mail.local
+package in.reeltime.mail
 
-class SentMessage {
+class Email {
     String to
     String from
     String subject
