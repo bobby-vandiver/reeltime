@@ -12,7 +12,7 @@ class ResetPasswordService {
     def accountRegistrationService
 
     def localizedMessageService
-    def mailService
+    def emailManager
 
     def fromAddress
     def resetPasswordCodeValidityLengthInMins
@@ -26,7 +26,7 @@ class ResetPasswordService {
         def localizedSubject = localizedMessageService.getMessage('account.password.reset.email.subject', locale)
         def localizedMessage = localizedMessageService.getMessage('account.password.reset.email.message', locale, [user.username, code])
 
-        mailService.sendMail(user.email, fromAddress, localizedSubject, localizedMessage)
+        emailManager.sendMail(user.email, fromAddress, localizedSubject, localizedMessage)
     }
 
     void resetPasswordForRegisteredClient(String username, String newPassword, String code) {

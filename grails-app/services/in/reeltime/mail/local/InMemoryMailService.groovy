@@ -8,8 +8,14 @@ class InMemoryMailService implements MailService {
     List<Email> sentMessages = []
 
     @Override
-    void sendMail(String to, String from, String subject, String body) {
+    void sendMail(Email email) {
         log.debug "Entering [${this.class.name}..."
+
+        def to = email.to
+        def from = email.from
+        def subject = email.subject
+        def body = email.body
+
         log.info "Sending email from [$from] to [$to] with subject [$subject] and body [$body]"
         sentMessages << new Email(to: to, from: from, subject: subject, body: body)
     }

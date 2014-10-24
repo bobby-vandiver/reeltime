@@ -11,7 +11,9 @@ beans = {
 
     customMarshallerRegistrar(CustomMarshallerRegistrar)
 
-    emailManager(EmailManager)
+    emailManager(EmailManager) {
+        mailService = ref('mailService')
+    }
 
     String environmentName = Environment.currentEnvironment.name
     switch(environmentName) {

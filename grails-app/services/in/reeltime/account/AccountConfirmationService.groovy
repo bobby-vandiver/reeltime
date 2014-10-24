@@ -12,7 +12,7 @@ class AccountConfirmationService {
     def authenticationService
 
     def localizedMessageService
-    def mailService
+    def emailManager
 
     def fromAddress
     def confirmationCodeValidityLengthInDays
@@ -23,7 +23,7 @@ class AccountConfirmationService {
         def localizedSubject = localizedMessageService.getMessage('registration.email.subject', locale)
         def localizedMessage = localizedMessageService.getMessage('registration.email.message', locale, [user.username, code])
 
-        mailService.sendMail(user.email, fromAddress, localizedSubject, localizedMessage)
+        emailManager.sendMail(user.email, fromAddress, localizedSubject, localizedMessage)
     }
 
     void confirmAccount(String code) {

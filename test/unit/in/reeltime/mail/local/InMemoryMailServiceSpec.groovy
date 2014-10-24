@@ -1,11 +1,18 @@
 package in.reeltime.mail.local
 
 import grails.test.mixin.TestFor
+import in.reeltime.mail.Email
 import in.reeltime.mail.MailService
 import spock.lang.Specification
 
 @TestFor(InMemoryMailService)
 class InMemoryMailServiceSpec extends Specification {
+
+    Email email
+
+    void setup() {
+        email = new Email(to: 'foo@dest.com', from: 'bar@src.com', subject: 'Hello', body: 'World')
+    }
 
     void "must be an instance of MailService"() {
         expect:
@@ -19,7 +26,7 @@ class InMemoryMailServiceSpec extends Specification {
 
     void "create and add mail to in-memory store"() {
         when:
-        service.sendMail('foo@dest.com', 'bar@src.com', 'Hello', 'World')
+        service.sendMail(email)
 
         then:
         service.sentMessages.size() == 1
@@ -34,7 +41,7 @@ class InMemoryMailServiceSpec extends Specification {
 
     void "delete in-memory store"() {
         given:
-        service.sendMail('foo@dest.com', 'bar@src.com', 'Hello', 'World')
+        service.sendMail(email)
 
         when:
         service.deleteAllMessages()
