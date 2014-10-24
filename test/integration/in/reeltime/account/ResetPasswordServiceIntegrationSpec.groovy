@@ -1,17 +1,20 @@
 package in.reeltime.account
 
-import grails.test.spock.IntegrationSpec
+import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.transaction.Transactional
 import in.reeltime.user.User
+import org.springframework.transaction.annotation.Propagation
 import test.helper.UserFactory
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ResetPasswordException
+import test.spec.MailServiceDependentIntegrationSpec
 
-class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
+class ResetPasswordServiceIntegrationSpec extends MailServiceDependentIntegrationSpec {
 
     def resetPasswordService
 
     def authenticationService
-    def inMemoryMailService
+    def accountRemovalService
 
     User user
     int savedResetPasswordCodeValidityLengthInMins
@@ -28,18 +31,19 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
 
     void setup() {
         user = UserFactory.createUser(USERNAME, PASSWORD, DISPLAY_NAME, EMAIL)
-        inMemoryMailService.deleteAllMessages()
-
         savedResetPasswordCodeValidityLengthInMins = resetPasswordService.resetPasswordCodeValidityLengthInMins
         resetPasswordService.resetPasswordCodeValidityLengthInMins = RESET_PASSWORD_CODE_LENGTH_IN_MINS
     }
 
     void cleanup() {
-        inMemoryMailService.deleteAllMessages()
         resetPasswordService.resetPasswordCodeValidityLengthInMins = savedResetPasswordCodeValidityLengthInMins
+
+        SpringSecurityUtils.doWithAuth(USERNAME) {
+            accountRemovalService.removeAccountForCurrentUser()
+        }
     }
 
-
+    @Transactional(propagation = Propagation.REQUIRED)
     void "do not allow password reset email to be sent on an account that has not been verified"() {
         given:
         user.verified = false
@@ -87,6 +91,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         confirmationCode.isCodeCorrect(sentCode)
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     void "user has valid reset password code"() {
         given:
         def resetPasswordCodeId = createResetPasswordCode(user, RAW_RESET_PASSWORD_CODE).id
@@ -102,6 +107,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         !AccountCode.findById(resetPasswordCodeId)
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     void "user has invalid reset password code"() {
         given:
         def resetPasswordCodeId = createResetPasswordCode(user, RAW_RESET_PASSWORD_CODE).id
@@ -121,6 +127,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         AccountCode.findById(resetPasswordCodeId)
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     void "user has not requested a password reset"() {
         when:
         resetPasswordService.resetPassword(USERNAME, NEW_PASSWORD, RAW_RESET_PASSWORD_CODE)
@@ -130,6 +137,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         e.message == "The user has not requested a password reset"
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     void "reset password code is old but has not expired"() {
         given:
         def resetPasswordCode = createResetPasswordCode(user, RAW_RESET_PASSWORD_CODE)
@@ -148,6 +156,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         !AccountCode.findById(resetPasswordCodeId)
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     void "reset password code has expired"() {
         given:
         def resetPasswordCode = createResetPasswordCode(user, RAW_RESET_PASSWORD_CODE)
@@ -167,6 +176,7 @@ class ResetPasswordServiceIntegrationSpec extends IntegrationSpec {
         !AccountCode.findById(resetPasswordCodeId)
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     void "multiple reset password code only removes the one valid"() {
         given:
         def anotherCodeId = createResetPasswordCode(user, RAW_RESET_PASSWORD_CODE.reverse()).id

@@ -1,23 +1,19 @@
 package in.reeltime.account
 
-import grails.test.spock.IntegrationSpec
+import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.transaction.Transactional
 import in.reeltime.user.User
 import in.reeltime.user.UserFollowing
+import org.springframework.transaction.annotation.Propagation
 import test.helper.UserFactory
+import test.spec.MailServiceDependentIntegrationSpec
 
-class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
+class AccountRegistrationServiceIntegrationSpec extends MailServiceDependentIntegrationSpec {
 
     def accountRegistrationService
-    def inMemoryMailService
+    def accountRemovalService
 
-    void setup() {
-        inMemoryMailService.deleteAllMessages()
-    }
-
-    void cleanup() {
-        inMemoryMailService.deleteAllMessages()
-    }
-
+    @Transactional(propagation = Propagation.NEVER)
     void "return client id and client secret in registration result and send confirmation email"() {
         given:
         def email = 'foo@test.com'
@@ -69,8 +65,14 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
 
         def confirmationCode = AccountCode.findByUser(user)
         confirmationCode.isCodeCorrect(sentCode)
+
+        cleanup:
+        SpringSecurityUtils.doWithAuth(username) {
+            accountRemovalService.removeAccountForCurrentUser()
+        }
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     void "register a new client for an existing user"() {
         given:
         def username = 'foo'
@@ -94,5 +96,10 @@ class AccountRegistrationServiceIntegrationSpec extends IntegrationSpec {
         user.clients.size() == 2
         user.clients.find { it.clientName == firstClientName } != null
         user.clients.find { it.clientName == secondClientName } != null
+
+        cleanup:
+        SpringSecurityUtils.doWithAuth(username) {
+            accountRemovalService.removeAccountForCurrentUser()
+        }
     }
 }

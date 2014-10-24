@@ -5,7 +5,7 @@ import in.reeltime.mail.Email
 
 class InMemoryMailService implements MailService {
 
-    List<Email> sentMessages = []
+    List<Email> sentMessages = [].asSynchronized()
 
     @Override
     void sendMail(Email email) {

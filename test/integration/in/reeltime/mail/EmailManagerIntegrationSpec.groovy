@@ -1,32 +1,14 @@
 package in.reeltime.mail
 
-import grails.test.spock.IntegrationSpec
 import org.springframework.transaction.support.DefaultTransactionDefinition
-import spock.lang.Ignore
+import test.spec.MailServiceDependentIntegrationSpec
 
-class EmailManagerIntegrationSpec extends IntegrationSpec {
+class EmailManagerIntegrationSpec extends MailServiceDependentIntegrationSpec {
 
     def emailManager
 
     def transactionManager
-    def inMemoryMailService
 
-    void "send mail adds the email to the send queue"() {
-        when:
-        emailManager.sendMail('dest', 'src', 'hello', 'world')
-
-        then:
-        def queue = emailManager.emails.get()
-        queue.size() == 1
-
-        def email = queue.peek()
-        email.to == 'dest'
-        email.from == 'src'
-        email.subject == 'hello'
-        email.body == 'world'
-    }
-
-    @Ignore("More transaction fun")
     void "each thread has its own queue"() {
         given:
         def t1 = new EmailThread(emailManager: emailManager, prefix: 't1')
@@ -61,8 +43,7 @@ class EmailManagerIntegrationSpec extends IntegrationSpec {
         e2.body == 't2-body'
     }
 
-    @Ignore("The transaction that is created in the test is separate from the one the code executes in")
-    void "send queued emails one transaction commit"() {
+    void "send queued emails on transaction commit"() {
         given:
         def definition = new DefaultTransactionDefinition()
         def status = transactionManager.getTransaction(definition)
@@ -90,5 +71,21 @@ class EmailManagerIntegrationSpec extends IntegrationSpec {
         e2.from == 'e2-from'
         e2.subject == 'e2-subject'
         e2.body == 'e2-body'
+    }
+
+    void "no emails are sent on transaction rollback"() {
+        given:
+        def definition = new DefaultTransactionDefinition()
+        def status = transactionManager.getTransaction(definition)
+
+        when:
+        emailManager.sendMail('e1-to', 'e1-from', 'e1-subject', 'e1-body')
+        emailManager.sendMail('e2-to', 'e2-from', 'e2-subject', 'e2-body')
+
+        and:
+        transactionManager.rollback(status)
+
+        then:
+        inMemoryMailService.sentMessages.size() == 0
     }
 }
