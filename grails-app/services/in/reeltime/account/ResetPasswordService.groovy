@@ -11,6 +11,8 @@ class ResetPasswordService {
     def accountCodeGenerationService
     def accountRegistrationService
 
+    def tokenRemovalService
+    
     def localizedMessageService
     def emailManager
 
@@ -57,6 +59,8 @@ class ResetPasswordService {
             }
             user.password = newPassword
             userService.storeUser(user)
+            
+            tokenRemovalService.removeAllTokensForUser(user)
         }
         finally {
             resetPasswordCode.delete()

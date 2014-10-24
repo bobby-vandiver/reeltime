@@ -2,6 +2,7 @@ package in.reeltime.account
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.transaction.Transactional
+import in.reeltime.oauth2.AccessToken
 import in.reeltime.user.User
 import org.springframework.transaction.annotation.Propagation
 import test.helper.UserFactory
@@ -193,6 +194,30 @@ class ResetPasswordServiceIntegrationSpec extends MailServiceDependentIntegratio
 
         and:
         AccountCode.findById(anotherCodeId)
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    void "revoke all access tokens when password is reset"() {
+        given:
+        def accessToken =  new AccessToken(
+                username: user.username,
+                clientId: user.clients[0].clientId,
+                value: 'access',
+                refreshToken: 'refresh',
+                tokenType: 'test',
+                scope: ['scope'],
+                authenticationKey: 'authKey',
+                authentication: [1, 2, 3, 4] as byte[]).save()
+
+        def accessTokenId = accessToken.id
+        def resetPasswordCodeId = createResetPasswordCode(user, RAW_RESET_PASSWORD_CODE).id
+
+        when:
+        resetPasswordService.resetPassword(USERNAME, NEW_PASSWORD, RAW_RESET_PASSWORD_CODE)
+
+        then:
+        !AccessToken.findById(accessTokenId)
+        !AccountCode.findById(resetPasswordCodeId)
     }
 
     private static AccountCode createResetPasswordCode(User user, String rawCode) {
