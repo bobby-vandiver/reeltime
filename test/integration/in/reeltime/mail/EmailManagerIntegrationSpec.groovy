@@ -4,13 +4,7 @@ import grails.test.spock.IntegrationSpec
 
 class EmailManagerIntegrationSpec extends IntegrationSpec {
 
-    EmailManager emailManager
-
-    def grailsApplication
-
-    void setup() {
-        emailManager = grailsApplication.mainContext.getBean('emailManager') as EmailManager
-    }
+    def emailManager
 
     void "send mail adds the email to the send queue"() {
         when:
