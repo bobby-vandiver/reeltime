@@ -12,31 +12,14 @@ class AccountController extends AbstractController {
     def accountRegistrationService
     def accountRemovalService
 
-    static allowedMethods = [register: 'POST', registerClient: 'POST']
+    static allowedMethods = [register: 'POST', removeAccount: 'DELETE']
 
     @Secured(["permitAll"])
     def register(AccountRegistrationCommand command) {
-
-        if(!command.hasErrors()) {
+        handleCommandRequest(command) {
             render(status: SC_CREATED, contentType: APPLICATION_JSON) {
                 marshall(accountRegistrationService.registerUserAndClient(command, request.locale))
             }
-        }
-        else {
-            commandErrorMessageResponse(command, SC_BAD_REQUEST)
-        }
-    }
-
-    @Secured(["permitAll"])
-    def registerClient(ClientRegistrationCommand command) {
-
-        if(!command.hasErrors()) {
-            render(status: SC_CREATED, contentType: APPLICATION_JSON) {
-                marshall(accountRegistrationService.registerClientForExistingUser(command.username, command.client_name))
-            }
-        }
-        else {
-            commandErrorMessageResponse(command, SC_BAD_REQUEST)
         }
     }
 

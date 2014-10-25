@@ -55,41 +55,4 @@ class AccountManagementControllerSpec extends AbstractControllerSpec {
         1 * authenticationService.getCurrentUser() >> user
         1 * accountManagementService.changeDisplayName(user, newDisplayName)
     }
-
-    void "revoke client"() {
-        given:
-        def clientId = 'client'
-        params.client_id = clientId
-
-        when:
-        controller.revokeClient()
-
-        then:
-        assertStatusCodeOnlyResponse(response, 200)
-
-        and:
-        1 * authenticationService.getCurrentUser() >> user
-        1 * accountManagementService.revokeClient(user, clientId)
-    }
-
-    @Unroll
-    void "client id is required for [#clientId]"() {
-        given:
-        params.client_id = clientId
-
-        when:
-        controller.revokeClient()
-
-        then:
-        assertErrorMessageResponse(response, 400, TEST_MESSAGE)
-
-        and:
-        0 * accountManagementService.revokeClient(_, _)
-        1 * localizedMessageService.getMessage('account.revoke.client.id.required', request.locale) >> TEST_MESSAGE
-
-        where:
-        _   |   clientId
-        _   |   null
-        _   |   ''
-    }
 }

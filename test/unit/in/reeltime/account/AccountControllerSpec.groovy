@@ -7,15 +7,6 @@ import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.RegistrationException
 import in.reeltime.user.User
 import in.reeltime.user.UserService
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.transaction.TransactionStatus
-import in.reeltime.security.AuthenticationService
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.BadCredentialsException
-import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.transaction.TransactionStatus
 
 @TestFor(AccountController)
 @Mock([User])
@@ -97,78 +88,15 @@ class AccountControllerSpec extends AbstractControllerSpec {
         params.email = 'foo@test.com'
         params.client_name = 'something'
 
-        and:
-        def message = 'this is a test'
-
         when:
         controller.register()
 
         then:
-        assertErrorMessageResponse(response, 503, message)
+        assertErrorMessageResponse(response, 503, TEST_MESSAGE)
 
         and:
         1 * accountRegistrationService.registerUserAndClient(_, _) >> { throw new RegistrationException('TEST') }
-        1 * localizedMessageService.getMessage('registration.internal.error', request.locale) >> message
-    }
-
-    void "respond with client credentials upon successful registration of a previously unknown client"() {
-        given:
-        def username = 'foo'
-        def password = 'secret'
-        def clientName = 'something'
-
-        and:
-        def clientId = 'buzz'
-        def clientSecret = 'bazz'
-
-        and:
-        def registrationResult = new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
-
-        and:
-        stubAuthenticationService(true)
-
-        and:
-        params.username = username
-        params.password = password
-        params.client_name = clientName
-
-        when:
-        controller.registerClient()
-
-        then:
-        assertStatusCodeAndContentType(response, 201)
-
-        and:
-        def json = getJsonResponse(response) as Map
-        json.size() == 2
-
-        and:
-        json.client_id == clientId
-        json.client_secret == clientSecret
-
-        and:
-        1 * accountRegistrationService.registerClientForExistingUser(username, clientName) >> registrationResult
-    }
-
-    private void stubAuthenticationService(boolean authenticated) {
-        defineBeans {
-            authenticationService(AuthenticationService)
-        }
-        def authenticationService = grailsApplication.mainContext.getBean('authenticationService')
-
-        authenticationService.authenticationManager = Stub(AuthenticationManager) {
-            authenticate(_) >> {
-                if(!authenticated) {
-                    throw new BadCredentialsException('TEST')
-                }
-            }
-        }
-
-        // Workaround for GRAILS-10538 per comment by Aaron Long:
-        // Source: https://jira.grails.org/browse/GRAILS-10538
-        authenticationService.transactionManager = Mock(PlatformTransactionManager) {
-            getTransaction(_) >> Mock(TransactionStatus)
-        }
+        1 * localizedMessageService.getMessage('registration.internal.error', request.locale) >> TEST_MESSAGE
     }
 
     void "remove account"() {

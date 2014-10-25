@@ -15,11 +15,11 @@ class UrlMappings {
             action = [POST: 'register']
         }
 
-        "/account/client" (controller: 'account') {
+        "/account/client" (controller: 'clientManagement') {
             action = [POST: 'registerClient']
         }
 
-        "/account/client/$client_id" (controller: 'accountManagement') {
+        "/account/client/$client_id" (controller: 'clientManagement') {
             action = [DELETE: 'revokeClient']
         }
 

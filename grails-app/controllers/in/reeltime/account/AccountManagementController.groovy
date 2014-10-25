@@ -29,14 +29,6 @@ class AccountManagementController extends AbstractController {
         }
     }
 
-    @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-write')"])
-    def revokeClient(String client_id) {
-        handleSingleParamRequest(client_id, 'account.revoke.client.id.required') {
-            accountManagementService.revokeClient(currentUser, client_id)
-            render(status: SC_OK)
-        }
-    }
-
     private User getCurrentUser() {
         authenticationService.currentUser
     }

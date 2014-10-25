@@ -11,6 +11,7 @@ import in.reeltime.playlist.SegmentController
 import in.reeltime.account.AccountController
 import in.reeltime.account.AccountConfirmationController
 import in.reeltime.account.AccountManagementController
+import in.reeltime.account.ClientManagementController
 import in.reeltime.account.ResetPasswordController
 import in.reeltime.account.DevelopmentOnlyAccountController
 import in.reeltime.status.ApplicationStatusController
@@ -25,7 +26,7 @@ import spock.lang.Unroll
 @Mock([VideoCreationController, VideoRemovalController, VideoController,
         PlaylistController, SegmentController, ReelController, AudienceController,
         AccountController, AccountConfirmationController, AccountManagementController,
-        ResetPasswordController, NewsfeedController,
+        ClientManagementController, ResetPasswordController, NewsfeedController,
         UserController, UserFollowingController,
         DevelopmentOnlyAccountController, NotificationController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
@@ -206,7 +207,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'POST'
 
         expect:
-        assertForwardUrlMapping('/account/client', controller: 'account', action: 'registerClient')
+        assertForwardUrlMapping('/account/client', controller: 'clientManagement', action: 'registerClient')
     }
 
     void "test revoke client endpoint mapping"() {
@@ -214,7 +215,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'DELETE'
 
         expect:
-        assertForwardUrlMapping('/account/client/device1', controller: 'accountManagement', action: 'revokeClient') {
+        assertForwardUrlMapping('/account/client/device1', controller: 'clientManagement', action: 'revokeClient') {
             client_id = 'device1'
         }
     }
