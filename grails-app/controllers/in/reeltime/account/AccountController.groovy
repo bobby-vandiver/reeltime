@@ -3,7 +3,7 @@ package in.reeltime.account
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.RegistrationException
-import in.reeltime.exceptions.ConfirmationException
+
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.*
 
@@ -12,10 +12,10 @@ class AccountController extends AbstractController {
     def accountRegistrationService
     def accountRemovalService
 
-    static allowedMethods = [register: 'POST', removeAccount: 'DELETE']
+    static allowedMethods = [registerAccount: 'POST', removeAccount: 'DELETE']
 
     @Secured(["permitAll"])
-    def register(AccountRegistrationCommand command) {
+    def registerAccount(AccountRegistrationCommand command) {
         handleCommandRequest(command) {
             render(status: SC_CREATED, contentType: APPLICATION_JSON) {
                 marshall(accountRegistrationService.registerUserAndClient(command, request.locale))

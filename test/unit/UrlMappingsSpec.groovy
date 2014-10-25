@@ -199,7 +199,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'POST'
 
         expect:
-        assertForwardUrlMapping('/account/register', controller: 'account', action: 'register')
+        assertForwardUrlMapping('/account/register', controller: 'account', action: 'registerAccount')
     }
 
     void "test register new client endpoint mapping"() {

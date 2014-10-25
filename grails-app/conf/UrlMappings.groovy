@@ -12,7 +12,7 @@ class UrlMappings {
         }
 
         "/account/register" (controller: 'account') {
-            action = [POST: 'register']
+            action = [POST: 'registerAccount']
         }
 
         "/account/client" (controller: 'clientManagement') {

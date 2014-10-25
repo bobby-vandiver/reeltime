@@ -63,7 +63,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
         }
 
         when:
-        controller.register()
+        controller.registerAccount()
 
         then:
         assertStatusCodeAndContentType(response, 201)
@@ -89,7 +89,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
         params.client_name = 'something'
 
         when:
-        controller.register()
+        controller.registerAccount()
 
         then:
         assertErrorMessageResponse(response, 503, TEST_MESSAGE)
