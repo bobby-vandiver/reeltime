@@ -18,7 +18,6 @@ class ClientManagementController extends AbstractController {
 
     static allowedMethods = [registerClient: 'POST', revokeClient: 'DELETE']
 
-    // TODO: Must have account-write scope!
     @Secured(["permitAll"])
     def registerClient(ClientRegistrationCommand command) {
         handleCommandRequest(command) {
