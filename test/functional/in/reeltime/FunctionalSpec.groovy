@@ -81,8 +81,8 @@ abstract class FunctionalSpec extends Specification {
         reelTimeClient.removeAccount(token)
     }
 
-    protected RestResponse registerUser(String username) {
-        def response = reelTimeClient.registerUser(username, TEST_PASSWORD, TEST_CLIENT_NAME)
+    protected RestResponse registerUser(String username, String password = TEST_PASSWORD) {
+        def response = reelTimeClient.registerUser(username, password, TEST_CLIENT_NAME)
 
         def clientId = response.json.client_id
         def clientSecret = response.json.client_secret

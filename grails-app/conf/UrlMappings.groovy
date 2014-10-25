@@ -19,8 +19,20 @@ class UrlMappings {
             action = [POST: 'registerClient']
         }
 
+        "/account/client/$client_id" (controller: 'accountManagement') {
+            action = [DELETE: 'revokeClient']
+        }
+
         "/account/confirm" (controller: 'accountConfirmation') {
             action = [POST:  'confirmAccount']
+        }
+
+        "/account/display" (controller: 'accountManagement') {
+            action = [POST: 'changeDisplayName']
+        }
+
+        "/account/password" (controller: 'accountManagement') {
+            action = [POST: 'changePassword']
         }
 
         "/account/password/email" (controller: 'resetPassword') {

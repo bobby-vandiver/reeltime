@@ -10,6 +10,7 @@ import in.reeltime.playlist.PlaylistController
 import in.reeltime.playlist.SegmentController
 import in.reeltime.account.AccountController
 import in.reeltime.account.AccountConfirmationController
+import in.reeltime.account.AccountManagementController
 import in.reeltime.account.ResetPasswordController
 import in.reeltime.account.DevelopmentOnlyAccountController
 import in.reeltime.status.ApplicationStatusController
@@ -23,7 +24,8 @@ import spock.lang.Unroll
 @TestMixin(UrlMappingsUnitTestMixin)
 @Mock([VideoCreationController, VideoRemovalController, VideoController,
         PlaylistController, SegmentController, ReelController, AudienceController,
-        AccountController, AccountConfirmationController, ResetPasswordController, NewsfeedController,
+        AccountController, AccountConfirmationController, AccountManagementController,
+        ResetPasswordController, NewsfeedController,
         UserController, UserFollowingController,
         DevelopmentOnlyAccountController, NotificationController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
@@ -207,6 +209,16 @@ class UrlMappingsSpec extends Specification {
         assertForwardUrlMapping('/account/client', controller: 'account', action: 'registerClient')
     }
 
+    void "test revoke client endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'DELETE'
+
+        expect:
+        assertForwardUrlMapping('/account/client/device1', controller: 'accountManagement', action: 'revokeClient') {
+            client_id = 'device1'
+        }
+    }
+
     void "test remove account endpoint mapping"() {
         given:
         webRequest.currentRequest.method = 'DELETE'
@@ -278,6 +290,8 @@ class UrlMappingsSpec extends Specification {
         '/videos'                   |   'GET'       |   'video'                 |   'listVideos'
         '/reels'                    |   'GET'       |   'reel'                  |   'listReels'
         '/account/confirm'          |   'POST'      |   'accountConfirmation'   |   'confirmAccount'
+        '/account/display'          |   'POST'      |   'accountManagement'     |   'changeDisplayName'
+        '/account/password'         |   'POST'      |   'accountManagement'     |   'changePassword'
         '/account/password/email'   |   'POST'      |   'resetPassword'         |   'sendEmail'
         '/account/password/reset'   |   'POST'      |   'resetPassword'         |   'resetPassword'
     }
