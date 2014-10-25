@@ -2,6 +2,7 @@ package helper.oauth2
 
 import grails.util.BuildSettings
 import groovyx.net.http.HttpResponseDecorator
+import groovyx.net.http.HttpResponseException
 import groovyx.net.http.RESTClient
 
 class AccessTokenRequester {
@@ -12,7 +13,12 @@ class AccessTokenRequester {
     static final TOKEN_ENDPOINT_URL = BASE_URL + 'oauth/token'
 
     static HttpResponseDecorator requestAccessToken(Map params) {
-        restClient.post(uri: TOKEN_ENDPOINT_URL, query: params)
+        try {
+            restClient.post(uri: TOKEN_ENDPOINT_URL, query: params)
+        }
+        catch(HttpResponseException e) {
+            return e.response
+        }
     }
 
     static String getAccessToken(Map params) {

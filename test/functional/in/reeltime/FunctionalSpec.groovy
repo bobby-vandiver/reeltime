@@ -69,16 +69,34 @@ abstract class FunctionalSpec extends Specification {
 
     void cleanup() {
         registeredTestUsers.each { Map entry ->
-            removeTestUser(entry.username, entry.clientId, entry.clientSecret)
+            removeTestUser(entry.username, entry.password, entry.clientId, entry.clientSecret)
         }
     }
 
-    private void removeTestUser(String username, String clientId, String clientSecret) {
+    private void removeTestUser(String username, String password, String clientId, String clientSecret) {
         println "Removing account for [$username]"
+
         def request = createAccessTokenRequest(username, clientId, clientSecret, ['account-write'])
+        request.password = password
 
         def token = getAccessTokenWithScope(request)
         reelTimeClient.removeAccount(token)
+    }
+
+    protected Map getClientCredentialsForRegisteredUser(String username) {
+        def entry = registeredTestUsers.find { it?.username == username }
+        if(!entry) {
+            throw new IllegalArgumentException("Unknown user: $username")
+        }
+        [clientId: entry.clientId, clientSecret: entry.clientSecret]
+    }
+
+    protected void updateUserPassword(String username, String newPassword) {
+        def entry = registeredTestUsers.find { it?.username == username }
+        if(!entry) {
+            throw new IllegalArgumentException("Unknown user: $username")
+        }
+        entry.password = newPassword
     }
 
     protected RestResponse registerUser(String username, String password = TEST_PASSWORD) {
@@ -87,7 +105,7 @@ abstract class FunctionalSpec extends Specification {
         def clientId = response.json.client_id
         def clientSecret = response.json.client_secret
 
-        registeredTestUsers << [username:username, clientId: clientId, clientSecret: clientSecret]
+        registeredTestUsers << [username:username, password: password, clientId: clientId, clientSecret: clientSecret]
         return response
     }
 
@@ -114,7 +132,7 @@ abstract class FunctionalSpec extends Specification {
         getAccessTokenWithScope(request)
     }
 
-    private static AccessTokenRequest createAccessTokenRequest(String username, String clientId, String clientSecret,
+    protected static AccessTokenRequest createAccessTokenRequest(String username, String clientId, String clientSecret,
                                                                Collection<String> scopes) {
         new AccessTokenRequest(
                 clientId: clientId,

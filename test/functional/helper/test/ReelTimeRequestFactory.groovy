@@ -24,6 +24,11 @@ class ReelTimeRequestFactory {
         new RestRequest(url: urlFactory.removeAccountUrl, token: token)
     }
 
+    RestRequest revokeClient(String token, clientId) {
+        def url = urlFactory.getRevokeClientUrl(clientId)
+        new RestRequest(url: url, token: token)
+    }
+
     RestRequest sendResetPasswordEmail(String name) {
         new RestRequest(url: urlFactory.sendResetPasswordEmailUrl, customizer: {
             username = name
@@ -55,6 +60,18 @@ class ReelTimeRequestFactory {
     RestRequest confirmAccountForUser(String token, String username) {
         def url = urlFactory.getInternalConfirmAccountUrl(username)
         new RestRequest(url: url, token: token)
+    }
+
+    RestRequest changeDisplayName(String token, newDisplayName) {
+        new RestRequest(url: urlFactory.changeDisplayNameUrl, token:token, customizer: {
+            new_display_name = newDisplayName
+        })
+    }
+
+    RestRequest changePassword(String token, newPassword) {
+        new RestRequest(url: urlFactory.changePasswordUrl, token: token, customizer: {
+            new_password = newPassword
+        })
     }
 
     RestRequest resetPasswordForUser(String token, String username, String password) {

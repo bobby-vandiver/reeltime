@@ -51,7 +51,7 @@ class ReelTimeClient {
         def request = requestFactory.sendResetPasswordEmail(username)
         def response = post(request)
 
-        if(response != 200) {
+        if(response.status != 200) {
             Assert.fail(getFailureText(response, "Failed to send reset password email."))
         }
     }
@@ -61,7 +61,7 @@ class ReelTimeClient {
         def request = requestFactory.resetPasswordForRegisteredClient(username, newPassword, resetCode, clientId, clientSecret)
         def response = post(request)
 
-        if(response != 200) {
+        if(response.status != 200) {
             Assert.fail(getFailureText(response, "Failed to reset password for registered client."))
         }
     }
@@ -70,7 +70,7 @@ class ReelTimeClient {
         def request = requestFactory.resetPasswordForNewClient(username, newPassword, resetCode, clientName)
         def response = post(request)
 
-        if(response != 200) {
+        if(response.status != 200) {
             Assert.fail(getFailureText(response, "Failed to reset password for new client."))
         }
         return response
@@ -80,8 +80,17 @@ class ReelTimeClient {
         def request = requestFactory.confirmAccountForUser(token, username)
         def response = post(request)
 
-        if(response != 200) {
+        if(response.status != 200) {
             Assert.fail(getFailureText(response, "Failed to confirm account on user's behalf."))
+        }
+    }
+
+    void changePassword(String token, String newPassword) {
+        def request = requestFactory.changePassword(token, newPassword)
+        def response = post(request)
+
+        if(response.status != 200) {
+            Assert.fail("Failed to change password. Status code: ${response.status}. JSON: ${response.json}")
         }
     }
 
@@ -89,7 +98,7 @@ class ReelTimeClient {
         def request = requestFactory.resetPasswordForUser(token, username, newPassword)
         def response = post(request)
 
-        if(response != 200) {
+        if(response.status != 200) {
             Assert.fail(getFailureText(response, "Failed to reset password on user's behalf."))
         }
     }

@@ -20,8 +20,20 @@ public class ReelTimeUrlFactory {
         getUrlForResource('account/client')
     }
 
+    String getRevokeClientUrl(clientId) {
+        getUrlForResource("account/client/$clientId")
+    }
+
     String getVerifyUrl() {
         getUrlForResource("account/confirm")
+    }
+
+    String getChangeDisplayNameUrl() {
+        getUrlForResource('account/display')
+    }
+
+    String getChangePasswordUrl() {
+        getUrlForResource('account/password')
     }
 
     String getSendResetPasswordEmailUrl() {
