@@ -2,7 +2,6 @@ package helper.test
 
 import grails.plugins.rest.client.RestResponse
 import helper.rest.AuthorizationAwareRestClient
-import junit.framework.Assert
 import org.codehaus.groovy.grails.web.json.JSONElement
 
 class ReelTimeClient {
@@ -24,12 +23,12 @@ class ReelTimeClient {
     RestResponse registerUser(String username, String password, String clientName) {
         def email = username + '@test.com'
         def displayName = username
-        def request = requestFactory.registerUser(username, password, displayName, email, clientName)
 
+        def request = requestFactory.registerUser(username, password, displayName, email, clientName)
         def response = post(request)
-        if(response.status != 201) {
-            Assert.fail("Failed to register user. Status code: ${response.status}. JSON: ${response.json}")
-        }
+
+        assertStatusOrFail(response, 201, "Failed to register user.")
+
         return response
     }
 
@@ -37,23 +36,17 @@ class ReelTimeClient {
         def request = requestFactory.removeAccount(token)
 
         def response = delete(request)
-        if(response.status != 200) {
-            Assert.fail("Failed to remove access token")
-        }
+        assertStatusOrFail(response, 200, "Failed to remove access token")
 
         response = delete(request)
-        if(response.status != 401) {
-            Assert.fail("The token associated with the deleted account is still valid! Status: ${response.status}")
-        }
+        assertStatusOrFail(response, 401, "The token associated with the deleted account is still valid!")
     }
 
     void sendResetPasswordEmail(String username) {
         def request = requestFactory.sendResetPasswordEmail(username)
         def response = post(request)
 
-        if(response.status != 200) {
-            Assert.fail(getFailureText(response, "Failed to send reset password email."))
-        }
+        assertStatusOrFail(response, 200, "Failed to send reset password email.")
     }
 
     void resetPasswordForRegisteredClient(String username, String newPassword, String resetCode,
@@ -61,18 +54,15 @@ class ReelTimeClient {
         def request = requestFactory.resetPasswordForRegisteredClient(username, newPassword, resetCode, clientId, clientSecret)
         def response = post(request)
 
-        if(response.status != 200) {
-            Assert.fail(getFailureText(response, "Failed to reset password for registered client."))
-        }
+        assertStatusOrFail(response, 200, "Failed to reset password for registered client.")
     }
 
     RestResponse resetPasswordForNewClient(String username, String newPassword, String resetCode, String clientName) {
         def request = requestFactory.resetPasswordForNewClient(username, newPassword, resetCode, clientName)
         def response = post(request)
 
-        if(response.status != 200) {
-            Assert.fail(getFailureText(response, "Failed to reset password for new client."))
-        }
+        assertStatusOrFail(response, 200, "Failed to reset password for new client.")
+
         return response
     }
 
@@ -80,36 +70,29 @@ class ReelTimeClient {
         def request = requestFactory.confirmAccountForUser(token, username)
         def response = post(request)
 
-        if(response.status != 200) {
-            Assert.fail(getFailureText(response, "Failed to confirm account on user's behalf."))
-        }
+        assertStatusOrFail(response, 200, "Failed to confirm account on user's behalf.")
     }
 
     void changePassword(String token, String newPassword) {
         def request = requestFactory.changePassword(token, newPassword)
         def response = post(request)
 
-        if(response.status != 200) {
-            Assert.fail("Failed to change password. Status code: ${response.status}. JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 200, "Failed to change password.")
     }
 
     void resetPasswordForUser(String token, String username, String newPassword) {
         def request = requestFactory.resetPasswordForUser(token, username, newPassword)
         def response = post(request)
 
-        if(response.status != 200) {
-            Assert.fail(getFailureText(response, "Failed to reset password on user's behalf."))
-        }
+        assertStatusOrFail(response, 200, "Failed to reset password on user's behalf.")
     }
 
     JSONElement newsfeed(String token) {
         def request = requestFactory.newsfeed(token)
         def response = get(request)
 
-        if(response.status != 200) {
-            Assert.fail("Failed to retrieve newsfeed. Status code: ${response.status}. JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 200, "Failed to retrieve newsfeed.")
+
         return response.json
     }
 
@@ -117,9 +100,8 @@ class ReelTimeClient {
         def request = requestFactory.listUsers(token, page)
         def response = get(request)
 
-        if(response.status != 200) {
-            Assert.fail("Failed to retrieve list of users. Status code: ${response.status}. JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 200, "Failed to retrieve list of users.")
+
         return response.json
     }
 
@@ -127,27 +109,22 @@ class ReelTimeClient {
         def request = requestFactory.followUser(token, username)
         def response = post(request)
 
-        if(response.status != 201) {
-            Assert.fail("Failed to follow user: $username. Status code: ${response.status}. JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 201, "Failed to follow user: $username.")
     }
 
     void unfollowUser(String token, String username) {
         def request = requestFactory.unfollowUser(token, username)
         def response = delete(request)
 
-        if(response.status != 200) {
-            Assert.fail("Failed to unfollow user: $username. Status code: ${response.status}. JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 200, "Failed to unfollow user: $username.")
     }
 
     JSONElement listFollowers(String token, String username) {
         def request = requestFactory.listFollowers(token, username)
         def response = get(request)
 
-        if(response.status != 200) {
-            Assert.fail("Failed to list followers for: $username. Status code: ${response.status}. JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 200, "Failed to list followers for: $username.")
+
         return response.json
     }
 
@@ -155,9 +132,8 @@ class ReelTimeClient {
         def request = requestFactory.listFollowees(token, username)
         def response = get(request)
 
-        if(response.status != 200) {
-            Assert.fail("Failed to list followees for: $username. Status code: ${response.status}. JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 200, "Failed to list followees for: $username.")
+
         return response.json
     }
 
@@ -165,9 +141,8 @@ class ReelTimeClient {
         def request = requestFactory.listVideos(token, page)
         def response = get(request)
 
-        if(response.status != 200) {
-            Assert.fail("Failed to retrieve list of videos. Status code: ${response.status}. JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 200, "Failed to retrieve list of videos.")
+
         return response.json
     }
 
@@ -181,9 +156,8 @@ class ReelTimeClient {
         def request = requestFactory.uploadVideo(token, title, reel, video)
         def response = post(request)
 
-        if(response.status != 202) {
-            Assert.fail("Failed to upload video. Status code: ${response.status}. JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 202, "Failed to upload video.")
+
         return response.json.videoId
     }
 
@@ -213,9 +187,8 @@ class ReelTimeClient {
         def request = requestFactory.listReelsForUser(token, username)
         def response = get(request)
 
-        if(response.status != 200) {
-            Assert.fail("Failed to list reels. Status: ${response.status} JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 200, "Failed to list reels.")
+
         def uncategorizedReel = response.json.find { it.name == 'Uncategorized' }
         return uncategorizedReel.reelId
     }
@@ -224,9 +197,8 @@ class ReelTimeClient {
         def request = requestFactory.listReels(token, page)
         def response = get(request)
 
-        if(response.status != 200) {
-            Assert.fail("Failed to retrieve list of reels. Status code: ${response.status}. JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 200, "Failed to retrieve list of reels.")
+
         return response.json
     }
 
@@ -234,9 +206,8 @@ class ReelTimeClient {
         def request = requestFactory.addReel(token, reelName)
         def response = post(request)
 
-        if(response.status != 201) {
-            Assert.fail("Failed to add reel [$reelName]. Status: ${response.status} JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 201, "Failed to add reel [$reelName].")
+
         return response.json.reelId
     }
 
@@ -244,56 +215,50 @@ class ReelTimeClient {
         def request = requestFactory.deleteReel(token, reelId)
         def response = delete(request)
 
-        if(response.status != 200) {
-            Assert.fail("Failed to delete reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
-        }
+        assertStatusOrFail(response, 200, "Failed to delete reel [$reelId].")
     }
 
     void addVideoToReel(String token, Long reelId, Long videoId) {
         def request = requestFactory.addVideoToReel(token, reelId, videoId)
-
         def response = post(request)
-        if(response.status != 201) {
-            Assert.fail("Failed to add video [$videoId] to reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
-        }
+
+        assertStatusOrFail(response, 201, "Failed to add video [$videoId] to reel [$reelId].")
     }
 
     JSONElement listVideosInReel(String token, Long reelId) {
         def request = requestFactory.listVideosInReel(token, reelId)
-
         def response = get(request)
-        if(response.status != 200) {
-            Assert.fail("Failed to list videos in reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
-        }
+
+        assertStatusOrFail(response, 200, "Failed to list videos in reel [$reelId].")
+
         return response.json
     }
 
     JSONElement listAudienceMembers(String token, Long reelId) {
         def request = requestFactory.listAudienceMembers(token, reelId)
-
         def response = get(request)
-        if(response.status != 200) {
-            Assert.fail("Failed to list audience members for reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
-        }
+
+        assertStatusOrFail(response, 200, "Failed to list audience members for reel [$reelId].")
+
         return response.json
     }
 
     void addAudienceMember(String token, Long reelId) {
         def request = requestFactory.addAudienceMember(token, reelId)
-
         def response = post(request)
-        if(response.status != 201) {
-            Assert.fail("Failed to add audience member for reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
-        }
+
+        assertStatusOrFail(response, 201, "Failed to add audience member for reel [$reelId].")
     }
 
     void removeAudienceMember(String token, Long reelId) {
         def request = requestFactory.removeAudienceMember(token, reelId)
-
         def response = delete(request)
-        if(response.status != 200) {
-            Assert.fail("Failed to remove audience member for reel [$reelId]. Status: ${response.status} JSON: ${response.json}")
-        }
+
+        assertStatusOrFail(response, 200, "Failed to remove audience member for reel [$reelId].")
+    }
+
+    private assertStatusOrFail(RestResponse response, int expectedStatus, String message) {
+        assert response.status == expectedStatus : getFailureText(response, message)
     }
 
     private static getFailureText(RestResponse response, String message) {
