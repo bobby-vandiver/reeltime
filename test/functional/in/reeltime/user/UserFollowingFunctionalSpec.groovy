@@ -28,6 +28,28 @@ class UserFollowingFunctionalSpec extends FunctionalSpec {
         'getListFolloweesUrl'   |   ['post', 'put', 'delete']
     }
 
+    @Unroll
+    void "invalid page number [#page] for [#requestMethod]"() {
+        given:
+        def request = requestFactory."$requestMethod"(followerToken, 'follower', page)
+
+        when:
+        def response = get(request)
+
+        then:
+        responseChecker.assertSingleErrorMessageResponse(response, 400, message)
+
+        where:
+        requestMethod   |   page    |   message
+        'listFollowers' |   0       |   '[page] must be a positive number'
+        'listFollowers' |   -1      |   '[page] must be a positive number'
+        'listFollowers' |   'foo'   |   '[page] is invalid'
+
+        'listFollowees' |   0       |   '[page] must be a positive number'
+        'listFollowees' |   -1      |   '[page] must be a positive number'
+        'listFollowees' |   'foo'   |   '[page] is invalid'
+    }
+
     void "begin following a user"() {
         when:
         reelTimeClient.followUser(followerToken, 'followee')

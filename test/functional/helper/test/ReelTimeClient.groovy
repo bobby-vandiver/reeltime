@@ -87,8 +87,8 @@ class ReelTimeClient {
         assertStatusOrFail(response, 200, "Failed to reset password on user's behalf.")
     }
 
-    JSONElement newsfeed(String token) {
-        def request = requestFactory.newsfeed(token)
+    JSONElement newsfeed(String token, Integer page = null) {
+        def request = requestFactory.newsfeed(token, page)
         def response = get(request)
 
         assertStatusOrFail(response, 200, "Failed to retrieve newsfeed.")
@@ -119,8 +119,8 @@ class ReelTimeClient {
         assertStatusOrFail(response, 200, "Failed to unfollow user: $username.")
     }
 
-    JSONElement listFollowers(String token, String username) {
-        def request = requestFactory.listFollowers(token, username)
+    JSONElement listFollowers(String token, String username, int page = 1) {
+        def request = requestFactory.listFollowers(token, username, page)
         def response = get(request)
 
         assertStatusOrFail(response, 200, "Failed to list followers for: $username.")
@@ -128,8 +128,8 @@ class ReelTimeClient {
         return response.json
     }
 
-    JSONElement listFollowees(String token, String username) {
-        def request = requestFactory.listFollowees(token, username)
+    JSONElement listFollowees(String token, String username, int page = 1) {
+        def request = requestFactory.listFollowees(token, username, page)
         def response = get(request)
 
         assertStatusOrFail(response, 200, "Failed to list followees for: $username.")

@@ -74,14 +74,12 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         assertErrorMessageResponse(response, 400, TEST_MESSAGE)
 
         and:
-        1 * localizedMessageService.getMessage('following.username.required', request.locale) >> TEST_MESSAGE
+        1 * localizedMessageService.getMessage(code, request.locale) >> TEST_MESSAGE
 
         where:
-        _   |   actionName
-        _   |   'followUser'
-        _   |   'unfollowUser'
-        _   |   'listFollowers'
-        _   |   'listFollowees'
+        actionName          |   code
+        'followUser'        |   'following.username.required'
+        'unfollowUser'      |   'following.username.required'
     }
 
     @Unroll
@@ -151,7 +149,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
 
         and:
         1 * userService.loadUser('followee') >> followee
-        1 * userFollowingService.listFollowersForFollowee(followee) >> [follower]
+        1 * userFollowingService.listFollowersForFollowee(followee, _) >> [follower]
     }
 
     void "list followees for specified user"() {
@@ -173,6 +171,68 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
 
         and:
         1 * userService.loadUser('follower') >> follower
-        1 * userFollowingService.listFolloweesForFollower(follower) >> [followee]
+        1 * userFollowingService.listFolloweesForFollower(follower, _) >> [followee]
+    }
+
+    void "use page 1 for list followers if page param is omitted"() {
+        given:
+        params.username = 'followee'
+
+        when:
+        controller.listFollowers()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        1 * userService.loadUser('followee') >> followee
+        1 * userFollowingService.listFollowersForFollowee(followee, 1) >> []
+    }
+
+    void "specify page for list followers"() {
+        given:
+        params.username = 'followee'
+        params.page = 4
+
+        when:
+        controller.listFollowers()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        1 * userService.loadUser('followee') >> followee
+        1 * userFollowingService.listFollowersForFollowee(followee, 4) >> []
+    }
+
+    void "use page 1 for list followees if page param is omitted"() {
+        given:
+        params.username = 'follower'
+
+        when:
+        controller.listFollowees()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        1 * userService.loadUser('follower') >> follower
+        1 * userFollowingService.listFolloweesForFollower(follower, 1) >> []
+    }
+
+    void "specify page for list followees"() {
+        given:
+        params.username = 'follower'
+        params.page = 4
+
+        when:
+        controller.listFollowees()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        1 * userService.loadUser('follower') >> follower
+        1 * userFollowingService.listFolloweesForFollower(follower, 4) >> []
     }
 }

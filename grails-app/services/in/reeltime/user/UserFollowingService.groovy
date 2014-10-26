@@ -2,6 +2,8 @@ package in.reeltime.user
 
 class UserFollowingService {
 
+    def maxUsersPerPage
+
     UserFollowing startFollowingUser(User follower, User followee) {
         log.info "User [${follower.username}] is attempting to follow user [${followee.username}]"
 
@@ -32,12 +34,40 @@ class UserFollowingService {
         following.delete()
     }
 
-    List<User> listFolloweesForFollower(User follower) {
+    List<User> listAllFolloweesForFollower(User follower) {
         UserFollowing.findAllByFollower(follower)?.collect { it.followee }
     }
 
-    List<User> listFollowersForFollowee(User followee) {
+    List<User> listAllFollowersForFollowee(User followee) {
         UserFollowing.findAllByFollowee(followee)?.collect { it.follower }
+    }
+
+    List<User> listFolloweesForFollower(User follower, int page) {
+        def list = UserFollowing.findAllByFollower(follower)?.collect { it.followee }
+        extractPageFromListInAlphabeticalOrder(list, page)
+    }
+
+    List<User> listFollowersForFollowee(User followee, int page) {
+        def list = UserFollowing.findAllByFollowee(followee)?.collect { it.follower }
+        extractPageFromListInAlphabeticalOrder(list, page)
+    }
+
+    private List<User> extractPageFromListInAlphabeticalOrder(List<User> list, int page) {
+        list?.sort { a, b ->
+            a.username <=> b.username
+        }
+
+        int start = (page - 1) * maxUsersPerPage
+        if(start > list.size()) {
+            start = 0
+        }
+
+        int end = start + maxUsersPerPage
+        if(end > list.size()) {
+            end = list.size()
+        }
+
+        return list[start..<end]
     }
 
     void removeFollowerFromAllFollowings(User follower) {

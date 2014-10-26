@@ -21,7 +21,6 @@ class PagedListCommandSpec extends Specification {
 
         where:
         page        |   valid   |   code
-        null        |   false   |   'nullable'
         -1          |   false   |   'min.notmet'
         0           |   false   |   'min.notmet'
         1           |   true    |   null
@@ -30,9 +29,12 @@ class PagedListCommandSpec extends Specification {
 
     void "request first page if page not specified"() {
         given:
-        def command = new PagedListCommand()
+        def command = new PagedListCommand(page: null)
 
         expect:
+        command.validate(['validate'])
+
+        and:
         command.page == 1
     }
 }

@@ -81,8 +81,8 @@ class ReelTimeRequestFactory {
         })
     }
 
-    RestRequest newsfeed(String token) {
-        new RestRequest(url: urlFactory.newsfeedUrl, token: token)
+    RestRequest newsfeed(String token, pageNumber) {
+        paginatedListRequest(token, pageNumber, urlFactory.newsfeedUrl)
     }
 
     RestRequest listUsers(String token, Integer pageNumber) {
@@ -102,14 +102,14 @@ class ReelTimeRequestFactory {
         new RestRequest(url: url, token: token)
     }
 
-    RestRequest listFollowers(String token, String username) {
+    RestRequest listFollowers(String token, username, pageNumber) {
         def url = urlFactory.getListFollowersUrl(username)
-        new RestRequest(url: url, token: token)
+        paginatedListRequest(token, pageNumber, url)
     }
 
-    RestRequest listFollowees(String token, String username) {
+    RestRequest listFollowees(String token, username, pageNumber) {
         def url = urlFactory.getListFolloweesUrl(username)
-        new RestRequest(url: url, token: token)
+        paginatedListRequest(token, pageNumber, url)
     }
 
     RestRequest listVideos(String token, Integer pageNumber) {
@@ -136,7 +136,7 @@ class ReelTimeRequestFactory {
         new RestRequest(url: url, token: token)
     }
 
-    RestRequest listReels(String token, Integer pageNumber) {
+    RestRequest listReels(String token, pageNumber) {
         paginatedListRequest(token, pageNumber, urlFactory.listReelsUrl)
     }
 
@@ -185,7 +185,8 @@ class ReelTimeRequestFactory {
         new RestRequest(url: url, token: token)
     }
 
-    private RestRequest paginatedListRequest(String token, Integer pageNumber, String url) {
-        new RestRequest(url: url, token: token, queryParams: [page: pageNumber ?: 1])
+    private RestRequest paginatedListRequest(String token, pageNumber, String url, Closure customizer = null) {
+        def queryParams = (pageNumber != null) ? [page: pageNumber] : [:]
+        new RestRequest(url: url, token: token, queryParams: queryParams, customizer: customizer)
     }
 }

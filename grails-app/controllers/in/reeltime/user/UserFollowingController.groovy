@@ -3,6 +3,7 @@ package in.reeltime.user
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.UserNotFoundException
+import in.reeltime.search.UsernamePagedListCommand
 
 import static javax.servlet.http.HttpServletResponse.*
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
@@ -41,21 +42,23 @@ class UserFollowingController extends AbstractController {
     }
 
     @Secured(["#oauth2.hasScope('users-read')"])
-    def listFollowers(String username) {
-        handleSingleParamRequest(username, 'following.username.required') {
-            def user = userService.loadUser(username)
+    def listFollowers(UsernamePagedListCommand command) {
+        log.debug "Listing followers for user [${command.username}] on page [${command.page}]"
+        handleCommandRequest(command) {
+            def user = userService.loadUser(command.username)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(userFollowingService.listFollowersForFollowee(user))
+                marshall(userFollowingService.listFollowersForFollowee(user, command.page))
             }
         }
     }
 
     @Secured(["#oauth2.hasScope('users-read')"])
-    def listFollowees(String username) {
-        handleSingleParamRequest(username, 'following.username.required') {
-            def user = userService.loadUser(username)
+    def listFollowees(UsernamePagedListCommand command) {
+        log.debug "Listing followees for user [${command.username}] on page [${command.page}]"
+        handleCommandRequest(command) {
+            def user = userService.loadUser(command.username)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(userFollowingService.listFolloweesForFollower(user))
+                marshall(userFollowingService.listFolloweesForFollower(user, command.page))
             }
         }
     }

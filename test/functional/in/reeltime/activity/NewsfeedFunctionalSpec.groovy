@@ -1,5 +1,6 @@
 package in.reeltime.activity
 
+import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
 import spock.lang.Unroll
 
@@ -21,7 +22,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
     void "invalid token scopes for newsfeed: #scopes"() {
         given:
         def token = getAccessTokenWithScopesForTestUser(scopes)
-        def request = requestFactory.newsfeed(token)
+        def request = requestFactory.newsfeed(token, 1)
 
         when:
         def response = get(request)
@@ -35,6 +36,24 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         _   |   ['audiences-read']
         _   |   ['users-read', 'audiences-write']
         _   |   ['users-write', 'audiences-read']
+    }
+
+    @Unroll
+    void "invalid page [#page] requested"() {
+        given:
+        def request = requestFactory.newsfeed(testUserToken, page)
+
+        when:
+        def response = get(request)
+
+        then:
+        responseChecker.assertSingleErrorMessageResponse(response, 400, message)
+
+        where:
+        page    |   message
+        -1      |   '[page] must be a positive number'
+        0       |   '[page] must be a positive number'
+        'abc'   |   '[page] is invalid'
     }
 
     void "new user should have no activity because they are not following anything"() {

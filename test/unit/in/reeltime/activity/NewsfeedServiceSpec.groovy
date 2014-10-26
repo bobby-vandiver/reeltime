@@ -57,7 +57,7 @@ class NewsfeedServiceSpec extends Specification {
 
         and:
         1 * audienceService.listReelsForAudienceMember(follower) >> [reel]
-        1 * userFollowingService.listFolloweesForFollower(follower) >> [followee]
+        1 * userFollowingService.listAllFolloweesForFollower(follower) >> [followee]
 
         and:
         1 * activityService.findActivities([followee], [reel], pageNumber) >> [activity]

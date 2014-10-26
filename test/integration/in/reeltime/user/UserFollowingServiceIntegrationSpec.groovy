@@ -72,7 +72,7 @@ class UserFollowingServiceIntegrationSpec extends IntegrationSpec {
         def followees = addFolloweesToFollower(count)
 
         when:
-        def list = userFollowingService.listFolloweesForFollower(follower)
+        def list = userFollowingService.listAllFolloweesForFollower(follower)
 
         then:
         list == followees
@@ -91,7 +91,7 @@ class UserFollowingServiceIntegrationSpec extends IntegrationSpec {
         def followers = addFollowersToFollowee(count)
 
         when:
-        def list = userFollowingService.listFollowersForFollowee(followee)
+        def list = userFollowingService.listAllFollowersForFollowee(followee)
 
         then:
         list == followers
@@ -102,6 +102,92 @@ class UserFollowingServiceIntegrationSpec extends IntegrationSpec {
         _   |   1
         _   |   5
         _   |   10
+    }
+
+    void "list followees by invalid page"() {
+        expect:
+        userFollowingService.listFolloweesForFollower(follower, 42) == []
+    }
+
+    void "list followers by invalid page"() {
+        expect:
+        userFollowingService.listFollowersForFollowee(followee, 42) == []
+    }
+
+    void "list followees by page in alphabetical order"() {
+        given:
+        def savedMaxUserPerPage = userFollowingService.maxUsersPerPage
+        userFollowingService.maxUsersPerPage = 2
+
+        and:
+        def joe = UserFactory.createUser('joe')
+        def bob = UserFactory.createUser('bob')
+        def alice = UserFactory.createUser('alice')
+
+        and:
+        userFollowingService.startFollowingUser(follower, joe)
+        userFollowingService.startFollowingUser(follower, bob)
+        userFollowingService.startFollowingUser(follower, alice)
+
+        when:
+        def pageOne = userFollowingService.listFolloweesForFollower(follower, 1)
+
+        then:
+        pageOne.size() == 2
+
+        and:
+        pageOne[0] == alice
+        pageOne[1] == bob
+
+        when:
+        def pageTwo = userFollowingService.listFolloweesForFollower(follower, 2)
+
+        then:
+        pageTwo.size() == 1
+
+        and:
+        pageTwo[0] == joe
+
+        cleanup:
+        userFollowingService.maxUsersPerPage = savedMaxUserPerPage
+    }
+
+    void "list followers by page in alphabetical order"() {
+        given:
+        def savedMaxUserPerPage = userFollowingService.maxUsersPerPage
+        userFollowingService.maxUsersPerPage = 2
+
+        and:
+        def joe = UserFactory.createUser('joe')
+        def bob = UserFactory.createUser('bob')
+        def alice = UserFactory.createUser('alice')
+
+        and:
+        userFollowingService.startFollowingUser(joe, followee)
+        userFollowingService.startFollowingUser(bob, followee)
+        userFollowingService.startFollowingUser(alice, followee)
+
+        when:
+        def pageOne = userFollowingService.listFollowersForFollowee(followee, 1)
+
+        then:
+        pageOne.size() == 2
+
+        and:
+        pageOne[0] == alice
+        pageOne[1] == bob
+
+        when:
+        def pageTwo = userFollowingService.listFollowersForFollowee(followee, 2)
+
+        then:
+        pageTwo.size() == 1
+
+        and:
+        pageTwo[0] == joe
+
+        cleanup:
+        userFollowingService.maxUsersPerPage = savedMaxUserPerPage
     }
 
     void "remove user from all following to which the user is the follower"() {

@@ -15,7 +15,7 @@ class NewsfeedService {
         def currentUser = authenticationService.currentUser
 
         def reelsFollowed = audienceService.listReelsForAudienceMember(currentUser)
-        def usersFollowed = userFollowingService.listFolloweesForFollower(currentUser)
+        def usersFollowed = userFollowingService.listAllFolloweesForFollower(currentUser)
 
         return activityService.findActivities(usersFollowed, reelsFollowed, pageNumber)
     }
