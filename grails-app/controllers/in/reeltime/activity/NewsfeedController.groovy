@@ -2,6 +2,7 @@ package in.reeltime.activity
 
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
+import in.reeltime.search.PagedListCommand
 
 import static javax.servlet.http.HttpServletResponse.*
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
@@ -13,20 +14,11 @@ class NewsfeedController extends AbstractController {
     static allowedMethods = [listRecentActivity: 'GET']
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('users-read') and #oauth2.hasScope('audiences-read')"])
-    def listRecentActivity(Integer page) {
-        int pageNumber = (page != null) ? page : 1
-
-        if(pageNumberIsValid(pageNumber)) {
+    def listRecentActivity(PagedListCommand command) {
+        handleCommandRequest(command) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                [activities: marshall(newsfeedService.listRecentActivity(pageNumber))]
+                [activities: marshall(newsfeedService.listRecentActivity(command.page))]
             }
         }
-        else {
-            errorMessageResponse('newsfeed.page.invalid', SC_BAD_REQUEST)
-        }
-    }
-
-    private static boolean pageNumberIsValid(int pageNumber) {
-        return pageNumber >= 1
     }
 }

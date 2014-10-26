@@ -47,27 +47,6 @@ class NewsfeedControllerSpec extends AbstractControllerSpec {
         _   |   100
     }
 
-    @Unroll
-    void "invalid page [#pageNumber]"() {
-        given:
-        params.page = pageNumber
-
-        when:
-        controller.listRecentActivity()
-
-        then:
-        assertErrorMessageResponse(response, 400, TEST_MESSAGE)
-
-        and:
-        0 * newsfeedService.listRecentActivity(_)
-        1 * localizedMessageService.getMessage('newsfeed.page.invalid', request.locale) >> TEST_MESSAGE
-
-        where:
-        _   |   pageNumber
-        _   |   0
-        _   |   -1
-    }
-
     void "return activity list"() {
         given:
         def user = new User(username: 'someone')
