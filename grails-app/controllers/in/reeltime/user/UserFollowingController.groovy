@@ -60,9 +60,8 @@ class UserFollowingController extends AbstractController {
         }
     }
 
-    // TODO: Should return a 404 not found
     def handleUserNotFoundException(UserNotFoundException e) {
-        exceptionErrorMessageResponse(e, 'following.unknown.username', SC_BAD_REQUEST)
+        exceptionErrorMessageResponse(e, 'following.unknown.username', SC_NOT_FOUND)
     }
 
     def handleIllegalArgumentException(IllegalArgumentException e) {

@@ -93,7 +93,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         controller."$actionName"()
 
         then:
-        assertErrorMessageResponse(response, 400, TEST_MESSAGE)
+        assertErrorMessageResponse(response, 404, TEST_MESSAGE)
 
         and:
         1 * userService.loadUser('nobody') >> { throw new UserNotFoundException('TEST') }
