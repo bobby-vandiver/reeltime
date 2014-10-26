@@ -14,14 +14,11 @@ class UserController extends AbstractController {
 
     @Secured(["#oauth2.hasScope('users-read')"])
     def listUsers(PagedListCommand command) {
-
-        if(!command.hasErrors()) {
+        log.debug "Listing all users on page [${command.page}]"
+        handleCommandRequest(command) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
                 marshall(userService.listUsers(command.page))
             }
-        }
-        else {
-            commandErrorMessageResponse(command, SC_BAD_REQUEST)
         }
     }
 }

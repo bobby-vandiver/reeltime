@@ -14,14 +14,11 @@ class VideoController extends AbstractController {
 
     @Secured(["#oauth2.hasScope('videos-read')"])
     def listVideos(PagedListCommand command) {
-
-        if(!command.hasErrors()) {
+        log.debug "Listing all videos on page [${command.page}]"
+        handleCommandRequest(command) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
                 marshall(videoService.listVideos(command.page))
             }
-        }
-        else {
-            commandErrorMessageResponse(command, SC_BAD_REQUEST)
         }
     }
 }

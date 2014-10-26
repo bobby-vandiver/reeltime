@@ -25,14 +25,11 @@ class ReelController extends AbstractController {
 
     @Secured(["#oauth2.hasScope('reels-read')"])
     def listReels(PagedListCommand command) {
-
-        if(!command.hasErrors()) {
+        log.debug "Listing all reels on page [${command.page}]"
+        handleCommandRequest(command) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
                 marshall(reelService.listReels(command.page))
             }
-        }
-        else {
-            commandErrorMessageResponse(command, SC_BAD_REQUEST)
         }
     }
 
