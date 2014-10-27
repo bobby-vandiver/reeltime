@@ -3,7 +3,7 @@ package in.reeltime.user
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.UserNotFoundException
-import in.reeltime.search.UsernamePagedListCommand
+import in.reeltime.search.PagedListCommand
 
 import static javax.servlet.http.HttpServletResponse.*
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
@@ -20,10 +20,10 @@ class UserFollowingController extends AbstractController {
     ]
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('users-write')"])
-    def followUser(String username) {
-        handleSingleParamRequest(username, 'following.username.required') {
+    def followUser(UsernameCommand command) {
+        handleCommandRequest(command) {
             def currentUser = authenticationService.currentUser
-            def userToFollow = userService.loadUser(username)
+            def userToFollow = userService.loadUser(command.username)
 
             userFollowingService.startFollowingUser(currentUser, userToFollow)
             render(status: SC_CREATED)
@@ -31,10 +31,10 @@ class UserFollowingController extends AbstractController {
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('users-write')"])
-    def unfollowUser(String username) {
-        handleSingleParamRequest(username, 'following.username.required') {
+    def unfollowUser(UsernameCommand command) {
+        handleCommandRequest(command) {
             def currentUser = authenticationService.currentUser
-            def userToUnfollow = userService.loadUser(username)
+            def userToUnfollow = userService.loadUser(command.username)
 
             userFollowingService.stopFollowingUser(currentUser, userToUnfollow)
             render(status: SC_OK)
@@ -42,23 +42,25 @@ class UserFollowingController extends AbstractController {
     }
 
     @Secured(["#oauth2.hasScope('users-read')"])
-    def listFollowers(UsernamePagedListCommand command) {
-        log.debug "Listing followers for user [${command.username}] on page [${command.page}]"
-        handleCommandRequest(command) {
-            def user = userService.loadUser(command.username)
+    def listFollowers(UsernameCommand usernameCommand, PagedListCommand pagedListCommand) {
+        log.debug "Listing followers for user [${usernameCommand.username}] on page [${pagedListCommand.page}]"
+
+        handleMultipleCommandRequest([usernameCommand, pagedListCommand]) {
+            def user = userService.loadUser(usernameCommand.username)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(userFollowingService.listFollowersForFollowee(user, command.page))
+                marshall(userFollowingService.listFollowersForFollowee(user, pagedListCommand.page))
             }
         }
     }
 
     @Secured(["#oauth2.hasScope('users-read')"])
-    def listFollowees(UsernamePagedListCommand command) {
-        log.debug "Listing followees for user [${command.username}] on page [${command.page}]"
-        handleCommandRequest(command) {
-            def user = userService.loadUser(command.username)
+    def listFollowees(UsernameCommand usernameCommand, PagedListCommand pagedListCommand) {
+        log.debug "Listing followees for user [${usernameCommand.username}] on page [${pagedListCommand.page}]"
+
+        handleMultipleCommandRequest([usernameCommand, pagedListCommand]) {
+            def user = userService.loadUser(usernameCommand.username)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(userFollowingService.listFolloweesForFollower(user, command.page))
+                marshall(userFollowingService.listFolloweesForFollower(user, pagedListCommand.page))
             }
         }
     }

@@ -8,6 +8,7 @@ import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.search.PagedListCommand
+import in.reeltime.user.UsernameCommand
 
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.*
@@ -34,11 +35,11 @@ class ReelController extends AbstractController {
     }
 
     @Secured(["#oauth2.hasScope('reels-read')"])
-    def listUserReels(String username) {
-        log.debug "Listing reels for user [$username]"
-        handleSingleParamRequest(username, 'reel.username.required') {
+    def listUserReels(UsernameCommand command) {
+        log.debug "Listing reels for user [${command.username}]"
+        handleCommandRequest(command) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(reelService.listReelsByUsername(username))
+                marshall(reelService.listReelsByUsername(command.username))
             }
         }
     }

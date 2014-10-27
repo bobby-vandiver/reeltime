@@ -1,9 +1,9 @@
-package in.reeltime.search
+package in.reeltime.user
 
 import grails.validation.Validateable
 
 @Validateable
-class UsernamePagedListCommand extends PagedListCommand {
+class UsernameCommand {
 
     String username
 

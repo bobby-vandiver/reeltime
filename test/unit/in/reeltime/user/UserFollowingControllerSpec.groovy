@@ -66,23 +66,6 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
     }
 
     @Unroll
-    void "username param is omitted for action [#actionName]"() {
-        when:
-        controller."$actionName"()
-
-        then:
-        assertErrorMessageResponse(response, 400, TEST_MESSAGE)
-
-        and:
-        1 * localizedMessageService.getMessage(code, request.locale) >> TEST_MESSAGE
-
-        where:
-        actionName          |   code
-        'followUser'        |   'following.username.required'
-        'unfollowUser'      |   'following.username.required'
-    }
-
-    @Unroll
     void "user to follow cannot be found for action [#actionName]"() {
         given:
         params.username = 'nobody'

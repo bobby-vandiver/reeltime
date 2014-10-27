@@ -374,8 +374,6 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         where:
         paramName   |   paramValue  |   actionName      |   code
-        'username'  |   null        |   'listUserReels' |   'reel.username.required'
-        'username'  |   ''          |   'listUserReels' |   'reel.username.required'
         'name'      |   null        |   'addReel'       |   'reel.name.required'
         'name'      |   ''          |   'addReel'       |   'reel.name.required'
     }

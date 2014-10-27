@@ -45,4 +45,24 @@ abstract class AbstractController {
     protected void handleCommandRequest(Object command, Closure action) {
         !command.hasErrors() ? action() : commandErrorMessageResponse(command, SC_BAD_REQUEST)
     }
+
+    protected void handleMultipleCommandRequest(Collection<Object> commands, Closure action) {
+        List<String> errors = []
+
+        commands.each { command->
+            if(command.hasErrors()) {
+                def commandErrors = localizedMessageService.getErrorMessages(command, request.locale)
+                errors.addAll(commandErrors)
+            }
+        }
+
+        if(errors.isEmpty()) {
+            action()
+        }
+        else {
+            render(status: SC_BAD_REQUEST, contentType: APPLICATION_JSON) {
+                [errors: errors]
+            }
+        }
+    }
 }
