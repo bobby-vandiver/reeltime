@@ -77,7 +77,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def response = "$httpMethod"(request)
 
         then:
-        responseChecker.assertSingleErrorMessageResponse(response, 400, '[reelId] is required')
+        responseChecker.assertErrorMessageInResponse(response, 400, '[reelId] is invalid')
 
         where:
         resource                |   httpMethod
@@ -104,7 +104,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         where:
         videoId         |   statusCode  |   message
         '12'            |   404         |   'Requested video was not found'
-        'invalid123'    |   400         |   '[videoId] is required'
+        'invalid123'    |   400         |   '[videoId] is invalid'
     }
 
     void "missing videoId when adding video to reel"() {
@@ -330,22 +330,9 @@ class ReelFunctionalSpec extends FunctionalSpec {
         reelTimeClient.listVideosInReel(readToken, reelId).size() == 0
     }
 
-    @Unroll
-    void "invalid page [#page] requested"() {
-        given:
-        def request = new RestRequest(url: urlFactory.listReelsUrl, token: token, queryParams: [page: page])
-
-        when:
-        def response = get(request)
-
-        then:
-        responseChecker.assertSingleErrorMessageResponse(response, 400, message)
-
-        where:
-        page    |   message
-        -1      |   '[page] must be a positive number'
-        0       |   '[page] must be a positive number'
-        'abc'   |   '[page] is invalid'
+    void "invalid page requested"() {
+        expect:
+        responseChecker.assertInvalidPageNumbers(urlFactory.listReelsUrl, token)
     }
 
     void "multiple users with different reels"() {

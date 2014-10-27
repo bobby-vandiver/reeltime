@@ -41,6 +41,20 @@ class ResponseChecker {
         }
     }
 
+    void assertInvalidPageNumbers(String url, String token) {
+        def scenarios = [
+                [page: -1, message: '[page] must be a positive number'],
+                [page: 0, message: '[page] must be a positive number'],
+                [page: 'abc', message: '[page] is invalid']
+        ]
+
+        scenarios.each { scenario ->
+            def request = new RestRequest(url: url, token: token, queryParams: [page: scenario.page])
+            def response = restClient.get(request)
+            assertSingleErrorMessageResponse(response, 400, scenario.message)
+        }
+    }
+
     void assertSingleErrorMessageResponse(RestResponse response, int expectedStatus, String expectedMessage) {
         assertMultipleErrorMessagesResponse(response, expectedStatus, [expectedMessage])
     }

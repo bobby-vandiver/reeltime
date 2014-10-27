@@ -23,33 +23,6 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         params.reelId = reelId
     }
 
-    @Unroll
-    void "reelId cannot be [#invalidId] for action [#actionName]"() {
-        given:
-        def message = 'TEST'
-
-        and:
-        params.reelId = invalidId
-
-        when:
-        controller."$actionName"()
-
-        then:
-        assertErrorMessageResponse(response, 400, message)
-
-        and:
-        1 * localizedMessageService.getMessage('reel.id.required', request.locale) >> message
-
-        where:
-        invalidId   |   actionName
-        null        |   'listMembers'
-        ''          |   'listMembers'
-        null        |   'addMember'
-        ''          |   'addMember'
-        null        |   'removeMember'
-        ''          |   'removeMember'
-    }
-
     void "attempt to list audience members of an unknown reel"() {
         given:
         def message = 'unknown reel'
@@ -112,7 +85,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
 
     void "empty audience members list"() {
         when:
-        controller.listMembers(reelId)
+        controller.listMembers()
 
         then:
         assertStatusCodeAndContentType(response, 200)
@@ -129,7 +102,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         def member = new User(username: 'member', displayName: 'member display')
 
         when:
-        controller.listMembers(reelId)
+        controller.listMembers()
 
         then:
         assertStatusCodeAndContentType(response, 200)
@@ -152,7 +125,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         def member2 = new User(username: 'member2', displayName: 'member2 display')
 
         when:
-        controller.listMembers(reelId)
+        controller.listMembers()
 
         then:
         assertStatusCodeAndContentType(response, 200)

@@ -15,29 +15,29 @@ class AudienceController extends AbstractController {
     static allowedMethods = [listMembers: 'GET', addMember: 'POST', removeMember: 'DELETE']
 
     @Secured(["#oauth2.hasScope('audiences-read')"])
-    def listMembers(Long reelId) {
-        log.debug "List audience members for reel [$reelId]"
-        handleSingleParamRequest(reelId, 'reel.id.required') {
+    def listMembers(ReelCommand command) {
+        log.debug "List audience members for reel [${command.reelId}]"
+        handleCommandRequest(command) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(audienceService.listMembers(reelId))
+                marshall(audienceService.listMembers(command.reelId))
             }
         }
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('audiences-write')"])
-    def addMember(Long reelId) {
-        log.debug "Add audience member for reel [$reelId]"
-        handleSingleParamRequest(reelId, 'reel.id.required') {
-            audienceService.addCurrentUserToAudience(reelId)
+    def addMember(ReelCommand command) {
+        log.debug "Add audience member for reel [${command.reelId}]"
+        handleCommandRequest(command) {
+            audienceService.addCurrentUserToAudience(command.reelId)
             render(status: SC_CREATED)
         }
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('audiences-write')"])
-    def removeMember(Long reelId) {
-        log.debug "Remove audience member for reel [$reelId]"
-        handleSingleParamRequest(reelId, 'reel.id.required') {
-            audienceService.removeCurrentUserFromAudience(reelId)
+    def removeMember(ReelCommand command) {
+        log.debug "Remove audience member for reel [${command.reelId}]"
+        handleCommandRequest(command) {
+            audienceService.removeCurrentUserFromAudience(command.reelId)
             render(status: SC_OK)
         }
     }

@@ -56,7 +56,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def response = "$httpMethod"(request)
 
         then:
-        responseChecker.assertSingleErrorMessageResponse(response, 400, '[reelId] is required')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[reelId] is invalid')
 
         where:
         _   |   httpMethod

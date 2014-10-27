@@ -378,40 +378,6 @@ class ReelControllerSpec extends AbstractControllerSpec {
         'username'  |   ''          |   'listUserReels' |   'reel.username.required'
         'name'      |   null        |   'addReel'       |   'reel.name.required'
         'name'      |   ''          |   'addReel'       |   'reel.name.required'
-        'reelId'    |   null        |   'deleteReel'    |   'reel.id.required'
-        'reelId'    |   ''          |   'deleteReel'    |   'reel.id.required'
-        'reelId'    |   null        |   'listVideos'    |   'reel.id.required'
-        'reelId'    |   ''          |   'listVideos'    |   'reel.id.required'
-        'reelId'    |   null        |   'addVideo'      |   'reel.id.required'
-        'reelId'    |   ''          |   'addVideo'      |   'reel.id.required'
-        'reelId'    |   null        |   'removeVideo'   |   'reel.id.required'
-        'reelId'    |   ''          |   'removeVideo'   |   'reel.id.required'
-    }
-
-    @Unroll
-    void "videoId cannot be [#paramValue] for [#actionName]"() {
-        given:
-        def message = 'TEST'
-
-        and:
-        params.reelId = 1234
-        params.videoId = paramValue
-
-        when:
-        controller."$actionName"()
-
-        then:
-        assertErrorMessageResponse(response, 400, message)
-
-        and:
-        1 * localizedMessageService.getMessage('video.id.required', request.locale) >> message
-
-        where:
-        paramValue  |   actionName
-        null        |   'addVideo'
-        ''          |   'addVideo'
-        null        |   'removeVideo'
-        ''          |   'removeVideo'
     }
 
     @Unroll

@@ -54,50 +54,38 @@ class ReelController extends AbstractController {
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
-    def deleteReel(Long reelId) {
-        log.debug "Deleting reel [$reelId]"
-        handleSingleParamRequest(reelId, 'reel.id.required') {
-            reelService.deleteReel(reelId)
+    def deleteReel(ReelCommand command) {
+        log.debug "Deleting reel [${command.reelId}]"
+        handleCommandRequest(command) {
+            reelService.deleteReel(command.reelId)
             render(status: SC_OK)
         }
     }
 
     @Secured(["#oauth2.hasScope('reels-read')"])
-    def listVideos(Long reelId) {
-        log.debug "Listing videos in reel [$reelId]"
-        handleSingleParamRequest(reelId, 'reel.id.required') {
+    def listVideos(ReelCommand command) {
+        log.debug "Listing videos in reel [${command.reelId}]"
+        handleCommandRequest(command) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(reelVideoManagementService.listVideos(reelId))
+                marshall(reelVideoManagementService.listVideos(command.reelId))
             }
         }
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
-    def addVideo(Long reelId, Long videoId) {
-        log.debug "Adding video [$videoId] to reel [$reelId]"
-        if(!reelId) {
-            errorMessageResponse('reel.id.required', SC_BAD_REQUEST)
-        }
-        else if(!videoId) {
-            errorMessageResponse('video.id.required', SC_BAD_REQUEST)
-        }
-        else {
-            reelVideoManagementService.addVideo(reelId, videoId)
+    def addVideo(ReelVideoCommand command) {
+        log.debug "Adding video [${command.videoId}] to reel [${command.reelId}]"
+        handleCommandRequest(command) {
+            reelVideoManagementService.addVideo(command.reelId, command.videoId)
             render(status: SC_CREATED)
         }
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
-    def removeVideo(Long reelId, Long videoId) {
-        log.debug "Removing video [$videoId] from reel [$reelId]"
-        if(!reelId) {
-            errorMessageResponse('reel.id.required', SC_BAD_REQUEST)
-        }
-        else if(!videoId) {
-            errorMessageResponse('video.id.required', SC_BAD_REQUEST)
-        }
-        else {
-            reelVideoManagementService.removeVideo(reelId, videoId)
+    def removeVideo(ReelVideoCommand command) {
+        log.debug "Removing video [${command.videoId}] from reel [${command.reelId}]"
+        handleCommandRequest(command) {
+            reelVideoManagementService.removeVideo(command.reelId, command.videoId)
             render(status: SC_OK)
         }
     }
