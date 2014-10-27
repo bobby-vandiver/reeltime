@@ -1,9 +1,9 @@
-package in.reeltime.reel
+package in.reeltime.video
 
 import grails.validation.Validateable
 
 @Validateable
-class ReelVideoCommand extends ReelCommand {
+class VideoCommand {
 
     Long videoId
 

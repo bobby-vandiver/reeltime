@@ -9,6 +9,7 @@ import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.search.PagedListCommand
 import in.reeltime.user.UsernameCommand
+import in.reeltime.video.VideoCommand
 
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.*
@@ -74,19 +75,21 @@ class ReelController extends AbstractController {
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
-    def addVideo(ReelVideoCommand command) {
-        log.debug "Adding video [${command.videoId}] to reel [${command.reelId}]"
-        handleCommandRequest(command) {
-            reelVideoManagementService.addVideo(command.reelId, command.videoId)
+    def addVideo(ReelCommand reelCommand, VideoCommand videoCommand) {
+        log.debug "Adding video [${videoCommand.videoId}] to reel [${reelCommand.reelId}]"
+
+        handleMultipleCommandRequest([reelCommand, videoCommand]) {
+            reelVideoManagementService.addVideo(reelCommand.reelId, videoCommand.videoId)
             render(status: SC_CREATED)
         }
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
-    def removeVideo(ReelVideoCommand command) {
-        log.debug "Removing video [${command.videoId}] from reel [${command.reelId}]"
-        handleCommandRequest(command) {
-            reelVideoManagementService.removeVideo(command.reelId, command.videoId)
+    def removeVideo(ReelCommand reelCommand, VideoCommand videoCommand) {
+        log.debug "Removing video [${videoCommand.videoId}] from reel [${reelCommand.reelId}]"
+
+        handleMultipleCommandRequest([reelCommand, videoCommand]) {
+            reelVideoManagementService.removeVideo(reelCommand.reelId, videoCommand.videoId)
             render(status: SC_OK)
         }
     }
