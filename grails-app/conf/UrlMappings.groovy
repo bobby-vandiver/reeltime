@@ -95,6 +95,10 @@ class UrlMappings {
             action = [GET: 'listUsers']
         }
 
+        "/user/$username" (controller: 'user') {
+            action = [GET: 'getUser']
+        }
+
         "/user/$username/reels" (controller: 'reel') {
             action = [GET: 'listUserReels']
         }

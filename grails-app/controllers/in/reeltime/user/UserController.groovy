@@ -12,6 +12,15 @@ class UserController extends AbstractController {
 
     static allowedMethods = [listUsers: 'GET']
 
+    def getUser(UsernameCommand command) {
+        log.debug "Getting details for user [${command.username}]"
+        handleCommandRequest(command) {
+            render(status: SC_OK, contentType: APPLICATION_JSON) {
+                marshall(userService.loadUser(command.username))
+            }
+        }
+    }
+
     @Secured(["#oauth2.hasScope('users-read')"])
     def listUsers(PagedListCommand command) {
         log.debug "Listing all users on page [${command.page}]"

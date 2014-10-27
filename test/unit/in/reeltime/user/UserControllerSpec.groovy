@@ -13,6 +13,34 @@ class UserControllerSpec extends AbstractControllerSpec {
         controller.userService = userService
     }
 
+    void "get user details"() {
+        given:
+        def username = 'foo'
+        def displayName = 'bar'
+
+        def user = new User(username: username, displayName: displayName)
+
+        and:
+        params.username = username
+
+        when:
+        controller.getUser()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        def json = getJsonResponse(response)
+        json.size() == 2
+
+        and:
+        json.username == username
+        json.display_name == displayName
+
+        and:
+        1 * userService.loadUser(username) >> user
+    }
+
     void "use page 1 if page param is omitted"() {
         when:
         controller.listUsers()

@@ -276,6 +276,16 @@ class UrlMappingsSpec extends Specification {
         'followees' |   'listFollowees'
     }
 
+    void "test user mapping"() {
+        given:
+        webRequest.currentRequest.method = 'GET'
+
+        expect:
+        assertForwardUrlMapping('/user/bob', controller: 'user', action: 'getUser') {
+            username = 'bob'
+        }
+    }
+
     // TODO: Consolidate the above simple tests into this one
     @Unroll
     void "http method [#httpMethod] on [#url] url maps to controller [#controller] action [#action]"() {
