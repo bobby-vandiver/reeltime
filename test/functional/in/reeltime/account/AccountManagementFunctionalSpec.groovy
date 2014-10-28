@@ -15,14 +15,12 @@ class AccountManagementFunctionalSpec extends FunctionalSpec {
     private static final USERNAME = 'account'
 
     void setup() {
-        token = registerNewUserAndGetToken(USERNAME, 'account-write')
+        token = registerNewUserAndGetToken(USERNAME, ['account-write', 'users-read'])
 
         def clientCredentials = getClientCredentialsForRegisteredUser(USERNAME)
         clientId = clientCredentials.clientId
         clientSecret = clientCredentials.clientSecret
     }
-
-    // TODO: Add test to confirm display name has changed when account/profile API is added
 
     @Unroll
     void "invalid http methods for url method [#urlMethod]"() {
@@ -100,5 +98,18 @@ class AccountManagementFunctionalSpec extends FunctionalSpec {
         response.status == 400
         response.data.error == 'invalid_grant'
         response.data.error_description == 'Bad credentials'
+    }
+
+    void "successfully change display name"() {
+        given:
+        def currentDisplayName = reelTimeClient.userProfile(token, USERNAME).json.display_name
+        def newDisplayName = currentDisplayName + 'a'
+
+        when:
+        reelTimeClient.changeDisplayName(token, newDisplayName)
+
+        then:
+        def changedDisplayName = reelTimeClient.userProfile(token, USERNAME).json.display_name
+        changedDisplayName == newDisplayName
     }
 }

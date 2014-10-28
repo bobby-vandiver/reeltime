@@ -85,6 +85,11 @@ class ReelTimeRequestFactory {
         paginatedListRequest(token, pageNumber, urlFactory.newsfeedUrl)
     }
 
+    RestRequest userProfile(String token, username) {
+        def url = urlFactory.getUserUrl(username)
+        new RestRequest(url: url, token: token)
+    }
+
     RestRequest listUsers(String token, Integer pageNumber) {
         paginatedListRequest(token, pageNumber, urlFactory.listUsersUrl)
     }

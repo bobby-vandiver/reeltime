@@ -20,9 +20,8 @@ class ReelTimeClient {
         this.requestFactory = requestFactory
     }
 
-    RestResponse registerUser(String username, String password, String clientName) {
+    RestResponse registerUser(String username, String password, String clientName, String displayName) {
         def email = username + '@test.com'
-        def displayName = username
 
         def request = requestFactory.registerUser(username, password, displayName, email, clientName)
         def response = post(request)
@@ -73,6 +72,13 @@ class ReelTimeClient {
         assertStatusOrFail(response, 200, "Failed to confirm account on user's behalf.")
     }
 
+    void changeDisplayName(String token, String newDisplayName) {
+        def request = requestFactory.changeDisplayName(token, newDisplayName)
+        def response = post(request)
+
+        assertStatusOrFail(response, 200, "Failed to change display name.")
+    }
+
     void changePassword(String token, String newPassword) {
         def request = requestFactory.changePassword(token, newPassword)
         def response = post(request)
@@ -94,6 +100,15 @@ class ReelTimeClient {
         assertStatusOrFail(response, 200, "Failed to retrieve newsfeed.")
 
         return response.json
+    }
+
+    RestResponse userProfile(String token, String username) {
+        def request = requestFactory.userProfile(token, username)
+        def response = get(request)
+
+        assertStatusOrFail(response, 200, "Failed to get user details.")
+
+        return response
     }
 
     JSONElement listUsers(String token, Integer page = null) {

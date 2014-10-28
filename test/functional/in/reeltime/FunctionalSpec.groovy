@@ -29,6 +29,7 @@ abstract class FunctionalSpec extends Specification {
     protected static final String TEST_PASSWORD = 'password'
 
     protected static final String TEST_CLIENT_NAME = 'test-client-name'
+    protected static final String TEST_DISPLAY_NAME = 'bob-display'
 
     protected static final List<String> ALL_SCOPES = [
         'account-read', 'account-write',
@@ -99,8 +100,11 @@ abstract class FunctionalSpec extends Specification {
         entry.password = newPassword
     }
 
-    protected RestResponse registerUser(String username, String password = TEST_PASSWORD) {
-        def response = reelTimeClient.registerUser(username, password, TEST_CLIENT_NAME)
+    protected RestResponse registerUser(String username, String password = TEST_PASSWORD, String displayName = null) {
+        displayName = displayName ?: username
+
+        println "Registering user with username [$username], password [$password] and display name [$displayName]"
+        def response = reelTimeClient.registerUser(username, password, TEST_CLIENT_NAME, displayName)
 
         def clientId = response.json.client_id
         def clientSecret = response.json.client_secret

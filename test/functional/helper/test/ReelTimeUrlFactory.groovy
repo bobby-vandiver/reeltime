@@ -80,6 +80,10 @@ public class ReelTimeUrlFactory {
         getUrlForResource("transcoder/notification/$action")
     }
 
+    String getUserUrl(username) {
+        getUrlForResource("user/$username")
+    }
+
     String getListUsersUrl() {
         getUrlForResource("users")
     }
