@@ -85,6 +85,10 @@ class ConfigInjector {
             maxReelsPerPage = config.reeltime.browse.maxResultsPerPage
         }
 
+        ctx.audienceService.with {
+            maxMembersPerPage = config.reeltime.browse.maxResultsPerPage
+        }
+
         ctx.authenticationService.with {
             authenticationManager = ctx.getBean('authenticationManager') as AuthenticationManager
         }

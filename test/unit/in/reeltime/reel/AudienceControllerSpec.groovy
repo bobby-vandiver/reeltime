@@ -23,64 +23,83 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         params.reelId = reelId
     }
 
-    void "attempt to list audience members of an unknown reel"() {
+    void "use page 1 for list if page param is omitted"() {
+        when:
+        controller.listMembers()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        def json = getJsonResponse(response)
+        json.size() == 0
+
+        1 * audienceService.listMembers(reelId, 1) >> []
+    }
+
+    void "specify page for members list"() {
         given:
-        def message = 'unknown reel'
+        params.page = 39
 
         when:
         controller.listMembers()
 
         then:
-        assertErrorMessageResponse(response, 404, message)
+        assertStatusCodeAndContentType(response, 200)
 
         and:
-        1 * audienceService.listMembers(reelId) >> { throw new ReelNotFoundException('TEST') }
-        1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> message
+        def json = getJsonResponse(response)
+        json.size() == 0
+
+        1 * audienceService.listMembers(reelId, 39) >> []
+    }
+
+    void "attempt to list audience members of an unknown reel"() {
+        when:
+        controller.listMembers()
+
+        then:
+        assertErrorMessageResponse(response, 404, TEST_MESSAGE)
+
+        and:
+        1 * audienceService.listMembers(reelId, _) >> { throw new ReelNotFoundException('TEST') }
+        1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> TEST_MESSAGE
     }
 
     void "attempt to add audience member to an unknown reel"() {
-        given:
-        def message = 'unknown reel'
-
         when:
         controller.addMember()
 
         then:
-        assertErrorMessageResponse(response, 404, message)
+        assertErrorMessageResponse(response, 404, TEST_MESSAGE)
 
         and:
         1 * audienceService.addCurrentUserToAudience(reelId) >> { throw new ReelNotFoundException('TEST') }
-        1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> message
+        1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> TEST_MESSAGE
     }
 
     void "attempt to remove audience member from an unknown reel"() {
-        given:
-        def message = 'unknown reel'
-
         when:
         controller.removeMember()
 
         then:
-        assertErrorMessageResponse(response, 404, message)
+        assertErrorMessageResponse(response, 404, TEST_MESSAGE)
 
         and:
         1 * audienceService.removeCurrentUserFromAudience(reelId) >> { throw new ReelNotFoundException('TEST') }
-        1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> message
+        1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> TEST_MESSAGE
     }
 
     void "attempt to remove audience member without proper authorization"() {
-        given:
-        def message = 'unknown reel'
-
         when:
         controller.removeMember()
 
         then:
-        assertErrorMessageResponse(response, 403, message)
+        assertErrorMessageResponse(response, 403, TEST_MESSAGE)
 
         and:
         1 * audienceService.removeCurrentUserFromAudience(reelId) >> { throw new AuthorizationException('TEST') }
-        1 * localizedMessageService.getMessage('audience.unauthorized', request.locale) >> message
+        1 * localizedMessageService.getMessage('audience.unauthorized', request.locale) >> TEST_MESSAGE
     }
 
     void "empty audience members list"() {
@@ -94,7 +113,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         def json = getJsonResponse(response)
         json.size() == 0
 
-        1 * audienceService.listMembers(reelId) >> []
+        1 * audienceService.listMembers(reelId, _) >> []
     }
 
     void "only one member in the audience"() {
@@ -116,7 +135,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         json[0].username == 'member'
         json[0].display_name == 'member display'
 
-        1 * audienceService.listMembers(reelId) >> [member]
+        1 * audienceService.listMembers(reelId, _) >> [member]
     }
 
     void "multiple members in the audience"() {
@@ -144,7 +163,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         json[1].username == 'member2'
         json[1].display_name == 'member2 display'
 
-        1 * audienceService.listMembers(reelId) >> [member1, member2]
+        1 * audienceService.listMembers(reelId, _) >> [member1, member2]
     }
 
     void "add audience member"() {

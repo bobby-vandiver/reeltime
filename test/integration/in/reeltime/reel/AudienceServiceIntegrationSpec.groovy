@@ -23,7 +23,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         def membersAdded = addAudienceMembersToReel(reel, count)
 
         when:
-        def list = audienceService.listMembers(reelId)
+        def list = audienceService.listMembers(reelId, 1)
 
         then:
         list.size() == count
@@ -39,7 +39,49 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         _   |   1
         _   |   2
         _   |   10
-        _   |   50
+    }
+
+    void "list members by page in alphabetical order"() {
+        given:
+        def savedMaxMembersPerPage = audienceService.maxMembersPerPage
+        audienceService.maxMembersPerPage = 2
+
+        and:
+        def reel = createReelWithEmptyAudience()
+        def reelId = reel.id
+
+        and:
+        def joe = UserFactory.createUser('joe')
+        def bob = UserFactory.createUser('bob')
+        def alice = UserFactory.createUser('alice')
+
+        and:
+        reel.audience.addToMembers(joe)
+        reel.audience.addToMembers(bob)
+        reel.audience.addToMembers(alice)
+        reel.save()
+
+        when:
+        def pageOne = audienceService.listMembers(reelId, 1)
+
+        then:
+        pageOne.size() == 2
+
+        and:
+        pageOne[0] == alice
+        pageOne[1] == bob
+
+        when:
+        def pageTwo = audienceService.listMembers(reelId, 2)
+
+        then:
+        pageTwo.size() == 1
+
+        and:
+        pageTwo[0] == joe
+
+        cleanup:
+        audienceService.maxMembersPerPage = savedMaxMembersPerPage
     }
 
     @Unroll

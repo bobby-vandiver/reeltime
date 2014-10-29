@@ -4,6 +4,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ReelNotFoundException
+import in.reeltime.search.PagedListCommand
 
 import static in.reeltime.common.ContentTypes.*
 import static javax.servlet.http.HttpServletResponse.*
@@ -15,11 +16,11 @@ class AudienceController extends AbstractController {
     static allowedMethods = [listMembers: 'GET', addMember: 'POST', removeMember: 'DELETE']
 
     @Secured(["#oauth2.hasScope('audiences-read')"])
-    def listMembers(ReelCommand command) {
-        log.debug "List audience members for reel [${command.reelId}]"
-        handleCommandRequest(command) {
+    def listMembers(ReelCommand reelCommand, PagedListCommand pagedListCommand) {
+        log.debug "List audience members for reel [${reelCommand.reelId}] on page [${pagedListCommand.page}]"
+        handleMultipleCommandRequest([reelCommand, pagedListCommand]) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(audienceService.listMembers(command.reelId))
+                marshall(audienceService.listMembers(reelCommand.reelId, pagedListCommand.page))
             }
         }
     }

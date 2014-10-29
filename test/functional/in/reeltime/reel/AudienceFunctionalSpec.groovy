@@ -28,6 +28,11 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         responseChecker.assertInvalidHttpMethods(urlFactory.getAudienceUrl(1234), ['put'], token)
     }
 
+    void "invalid page number for list audience members"() {
+        expect:
+        responseChecker.assertInvalidPageNumbers(urlFactory.getAudienceUrl(1234), token)
+    }
+
     @Unroll
     void "use token to access audience via [#httpMethod] requiring write access [#useReadToken]"() {
         given:

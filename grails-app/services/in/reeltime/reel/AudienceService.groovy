@@ -12,9 +12,12 @@ class AudienceService {
     def authenticationService
     def activityService
 
-    Collection<User> listMembers(Long reelId) {
+    def maxMembersPerPage
+
+    List<User> listMembers(Long reelId, int page) {
         def reel = reelService.loadReel(reelId)
-        return reel.audience.members
+        def memberIds = reel.audience.members*.id?.flatten()?.toList() ?: []
+        User.findAllByIdInListInAlphabeticalOrderByPage(memberIds, page, maxMembersPerPage)
     }
 
     List<Reel> listReelsForAudienceMember(User member) {
