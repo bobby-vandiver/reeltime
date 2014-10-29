@@ -27,6 +27,11 @@ class User {
 
 	static transients = ['springSecurityService']
 
+    static List<User> findAllByIdInListInAlphabeticalOrderByPage(List<Long> userIds, int page, int maxUsersPerPage) {
+        int offset = (page - 1) * maxUsersPerPage
+        User.findAllByIdInList(userIds, [max: maxUsersPerPage, offset: offset, sort: 'username'])
+    }
+
 	static constraints = {
         displayName blank: false, nullable: false, matches: DISPLAY_NAME_REGEX
         email blank: false, nullable: false, email: true

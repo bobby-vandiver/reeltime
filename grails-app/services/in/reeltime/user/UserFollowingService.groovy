@@ -43,31 +43,13 @@ class UserFollowingService {
     }
 
     List<User> listFolloweesForFollower(User follower, int page) {
-        def list = UserFollowing.findAllByFollower(follower)?.collect { it.followee }
-        extractPageFromListInAlphabeticalOrder(list, page)
+        def followeeIds = UserFollowing.findAllByFollower(follower)?.collect { it.followee*.id }?.flatten()
+        User.findAllByIdInListInAlphabeticalOrderByPage(followeeIds, page, maxUsersPerPage)
     }
 
     List<User> listFollowersForFollowee(User followee, int page) {
-        def list = UserFollowing.findAllByFollowee(followee)?.collect { it.follower }
-        extractPageFromListInAlphabeticalOrder(list, page)
-    }
-
-    private List<User> extractPageFromListInAlphabeticalOrder(List<User> list, int page) {
-        list?.sort { a, b ->
-            a.username <=> b.username
-        }
-
-        int start = (page - 1) * maxUsersPerPage
-        if(start > list.size()) {
-            start = 0
-        }
-
-        int end = start + maxUsersPerPage
-        if(end > list.size()) {
-            end = list.size()
-        }
-
-        return list[start..<end]
+        def followerIds = UserFollowing.findAllByFollowee(followee)?.collect { it.follower*.id }?.flatten()
+        User.findAllByIdInListInAlphabeticalOrderByPage(followerIds, page, maxUsersPerPage)
     }
 
     void removeFollowerFromAllFollowings(User follower) {
