@@ -59,6 +59,35 @@ class ReelControllerSpec extends AbstractControllerSpec {
         1 * reelService.listReels(3) >> [reel]
     }
 
+    void "use page 1 for list if page param is omitted"() {
+        given:
+        params.username = 'bob'
+
+        when:
+        controller.listUserReels()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        1 * reelService.listReelsByUsername('bob', 1) >> []
+    }
+
+    void "specify page for members list"() {
+        given:
+        params.username = 'bob'
+        params.page = 42
+
+        when:
+        controller.listUserReels()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        1 * reelService.listReelsByUsername('bob', 42) >> []
+    }
+
     void "empty reels list"() {
         given:
         params.username = 'bob'
@@ -74,7 +103,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json.size() == 0
 
         and:
-        1 * reelService.listReelsByUsername('bob') >> []
+        1 * reelService.listReelsByUsername('bob', _) >> []
     }
 
     void "reels list contains only one reel"() {
@@ -101,7 +130,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json[0].name == 'foo'
 
         and:
-        1 * reelService.listReelsByUsername('bob') >> [reel]
+        1 * reelService.listReelsByUsername('bob', _) >> [reel]
     }
 
     void "reels list contains multiple reels"() {
@@ -137,7 +166,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json[1].name == 'bar'
 
         and:
-        1 * reelService.listReelsByUsername('bob') >> [reel1, reel2]
+        1 * reelService.listReelsByUsername('bob', _) >> [reel1, reel2]
     }
 
     void "cannot list reels for unknown user"() {
@@ -155,7 +184,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         assertErrorMessageResponse(response, 404, message)
 
         and:
-        1 * reelService.listReelsByUsername(username) >> { throw new UserNotFoundException('TEST') }
+        1 * reelService.listReelsByUsername(username, _) >> { throw new UserNotFoundException('TEST') }
         1 * localizedMessageService.getMessage('reel.unknown.username', request.locale) >> message
     }
 

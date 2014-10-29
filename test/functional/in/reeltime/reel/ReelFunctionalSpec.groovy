@@ -133,6 +133,11 @@ class ReelFunctionalSpec extends FunctionalSpec {
         responseChecker.assertSingleErrorMessageResponse(response, 404, 'Requested user was not found')
     }
 
+    void "invalid page number for listing user reels"() {
+        expect:
+        responseChecker.assertInvalidPageNumbers(urlFactory.getReelsListUrl(TEST_USER), readToken)
+    }
+
     void "attempt to add another uncategorized reel"() {
         given:
         def request = new RestRequest(url: urlFactory.addReelUrl, token: writeToken, customizer: {

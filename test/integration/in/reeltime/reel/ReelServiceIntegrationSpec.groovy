@@ -21,19 +21,9 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
     User owner
     User notOwner
 
-    static final int TEST_MAX_REELS_PER_PAGE = 3
-    int savedMaxReelsPerPage
-
     void setup() {
         owner = UserFactory.createUser('theOwner')
         notOwner = UserFactory.createUser('notTheOwner')
-
-        savedMaxReelsPerPage = reelService.maxReelsPerPage
-        reelService.maxReelsPerPage = TEST_MAX_REELS_PER_PAGE
-    }
-
-    void cleanup() {
-        reelService.maxReelsPerPage = savedMaxReelsPerPage
     }
 
     void "create reel"() {
@@ -102,7 +92,7 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
 
     void "cannot list reels for an unknown user"() {
         when:
-        reelService.listReelsByUsername('nobody')
+        reelService.listReelsByUsername('nobody', 1)
 
         then:
         thrown(UserNotFoundException)
@@ -114,7 +104,7 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         def reels = createReels(owner, count)
 
         when:
-        def list = reelService.listReelsByUsername(owner.username)
+        def list = reelService.listReelsByUsername(owner.username, 1)
 
         then:
         assertListsContainSameElements(list, reels)
@@ -126,7 +116,39 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         _   |   2
         _   |   5
         _   |   10
-        _   |   100
+    }
+
+    void "list reels for user by page from newest to oldest"() {
+        given:
+        def savedMaxReelsPerPage = reelService.maxReelsPerPage
+        reelService.maxReelsPerPage = 2
+
+        and:
+        def ownerUncategorizedReel = owner.reels[0]
+        def someReel = ReelFactory.createReel(owner, 'some reel')
+        def anotherReel = ReelFactory.createReel(owner, 'another reel')
+
+        when:
+        def pageOne = reelService.listReelsByUsername(owner.username, 1)
+
+        then:
+        pageOne.size() == 2
+
+        and:
+        pageOne[0] == anotherReel
+        pageOne[1] == someReel
+
+        when:
+        def pageTwo = reelService.listReelsByUsername(owner.username, 2)
+
+        then:
+        pageTwo.size() == 1
+
+        and:
+        pageTwo[0] == ownerUncategorizedReel
+
+        cleanup:
+        reelService.maxReelsPerPage = savedMaxReelsPerPage
     }
 
     @Unroll
@@ -220,8 +242,12 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         _   |   'c' * 26
     }
 
-    void "list reels by page"() {
+    void "list reels by page in order from newest to oldest"() {
         given:
+        def savedMaxReelsPerPage = reelService.maxReelsPerPage
+        reelService.maxReelsPerPage = 3
+
+        and:
         def ownerUncategorizedReel = owner.reels[0]
         def notOwnerUncategorizedReel = notOwner.reels[0]
 
@@ -233,12 +259,12 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         def pageOne = reelService.listReels(1)
 
         then:
-        pageOne.size() == TEST_MAX_REELS_PER_PAGE
+        pageOne.size() == 3
 
         and:
-        pageOne[0] == ownerUncategorizedReel
-        pageOne[1] == notOwnerUncategorizedReel
-        pageOne[2] == someReel
+        pageOne[0] == anotherReel
+        pageOne[1] == someReel
+        pageOne[2] == notOwnerUncategorizedReel
 
         when:
         def pageTwo = reelService.listReels(2)
@@ -247,7 +273,10 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         pageTwo.size() == 1
 
         and:
-        pageTwo[0] == anotherReel
+        pageTwo[0] == ownerUncategorizedReel
+
+        cleanup:
+        reelService.maxReelsPerPage = savedMaxReelsPerPage
     }
 
     private Collection<Reel> createReels(User owner, int count) {
