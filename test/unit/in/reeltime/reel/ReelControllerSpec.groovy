@@ -299,7 +299,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json.size() == 0
 
         and:
-        1 * reelVideoManagementService.listVideos(1234) >> []
+        1 * reelVideoManagementService.listVideosInReel(1234) >> []
     }
 
     void "video list contains only one video"() {
@@ -326,7 +326,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json[0].title == 'one'
 
         and:
-        1 * reelVideoManagementService.listVideos(1234) >> [video]
+        1 * reelVideoManagementService.listVideosInReel(1234) >> [video]
     }
 
     void "video list contains multiple videos"() {
@@ -362,7 +362,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json[1].title == 'second'
 
         and:
-        1 * reelVideoManagementService.listVideos(1234) >> [video1, video2]
+        1 * reelVideoManagementService.listVideosInReel(1234) >> [video1, video2]
     }
 
     void "attempt to list videos for an unknown reel"() {
@@ -380,7 +380,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         assertErrorMessageResponse(response, 404, message)
 
         and:
-        1 * reelVideoManagementService.listVideos(reelId) >> { throw new ReelNotFoundException('TEST') }
+        1 * reelVideoManagementService.listVideosInReel(reelId) >> { throw new ReelNotFoundException('TEST') }
         1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> message
     }
 

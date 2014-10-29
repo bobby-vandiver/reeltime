@@ -283,7 +283,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         def video = Video.findById(videoId)
         def reel = Reel.findById(reelId)
 
-        def list = reelVideoManagementService.listVideos(reelId)
+        def list = reelVideoManagementService.listVideosInReel(reelId)
         assert list.contains(video) == shouldContain
 
         def reelVideo = ReelVideo.findByReelAndVideo(reel, video)
@@ -297,7 +297,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         def videos = createVideos(reel, count)
 
         when:
-        def list = reelVideoManagementService.listVideos(reel.id)
+        def list = reelVideoManagementService.listVideosInReel(reel.id)
 
         then:
         assertListsContainSameElements(list, videos)

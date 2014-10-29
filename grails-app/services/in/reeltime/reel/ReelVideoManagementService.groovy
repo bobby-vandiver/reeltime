@@ -14,7 +14,7 @@ class ReelVideoManagementService {
     def authenticationService
     def activityService
 
-    Collection<Video> listVideos(Long reelId) {
+    Collection<Video> listVideosInReel(Long reelId) {
         def reel = reelService.loadReel(reelId)
         ReelVideo.findAllByReel(reel)?.video ?: []
     }

@@ -69,7 +69,7 @@ class ReelController extends AbstractController {
         log.debug "Listing videos in reel [${command.reelId}]"
         handleCommandRequest(command) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(reelVideoManagementService.listVideos(command.reelId))
+                marshall(reelVideoManagementService.listVideosInReel(command.reelId))
             }
         }
     }
