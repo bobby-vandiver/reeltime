@@ -65,11 +65,11 @@ class ReelController extends AbstractController {
     }
 
     @Secured(["#oauth2.hasScope('reels-read')"])
-    def listVideos(ReelCommand command) {
-        log.debug "Listing videos in reel [${command.reelId}]"
-        handleCommandRequest(command) {
+    def listVideos(ReelCommand reelCommand, PagedListCommand pagedListCommand) {
+        log.debug "Listing videos in reel [${reelCommand.reelId}] on page [${pagedListCommand.page}]"
+        handleMultipleCommandRequest([reelCommand, pagedListCommand]) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(reelVideoManagementService.listVideosInReel(command.reelId))
+                marshall(reelVideoManagementService.listVideosInReel(reelCommand.reelId, pagedListCommand.page))
             }
         }
     }

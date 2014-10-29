@@ -9,15 +9,14 @@ import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.exceptions.AuthorizationException
 import spock.lang.Unroll
+import test.helper.ReelFactory
 import test.helper.UserFactory
+import test.helper.VideoFactory
 
 class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
 
     def reelService
     def reelVideoManagementService
-
-    def userService
-    def clientService
 
     def activityService
 
@@ -27,6 +26,50 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
     void setup() {
         owner = UserFactory.createUser('theOwner')
         notOwner = UserFactory.createUser('notTheOwner')
+    }
+
+    void "list videos in reel by page from newest to oldest"() {
+        given:
+        def savedMaxVideosPerPage = reelVideoManagementService.maxVideosPerPage
+        reelVideoManagementService.maxVideosPerPage = 2
+
+        and:
+        def reel = owner.reels[0]
+        def reelId = reel.id
+
+        and:
+        def first = VideoFactory.createVideo(owner, 'first')
+        def second = VideoFactory.createVideo(owner, 'second')
+        def third = VideoFactory.createVideo(owner, 'third')
+
+        and:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelVideoManagementService.addVideoToReel(reel, first)
+            reelVideoManagementService.addVideoToReel(reel, second)
+            reelVideoManagementService.addVideoToReel(reel, third)
+        }
+
+        when:
+        def pageOne = reelVideoManagementService.listVideosInReel(reelId, 1)
+
+        then:
+        pageOne.size() == 2
+
+        and:
+        pageOne[0] == third
+        pageOne[1] == second
+
+        when:
+        def pageTwo = reelVideoManagementService.listVideosInReel(reelId, 2)
+
+        then:
+        pageTwo.size() == 1
+
+        and:
+        pageTwo[0] == first
+
+        cleanup:
+        reelVideoManagementService.maxVideosPerPage = savedMaxVideosPerPage
     }
 
     @Unroll
@@ -283,7 +326,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         def video = Video.findById(videoId)
         def reel = Reel.findById(reelId)
 
-        def list = reelVideoManagementService.listVideosInReel(reelId)
+        def list = reelVideoManagementService.listVideosInReel(reelId, 1)
         assert list.contains(video) == shouldContain
 
         def reelVideo = ReelVideo.findByReelAndVideo(reel, video)
@@ -297,7 +340,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         def videos = createVideos(reel, count)
 
         when:
-        def list = reelVideoManagementService.listVideosInReel(reel.id)
+        def list = reelVideoManagementService.listVideosInReel(reel.id, 1)
 
         then:
         assertListsContainSameElements(list, videos)

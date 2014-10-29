@@ -138,6 +138,11 @@ class ReelFunctionalSpec extends FunctionalSpec {
         responseChecker.assertInvalidPageNumbers(urlFactory.getReelsListUrl(TEST_USER), readToken)
     }
 
+    void "invalid page number for listing videos in reel"() {
+        expect:
+        responseChecker.assertInvalidPageNumbers(urlFactory.getReelUrl(1234), readToken)
+    }
+
     void "attempt to add another uncategorized reel"() {
         given:
         def request = new RestRequest(url: urlFactory.addReelUrl, token: writeToken, customizer: {

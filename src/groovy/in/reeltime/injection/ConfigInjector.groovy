@@ -85,6 +85,10 @@ class ConfigInjector {
             maxReelsPerPage = config.reeltime.browse.maxResultsPerPage
         }
 
+        ctx.reelVideoManagementService.with {
+            maxVideosPerPage = config.reeltime.browse.maxResultsPerPage
+        }
+
         ctx.audienceService.with {
             maxMembersPerPage = config.reeltime.browse.maxResultsPerPage
         }

@@ -14,9 +14,15 @@ class ReelVideoManagementService {
     def authenticationService
     def activityService
 
-    Collection<Video> listVideosInReel(Long reelId) {
+    def maxVideosPerPage
+
+    List<Video> listVideosInReel(Long reelId, int page) {
+
         def reel = reelService.loadReel(reelId)
-        ReelVideo.findAllByReel(reel)?.video ?: []
+        def videoIds = ReelVideo.findAllByReel(reel)?.collect { it.video*.id }?.flatten()
+
+        int offset = (page - 1) * maxVideosPerPage
+        Video.findAllByIdInList(videoIds, [max: maxVideosPerPage, offset: offset, sort: 'dateCreated', order: 'desc'])
     }
 
     void addVideo(Long reelId, Long videoId) {
