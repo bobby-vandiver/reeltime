@@ -25,22 +25,6 @@ class VideoServiceIntegrationSpec extends IntegrationSpec {
         videoService.maxVideosPerPage = savedMaxVideosPerPage
     }
 
-    void "list videos in order of creation"() {
-        given:
-        def first = VideoFactory.createVideo(creator, 'first')
-        def second = VideoFactory.createVideo(creator, 'second')
-
-        when:
-        def list = videoService.listVideos(1)
-
-        then:
-        list.size() == 2
-
-        and:
-        list[0] == first
-        list[1] == second
-    }
-
     void "do not list videos that are not available for streaming"() {
         given:
         def exclude = VideoFactory.createVideo(creator, 'exclude', false)
@@ -57,7 +41,7 @@ class VideoServiceIntegrationSpec extends IntegrationSpec {
         !list.contains(exclude)
     }
 
-    void "list videos by page from newest to oldest"() {
+    void "list videos by page in order of creation from newest to oldest"() {
         given:
         def first = createVideoThenWait('first')
         def second = createVideoThenWait('second')
