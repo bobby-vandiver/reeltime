@@ -57,12 +57,12 @@ class VideoServiceIntegrationSpec extends IntegrationSpec {
         !list.contains(exclude)
     }
 
-    void "list videos by page"() {
+    void "list videos by page from newest to oldest"() {
         given:
-        def first = VideoFactory.createVideo(creator, 'first')
-        def second = VideoFactory.createVideo(creator, 'second')
-        def third = VideoFactory.createVideo(creator, 'third')
-        def fourth = VideoFactory.createVideo(creator, 'fourth')
+        def first = createVideoThenWait('first')
+        def second = createVideoThenWait('second')
+        def third = createVideoThenWait('third')
+        def fourth = createVideoThenWait('fourth')
 
         when:
         def pageOne = videoService.listVideos(1)
@@ -71,9 +71,9 @@ class VideoServiceIntegrationSpec extends IntegrationSpec {
         pageOne.size() == 3
 
         and:
-        pageOne[0] == first
-        pageOne[1] == second
-        pageOne[2] == third
+        pageOne[0] == fourth
+        pageOne[1] == third
+        pageOne[2] == second
 
         when:
         def pageTwo = videoService.listVideos(2)
@@ -82,6 +82,12 @@ class VideoServiceIntegrationSpec extends IntegrationSpec {
         pageTwo.size() == 1
 
         and:
-        pageTwo[0] == fourth
+        pageTwo[0] == first
+    }
+
+    private Video createVideoThenWait(String title) {
+        def video = VideoFactory.createVideo(creator, title)
+        sleep(500)
+        return video
     }
 }

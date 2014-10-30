@@ -20,7 +20,7 @@ class VideoService {
 
     List<Video> listVideos(int page) {
         int offset = (page - 1) * maxVideosPerPage
-        Video.findAllByAvailable(true, [max: maxVideosPerPage, offset: offset, sort: 'dateCreated'])
+        Video.findAllByAvailable(true, [max: maxVideosPerPage, offset: offset, sort: 'dateCreated', order: 'desc'])
     }
 
     Video loadVideo(Long videoId) {
