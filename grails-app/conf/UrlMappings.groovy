@@ -36,11 +36,7 @@ class UrlMappings {
 
         /* ReelTime API */
         "/account" (controller: 'account') {
-            action = [DELETE: 'removeAccount']
-        }
-
-        "/account/register" (controller: 'account') {
-            action = [POST: 'registerAccount']
+            action = [POST: 'registerAccount', DELETE: 'removeAccount']
         }
 
         "/account/client" (controller: 'clientManagement') {

@@ -14,10 +14,10 @@ class VideoFunctionalSpec extends FunctionalSpec {
 
     void "invalid http methods"() {
         given:
-        def url = urlFactory.listVideosUrl
+        def url = urlFactory.videosUrl
 
         expect:
-        responseChecker.assertInvalidHttpMethods(url, ['post', 'put', 'delete'], token)
+        responseChecker.assertInvalidHttpMethods(url, ['put', 'delete'], token)
     }
 
     @Unroll

@@ -151,14 +151,6 @@ class UrlMappingsSpec extends Specification {
         'DELETE'    |   'removeMember'
     }
 
-    void "test registration endpoint mapping"() {
-        given:
-        webRequest.currentRequest.method = 'POST'
-
-        expect:
-        assertForwardUrlMapping('/account/register', controller: 'account', action: 'registerAccount')
-    }
-
     void "test register new client endpoint mapping"() {
         given:
         webRequest.currentRequest.method = 'POST'
@@ -175,14 +167,6 @@ class UrlMappingsSpec extends Specification {
         assertForwardUrlMapping('/account/client/device1', controller: 'clientManagement', action: 'revokeClient') {
             client_id = 'device1'
         }
-    }
-
-    void "test remove account endpoint mapping"() {
-        given:
-        webRequest.currentRequest.method = 'DELETE'
-
-        expect:
-        assertForwardUrlMapping('/account', controller: 'account', action: 'removeAccount')
     }
 
     void "test application available mapping"() {
@@ -259,13 +243,14 @@ class UrlMappingsSpec extends Specification {
         '/videos'                   |   'POST'      |   'video'                 |   'upload'
         '/reels'                    |   'GET'       |   'reel'                  |   'listReels'
         '/reels'                    |   'POST'      |   'reel'                  |   'addReel'
+        '/account'                  |   'POST'      |   'account'               |   'registerAccount'
+        '/account'                  |   'DELETE'    |   'account'               |   'removeAccount'
         '/account/confirm'          |   'POST'      |   'accountConfirmation'   |   'confirmAccount'
         '/account/display'          |   'POST'      |   'accountManagement'     |   'changeDisplayName'
         '/account/password'         |   'POST'      |   'accountManagement'     |   'changePassword'
         '/account/password/email'   |   'POST'      |   'resetPassword'         |   'sendEmail'
         '/account/password/reset'   |   'POST'      |   'resetPassword'         |   'resetPassword'
     }
-
 
     @Unroll
     void "internal development only url [#url] maps to controller [#controller] action [#action]"() {

@@ -12,8 +12,36 @@ public class ReelTimeUrlFactory {
         return baseUrl + resource
     }
 
+    String getSpringSecurityCheckUrl() {
+        getUrlForResource('j_spring_security_check')
+    }
+
+    String getInternalConfirmAccountUrl(username) {
+        getUrlForResource("internal/$username/confirm")
+    }
+
+    String getInternalResetPasswordUrl(username) {
+        getUrlForResource("internal/$username/password")
+    }
+
+    String getHealthCheckUrl() {
+        getUrlForResource('available')
+    }
+
+    String getNotificationUrl(action) {
+        getUrlForResource("transcoder/notification/$action")
+    }
+
     String getRegisterUrl() {
-        getUrlForResource('account/register')
+        getAccountUrl()
+    }
+
+    String getRemoveAccountUrl () {
+        getAccountUrl()
+    }
+
+    String getAccountUrl() {
+        getUrlForResource('account')
     }
 
     String getRegisterClientUrl() {
@@ -44,91 +72,75 @@ public class ReelTimeUrlFactory {
         getUrlForResource('account/password/reset')
     }
 
-    String getInternalConfirmAccountUrl(username) {
-        getUrlForResource("internal/$username/confirm")
-    }
-
-    String getInternalResetPasswordUrl(username) {
-        getUrlForResource("internal/$username/password")
-    }
-
-    String getRemoveAccountUrl () {
-        getUrlForResource('account')
-    }
-
     String getNewsfeedUrl() {
         getUrlForResource('newsfeed')
     }
 
     String getListVideosUrl() {
-        getUrlForResource('videos')
+        getVideosUrl()
     }
 
     String getUploadUrl() {
-        getUrlForResource('video')
+        getVideosUrl()
+    }
+
+    String getVideosUrl() {
+        getUrlForResource('videos')
     }
 
     String getDeleteVideoUrl(videoId) {
-        getUrlForResource("video/$videoId")
+        getUrlForResource("videos/$videoId")
     }
 
     String getStatusUrl(videoId) {
-        getUrlForResource("video/$videoId/status")
+        getUrlForResource("videos/$videoId/status")
     }
 
-    String getNotificationUrl(action) {
-        getUrlForResource("transcoder/notification/$action")
+    String getListReelsUrl() {
+        getReelsUrl()
     }
 
-    String getUserUrl(username) {
-        getUrlForResource("user/$username")
+    String getAddReelUrl() {
+        getReelsUrl()
+    }
+
+    String getReelsUrl() {
+        getUrlForResource('reels')
+    }
+
+    String getReelUrl(reelId) {
+        getUrlForResource("reels/$reelId")
+    }
+
+    String getRemoveVideoFromReelUrl(reelId, videoId) {
+        getUrlForResource("reels/$reelId/$videoId")
+    }
+
+    String getAudienceUrl(reelId) {
+        getUrlForResource("reels/$reelId/audience")
     }
 
     String getListUsersUrl() {
         getUrlForResource("users")
     }
 
+    String getUserUrl(username) {
+        getUrlForResource("users/$username")
+    }
+
     String getReelsListUrl(username) {
-        getUrlForResource("user/$username/reels")
+        getUrlForResource("users/$username/reels")
     }
 
     String getFollowUrl(username) {
-        getUrlForResource("user/$username/follow")
+        getUrlForResource("users/$username/follow")
     }
 
     String getListFollowersUrl(username) {
-        getUrlForResource("user/$username/followers")
+        getUrlForResource("users/$username/followers")
     }
 
     String getListFolloweesUrl(username) {
-        getUrlForResource("user/$username/followees")
-    }
-
-    String getListReelsUrl() {
-        getUrlForResource('reels')
-    }
-
-    String getAddReelUrl() {
-        getUrlForResource('reel')
-    }
-
-    String getReelUrl(reelId) {
-        getUrlForResource("reel/$reelId")
-    }
-
-    String getRemoveVideoFromReelUrl(reelId, videoId) {
-        getUrlForResource("reel/$reelId/$videoId")
-    }
-
-    String getAudienceUrl(reelId) {
-        getUrlForResource("reel/$reelId/audience")
-    }
-
-    String getHealthCheckUrl() {
-        getUrlForResource('available')
-    }
-
-    String getSpringSecurityCheckUrl() {
-        getUrlForResource('j_spring_security_check')
+        getUrlForResource("users/$username/followees")
     }
 }

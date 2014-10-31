@@ -29,10 +29,9 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
         where:
         resource            |   methods
-        'reels'             |   ['post', 'put', 'delete']
-        'reel'              |   ['get', 'put', 'delete']
-        'reel/1234'         |   ['put']
-        'reel/1234/5678'    |   ['get', 'put', 'post']
+        'reels'             |   ['put', 'delete']
+        'reels/1234'        |   ['put']
+        'reels/1234/5678'   |   ['get', 'put', 'post']
     }
 
     @Unroll
@@ -81,10 +80,10 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
         where:
         resource                |   httpMethod
-        'reel/invalid123'       |   'get'
-        'reel/invalid123'       |   'post'
-        'reel/invalid123'       |   'delete'
-        'reel/invalid123/42'    |   'delete'
+        'reels/invalid123'      |   'get'
+        'reels/invalid123'      |   'post'
+        'reels/invalid123'      |   'delete'
+        'reels/invalid123/42'   |   'delete'
     }
 
     void "invalid videoId when removing video from reel"() {
