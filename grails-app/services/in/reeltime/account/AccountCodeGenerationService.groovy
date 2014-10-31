@@ -1,14 +1,11 @@
 package in.reeltime.account
 
 import in.reeltime.user.User
+import static in.reeltime.account.AccountCode.*
 
 class AccountCodeGenerationService {
 
     def securityService
-
-    protected static final SALT_LENGTH = 8
-    protected static final CODE_LENGTH = 8
-    protected static final ALLOWED_CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
     String generateAccountConfirmationCode(User user) {
         generateCode(user, AccountCodeType.AccountConfirmation)

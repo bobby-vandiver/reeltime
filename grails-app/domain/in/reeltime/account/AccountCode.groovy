@@ -6,6 +6,10 @@ import java.security.MessageDigest
 
 class AccountCode {
 
+    static final SALT_LENGTH = 32
+    static final CODE_LENGTH = 8
+    static final ALLOWED_CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
     User user
     String code
     byte[] salt
@@ -16,7 +20,7 @@ class AccountCode {
     static constraints = {
         user nullable: false
         code blank: false, nullable: false
-        salt nullable: false, size: 8..8
+        salt nullable: false, minSize: SALT_LENGTH, maxSize: SALT_LENGTH
         type nullable: false
     }
 

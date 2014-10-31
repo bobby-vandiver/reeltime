@@ -167,7 +167,7 @@ class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
     }
 
     private static AccountCode createAccountConfirmation(User user, String rawCode) {
-        def salt = 'z14aflaa'.bytes
+        def salt = ('a' * AccountCode.SALT_LENGTH).bytes
         new AccountCode(user: user, code: rawCode, salt: salt,
                 type: AccountCodeType.AccountConfirmation).save(flush: true)
     }

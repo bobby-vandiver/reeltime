@@ -1,7 +1,5 @@
 package in.reeltime.security
 
-import org.springframework.security.crypto.keygen.KeyGenerators
-
 import java.security.SecureRandom
 
 class SecurityService {
@@ -18,6 +16,9 @@ class SecurityService {
     }
 
     byte[] generateSalt(int size) {
-        KeyGenerators.secureRandom(size).generateKey()
+        def secureRandom = new SecureRandom()
+        def salt = new byte[size]
+        secureRandom.nextBytes(salt)
+        return salt
     }
 }

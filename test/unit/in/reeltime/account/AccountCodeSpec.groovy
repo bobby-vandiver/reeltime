@@ -57,9 +57,10 @@ class AccountCodeSpec extends Specification {
         salt        |   valid
         null        |   false
         ''          |   false
-        '1234abc'   |   false
-        '1234abcd'  |   true
-        '1234abcde' |   false
+        '1234abcd'  |   false
+        'b' * 31    |   false
+        'b' * 32    |   true
+        'b' * 33    |   false
     }
 
     @Unroll
