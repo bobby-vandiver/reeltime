@@ -3,12 +3,11 @@ package in.reeltime.video
 import grails.test.spock.IntegrationSpec
 import groovy.json.JsonSlurper
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockMultipartFile
-import org.springframework.web.multipart.MultipartFile
 import spock.lang.Unroll
 
-class VideoCreationControllerIntegrationSpec extends IntegrationSpec {
+class VideoControllerIntegrationSpec extends IntegrationSpec {
 
-    VideoCreationController controller
+    VideoController controller
 
     def springSecurityService
     def videoCreationService
@@ -17,7 +16,7 @@ class VideoCreationControllerIntegrationSpec extends IntegrationSpec {
     def grailsApplication
 
     void setup() {
-        controller = new VideoCreationController()
+        controller = new VideoController()
         controller.springSecurityService = springSecurityService
         controller.videoCreationService = videoCreationService
         controller.localizedMessageService = localizedMessageService

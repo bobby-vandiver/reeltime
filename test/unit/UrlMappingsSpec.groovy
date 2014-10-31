@@ -3,8 +3,6 @@ import grails.test.mixin.TestMixin
 import grails.test.mixin.web.UrlMappingsUnitTestMixin
 import spock.lang.Specification
 import in.reeltime.notification.NotificationController
-import in.reeltime.video.VideoCreationController
-import in.reeltime.video.VideoRemovalController
 import in.reeltime.video.VideoController
 import in.reeltime.playlist.PlaylistController
 import in.reeltime.playlist.SegmentController
@@ -23,8 +21,7 @@ import in.reeltime.user.UserFollowingController
 import spock.lang.Unroll
 
 @TestMixin(UrlMappingsUnitTestMixin)
-@Mock([VideoCreationController, VideoRemovalController, VideoController,
-        PlaylistController, SegmentController, ReelController, AudienceController,
+@Mock([VideoController, PlaylistController, SegmentController, ReelController, AudienceController,
         AccountController, AccountConfirmationController, AccountManagementController,
         ClientManagementController, ResetPasswordController, NewsfeedController,
         UserController, UserFollowingController,
@@ -47,20 +44,14 @@ class UrlMappingsSpec extends Specification {
         'error'         |   '/transcoder/notification/error'
     }
 
-    void "test video endpoint mapping"() {
-        given:
-        webRequest.currentRequest.method = 'POST'
-
-        expect:
-        assertForwardUrlMapping('/video', controller: 'videoCreation', action: 'upload')
-    }
-
     void "test video status endpoint mapping"() {
         given:
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/video/1234/status', controller: 'videoCreation', action: 'status')
+        assertForwardUrlMapping('/videos/1234/status', controller: 'video', action: 'status') {
+            videoId = '1234'
+        }
     }
 
     void "test video removal endpoint mapping"() {
@@ -68,7 +59,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'DELETE'
 
         expect:
-        assertForwardUrlMapping('/video/1234', controller: 'videoRemoval', action: 'remove') {
+        assertForwardUrlMapping('/videos/1234', controller: 'video', action: 'remove') {
             videoId = '1234'
         }
     }
@@ -78,7 +69,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/playlist/1234', controller: 'playlist', action: 'getVariantPlaylist') {
+        assertForwardUrlMapping('/playlists/1234', controller: 'playlist', action: 'getVariantPlaylist') {
             videoId = '1234'
         }
     }
@@ -88,7 +79,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/playlist/12434/949', controller: 'playlist', action: 'getMediaPlaylist') {
+        assertForwardUrlMapping('/playlists/12434/949', controller: 'playlist', action: 'getMediaPlaylist') {
             videoId = '12434'
             playlistId = '949'
         }
@@ -99,7 +90,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/playlist/124344/5949/8891', controller: 'segment', action: 'getSegment') {
+        assertForwardUrlMapping('/playlists/124344/5949/8891', controller: 'segment', action: 'getSegment') {
             videoId = '124344'
             playlistId = '5949'
             segmentId = '8891'
@@ -110,47 +101,26 @@ class UrlMappingsSpec extends Specification {
         given:
         webRequest.currentRequest.method = 'GET'
 
-        assertForwardUrlMapping('/user/bob/reels', controller: 'reel', action: 'listUserReels') {
+        assertForwardUrlMapping('/users/bob/reels', controller: 'reel', action: 'listUserReels') {
             username = 'bob'
         }
     }
 
-    void "test reel endpoint mapping"() {
+    @Unroll
+    void "httpMethod [#httpMethod] for reel url maps to action [#action]"() {
         given:
-        webRequest.currentRequest.method = 'POST'
+        webRequest.currentRequest.method = httpMethod
 
         expect:
-        assertForwardUrlMapping('/reel', controller: 'reel', action: 'addReel')
-    }
-
-    void "test list videos in reel endpoint mapping"() {
-        given:
-        webRequest.currentRequest.method = 'GET'
-
-        expect:
-        assertForwardUrlMapping('/reel/1234', controller: 'reel', action: 'listVideos') {
-            reelId = '1234'
-        }
-    }
-
-    void "test add video to reel endpoint mapping"() {
-        given:
-        webRequest.currentRequest.method = 'POST'
-
-        expect:
-        assertForwardUrlMapping('/reel/5678', controller: 'reel', action: 'addVideo') {
-            reelId = '5678'
-        }
-    }
-
-    void "test delete reel endpoint mapping"() {
-        given:
-        webRequest.currentRequest.method = 'DELETE'
-
-        expect:
-        assertForwardUrlMapping('/reel/8675309', controller: 'reel', action: 'deleteReel') {
+        assertForwardUrlMapping('/reels/8675309', controller: 'reel', action: action) {
             reelId = '8675309'
         }
+
+        where:
+        httpMethod  |   action
+        'GET'       |   'listVideos'
+        'POST'      |   'addVideo'
+        'DELETE'    |   'deleteReel'
     }
 
     void "test remove video from reel endpoint mapping"() {
@@ -158,40 +128,27 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'DELETE'
 
         expect:
-        assertForwardUrlMapping('/reel/1234/5678', controller: 'reel', action: 'removeVideo') {
+        assertForwardUrlMapping('/reels/1234/5678', controller: 'reel', action: 'removeVideo') {
             reelId = '1234'
             videoId = '5678'
         }
     }
 
-    void "test list audience members endpoint mapping"() {
+    @Unroll
+    void "httpMethod [#httpMethod] for audience url maps to action [#action]"() {
         given:
-        webRequest.currentRequest.method = 'GET'
+        webRequest.currentRequest.method = httpMethod
 
         expect:
-        assertForwardUrlMapping('/reel/1234/audience', controller: 'audience', action: 'listMembers') {
+        assertForwardUrlMapping('/reels/1234/audience', controller: 'audience', action: action) {
             reelId = '1234'
         }
-    }
 
-    void "test add audience member endpoint mapping"() {
-        given:
-        webRequest.currentRequest.method = 'POST'
-
-        expect:
-        assertForwardUrlMapping('/reel/1234/audience', controller: 'audience', action: 'addMember') {
-            reelId = '1234'
-        }
-    }
-
-    void "test remove audience member endpoint mapping"() {
-        given:
-        webRequest.currentRequest.method = 'DELETE'
-
-        expect:
-        assertForwardUrlMapping('/reel/1234/audience', controller: 'audience', action: 'removeMember') {
-            reelId = '1234'
-        }
+        where:
+        httpMethod  |   action
+        'GET'       |   'listMembers'
+        'POST'      |   'addMember'
+        'DELETE'    |   'removeMember'
     }
 
     void "test registration endpoint mapping"() {
@@ -250,7 +207,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = httpMethod
 
         expect:
-        assertForwardUrlMapping('/user/bob/follow', controller: 'userFollowing', action: actionName) {
+        assertForwardUrlMapping('/users/bob/follow', controller: 'userFollowing', action: actionName) {
             username = 'bob'
         }
 
@@ -266,7 +223,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping("/user/bob/$resource", controller: 'userFollowing', action: actionName) {
+        assertForwardUrlMapping("/users/bob/$resource", controller: 'userFollowing', action: actionName) {
             username = 'bob'
         }
 
@@ -281,7 +238,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/user/bob', controller: 'user', action: 'getUser') {
+        assertForwardUrlMapping('/users/bob', controller: 'user', action: 'getUser') {
             username = 'bob'
         }
     }
@@ -299,13 +256,16 @@ class UrlMappingsSpec extends Specification {
         url                         |   httpMethod  |   controller              |   action
         '/users'                    |   'GET'       |   'user'                  |   'listUsers'
         '/videos'                   |   'GET'       |   'video'                 |   'listVideos'
+        '/videos'                   |   'POST'      |   'video'                 |   'upload'
         '/reels'                    |   'GET'       |   'reel'                  |   'listReels'
+        '/reels'                    |   'POST'      |   'reel'                  |   'addReel'
         '/account/confirm'          |   'POST'      |   'accountConfirmation'   |   'confirmAccount'
         '/account/display'          |   'POST'      |   'accountManagement'     |   'changeDisplayName'
         '/account/password'         |   'POST'      |   'accountManagement'     |   'changePassword'
         '/account/password/email'   |   'POST'      |   'resetPassword'         |   'sendEmail'
         '/account/password/reset'   |   'POST'      |   'resetPassword'         |   'resetPassword'
     }
+
 
     @Unroll
     void "internal development only url [#url] maps to controller [#controller] action [#action]"() {

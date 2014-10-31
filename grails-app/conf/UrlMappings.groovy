@@ -2,11 +2,39 @@ class UrlMappings {
 
 	static mappings = {
 
+        /* Error handling */
         "405" (controller: 'errors', action: 'methodNotAllowed')
         "500" (controller: 'errors', action: 'internalServerError')
 
+        /* Internal development use ONLY */
+        "/internal/$username/confirm" (controller: 'developmentOnlyAccount') {
+            action = [POST: 'confirmAccountForUser']
+        }
+
+        "/internal/$username/password" (controller: 'developmentOnlyAccount') {
+            action = [POST: 'resetPasswordForUser']
+        }
+
+        /* AWS integration */
         "/available" (controller: 'applicationStatus', action: 'available')
 
+        "/transcoder/notification/completed" (controller: 'notification') {
+            action = [POST: 'completed']
+        }
+
+        "/transcoder/notification/progressing" (controller: 'notification') {
+            action = [POST: 'progressing']
+        }
+
+        "/transcoder/notification/warning" (controller: 'notification') {
+            action = [POST: 'warning']
+        }
+
+        "/transcoder/notification/error" (controller: 'notification') {
+            action = [POST: 'error']
+        }
+
+        /* ReelTime API */
         "/account" (controller: 'account') {
             action = [DELETE: 'removeAccount']
         }
@@ -47,100 +75,70 @@ class UrlMappings {
             action = [GET: 'listRecentActivity']
         }
 
-        "/transcoder/notification/completed" (controller: 'notification') {
-            action = [POST: 'completed']
-        }
-
-        "/transcoder/notification/progressing" (controller: 'notification') {
-            action = [POST: 'progressing']
-        }
-
-        "/transcoder/notification/warning" (controller: 'notification') {
-            action = [POST: 'warning']
-        }
-
-        "/transcoder/notification/error" (controller: 'notification') {
-            action = [POST: 'error']
-        }
-
-        "/videos" (controller: 'video') {
-            action = [GET: 'listVideos']
-        }
-
-        "/video" (controller: 'videoCreation') {
-            action = [POST: 'upload']
-        }
-
-        "/video/$videoId" (controller: 'videoRemoval') {
-            action = [DELETE: 'remove']
-        }
-
-        "/video/$videoId/status" (controller: 'videoCreation') {
-            action = [GET: 'status']
-        }
-
-        "/playlist/$videoId" (controller: 'playlist') {
+        "/playlists/$videoId" (controller: 'playlist') {
             action = [GET: 'getVariantPlaylist']
         }
 
-        "/playlist/$videoId/$playlistId" (controller: 'playlist') {
+        "/playlists/$videoId/$playlistId" (controller: 'playlist') {
             action = [GET: 'getMediaPlaylist']
         }
 
-        "/playlist/$videoId/$playlistId/$segmentId" (controller: 'segment') {
+        "/playlists/$videoId/$playlistId/$segmentId" (controller: 'segment') {
             action = [GET: 'getSegment']
+        }
+
+        "/reels" (controller: 'reel') {
+            action = [GET: 'listReels', POST: 'addReel']
+        }
+
+        "/reels/$reelId" (controller: 'reel') {
+            action = [GET: 'listVideos', POST: 'addVideo', DELETE: 'deleteReel']
+        }
+
+        "/reels/$reelId/$videoId" (controller: 'reel') {
+            action = [DELETE: 'removeVideo']
+        }
+
+        "/reels/$reelId/audience" (controller: 'audience') {
+            action = [GET: 'listMembers', POST: 'addMember', DELETE: 'removeMember']
         }
 
         "/users" (controller: 'user') {
             action = [GET: 'listUsers']
         }
 
-        "/user/$username" (controller: 'user') {
+        "/users/$username" (controller: 'user') {
             action = [GET: 'getUser']
         }
 
-        "/user/$username/reels" (controller: 'reel') {
+        "/users/$username/reels" (controller: 'reel') {
             action = [GET: 'listUserReels']
         }
 
-        "/user/$username/follow" (controller: 'userFollowing') {
+        "/users/$username/follow" (controller: 'userFollowing') {
             action = [POST: 'followUser', DELETE: 'unfollowUser']
         }
 
-        "/user/$username/followers" (controller: 'userFollowing') {
+        "/users/$username/followers" (controller: 'userFollowing') {
             action = [GET: 'listFollowers']
         }
 
-        "/user/$username/followees" (controller: 'userFollowing') {
+        "/users/$username/followees" (controller: 'userFollowing') {
             action = [GET: 'listFollowees']
         }
 
-        "/reels" (controller: 'reel') {
-            action = [GET: 'listReels']
+        "/videos" (controller: 'video') {
+            action = [GET: 'listVideos', POST: 'upload']
         }
 
-        "/reel" (controller: 'reel') {
-            action = [POST: 'addReel']
+        "/videos/$videoId" (controller: 'video') {
+            action = [DELETE: 'remove']
         }
 
-        "/reel/$reelId" (controller: 'reel') {
-            action = [GET: 'listVideos', POST: 'addVideo', DELETE: 'deleteReel']
+        // TODO: This should be /videos/$videoId and return the video object
+        "/videos/$videoId/status" (controller: 'video') {
+            action = [GET: 'status']
         }
 
-        "/reel/$reelId/$videoId" (controller: 'reel') {
-            action = [DELETE: 'removeVideo']
-        }
-
-        "/reel/$reelId/audience" (controller: 'audience') {
-            action = [GET: 'listMembers', POST: 'addMember', DELETE: 'removeMember']
-        }
-
-        "/internal/$username/confirm" (controller: 'developmentOnlyAccount') {
-            action = [POST: 'confirmAccountForUser']
-        }
-
-        "/internal/$username/password" (controller: 'developmentOnlyAccount') {
-            action = [POST: 'resetPasswordForUser']
-        }
     }
 }
