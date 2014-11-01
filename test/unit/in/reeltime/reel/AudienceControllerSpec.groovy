@@ -95,11 +95,10 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         controller.removeMember()
 
         then:
-        assertErrorMessageResponse(response, 403, TEST_MESSAGE)
+        assertStatusCodeOnlyResponse(response, 403)
 
         and:
         1 * audienceService.removeCurrentUserFromAudience(reelId) >> { throw new AuthorizationException('TEST') }
-        1 * localizedMessageService.getMessage('audience.unauthorized', request.locale) >> TEST_MESSAGE
     }
 
     void "empty audience members list"() {

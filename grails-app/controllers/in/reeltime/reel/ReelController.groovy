@@ -94,10 +94,6 @@ class ReelController extends AbstractController {
         }
     }
 
-    def handleAuthorizationException(AuthorizationException e) {
-        exceptionErrorMessageResponse(e, 'reel.unauthorized', SC_FORBIDDEN)
-    }
-
     def handleUserNotFoundException(UserNotFoundException e) {
         exceptionErrorMessageResponse(e, 'reel.unknown.username', SC_NOT_FOUND)
     }

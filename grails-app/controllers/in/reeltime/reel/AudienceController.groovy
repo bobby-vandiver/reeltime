@@ -43,10 +43,6 @@ class AudienceController extends AbstractController {
         }
     }
 
-    def handleAuthorizationException(AuthorizationException e) {
-        exceptionErrorMessageResponse(e, 'audience.unauthorized', SC_FORBIDDEN)
-    }
-
     def handleReelNotFoundException(ReelNotFoundException e) {
         exceptionErrorMessageResponse(e, 'reel.unknown', SC_NOT_FOUND)
     }

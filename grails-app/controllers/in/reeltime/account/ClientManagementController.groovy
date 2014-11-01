@@ -45,8 +45,4 @@ class ClientManagementController extends AbstractController {
     private User getCurrentUser() {
         authenticationService.currentUser
     }
-
-    def handleAuthorizationException(AuthorizationException e) {
-        exceptionStatusCodeOnlyResponse(e, SC_FORBIDDEN)
-    }
 }

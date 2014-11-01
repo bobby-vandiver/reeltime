@@ -1,7 +1,10 @@
 package in.reeltime.common
 
+import in.reeltime.exceptions.AuthorizationException
+
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 
 abstract class AbstractController {
 
@@ -39,26 +42,35 @@ abstract class AbstractController {
     }
 
     protected void handleCommandRequest(Object command, Closure action) {
-        !command.hasErrors() ? action() : commandErrorMessageResponse(command, SC_BAD_REQUEST)
+        try {
+            !command.hasErrors() ? action() : commandErrorMessageResponse(command, SC_BAD_REQUEST)
+        }
+        catch(AuthorizationException e) {
+            exceptionStatusCodeOnlyResponse(e, SC_FORBIDDEN)
+        }
     }
 
     protected void handleMultipleCommandRequest(Collection<Object> commands, Closure action) {
-        List<String> errors = []
+        try {
+            List<String> errors = []
 
-        commands.each { command->
-            if(command.hasErrors()) {
-                def commandErrors = localizedMessageService.getErrorMessages(command, request.locale)
-                errors.addAll(commandErrors)
+            commands.each { command ->
+                if (command.hasErrors()) {
+                    def commandErrors = localizedMessageService.getErrorMessages(command, request.locale)
+                    errors.addAll(commandErrors)
+                }
+            }
+
+            if (errors.isEmpty()) {
+                action()
+            } else {
+                render(status: SC_BAD_REQUEST, contentType: APPLICATION_JSON) {
+                    [errors: errors]
+                }
             }
         }
-
-        if(errors.isEmpty()) {
-            action()
-        }
-        else {
-            render(status: SC_BAD_REQUEST, contentType: APPLICATION_JSON) {
-                [errors: errors]
-            }
+        catch(AuthorizationException e) {
+            exceptionStatusCodeOnlyResponse(e, SC_FORBIDDEN)
         }
     }
 }

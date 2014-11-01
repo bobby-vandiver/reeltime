@@ -248,9 +248,6 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     void "unauthorized delete reel request"() {
         given:
-        def message = 'unauthorized request'
-
-        and:
         def reelId = 1234
         params.reelId = reelId
 
@@ -258,11 +255,10 @@ class ReelControllerSpec extends AbstractControllerSpec {
         controller.deleteReel()
 
         then:
-        assertErrorMessageResponse(response, 403, message)
+        assertStatusCodeOnlyResponse(response, 403)
 
         and:
         1 * reelService.deleteReel(reelId) >> { throw new AuthorizationException('TEST') }
-        1 * localizedMessageService.getMessage('reel.unauthorized', request.locale) >> message
     }
 
     void "attempt to delete an unknown reel"() {
@@ -413,12 +409,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
         1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> message
     }
 
-    @Unroll
-    void "attempt to add video throws [#exceptionClass]"() {
+    void "attempt to add video to unknown reel"() {
         given:
-        def message = 'TEST'
-
-        and:
         def reelId = 9431
         def videoId = 81813
 
@@ -430,16 +422,30 @@ class ReelControllerSpec extends AbstractControllerSpec {
         controller.addVideo()
 
         then:
-        assertErrorMessageResponse(response, statusCode, message)
+        assertErrorMessageResponse(response, 404, TEST_MESSAGE)
 
         and:
-        1 * reelVideoManagementService.addVideo(reelId, videoId) >> { throw exceptionClass.newInstance('TEST') }
-        1 * localizedMessageService.getMessage(messageCode, request.locale) >> message
+        1 * reelVideoManagementService.addVideo(reelId, videoId) >> { throw new ReelNotFoundException('TEST') }
+        1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> TEST_MESSAGE
+    }
 
-        where:
-        exceptionClass          |   statusCode  |   messageCode
-        ReelNotFoundException   |   404         |   'reel.unknown'
-        AuthorizationException  |   403         |   'reel.unauthorized'
+    void "attempt to add video when not authorized"() {
+        given:
+        def reelId = 9431
+        def videoId = 81813
+
+        and:
+        params.reelId = reelId
+        params.videoId = videoId
+
+        when:
+        controller.addVideo()
+
+        then:
+        assertStatusCodeOnlyResponse(response, 403)
+
+        and:
+        1 * reelVideoManagementService.addVideo(reelId, videoId) >> { throw new AuthorizationException('TEST') }
     }
 
     void "successfully add a video to a reel"() {
@@ -489,7 +495,25 @@ class ReelControllerSpec extends AbstractControllerSpec {
         exceptionClass          |   statusCode  |   messageCode
         ReelNotFoundException   |   404         |   'reel.unknown'
         VideoNotFoundException  |   404         |   'video.unknown'
-        AuthorizationException  |   403         |   'reel.unauthorized'
+    }
+
+    void "attempt to remove video when not authorized"() {
+        given:
+        def reelId = 9431
+        def videoId = 81813
+
+        and:
+        params.reelId = reelId
+        params.videoId = videoId
+
+        when:
+        controller.removeVideo()
+
+        then:
+        assertStatusCodeOnlyResponse(response, 403)
+
+        and:
+        1 * reelVideoManagementService.removeVideo(reelId, videoId) >> { throw new AuthorizationException('TEST') }
     }
 
     void "successfully remove a video from a reel"() {

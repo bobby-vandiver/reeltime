@@ -63,8 +63,4 @@ class ResetPasswordController extends AbstractController {
             }
         }
     }
-
-    def handleAuthorizationException(AuthorizationException e) {
-        exceptionStatusCodeOnlyResponse(e, SC_FORBIDDEN)
-    }
 }
