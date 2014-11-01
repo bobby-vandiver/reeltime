@@ -29,6 +29,12 @@ class ReelTimeRequestFactory {
         new RestRequest(url: url, token: token)
     }
 
+    RestRequest confirmAccount(String token, confirmationCode) {
+        new RestRequest(url: urlFactory.confirmationUrl, token: token, customizer: {
+            code = confirmationCode
+        })
+    }
+
     RestRequest sendResetPasswordEmail(String name) {
         new RestRequest(url: urlFactory.sendResetPasswordEmailUrl, customizer: {
             username = name

@@ -7,10 +7,10 @@ import spock.lang.Unroll
 
 class RegistrationFunctionalSpec extends FunctionalSpec {
 
-    static String token
+    String token
 
     void setup() {
-        registerUser('registerTest')
+        token = registerNewUserAndGetToken('registerTest', 'account-write')
     }
 
     @Unroll
@@ -152,9 +152,37 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         response.json.errors.contains('[email] is required')
     }
 
-    void "invalid http methods for verify endpoint"() {
+    void "invalid http methods for confirmation endpoint"() {
         expect:
-        responseChecker.assertInvalidHttpMethods(urlFactory.verifyUrl, ['get', 'put', 'delete'], token)
+        responseChecker.assertInvalidHttpMethods(urlFactory.confirmationUrl, ['get', 'put', 'delete'], token)
+    }
+
+    @Unroll
+    void "confirmation code is required -- cannot be [#code]"() {
+        given:
+        def request = requestFactory.confirmAccount(token, code)
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[code] is required')
+
+        where:
+        _   |   code
+        _   |   null
+        _   |   ''
+    }
+
+    void "confirmation code is invalid" () {
+        given:
+        def request = requestFactory.confirmAccount(token, 'uh-oh')
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertStatusCode(response, 403)
     }
 
     void "register client with bad credentials"() {

@@ -4,7 +4,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.ConfirmationException
 
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 import static javax.servlet.http.HttpServletResponse.SC_OK
 
 class AccountConfirmationController extends AbstractController {
@@ -14,18 +14,15 @@ class AccountConfirmationController extends AbstractController {
     static allowedMethods = [confirmAccount: 'POST']
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-write')"])
-    def confirmAccount(String code) {
-
-        if(code) {
-            accountConfirmationService.confirmAccount(code)
-            render(status: SC_OK)
+    def confirmAccount(AccountConfirmationCommand command) {
+        handleCommandRequest(command) {
+            try {
+                accountConfirmationService.confirmAccount(command.code)
+                render(status: SC_OK)
+            }
+            catch(ConfirmationException e) {
+                exceptionStatusCodeOnlyResponse(e, SC_FORBIDDEN)
+            }
         }
-        else {
-            errorMessageResponse('registration.confirmation.code.required', SC_BAD_REQUEST)
-        }
-    }
-
-    def handleConfirmationException(ConfirmationException e) {
-        exceptionErrorMessageResponse(e, 'registration.confirmation.code.error', SC_BAD_REQUEST)
     }
 }

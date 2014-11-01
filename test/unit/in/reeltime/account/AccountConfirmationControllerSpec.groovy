@@ -15,29 +15,6 @@ class AccountConfirmationControllerSpec extends AbstractControllerSpec {
         controller.accountConfirmationService = accountConfirmationService
     }
 
-    @Unroll
-    void "confirmation code must be present -- cannot be [#code]"() {
-        given:
-        def message = 'confirmation code required'
-
-        and:
-        params.code = code
-
-        when:
-        controller.confirmAccount()
-
-        then:
-        assertErrorMessageResponse(response, 400, message)
-
-        and:
-        1 * localizedMessageService.getMessage('registration.confirmation.code.required', request.locale) >> message
-
-        where:
-        _   |   code
-        _   |   null
-        _   |   ''
-    }
-
     void "pass confirmation code to service to complete account confirmation"() {
         given:
         params.code = 'let-me-in'
@@ -55,19 +32,15 @@ class AccountConfirmationControllerSpec extends AbstractControllerSpec {
 
     void "handle confirmation error"() {
         given:
-        def message = 'confirmation error'
-
-        and:
         params.code = 'uh-oh'
 
         when:
         controller.confirmAccount()
 
         then:
-        assertErrorMessageResponse(response, 400, message)
+        assertStatusCodeOnlyResponse(response, 403)
 
         and:
         1 * accountConfirmationService.confirmAccount(_) >> { throw new ConfirmationException('TEST') }
-        1 * localizedMessageService.getMessage('registration.confirmation.code.error', request.locale) >> message
     }
 }

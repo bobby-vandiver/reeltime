@@ -52,7 +52,7 @@ public class ReelTimeUrlFactory {
         getUrlForResource("account/client/$clientId")
     }
 
-    String getVerifyUrl() {
+    String getConfirmationUrl() {
         getUrlForResource("account/confirm")
     }
 
