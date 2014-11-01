@@ -3,16 +3,37 @@ package in.reeltime.account
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.ConfirmationException
+import in.reeltime.security.AuthenticationService
+import in.reeltime.user.User
 import spock.lang.Unroll
 
 @TestFor(AccountConfirmationController)
 class AccountConfirmationControllerSpec extends AbstractControllerSpec {
 
     AccountConfirmationService accountConfirmationService
+    AuthenticationService authenticationService
 
     void setup() {
         accountConfirmationService = Mock(AccountConfirmationService)
+        authenticationService = Mock(AuthenticationService)
+
         controller.accountConfirmationService = accountConfirmationService
+        controller.authenticationService = authenticationService
+    }
+
+    void "send confirmation email"() {
+        given:
+        def user = new User(username: 'current')
+
+        when:
+        controller.sendEmail()
+
+        then:
+        assertStatusCodeOnlyResponse(response, 200)
+
+        and:
+        1 * authenticationService.getCurrentUser() >> user
+        1 * accountConfirmationService.sendConfirmationEmail(user, request.locale)
     }
 
     void "pass confirmation code to service to complete account confirmation"() {
@@ -23,8 +44,7 @@ class AccountConfirmationControllerSpec extends AbstractControllerSpec {
         controller.confirmAccount()
 
         then:
-        response.status == 200
-        response.contentLength == 0
+        assertStatusCodeOnlyResponse(response, 200)
 
         and:
         1 * accountConfirmationService.confirmAccount('let-me-in')

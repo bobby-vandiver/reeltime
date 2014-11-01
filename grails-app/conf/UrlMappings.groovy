@@ -51,6 +51,10 @@ class UrlMappings {
             action = [POST:  'confirmAccount']
         }
 
+        "/account/confirm/email" (controller: 'accountConfirmation') {
+            action = [POST: 'sendEmail']
+        }
+
         "/account/display" (controller: 'accountManagement') {
             action = [POST: 'changeDisplayName']
         }

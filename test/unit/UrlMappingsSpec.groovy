@@ -246,6 +246,7 @@ class UrlMappingsSpec extends Specification {
         '/account'                  |   'POST'      |   'account'               |   'registerAccount'
         '/account'                  |   'DELETE'    |   'account'               |   'removeAccount'
         '/account/confirm'          |   'POST'      |   'accountConfirmation'   |   'confirmAccount'
+        '/account/confirm/email'    |   'POST'      |   'accountConfirmation'   |   'sendEmail'
         '/account/display'          |   'POST'      |   'accountManagement'     |   'changeDisplayName'
         '/account/password'         |   'POST'      |   'accountManagement'     |   'changePassword'
         '/account/password/email'   |   'POST'      |   'resetPassword'         |   'sendEmail'
