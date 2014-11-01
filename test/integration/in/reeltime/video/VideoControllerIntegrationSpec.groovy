@@ -9,7 +9,7 @@ class VideoControllerIntegrationSpec extends IntegrationSpec {
 
     VideoController controller
 
-    def springSecurityService
+    def authenticationService
     def videoCreationService
 
     def localizedMessageService
@@ -17,7 +17,7 @@ class VideoControllerIntegrationSpec extends IntegrationSpec {
 
     void setup() {
         controller = new VideoController()
-        controller.springSecurityService = springSecurityService
+        controller.authenticationService = authenticationService
         controller.videoCreationService = videoCreationService
         controller.localizedMessageService = localizedMessageService
     }

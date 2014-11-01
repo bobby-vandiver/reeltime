@@ -13,7 +13,7 @@ import static javax.servlet.http.HttpServletResponse.*
 
 class VideoController extends AbstractController {
 
-    def springSecurityService
+    def authenticationService
 
     def videoService
     def videoCreationService
@@ -53,8 +53,16 @@ class VideoController extends AbstractController {
     }
 
     private void bindAdditionalData(VideoCreationCommand command) {
-        command.creator = springSecurityService.currentUser as User
+        sanitizePrivateData(command)
+        command.creator = authenticationService.currentUser
         command.videoStream = getVideoStreamFromRequest()
+    }
+
+    private void sanitizePrivateData(VideoCreationCommand command) {
+        command.videoStreamSizeIsValid = null
+        command.durationInSeconds = null
+        command.h264StreamIsPresent = null
+        command.aacStreamIsPresent = null
     }
 
     private InputStream getVideoStreamFromRequest() {

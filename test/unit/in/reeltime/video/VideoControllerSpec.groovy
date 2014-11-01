@@ -1,6 +1,5 @@
 package in.reeltime.video
 
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
@@ -8,6 +7,7 @@ import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.TranscoderException
 import in.reeltime.exceptions.ProbeException
 import in.reeltime.exceptions.VideoNotFoundException
+import in.reeltime.security.AuthenticationService
 import in.reeltime.user.User
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Unroll
@@ -24,7 +24,7 @@ class VideoControllerSpec extends AbstractControllerSpec {
 
     void setup() {
         currentUser = new User(username: 'bob')
-        controller.springSecurityService = Stub(SpringSecurityService) {
+        controller.authenticationService = Stub(AuthenticationService) {
             getCurrentUser() >> currentUser
         }
 
