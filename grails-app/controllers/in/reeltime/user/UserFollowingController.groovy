@@ -65,10 +65,6 @@ class UserFollowingController extends AbstractController {
         }
     }
 
-    def handleUserNotFoundException(UserNotFoundException e) {
-        exceptionErrorMessageResponse(e, 'following.unknown.username', SC_NOT_FOUND)
-    }
-
     def handleIllegalArgumentException(IllegalArgumentException e) {
         exceptionErrorMessageResponse(e, 'following.invalid.request', SC_BAD_REQUEST)
     }

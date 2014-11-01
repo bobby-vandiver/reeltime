@@ -32,9 +32,4 @@ class UserController extends AbstractController {
             }
         }
     }
-
-    // TODO: Refactor to common exception handler controller for consistent handling
-    def handleUserNotFoundException(UserNotFoundException e) {
-        exceptionErrorMessageResponse(e, 'reel.unknown.username', SC_NOT_FOUND)
-    }
 }

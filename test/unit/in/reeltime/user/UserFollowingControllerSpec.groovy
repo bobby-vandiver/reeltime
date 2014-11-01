@@ -78,7 +78,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
 
         and:
         1 * userService.loadUser('nobody') >> { throw new UserNotFoundException('TEST') }
-        1 * localizedMessageService.getMessage('following.unknown.username', request.locale) >> TEST_MESSAGE
+        1 * localizedMessageService.getMessage('user.unknown', request.locale) >> TEST_MESSAGE
 
         where:
         _   |   actionName

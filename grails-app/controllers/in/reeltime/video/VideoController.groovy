@@ -35,13 +35,20 @@ class VideoController extends AbstractController {
     def upload(VideoCreationCommand command) {
         bindAdditionalData(command)
 
-        if(videoCreationService.allowCreation(command)) {
-            render(status: SC_ACCEPTED, contentType: APPLICATION_JSON) {
-                marshall(videoCreationService.createVideo(command))
+        try {
+            if (videoCreationService.allowCreation(command)) {
+                render(status: SC_ACCEPTED, contentType: APPLICATION_JSON) {
+                    marshall(videoCreationService.createVideo(command))
+                }
+            } else {
+                commandErrorMessageResponse(command, SC_BAD_REQUEST)
             }
         }
-        else {
-            commandErrorMessageResponse(command, SC_BAD_REQUEST)
+        catch(ProbeException e) {
+            exceptionErrorMessageResponse(e, 'videoCreation.probe.error', SC_SERVICE_UNAVAILABLE)
+        }
+        catch(TranscoderException e) {
+            exceptionErrorMessageResponse(e, 'videoCreation.transcoder.error', SC_SERVICE_UNAVAILABLE)
         }
     }
 
@@ -57,14 +64,6 @@ class VideoController extends AbstractController {
         else {
             return null
         }
-    }
-
-    def handleTranscoderException(TranscoderException e) {
-        exceptionErrorMessageResponse(e, 'videoCreation.transcoder.error', SC_SERVICE_UNAVAILABLE)
-    }
-
-    def handleProbeException(ProbeException e) {
-        exceptionErrorMessageResponse(e, 'videoCreation.probe.error', SC_SERVICE_UNAVAILABLE)
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('videos-write')"])
@@ -92,9 +91,5 @@ class VideoController extends AbstractController {
             videoRemovalService.removeVideoById(command.videoId)
             render(status: SC_OK)
         }
-    }
-
-    def handleVideoNotFoundException(VideoNotFoundException e) {
-        exceptionErrorMessageResponse(e, 'video.unknown', SC_NOT_FOUND)
     }
 }

@@ -49,8 +49,13 @@ class ReelController extends AbstractController {
     def addReel(AddReelCommand command) {
         log.debug "Adding reel [${command.name}]"
         handleCommandRequest(command) {
-            render(status: SC_CREATED, contentType: APPLICATION_JSON) {
-                marshall(reelService.addReel(command.name))
+            try {
+                render(status: SC_CREATED, contentType: APPLICATION_JSON) {
+                    marshall(reelService.addReel(command.name))
+                }
+            }
+            catch(InvalidReelNameException e) {
+                exceptionErrorMessageResponse(e, 'addReel.name.invalid', SC_BAD_REQUEST)
             }
         }
     }
@@ -92,21 +97,5 @@ class ReelController extends AbstractController {
             reelVideoManagementService.removeVideo(reelCommand.reelId, videoCommand.videoId)
             render(status: SC_OK)
         }
-    }
-
-    def handleUserNotFoundException(UserNotFoundException e) {
-        exceptionErrorMessageResponse(e, 'reel.unknown.username', SC_NOT_FOUND)
-    }
-
-    def handleReelNotFoundException(ReelNotFoundException e) {
-        exceptionErrorMessageResponse(e, 'reel.unknown', SC_NOT_FOUND)
-    }
-
-    def handleInvalidReelNameException(InvalidReelNameException e) {
-        exceptionErrorMessageResponse(e, 'reel.invalid.name', SC_BAD_REQUEST)
-    }
-
-    def handleVideoNotFoundException(VideoNotFoundException e) {
-        exceptionErrorMessageResponse(e, 'video.unknown', SC_NOT_FOUND)
     }
 }

@@ -1,10 +1,14 @@
 package in.reeltime.common
 
 import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.exceptions.ReelNotFoundException
+import in.reeltime.exceptions.UserNotFoundException
+import in.reeltime.exceptions.VideoNotFoundException
 
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
 abstract class AbstractController {
 
@@ -42,16 +46,13 @@ abstract class AbstractController {
     }
 
     protected void handleCommandRequest(Object command, Closure action) {
-        try {
+        handleRequest {
             !command.hasErrors() ? action() : commandErrorMessageResponse(command, SC_BAD_REQUEST)
-        }
-        catch(AuthorizationException e) {
-            exceptionStatusCodeOnlyResponse(e, SC_FORBIDDEN)
         }
     }
 
     protected void handleMultipleCommandRequest(Collection<Object> commands, Closure action) {
-        try {
+        handleRequest {
             List<String> errors = []
 
             commands.each { command ->
@@ -69,8 +70,24 @@ abstract class AbstractController {
                 }
             }
         }
+    }
+
+    private void handleRequest(Closure action) {
+        try {
+            action()
+        }
         catch(AuthorizationException e) {
             exceptionStatusCodeOnlyResponse(e, SC_FORBIDDEN)
         }
+        catch(UserNotFoundException e) {
+            exceptionErrorMessageResponse(e, 'user.unknown', SC_NOT_FOUND)
+        }
+        catch(ReelNotFoundException e) {
+            exceptionErrorMessageResponse(e, 'reel.unknown', SC_NOT_FOUND)
+        }
+        catch(VideoNotFoundException e) {
+            exceptionErrorMessageResponse(e, 'video.unknown', SC_NOT_FOUND)
+        }
+
     }
 }

@@ -185,7 +185,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         1 * reelService.listReelsByUsername(username, _) >> { throw new UserNotFoundException('TEST') }
-        1 * localizedMessageService.getMessage('reel.unknown.username', request.locale) >> message
+        1 * localizedMessageService.getMessage('user.unknown', request.locale) >> message
     }
 
     void "successfully add a new reel"() {
@@ -227,7 +227,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         1 * reelService.addReel(reelName) >> { throw new InvalidReelNameException('TEST') }
-        1 * localizedMessageService.getMessage('reel.invalid.name', request.locale) >> message
+        1 * localizedMessageService.getMessage('addReel.name.invalid', request.locale) >> message
     }
 
     void "successfully delete a reel"() {

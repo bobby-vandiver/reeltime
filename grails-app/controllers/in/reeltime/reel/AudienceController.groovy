@@ -42,8 +42,4 @@ class AudienceController extends AbstractController {
             render(status: SC_OK)
         }
     }
-
-    def handleReelNotFoundException(ReelNotFoundException e) {
-        exceptionErrorMessageResponse(e, 'reel.unknown', SC_NOT_FOUND)
-    }
 }
