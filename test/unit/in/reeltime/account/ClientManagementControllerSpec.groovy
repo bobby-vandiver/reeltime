@@ -107,27 +107,6 @@ class ClientManagementControllerSpec extends AbstractControllerSpec {
         1 * accountManagementService.revokeClient(user, clientId)
     }
 
-    @Unroll
-    void "client id is required for [#clientId]"() {
-        given:
-        params.client_id = clientId
-
-        when:
-        controller.revokeClient()
-
-        then:
-        assertErrorMessageResponse(response, 400, TEST_MESSAGE)
-
-        and:
-        0 * accountManagementService.revokeClient(_, _)
-        1 * localizedMessageService.getMessage('account.revoke.client.id.required', request.locale) >> TEST_MESSAGE
-
-        where:
-        _   |   clientId
-        _   |   null
-        _   |   ''
-    }
-
     private void stubAuthenticationService(boolean authenticated) {
         defineBeans {
             authenticationService(AuthenticationService)

@@ -38,10 +38,6 @@ abstract class AbstractController {
         }
     }
 
-    protected void handleSingleParamRequest(Object paramToCheck, String errorMessageCode, Closure action) {
-        paramToCheck ? action() : errorMessageResponse(errorMessageCode, SC_BAD_REQUEST)
-    }
-
     protected void handleCommandRequest(Object command, Closure action) {
         !command.hasErrors() ? action() : commandErrorMessageResponse(command, SC_BAD_REQUEST)
     }

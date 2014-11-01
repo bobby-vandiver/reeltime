@@ -72,6 +72,17 @@ class AccountManagementFunctionalSpec extends FunctionalSpec {
         'abc24'         |   '[new_password] must be at least 6 characters long'
     }
 
+    void "attempt to revoke client access for unknown client"() {
+        given:
+        def request = requestFactory.revokeClient(token, clientId + 'a')
+
+        when:
+        def response = delete(request)
+
+        then:
+        responseChecker.assertStatusCode(response, 403)
+    }
+
     void "successfully change password"() {
         given:
         def oldPassword = TEST_PASSWORD
