@@ -176,29 +176,6 @@ class VideoControllerSpec extends AbstractControllerSpec {
         1 * videoRemovalService.removeVideoById(1234)
     }
 
-    @Unroll
-    void "videoId cannot be [#videoId]"() {
-        given:
-        def message = 'TEST'
-
-        and:
-        params.videoId = videoId
-
-        when:
-        controller.remove()
-
-        then:
-        assertErrorMessageResponse(response, 400, message)
-
-        and:
-        1 * localizedMessageService.getMessage('video.id.required', request.locale) >> message
-
-        where:
-        _   |   videoId
-        _   |   null
-        _   |   ''
-    }
-
     void "attempt to remove video that does not exist"() {
         given:
         def message = 'TEST'

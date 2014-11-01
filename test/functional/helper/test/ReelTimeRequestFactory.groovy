@@ -129,11 +129,9 @@ class ReelTimeRequestFactory {
         })
     }
 
-    RestRequest deleteVideo(String token, Long vid) {
-        def url = urlFactory.getDeleteVideoUrl(vid)
-        new RestRequest(url: url, token: token, customizer: {
-            videoId = vid
-        })
+    RestRequest deleteVideo(String token, videoId) {
+        def url = urlFactory.getDeleteVideoUrl(videoId)
+        new RestRequest(url: url, token: token)
     }
 
     RestRequest videoStatus(String token, Long videoId) {

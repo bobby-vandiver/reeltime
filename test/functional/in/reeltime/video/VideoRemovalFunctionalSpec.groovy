@@ -44,15 +44,15 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
         responseChecker.assertInvalidHttpMethods(deleteUrl, ['get', 'put', 'post'], videosWriteToken)
     }
 
-    void "videoId param is missing"() {
+    void "videoId param is invalid"() {
         given:
-        def request = requestFactory.deleteVideo(videosWriteToken, null)
+        def request = requestFactory.deleteVideo(videosWriteToken, 'abc')
 
         when:
         def response = delete(request)
 
         then:
-        responseChecker.assertSingleErrorMessageResponse(response, 400, '[videoId] is required')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[videoId] is invalid')
     }
 
     void "successfully delete video"() {

@@ -68,28 +68,28 @@ class VideoController extends AbstractController {
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('videos-write')"])
-    def status(Long videoId) {
-        int status
-        if(!videoService.videoExists(videoId)) {
-            status = SC_NOT_FOUND
+    def status(VideoCommand command) {
+        handleCommandRequest(command) {
+            int status
+            def videoId = command.videoId
+            if (!videoService.videoExists(videoId)) {
+                status = SC_NOT_FOUND
+            } else if (!videoService.currentUserIsVideoCreator(videoId)) {
+                status = SC_FORBIDDEN
+            } else if (!videoService.videoIsAvailable(videoId)) {
+                status = SC_ACCEPTED
+            } else {
+                status = SC_CREATED
+            }
+            render(status: status)
         }
-        else if(!videoService.currentUserIsVideoCreator(videoId)) {
-            status = SC_FORBIDDEN
-        }
-        else if(!videoService.videoIsAvailable(videoId)) {
-            status = SC_ACCEPTED
-        }
-        else {
-            status = SC_CREATED
-        }
-        render(status: status)
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('videos-write')"])
-    def remove(Long videoId) {
-        log.debug "Removing video [$videoId]"
-        handleSingleParamRequest(videoId, 'video.id.required') {
-            videoRemovalService.removeVideoById(videoId)
+    def remove(VideoCommand command) {
+        log.debug "Removing video [${command.videoId}]"
+        handleCommandRequest(command) {
+            videoRemovalService.removeVideoById(command.videoId)
             render(status: SC_OK)
         }
     }
