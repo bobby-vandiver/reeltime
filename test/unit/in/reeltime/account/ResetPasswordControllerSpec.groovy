@@ -41,27 +41,6 @@ class ResetPasswordControllerSpec extends AbstractControllerSpec {
         1 * resetPasswordService.sendResetPasswordEmail(user, request.locale)
     }
 
-    @Unroll
-    void "username is required for sending reset password email -- cannot be [#username] "() {
-        given:
-        params.username = username
-
-        when:
-        controller.sendEmail()
-
-        then:
-        assertErrorMessageResponse(response, 400, TEST_MESSAGE)
-
-        and:
-        1 * localizedMessageService.getMessage('account.reset.password.email.username.required', request.locale) >> TEST_MESSAGE
-        0 * resetPasswordService.sendResetPasswordEmail(_, _)
-
-        where:
-        _   |   username
-        _   |   null
-        _   |   ''
-    }
-
     void "registration exception is thrown when resetting password and registering new client"() {
         given:
         params.username = 'foo'

@@ -5,6 +5,7 @@ import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.RegistrationException
 import in.reeltime.exceptions.UserNotFoundException
+import in.reeltime.user.UsernameCommand
 
 import static javax.servlet.http.HttpServletResponse.*
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
@@ -19,9 +20,9 @@ class ResetPasswordController extends AbstractController {
     static allowedMethods = [sendEmail: 'POST', resetPassword: 'POST']
 
     @Secured(["permitAll"])
-    def sendEmail(String username) {
-        handleSingleParamRequest(username, 'account.reset.password.email.username.required') {
-            def user = userService.loadUser(username)
+    def sendEmail(UsernameCommand command) {
+        handleCommandRequest(command) {
+            def user = userService.loadUser(command.username)
             resetPasswordService.sendResetPasswordEmail(user, request.locale)
             render(status: SC_OK)
         }

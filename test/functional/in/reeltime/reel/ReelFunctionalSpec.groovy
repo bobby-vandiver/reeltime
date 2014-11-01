@@ -166,13 +166,13 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        responseChecker.assertSingleErrorMessageResponse(response, 400, 'Requested reel name is not allowed')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, message)
 
         where:
-        _   |   reelName
-        _   |   'z'
-        _   |   'bad'
-        _   |   'this is a really long reel name that is invalid'
+        reelName                                            |   message
+        'z'                                                 |   '[name] must be at least 5 characters long'
+        'bad'                                               |   '[name] must be at least 5 characters long'
+        'this is a really long reel name that is invalid'   |   '[name] must be no more than 25 characters long'
     }
 
     void "only reel owner can delete reel"() {

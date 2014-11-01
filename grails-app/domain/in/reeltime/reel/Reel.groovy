@@ -17,7 +17,7 @@ class Reel {
     static hasOne = [audience: Audience]
 
     static constraints = {
-        name nullable: false, blank: false, size: MINIMUM_NAME_LENGTH..MAXIMUM_NAME_LENGTH
+        name nullable: false, blank: false, minSize: MINIMUM_NAME_LENGTH, maxSize: MAXIMUM_NAME_LENGTH
         owner nullable: false
         audience unique: true
     }

@@ -46,11 +46,11 @@ class ReelController extends AbstractController {
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
-    def addReel(String name) {
-        log.debug "Adding reel [$name]"
-        handleSingleParamRequest(name, 'reel.name.required') {
+    def addReel(AddReelCommand command) {
+        log.debug "Adding reel [${command.name}]"
+        handleCommandRequest(command) {
             render(status: SC_CREATED, contentType: APPLICATION_JSON) {
-                marshall(reelService.addReel(name))
+                marshall(reelService.addReel(command.name))
             }
         }
     }

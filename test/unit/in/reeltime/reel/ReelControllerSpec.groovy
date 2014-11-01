@@ -414,29 +414,6 @@ class ReelControllerSpec extends AbstractControllerSpec {
     }
 
     @Unroll
-    void "[#paramName] cannot be [#paramValue] for action [#actionName]"() {
-        given:
-        def message = 'TEST'
-
-        and:
-        params."$paramName" = paramValue
-
-        when:
-        controller."$actionName"()
-
-        then:
-        assertErrorMessageResponse(response, 400, message)
-
-        and:
-        1 * localizedMessageService.getMessage(code, request.locale) >> message
-
-        where:
-        paramName   |   paramValue  |   actionName      |   code
-        'name'      |   null        |   'addReel'       |   'reel.name.required'
-        'name'      |   ''          |   'addReel'       |   'reel.name.required'
-    }
-
-    @Unroll
     void "attempt to add video throws [#exceptionClass]"() {
         given:
         def message = 'TEST'
