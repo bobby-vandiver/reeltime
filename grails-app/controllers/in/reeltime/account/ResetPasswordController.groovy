@@ -47,23 +47,24 @@ class ResetPasswordController extends AbstractController {
 
     private def resetPasswordForNewClient(ResetPasswordCommand command) {
         handleCommandRequest(command) {
-            String username = command.username
-            String newPassword = command.new_password
+            try {
+                String username = command.username
+                String newPassword = command.new_password
 
-            String code = command.code
-            String clientName = command.client_name
+                String code = command.code
+                String clientName = command.client_name
 
-            render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(resetPasswordService.resetPasswordForNewClient(username, newPassword, code, clientName))
+                render(status: SC_OK, contentType: APPLICATION_JSON) {
+                    marshall(resetPasswordService.resetPasswordForNewClient(username, newPassword, code, clientName))
+                }
+            }
+            catch(RegistrationException e) {
+                exceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
             }
         }
     }
 
     def handleAuthorizationException(AuthorizationException e) {
         exceptionStatusCodeOnlyResponse(e, SC_FORBIDDEN)
-    }
-
-    def handleRegistrationException(RegistrationException e) {
-        exceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
     }
 }

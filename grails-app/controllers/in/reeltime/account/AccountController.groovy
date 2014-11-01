@@ -17,8 +17,13 @@ class AccountController extends AbstractController {
     @Secured(["permitAll"])
     def registerAccount(AccountRegistrationCommand command) {
         handleCommandRequest(command) {
-            render(status: SC_CREATED, contentType: APPLICATION_JSON) {
-                marshall(accountRegistrationService.registerUserAndClient(command, request.locale))
+            try {
+                render(status: SC_CREATED, contentType: APPLICATION_JSON) {
+                    marshall(accountRegistrationService.registerUserAndClient(command, request.locale))
+                }
+            }
+            catch(RegistrationException e) {
+                exceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
             }
         }
     }
@@ -27,9 +32,5 @@ class AccountController extends AbstractController {
     def removeAccount() {
         accountRemovalService.removeAccountForCurrentUser()
         render(status: SC_OK)
-    }
-
-    def handleRegistrationException(RegistrationException e) {
-        exceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
     }
 }

@@ -23,8 +23,13 @@ class ClientManagementController extends AbstractController {
     @Secured(["permitAll"])
     def registerClient(ClientRegistrationCommand command) {
         handleCommandRequest(command) {
-            render(status: SC_CREATED, contentType: APPLICATION_JSON) {
-                marshall(accountRegistrationService.registerClientForExistingUser(command.username, command.client_name))
+            try {
+                render(status: SC_CREATED, contentType: APPLICATION_JSON) {
+                    marshall(accountRegistrationService.registerClientForExistingUser(command.username, command.client_name))
+                }
+            }
+            catch(RegistrationException e) {
+                exceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
             }
         }
     }
@@ -39,10 +44,6 @@ class ClientManagementController extends AbstractController {
 
     private User getCurrentUser() {
         authenticationService.currentUser
-    }
-
-    def handleRegistrationException(RegistrationException e) {
-        exceptionErrorMessageResponse(e, 'registration.internal.error', SC_SERVICE_UNAVAILABLE)
     }
 
     def handleAuthorizationException(AuthorizationException e) {
