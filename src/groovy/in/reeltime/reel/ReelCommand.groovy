@@ -5,9 +5,9 @@ import grails.validation.Validateable
 @Validateable
 class ReelCommand {
 
-    Long reelId
+    Long reel_id
 
     static constraints = {
-        reelId nullable: false
+        reel_id nullable: false
     }
 }

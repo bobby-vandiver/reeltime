@@ -205,7 +205,7 @@ class ReelTimeClient {
         assertStatusOrFail(response, 200, "Failed to list reels.")
 
         def uncategorizedReel = response.json.find { it.name == 'Uncategorized' }
-        return uncategorizedReel.reelId
+        return uncategorizedReel.reel_id
     }
 
     JSONElement listReels(String token, Integer page = null) {
@@ -223,7 +223,7 @@ class ReelTimeClient {
 
         assertStatusOrFail(response, 201, "Failed to add reel [$reelName].")
 
-        return response.json.reelId
+        return response.json.reel_id
     }
 
     void deleteReel(String token, Long reelId) {

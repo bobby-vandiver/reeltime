@@ -117,7 +117,7 @@ class ResponseChecker {
     }
 
     void assertReelIdInList(JSONElement list, Long reelId) {
-        assert elementIsInList(list, 'reelId', reelId)
+        assert elementIsInList(list, 'reel_id', reelId)
     }
 
     void assertUsernameInList(JSONElement list, String username) {

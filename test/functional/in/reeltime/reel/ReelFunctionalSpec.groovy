@@ -76,7 +76,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def response = "$httpMethod"(request)
 
         then:
-        responseChecker.assertErrorMessageInResponse(response, 400, '[reelId] is invalid')
+        responseChecker.assertErrorMessageInResponse(response, 400, '[reel_id] is invalid')
 
         where:
         resource                |   httpMethod
@@ -222,7 +222,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         and:
         response.json.size() == 1
         response.json[0].name == 'Uncategorized'
-        response.json[0].reelId > 0
+        response.json[0].reel_id > 0
     }
 
     void "add a new reel"() {
@@ -242,10 +242,10 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
         and:
         response.json.name == 'some new reel'
-        response.json.reelId > 0
+        response.json.reel_id > 0
 
         and:
-        response.json.reelId != uncategorizedReelId
+        response.json.reel_id != uncategorizedReelId
     }
 
     void "delete a reel"() {

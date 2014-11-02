@@ -2,7 +2,6 @@ package in.reeltime.reel
 
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import in.reeltime.reel.ReelCommand
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -10,15 +9,15 @@ import spock.lang.Unroll
 class ReelCommandSpec extends Specification {
 
     @Unroll
-    void "reelId [#reelId] is valid [#valid]"() {
+    void "reel_id [#reelId] is valid [#valid]"() {
         given:
-        def command = new ReelCommand(reelId: reelId)
+        def command = new ReelCommand(reel_id: reelId)
 
         expect:
-        command.validate(['reelId']) == valid
+        command.validate(['reel_id']) == valid
 
         and:
-        command.errors.getFieldError('reelId')?.code == code
+        command.errors.getFieldError('reel_id')?.code == code
 
         where:
         reelId      |   valid   |   code

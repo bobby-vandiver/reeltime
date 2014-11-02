@@ -2,11 +2,7 @@ package in.reeltime.reel
 
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
-import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.InvalidReelNameException
-import in.reeltime.exceptions.ReelNotFoundException
-import in.reeltime.exceptions.UserNotFoundException
-import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.search.PagedListCommand
 import in.reeltime.user.UsernameCommand
 import in.reeltime.video.VideoCommand
@@ -62,39 +58,39 @@ class ReelController extends AbstractController {
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
     def deleteReel(ReelCommand command) {
-        log.debug "Deleting reel [${command.reelId}]"
+        log.debug "Deleting reel [${command.reel_id}]"
         handleCommandRequest(command) {
-            reelService.deleteReel(command.reelId)
+            reelService.deleteReel(command.reel_id)
             render(status: SC_OK)
         }
     }
 
     @Secured(["#oauth2.hasScope('reels-read')"])
     def listVideos(ReelCommand reelCommand, PagedListCommand pagedListCommand) {
-        log.debug "Listing videos in reel [${reelCommand.reelId}] on page [${pagedListCommand.page}]"
+        log.debug "Listing videos in reel [${reelCommand.reel_id}] on page [${pagedListCommand.page}]"
         handleMultipleCommandRequest([reelCommand, pagedListCommand]) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(reelVideoManagementService.listVideosInReel(reelCommand.reelId, pagedListCommand.page))
+                marshall(reelVideoManagementService.listVideosInReel(reelCommand.reel_id, pagedListCommand.page))
             }
         }
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
     def addVideo(ReelCommand reelCommand, VideoCommand videoCommand) {
-        log.debug "Adding video [${videoCommand.videoId}] to reel [${reelCommand.reelId}]"
+        log.debug "Adding video [${videoCommand.videoId}] to reel [${reelCommand.reel_id}]"
 
         handleMultipleCommandRequest([reelCommand, videoCommand]) {
-            reelVideoManagementService.addVideo(reelCommand.reelId, videoCommand.videoId)
+            reelVideoManagementService.addVideo(reelCommand.reel_id, videoCommand.videoId)
             render(status: SC_CREATED)
         }
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
     def removeVideo(ReelCommand reelCommand, VideoCommand videoCommand) {
-        log.debug "Removing video [${videoCommand.videoId}] from reel [${reelCommand.reelId}]"
+        log.debug "Removing video [${videoCommand.videoId}] from reel [${reelCommand.reel_id}]"
 
         handleMultipleCommandRequest([reelCommand, videoCommand]) {
-            reelVideoManagementService.removeVideo(reelCommand.reelId, videoCommand.videoId)
+            reelVideoManagementService.removeVideo(reelCommand.reel_id, videoCommand.videoId)
             render(status: SC_OK)
         }
     }

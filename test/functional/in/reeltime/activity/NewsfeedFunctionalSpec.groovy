@@ -90,14 +90,14 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[0].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
         newsfeed.activities[0].user.username == TEST_USER
 
-        newsfeed.activities[0].reel.reelId == reelId
+        newsfeed.activities[0].reel.reel_id == reelId
         newsfeed.activities[0].reel.name == 'some reel'
 
         and:
         newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[1].user.username == 'someone'
 
-        newsfeed.activities[1].reel.reelId == reelId
+        newsfeed.activities[1].reel.reel_id == reelId
         newsfeed.activities[1].reel.name == 'some reel'
 
         newsfeed.activities[1].video.videoId == additionalVideoId
@@ -107,7 +107,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[2].user.username == 'someone'
 
-        newsfeed.activities[2].reel.reelId == reelId
+        newsfeed.activities[2].reel.reel_id == reelId
         newsfeed.activities[2].reel.name == 'some reel'
 
         newsfeed.activities[2].video.videoId == videoId
@@ -117,7 +117,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[3].type == CREATE_REEL_ACTIVITY_TYPE
         newsfeed.activities[3].user.username == 'someone'
 
-        newsfeed.activities[3].reel.reelId == reelId
+        newsfeed.activities[3].reel.reel_id == reelId
         newsfeed.activities[3].reel.name == 'some reel'
     }
 
@@ -149,21 +149,21 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[0].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
         newsfeed.activities[0].user.username == TEST_USER
 
-        newsfeed.activities[0].reel.reelId == anyReelId
+        newsfeed.activities[0].reel.reel_id == anyReelId
         newsfeed.activities[0].reel.name == 'any reel'
 
         and:
         newsfeed.activities[1].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
         newsfeed.activities[1].user.username == TEST_USER
 
-        newsfeed.activities[1].reel.reelId == someReelId
+        newsfeed.activities[1].reel.reel_id == someReelId
         newsfeed.activities[1].reel.name == 'some reel'
 
         and:
         newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[2].user.username == 'someone'
 
-        newsfeed.activities[2].reel.reelId == someReelId
+        newsfeed.activities[2].reel.reel_id == someReelId
         newsfeed.activities[2].reel.name == 'some reel'
 
         newsfeed.activities[2].video.videoId == someVideoId
@@ -173,7 +173,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[3].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[3].user.username == 'anyone'
 
-        newsfeed.activities[3].reel.reelId == anyReelId
+        newsfeed.activities[3].reel.reel_id == anyReelId
         newsfeed.activities[3].reel.name == 'any reel'
 
         newsfeed.activities[3].video.videoId == anyVideoId
@@ -183,14 +183,14 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[4].type == CREATE_REEL_ACTIVITY_TYPE
         newsfeed.activities[4].user.username == 'anyone'
 
-        newsfeed.activities[4].reel.reelId == anyReelId
+        newsfeed.activities[4].reel.reel_id == anyReelId
         newsfeed.activities[4].reel.name == 'any reel'
 
         and:
         newsfeed.activities[5].type == CREATE_REEL_ACTIVITY_TYPE
         newsfeed.activities[5].user.username == 'someone'
 
-        newsfeed.activities[5].reel.reelId == someReelId
+        newsfeed.activities[5].reel.reel_id == someReelId
         newsfeed.activities[5].reel.name == 'some reel'
     }
 
@@ -222,7 +222,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[0].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[0].user.username == 'someone'
 
-        newsfeed.activities[0].reel.reelId == uncategorizedReelId
+        newsfeed.activities[0].reel.reel_id == uncategorizedReelId
         newsfeed.activities[0].reel.name == 'Uncategorized'
 
         newsfeed.activities[0].video.videoId == uncategorizedVideoId
@@ -232,7 +232,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[1].user.username == 'someone'
 
-        newsfeed.activities[1].reel.reelId == reelId
+        newsfeed.activities[1].reel.reel_id == reelId
         newsfeed.activities[1].reel.name == 'some reel'
 
         newsfeed.activities[1].video.videoId == additionalVideoId
@@ -242,7 +242,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[2].user.username == 'someone'
 
-        newsfeed.activities[2].reel.reelId == reelId
+        newsfeed.activities[2].reel.reel_id == reelId
         newsfeed.activities[2].reel.name == 'some reel'
 
         newsfeed.activities[2].video.videoId == videoId
@@ -252,7 +252,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[3].type == CREATE_REEL_ACTIVITY_TYPE
         newsfeed.activities[3].user.username == 'someone'
 
-        newsfeed.activities[3].reel.reelId == reelId
+        newsfeed.activities[3].reel.reel_id == reelId
         newsfeed.activities[3].reel.name == 'some reel'
     }
 
@@ -284,7 +284,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[0].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[0].user.username == 'someone'
 
-        newsfeed.activities[0].reel.reelId == someReelId
+        newsfeed.activities[0].reel.reel_id == someReelId
         newsfeed.activities[0].reel.name == 'some reel'
 
         newsfeed.activities[0].video.videoId == someVideoId
@@ -294,7 +294,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[1].user.username == 'anyone'
 
-        newsfeed.activities[1].reel.reelId == anyReelId
+        newsfeed.activities[1].reel.reel_id == anyReelId
         newsfeed.activities[1].reel.name == 'any reel'
 
         newsfeed.activities[1].video.videoId == anyVideoId
@@ -304,14 +304,14 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[2].type == CREATE_REEL_ACTIVITY_TYPE
         newsfeed.activities[2].user.username == 'anyone'
 
-        newsfeed.activities[2].reel.reelId == anyReelId
+        newsfeed.activities[2].reel.reel_id == anyReelId
         newsfeed.activities[2].reel.name == 'any reel'
 
         and:
         newsfeed.activities[3].type == CREATE_REEL_ACTIVITY_TYPE
         newsfeed.activities[3].user.username == 'someone'
 
-        newsfeed.activities[3].reel.reelId == someReelId
+        newsfeed.activities[3].reel.reel_id == someReelId
         newsfeed.activities[3].reel.name == 'some reel'
     }
 
@@ -345,14 +345,14 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[0].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
         newsfeed.activities[0].user.username == TEST_USER
 
-        newsfeed.activities[0].reel.reelId == someReelId
+        newsfeed.activities[0].reel.reel_id == someReelId
         newsfeed.activities[0].reel.name == 'some reel'
 
         and:
         newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[1].user.username == 'someone'
 
-        newsfeed.activities[1].reel.reelId == someReelId
+        newsfeed.activities[1].reel.reel_id == someReelId
         newsfeed.activities[1].reel.name == 'some reel'
 
         newsfeed.activities[1].video.videoId == someVideoId
@@ -362,7 +362,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[2].user.username == 'anyone'
 
-        newsfeed.activities[2].reel.reelId == anyReelId
+        newsfeed.activities[2].reel.reel_id == anyReelId
         newsfeed.activities[2].reel.name == 'any reel'
 
         newsfeed.activities[2].video.videoId == anyVideoId
@@ -372,14 +372,14 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[3].type == CREATE_REEL_ACTIVITY_TYPE
         newsfeed.activities[3].user.username == 'anyone'
 
-        newsfeed.activities[3].reel.reelId == anyReelId
+        newsfeed.activities[3].reel.reel_id == anyReelId
         newsfeed.activities[3].reel.name == 'any reel'
 
         and:
         newsfeed.activities[4].type == CREATE_REEL_ACTIVITY_TYPE
         newsfeed.activities[4].user.username == 'someone'
 
-        newsfeed.activities[4].reel.reelId == someReelId
+        newsfeed.activities[4].reel.reel_id == someReelId
         newsfeed.activities[4].reel.name == 'some reel'
     }
 
@@ -421,21 +421,21 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[0].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
         newsfeed.activities[0].user.username == TEST_USER
 
-        newsfeed.activities[0].reel.reelId == reelId
+        newsfeed.activities[0].reel.reel_id == reelId
         newsfeed.activities[0].reel.name == 'some reel'
 
         and:
         newsfeed.activities[1].type == CREATE_REEL_ACTIVITY_TYPE
         newsfeed.activities[1].user.username == 'someone'
 
-        newsfeed.activities[1].reel.reelId == reelId
+        newsfeed.activities[1].reel.reel_id == reelId
         newsfeed.activities[1].reel.name == 'some reel'
 
         and:
         newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
         newsfeed.activities[2].user.username == 'someone'
 
-        newsfeed.activities[2].reel.reelId == uncategorizedReelId
+        newsfeed.activities[2].reel.reel_id == uncategorizedReelId
         newsfeed.activities[2].reel.name == 'Uncategorized'
 
         newsfeed.activities[2].video.videoId == videoId

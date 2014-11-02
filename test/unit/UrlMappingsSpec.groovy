@@ -50,7 +50,7 @@ class UrlMappingsSpec extends Specification {
 
         expect:
         assertForwardUrlMapping('/videos/1234/status', controller: 'video', action: 'status') {
-            videoId = '1234'
+            video_id = '1234'
         }
     }
 
@@ -60,7 +60,7 @@ class UrlMappingsSpec extends Specification {
 
         expect:
         assertForwardUrlMapping('/videos/1234', controller: 'video', action: 'remove') {
-            videoId = '1234'
+            video_id = '1234'
         }
     }
 
@@ -70,7 +70,7 @@ class UrlMappingsSpec extends Specification {
 
         expect:
         assertForwardUrlMapping('/playlists/1234', controller: 'playlist', action: 'getVariantPlaylist') {
-            videoId = '1234'
+            video_id = '1234'
         }
     }
 
@@ -80,8 +80,8 @@ class UrlMappingsSpec extends Specification {
 
         expect:
         assertForwardUrlMapping('/playlists/12434/949', controller: 'playlist', action: 'getMediaPlaylist') {
-            videoId = '12434'
-            playlistId = '949'
+            video_id = '12434'
+            playlist_id = '949'
         }
     }
 
@@ -91,9 +91,9 @@ class UrlMappingsSpec extends Specification {
 
         expect:
         assertForwardUrlMapping('/playlists/124344/5949/8891', controller: 'segment', action: 'getSegment') {
-            videoId = '124344'
-            playlistId = '5949'
-            segmentId = '8891'
+            video_id = '124344'
+            playlist_id = '5949'
+            segment_id = '8891'
         }
     }
 
@@ -113,7 +113,7 @@ class UrlMappingsSpec extends Specification {
 
         expect:
         assertForwardUrlMapping('/reels/8675309', controller: 'reel', action: action) {
-            reelId = '8675309'
+            reel_id = '8675309'
         }
 
         where:
@@ -129,8 +129,8 @@ class UrlMappingsSpec extends Specification {
 
         expect:
         assertForwardUrlMapping('/reels/1234/5678', controller: 'reel', action: 'removeVideo') {
-            reelId = '1234'
-            videoId = '5678'
+            reel_id = '1234'
+            video_id = '5678'
         }
     }
 
@@ -141,7 +141,7 @@ class UrlMappingsSpec extends Specification {
 
         expect:
         assertForwardUrlMapping('/reels/1234/audience', controller: 'audience', action: action) {
-            reelId = '1234'
+            reel_id = '1234'
         }
 
         where:

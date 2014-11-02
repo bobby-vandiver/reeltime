@@ -75,15 +75,15 @@ class UrlMappings {
             action = [GET: 'listRecentActivity']
         }
 
-        "/playlists/$videoId" (controller: 'playlist') {
+        "/playlists/$video_id" (controller: 'playlist') {
             action = [GET: 'getVariantPlaylist']
         }
 
-        "/playlists/$videoId/$playlistId" (controller: 'playlist') {
+        "/playlists/$video_id/$playlist_id" (controller: 'playlist') {
             action = [GET: 'getMediaPlaylist']
         }
 
-        "/playlists/$videoId/$playlistId/$segmentId" (controller: 'segment') {
+        "/playlists/$video_id/$playlist_id/$segment_id" (controller: 'segment') {
             action = [GET: 'getSegment']
         }
 
@@ -91,15 +91,15 @@ class UrlMappings {
             action = [GET: 'listReels', POST: 'addReel']
         }
 
-        "/reels/$reelId" (controller: 'reel') {
+        "/reels/$reel_id" (controller: 'reel') {
             action = [GET: 'listVideos', POST: 'addVideo', DELETE: 'deleteReel']
         }
 
-        "/reels/$reelId/$videoId" (controller: 'reel') {
+        "/reels/$reel_id/$video_id" (controller: 'reel') {
             action = [DELETE: 'removeVideo']
         }
 
-        "/reels/$reelId/audience" (controller: 'audience') {
+        "/reels/$reel_id/audience" (controller: 'audience') {
             action = [GET: 'listMembers', POST: 'addMember', DELETE: 'removeMember']
         }
 
@@ -131,12 +131,12 @@ class UrlMappings {
             action = [GET: 'listVideos', POST: 'upload']
         }
 
-        "/videos/$videoId" (controller: 'video') {
+        "/videos/$video_id" (controller: 'video') {
             action = [DELETE: 'remove']
         }
 
-        // TODO: This should be /videos/$videoId and return the video object
-        "/videos/$videoId/status" (controller: 'video') {
+        // TODO: This should be /videos/$video_id and return the video object
+        "/videos/$video_id/status" (controller: 'video') {
             action = [GET: 'status']
         }
 

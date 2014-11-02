@@ -22,11 +22,11 @@ class CustomMarshallerRegistrar {
         },
 
         (Reel): { reel ->
-            return [reelId: reel.id, name: reel.name]
+            return [reel_id: reel.id, name: reel.name]
         },
 
         (Video): { video ->
-            return [videoId: video.id, title: video.title]
+            return [video_id: video.id, title: video.title]
         },
 
         (UserReelActivity): { activity ->
