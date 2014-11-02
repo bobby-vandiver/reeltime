@@ -5,12 +5,11 @@ import in.reeltime.user.User
 
 class VideoService {
 
-    // TODO: Get current user from the userService
-    def springSecurityService
+    def authenticationService
     def maxVideosPerPage
 
     boolean currentUserIsVideoCreator(Long videoId) {
-        def currentUser = springSecurityService.currentUser as User
+        def currentUser = authenticationService.currentUser
         Video.findByIdAndCreator(videoId, currentUser) != null
     }
 

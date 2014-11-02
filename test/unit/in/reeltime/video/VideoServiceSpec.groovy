@@ -3,6 +3,7 @@ package in.reeltime.video
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import in.reeltime.security.AuthenticationService
 import in.reeltime.user.User
 import in.reeltime.exceptions.VideoNotFoundException
 import spock.lang.Specification
@@ -12,11 +13,11 @@ import spock.lang.Unroll
 @Mock([Video, User])
 class VideoServiceSpec extends Specification {
 
-    SpringSecurityService springSecurityService
+    AuthenticationService authenticationService
 
     void setup() {
-        springSecurityService = Mock(SpringSecurityService)
-        service.springSecurityService = springSecurityService
+        authenticationService = Mock(AuthenticationService)
+        service.authenticationService = authenticationService
     }
 
     void "creator is the current user"() {
@@ -31,7 +32,7 @@ class VideoServiceSpec extends Specification {
         result
 
         and:
-        1 * springSecurityService.currentUser >> creator
+        1 * authenticationService.getCurrentUser() >> creator
     }
 
     void "creator is not the current user"() {
@@ -49,7 +50,7 @@ class VideoServiceSpec extends Specification {
         !result
 
         and:
-        1 * springSecurityService.currentUser >> currentUser
+        1 * authenticationService.getCurrentUser() >> currentUser
     }
 
     void "video exists"() {
