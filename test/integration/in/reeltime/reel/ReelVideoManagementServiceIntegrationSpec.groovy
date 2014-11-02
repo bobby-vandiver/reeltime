@@ -28,6 +28,26 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         notOwner = UserFactory.createUser('notTheOwner')
     }
 
+    void "do not list videos that are not available for streaming"() {
+        given:
+        def unavailable = VideoFactory.createVideo(owner, 'unavailable', false)
+
+        and:
+        def reel = owner.reels[0]
+        def reelId = reel.id
+
+        and:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelVideoManagementService.addVideoToReel(reel, unavailable)
+        }
+
+        when:
+        def list = reelVideoManagementService.listVideosInReel(reelId, 1)
+
+        then:
+        list.size() == 0
+    }
+
     void "list videos in reel by page from newest to oldest"() {
         given:
         def savedMaxVideosPerPage = reelVideoManagementService.maxVideosPerPage

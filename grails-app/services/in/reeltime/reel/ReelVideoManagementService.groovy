@@ -22,7 +22,9 @@ class ReelVideoManagementService {
         def videoIds = ReelVideo.findAllByReel(reel)?.collect { it.video*.id }?.flatten()
 
         int offset = (page - 1) * maxVideosPerPage
-        Video.findAllByIdInList(videoIds, [max: maxVideosPerPage, offset: offset, sort: 'dateCreated', order: 'desc'])
+        def params = [max: maxVideosPerPage, offset: offset, sort: 'dateCreated', order: 'desc']
+
+        Video.findAllByIdInListAndAvailable(videoIds, true, params)
     }
 
     void addVideo(Long reelId, Long videoId) {
