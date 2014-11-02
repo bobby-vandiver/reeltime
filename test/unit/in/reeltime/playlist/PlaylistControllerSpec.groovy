@@ -54,7 +54,7 @@ class PlaylistControllerSpec extends Specification {
         response.status == 404
 
         where:
-        name << ['playlistId', 'video_id']
+        name << ['playlist_id', 'video_id']
     }
 
     void "return a 404 if the playlist does not belong to the video"() {
@@ -74,7 +74,7 @@ class PlaylistControllerSpec extends Specification {
 
         and:
         params.videoId = video2.id
-        params.playlistId = playlist.id
+        params.playlist_id = playlist.id
 
         when:
         controller.getMediaPlaylist()
@@ -97,9 +97,9 @@ class PlaylistControllerSpec extends Specification {
 
         and:
         params.videoId = video.id
-        params.playlistId = playlist.id
+        params.playlist_id = playlist.id
 
-        assert Playlist.findById(params.playlistId)
+        assert Playlist.findById(params.playlist_id)
 
         and:
         controller.playlistService = Mock(PlaylistService)
