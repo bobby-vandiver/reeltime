@@ -233,7 +233,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
     void "successfully delete a reel"() {
         given:
         def reelId = 8675309
-        params.reelId = reelId
+        params.reel_id = reelId
 
         when:
         controller.deleteReel()
@@ -249,7 +249,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
     void "unauthorized delete reel request"() {
         given:
         def reelId = 1234
-        params.reelId = reelId
+        params.reel_id = reelId
 
         when:
         controller.deleteReel()
@@ -267,7 +267,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         def reelId = 9431
-        params.reelId = reelId
+        params.reel_id = reelId
 
         when:
         controller.deleteReel()
@@ -282,7 +282,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     void "use page 1 for videos in reel list if page param is omitted"() {
         given:
-        params.reelId = 1234
+        params.reel_id = 1234
 
         when:
         controller.listVideos()
@@ -296,7 +296,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     void "specify page for videos in reel list"() {
         given:
-        params.reelId = 1234
+        params.reel_id = 1234
         params.page = 21
 
         when:
@@ -311,7 +311,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     void "empty list of videos for reel"() {
         given:
-        params.reelId = 1234
+        params.reel_id = 1234
 
         when:
         controller.listVideos()
@@ -333,7 +333,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         assert video.id > 0
 
         and:
-        params.reelId = 1234
+        params.reel_id = 1234
 
         when:
         controller.listVideos()
@@ -364,7 +364,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         assert video2.id > 0
 
         and:
-        params.reelId = 1234
+        params.reel_id = 1234
 
         when:
         controller.listVideos()
@@ -396,7 +396,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         def reelId = 9431
-        params.reelId = reelId
+        params.reel_id = reelId
 
         when:
         controller.listVideos()
@@ -415,8 +415,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
         def videoId = 81813
 
         and:
-        params.reelId = reelId
-        params.videoId = videoId
+        params.reel_id = reelId
+        params.video_id = videoId
 
         when:
         controller.addVideo()
@@ -435,8 +435,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
         def videoId = 81813
 
         and:
-        params.reelId = reelId
-        params.videoId = videoId
+        params.reel_id = reelId
+        params.video_id = videoId
 
         when:
         controller.addVideo()
@@ -454,8 +454,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
         def videoId = 81813
 
         and:
-        params.reelId = reelId
-        params.videoId = videoId
+        params.reel_id = reelId
+        params.video_id = videoId
 
         when:
         controller.addVideo()
@@ -478,8 +478,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
         def videoId = 81813
 
         and:
-        params.reelId = reelId
-        params.videoId = videoId
+        params.reel_id = reelId
+        params.video_id = videoId
 
         when:
         controller.removeVideo()
@@ -503,8 +503,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
         def videoId = 81813
 
         and:
-        params.reelId = reelId
-        params.videoId = videoId
+        params.reel_id = reelId
+        params.video_id = videoId
 
         when:
         controller.removeVideo()
@@ -522,8 +522,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
         def videoId = 81813
 
         and:
-        params.reelId = reelId
-        params.videoId = videoId
+        params.reel_id = reelId
+        params.video_id = videoId
 
         when:
         controller.removeVideo()

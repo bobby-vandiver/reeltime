@@ -140,7 +140,7 @@ class VideoControllerSpec extends AbstractControllerSpec {
     @Unroll
     void "status [#statusCode] for video that exists [#exists], current user is creator [#isCreator] and video is available [#available]"() {
         given:
-        params.videoId = 1234
+        params.video_id = 1234
 
         when:
         controller.status()
@@ -164,7 +164,7 @@ class VideoControllerSpec extends AbstractControllerSpec {
 
     void "pass videoId to service for removal"() {
         given:
-        params.videoId = 1234
+        params.video_id = 1234
 
         when:
         controller.remove()
@@ -181,7 +181,7 @@ class VideoControllerSpec extends AbstractControllerSpec {
         def message = 'TEST'
 
         and:
-        params.videoId = 1234
+        params.video_id = 1234
 
         when:
         controller.remove()

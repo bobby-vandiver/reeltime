@@ -20,7 +20,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         controller.audienceService = audienceService
 
         reelId = 1234
-        params.reelId = reelId
+        params.reel_id = reelId
     }
 
     void "use page 1 for list if page param is omitted"() {

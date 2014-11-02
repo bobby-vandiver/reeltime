@@ -165,10 +165,10 @@ class ReelTimeRequestFactory {
         new RestRequest(url: url, token: token)
     }
 
-    RestRequest addVideoToReel(String token, Long reelId, Long vid) {
+    RestRequest addVideoToReel(String token, Long reelId, Long videoId) {
         def url = urlFactory.getReelUrl(reelId)
         new RestRequest(url: url, token: token, customizer: {
-            videoId = vid
+            video_id = videoId
         })
     }
 

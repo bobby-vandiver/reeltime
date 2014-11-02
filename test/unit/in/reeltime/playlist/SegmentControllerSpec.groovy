@@ -89,9 +89,9 @@ class SegmentControllerSpec extends Specification {
         assert segment.id
 
         and:
-        params.videoId = video.id
-        params.playlistId = playlist.id
-        params.segmentId = segment.segmentId
+        params.video_id = video.id
+        params.playlist_id = playlist.id
+        params.segment_id = segment.segmentId
 
         and:
         def segmentStream = new ByteArrayInputStream('media segment'.bytes)
@@ -132,9 +132,9 @@ class SegmentControllerSpec extends Specification {
         assert segment2.id
 
         and:
-        params.videoId = video.id
-        params.playlistId = playlist.id
-        params.segmentId = segment1.segmentId
+        params.video_id = video.id
+        params.playlist_id = playlist.id
+        params.segment_id = segment1.segmentId
 
         and:
         def data = new File('test/files/sample.ts')

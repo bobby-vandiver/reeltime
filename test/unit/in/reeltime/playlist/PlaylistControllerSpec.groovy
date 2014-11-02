@@ -12,7 +12,7 @@ class PlaylistControllerSpec extends Specification {
 
     void "return a 404 if the video does not exist"() {
         given:
-        params.videoId = 1234
+        params.video_id = 1234
 
         when:
         controller.getVariantPlaylist()
@@ -24,7 +24,7 @@ class PlaylistControllerSpec extends Specification {
     void "return a 200 and the variant playlist for the requested video"() {
         given:
         def video = new Video(title: 'test', available: true).save(validate: false)
-        params.videoId = video.id
+        params.video_id = video.id
         assert video.id
 
         and:
@@ -73,7 +73,7 @@ class PlaylistControllerSpec extends Specification {
         assert video1.id != video2.id
 
         and:
-        params.videoId = video2.id
+        params.video_id = video2.id
         params.playlist_id = playlist.id
 
         when:
@@ -96,7 +96,7 @@ class PlaylistControllerSpec extends Specification {
         assert video.id
 
         and:
-        params.videoId = video.id
+        params.video_id = video.id
         params.playlist_id = playlist.id
 
         assert Playlist.findById(params.playlist_id)
@@ -120,7 +120,7 @@ class PlaylistControllerSpec extends Specification {
     void "return a 404 if the video exists but is not available for [#method]"() {
         given:
         def video = new Video(title: 'test', available: false).save(validate: false)
-        params.videoId = video.id
+        params.video_id = video.id
         assert video.id
 
         when:
