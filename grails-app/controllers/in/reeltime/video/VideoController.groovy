@@ -4,9 +4,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.ProbeException
 import in.reeltime.exceptions.TranscoderException
-import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.search.PagedListCommand
-import in.reeltime.user.User
 import org.springframework.web.multipart.MultipartRequest
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 import static javax.servlet.http.HttpServletResponse.*
@@ -78,7 +76,7 @@ class VideoController extends AbstractController {
     def status(VideoCommand command) {
         handleCommandRequest(command) {
             int status
-            def videoId = command.videoId
+            def videoId = command.video_id
             if (!videoService.videoExists(videoId)) {
                 status = SC_NOT_FOUND
             } else if (!videoService.currentUserIsVideoCreator(videoId)) {
@@ -94,9 +92,9 @@ class VideoController extends AbstractController {
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('videos-write')"])
     def remove(VideoCommand command) {
-        log.debug "Removing video [${command.videoId}]"
+        log.debug "Removing video [${command.video_id}]"
         handleCommandRequest(command) {
-            videoRemovalService.removeVideoById(command.videoId)
+            videoRemovalService.removeVideoById(command.video_id)
             render(status: SC_OK)
         }
     }

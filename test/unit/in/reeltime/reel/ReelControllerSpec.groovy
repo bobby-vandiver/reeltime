@@ -347,7 +347,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         json[0].size() == 2
-        json[0].videoId == video.id
+        json[0].video_id == video.id
         json[0].title == 'one'
 
         and:
@@ -378,12 +378,12 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         json[0].size() == 2
-        json[0].videoId == video1.id
+        json[0].video_id == video1.id
         json[0].title == 'first'
 
         and:
         json[1].size() == 2
-        json[1].videoId == video2.id
+        json[1].video_id == video2.id
         json[1].title == 'second'
 
         and:

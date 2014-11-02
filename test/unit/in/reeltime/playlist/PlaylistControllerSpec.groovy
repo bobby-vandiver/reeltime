@@ -54,7 +54,7 @@ class PlaylistControllerSpec extends Specification {
         response.status == 404
 
         where:
-        name << ['playlistId', 'videoId']
+        name << ['playlistId', 'video_id']
     }
 
     void "return a 404 if the playlist does not belong to the video"() {

@@ -23,7 +23,7 @@ class SegmentControllerSpec extends Specification {
         response.status == 404
 
         where:
-        name << ['segmentId', 'playlistId', 'videoId']
+        name << ['segmentId', 'playlistId', 'video_id']
     }
 
     void "return a 404 if the video exists but is not available"() {

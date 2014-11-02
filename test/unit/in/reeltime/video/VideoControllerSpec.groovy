@@ -63,7 +63,7 @@ class VideoControllerSpec extends AbstractControllerSpec {
         json.size() == 1
 
         and:
-        json[0].videoId == video.id
+        json[0].video_id == video.id
         json[0].title == 'buzz'
 
         and:
@@ -108,7 +108,7 @@ class VideoControllerSpec extends AbstractControllerSpec {
         json.size() == 2
 
         and:
-        json.videoId > 0
+        json.video_id > 0
         json.title == title
     }
 

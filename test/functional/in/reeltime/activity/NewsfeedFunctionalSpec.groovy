@@ -100,7 +100,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[1].reel.reel_id == reelId
         newsfeed.activities[1].reel.name == 'some reel'
 
-        newsfeed.activities[1].video.videoId == additionalVideoId
+        newsfeed.activities[1].video.video_id == additionalVideoId
         newsfeed.activities[1].video.title == 'another video'
 
         and:
@@ -110,7 +110,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[2].reel.reel_id == reelId
         newsfeed.activities[2].reel.name == 'some reel'
 
-        newsfeed.activities[2].video.videoId == videoId
+        newsfeed.activities[2].video.video_id == videoId
         newsfeed.activities[2].video.title == 'some video'
 
         and:
@@ -166,7 +166,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[2].reel.reel_id == someReelId
         newsfeed.activities[2].reel.name == 'some reel'
 
-        newsfeed.activities[2].video.videoId == someVideoId
+        newsfeed.activities[2].video.video_id == someVideoId
         newsfeed.activities[2].video.title == 'some video'
 
         and:
@@ -176,7 +176,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[3].reel.reel_id == anyReelId
         newsfeed.activities[3].reel.name == 'any reel'
 
-        newsfeed.activities[3].video.videoId == anyVideoId
+        newsfeed.activities[3].video.video_id == anyVideoId
         newsfeed.activities[3].video.title == 'any video'
 
         and:
@@ -225,7 +225,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[0].reel.reel_id == uncategorizedReelId
         newsfeed.activities[0].reel.name == 'Uncategorized'
 
-        newsfeed.activities[0].video.videoId == uncategorizedVideoId
+        newsfeed.activities[0].video.video_id == uncategorizedVideoId
         newsfeed.activities[0].video.title == 'uncategorized video'
 
         and:
@@ -235,7 +235,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[1].reel.reel_id == reelId
         newsfeed.activities[1].reel.name == 'some reel'
 
-        newsfeed.activities[1].video.videoId == additionalVideoId
+        newsfeed.activities[1].video.video_id == additionalVideoId
         newsfeed.activities[1].video.title == 'another video'
 
         and:
@@ -245,7 +245,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[2].reel.reel_id == reelId
         newsfeed.activities[2].reel.name == 'some reel'
 
-        newsfeed.activities[2].video.videoId == videoId
+        newsfeed.activities[2].video.video_id == videoId
         newsfeed.activities[2].video.title == 'some video'
 
         and:
@@ -287,7 +287,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[0].reel.reel_id == someReelId
         newsfeed.activities[0].reel.name == 'some reel'
 
-        newsfeed.activities[0].video.videoId == someVideoId
+        newsfeed.activities[0].video.video_id == someVideoId
         newsfeed.activities[0].video.title == 'some video'
 
         and:
@@ -297,7 +297,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[1].reel.reel_id == anyReelId
         newsfeed.activities[1].reel.name == 'any reel'
 
-        newsfeed.activities[1].video.videoId == anyVideoId
+        newsfeed.activities[1].video.video_id == anyVideoId
         newsfeed.activities[1].video.title == 'any video'
 
         and:
@@ -355,7 +355,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[1].reel.reel_id == someReelId
         newsfeed.activities[1].reel.name == 'some reel'
 
-        newsfeed.activities[1].video.videoId == someVideoId
+        newsfeed.activities[1].video.video_id == someVideoId
         newsfeed.activities[1].video.title == 'some video'
 
         and:
@@ -365,7 +365,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[2].reel.reel_id == anyReelId
         newsfeed.activities[2].reel.name == 'any reel'
 
-        newsfeed.activities[2].video.videoId == anyVideoId
+        newsfeed.activities[2].video.video_id == anyVideoId
         newsfeed.activities[2].video.title == 'any video'
 
         and:
@@ -438,7 +438,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         newsfeed.activities[2].reel.reel_id == uncategorizedReelId
         newsfeed.activities[2].reel.name == 'Uncategorized'
 
-        newsfeed.activities[2].video.videoId == videoId
+        newsfeed.activities[2].video.video_id == videoId
         newsfeed.activities[2].video.title == 'some video'
     }
 }

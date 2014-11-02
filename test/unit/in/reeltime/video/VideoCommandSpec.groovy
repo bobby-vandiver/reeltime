@@ -11,13 +11,13 @@ class VideoCommandSpec extends Specification {
     @Unroll
     void "videoId [#videoId] is valid [#valid]"() {
         given:
-        def command = new VideoCommand(videoId: videoId)
+        def command = new VideoCommand(video_id: videoId)
 
         expect:
-        command.validate(['videoId']) == valid
+        command.validate(['video_id']) == valid
 
         and:
-        command.errors.getFieldError('videoId')?.code == code
+        command.errors.getFieldError('video_id')?.code == code
 
         where:
         videoId     |   valid   |   code

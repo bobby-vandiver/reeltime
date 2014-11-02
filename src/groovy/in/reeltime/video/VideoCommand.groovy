@@ -5,9 +5,9 @@ import grails.validation.Validateable
 @Validateable
 class VideoCommand {
 
-    Long videoId
+    Long video_id
 
     static constraints = {
-        videoId nullable: false
+        video_id nullable: false
     }
 }

@@ -52,7 +52,7 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
         def response = delete(request)
 
         then:
-        responseChecker.assertSingleErrorMessageResponse(response, 400, '[videoId] is invalid')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[video_id] is invalid')
     }
 
     void "successfully delete video"() {

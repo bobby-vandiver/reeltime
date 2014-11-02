@@ -77,20 +77,20 @@ class ReelController extends AbstractController {
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
     def addVideo(ReelCommand reelCommand, VideoCommand videoCommand) {
-        log.debug "Adding video [${videoCommand.videoId}] to reel [${reelCommand.reel_id}]"
+        log.debug "Adding video [${videoCommand.video_id}] to reel [${reelCommand.reel_id}]"
 
         handleMultipleCommandRequest([reelCommand, videoCommand]) {
-            reelVideoManagementService.addVideo(reelCommand.reel_id, videoCommand.videoId)
+            reelVideoManagementService.addVideo(reelCommand.reel_id, videoCommand.video_id)
             render(status: SC_CREATED)
         }
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('reels-write')"])
     def removeVideo(ReelCommand reelCommand, VideoCommand videoCommand) {
-        log.debug "Removing video [${videoCommand.videoId}] from reel [${reelCommand.reel_id}]"
+        log.debug "Removing video [${videoCommand.video_id}] from reel [${reelCommand.reel_id}]"
 
         handleMultipleCommandRequest([reelCommand, videoCommand]) {
-            reelVideoManagementService.removeVideo(reelCommand.reel_id, videoCommand.videoId)
+            reelVideoManagementService.removeVideo(reelCommand.reel_id, videoCommand.video_id)
             render(status: SC_OK)
         }
     }

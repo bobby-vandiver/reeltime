@@ -80,7 +80,7 @@ class NewsfeedControllerSpec extends AbstractControllerSpec {
         json.activities[0].reel.reel_id == reelId
         json.activities[0].reel.name == 'foo'
 
-        json.activities[0].video.videoId == videoId
+        json.activities[0].video.video_id == videoId
         json.activities[0].video.title == 'bar'
 
         and:

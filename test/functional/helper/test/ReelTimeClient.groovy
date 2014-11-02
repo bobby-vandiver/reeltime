@@ -173,7 +173,7 @@ class ReelTimeClient {
 
         assertStatusOrFail(response, 202, "Failed to upload video.")
 
-        return response.json.videoId
+        return response.json.video_id
     }
 
     int pollForCreationComplete(String uploadToken, long videoId,

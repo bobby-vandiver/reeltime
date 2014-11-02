@@ -103,7 +103,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         where:
         videoId         |   statusCode  |   message
         '12'            |   404         |   'Requested video was not found'
-        'invalid123'    |   400         |   '[videoId] is invalid'
+        'invalid123'    |   400         |   '[video_id] is invalid'
     }
 
     void "missing videoId when adding video to reel"() {
@@ -118,7 +118,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        responseChecker.assertSingleErrorMessageResponse(response, 400, '[videoId] is required')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[video_id] is required')
     }
 
     void "attempt to list reels for an unknown user"() {
@@ -297,7 +297,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         then:
         response.status == 200
         response.json.size() == 1
-        response.json[0].videoId == videoId
+        response.json[0].video_id == videoId
     }
 
     void "uploaded video is added to another person's reel"() {
