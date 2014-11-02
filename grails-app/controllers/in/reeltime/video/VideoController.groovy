@@ -4,6 +4,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.ProbeException
 import in.reeltime.exceptions.TranscoderException
+import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.search.PagedListCommand
 import org.springframework.web.multipart.MultipartRequest
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
@@ -17,7 +18,7 @@ class VideoController extends AbstractController {
     def videoCreationService
     def videoRemovalService
 
-    static allowedMethods = [listVideos: 'GET', upload: 'POST', status: 'GET', remove: 'DELETE']
+    static allowedMethods = [listVideos: 'GET', upload: 'POST', status: 'GET', removeVideo: 'DELETE']
 
     @Secured(["#oauth2.hasScope('videos-read')"])
     def listVideos(PagedListCommand command) {
@@ -72,26 +73,26 @@ class VideoController extends AbstractController {
         }
     }
 
-    @Secured(["#oauth2.isUser() and #oauth2.hasScope('videos-write')"])
-    def status(VideoCommand command) {
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('videos-read')"])
+    def getVideo(VideoCommand command) {
         handleCommandRequest(command) {
-            int status
-            def videoId = command.video_id
-            if (!videoService.videoExists(videoId)) {
-                status = SC_NOT_FOUND
-            } else if (!videoService.currentUserIsVideoCreator(videoId)) {
-                status = SC_FORBIDDEN
-            } else if (!videoService.videoIsAvailable(videoId)) {
-                status = SC_ACCEPTED
-            } else {
-                status = SC_CREATED
+            def video = videoService.loadVideo(command.video_id)
+
+            boolean available = video.available
+            boolean currentUserIsCreator = (video.creator == authenticationService.currentUser)
+
+            if(!available && !currentUserIsCreator) {
+                throw new VideoNotFoundException("Video is unavailable and can only be found by its creator at this time")
             }
-            render(status: status)
+
+            render(status: available ? SC_OK : SC_ACCEPTED, contentType: APPLICATION_JSON) {
+                marshall(video)
+            }
         }
     }
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('videos-write')"])
-    def remove(VideoCommand command) {
+    def removeVideo(VideoCommand command) {
         log.debug "Removing video [${command.video_id}]"
         handleCommandRequest(command) {
             videoRemovalService.removeVideoById(command.video_id)

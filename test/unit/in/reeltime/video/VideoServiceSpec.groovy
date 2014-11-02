@@ -13,59 +13,6 @@ import spock.lang.Unroll
 @Mock([Video, User])
 class VideoServiceSpec extends Specification {
 
-    AuthenticationService authenticationService
-
-    void setup() {
-        authenticationService = Mock(AuthenticationService)
-        service.authenticationService = authenticationService
-    }
-
-    void "creator is the current user"() {
-        given:
-        def creator = createUser('creator')
-        def video = new Video(creator: creator).save(validate: false)
-
-        when:
-        def result = service.currentUserIsVideoCreator(video.id)
-
-        then:
-        result
-
-        and:
-        1 * authenticationService.getCurrentUser() >> creator
-    }
-
-    void "creator is not the current user"() {
-        given:
-        def creator = createUser('creator')
-        def video = new Video(creator: creator).save(validate: false)
-
-        and:
-        def currentUser = createUser('current')
-
-        when:
-        def result = service.currentUserIsVideoCreator(video.id)
-
-        then:
-        !result
-
-        and:
-        1 * authenticationService.getCurrentUser() >> currentUser
-    }
-
-    void "video exists"() {
-        given:
-        def video = new Video().save(validate: false)
-
-        expect:
-        service.videoExists(video.id)
-    }
-
-    void "video does not exist"() {
-        expect:
-        !service.videoExists(1234)
-    }
-
     void "load video that exists"() {
         given:
         def video = new Video().save(validate: false)

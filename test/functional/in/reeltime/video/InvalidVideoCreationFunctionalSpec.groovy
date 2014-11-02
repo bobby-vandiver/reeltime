@@ -6,13 +6,13 @@ import in.reeltime.FunctionalSpec
 class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     String invalidToken
-    String insufficientScopeToken
-    String uploadToken
+    String videosReadToken
+    String videosWriteToken
 
     void setup() {
         invalidToken = 'bad-mojo'
-        insufficientScopeToken = getAccessTokenWithScopeForTestUser('videos-read')
-        uploadToken = getAccessTokenWithScopeForTestUser('videos-write')
+        videosReadToken = getAccessTokenWithScopeForTestUser('videos-read')
+        videosWriteToken = getAccessTokenWithScopeForTestUser('videos-write')
     }
 
     void "no token present"() {
@@ -28,7 +28,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "token does not have upload scope"() {
         given:
-        def request = createUploadRequest(insufficientScopeToken)
+        def request = createUploadRequest(videosReadToken)
 
         when:
         def response = post(request)
@@ -50,12 +50,12 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "invalid http method for upload"() {
         expect:
-        responseChecker.assertInvalidHttpMethods(urlFactory.uploadUrl, ['get', 'put', 'delete'], uploadToken)
+        responseChecker.assertInvalidHttpMethods(urlFactory.uploadUrl, ['get', 'put', 'delete'], videosWriteToken)
     }
 
     void "all params are missing"() {
         given:
-        def request = createUploadRequest(uploadToken)
+        def request = createUploadRequest(videosWriteToken)
 
         and:
         def expectedErrors = [
@@ -73,7 +73,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "video param is missing"() {
         given:
-        def request = createUploadRequest(uploadToken) {
+        def request = createUploadRequest(videosWriteToken) {
             reel = 'Uncategorized'
             title = 'no-video'
         }
@@ -87,7 +87,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "title param is missing"() {
         given:
-        def request = createUploadRequest(uploadToken) {
+        def request = createUploadRequest(videosWriteToken) {
             reel = 'Uncategorized'
             video = new File('test/files/small.mp4')
         }
@@ -101,7 +101,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "reel param is missing"() {
         given:
-        def request = createUploadRequest(uploadToken) {
+        def request = createUploadRequest(videosWriteToken) {
             title = 'no-reel'
             video = new File('test/files/small.mp4')
         }
@@ -115,7 +115,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "unknown reel specified"() {
         given:
-        def request = createUploadRequest(uploadToken) {
+        def request = createUploadRequest(videosWriteToken) {
             reel = 'unknown-reel'
             title = 'unknown reel test'
             video = new File('test/files/small.mp4')
@@ -130,7 +130,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "submitted video contains only aac stream"() {
         given:
-        def request = createUploadRequest(uploadToken) {
+        def request = createUploadRequest(videosWriteToken) {
             reel = 'Uncategorized'
             title = 'video-is-only-aac'
             video = new File('test/files/sample_mpeg4.mp4')
@@ -148,7 +148,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def expected = ['[video] must contain an h264 video stream', '[video] must contain an aac audio stream']
 
         and:
-        def request = createUploadRequest(uploadToken) {
+        def request = createUploadRequest(videosWriteToken) {
             reel = 'Uncategorized'
             title = 'video-has-no-valid-streams'
             video = new File('test/files/empty')
@@ -163,7 +163,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "submitted video exceeds max length"() {
         given:
-        def request = createUploadRequest(uploadToken) {
+        def request = createUploadRequest(videosWriteToken) {
             reel = 'Uncategorized'
             title = 'video-exceeds-max-length'
             video = new File('test/files/spidey.mp4')
@@ -176,46 +176,26 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         responseChecker.assertSingleErrorMessageResponse(response, 400, '[video] exceeds max length of 2 minutes')
     }
 
-    void "invalid http method for status"() {
+    void "invalid http method for video url"() {
         given:
-        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(uploadToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(videosWriteToken)
 
         expect:
-        responseChecker.assertInvalidHttpMethods(urlFactory.getStatusUrl(videoId), ['post', 'put', 'delete'], uploadToken)
+        responseChecker.assertInvalidHttpMethods(urlFactory.getVideoUrl(videoId), ['post', 'put'], videosWriteToken)
     }
 
-    void "cannot check status of unknown video"() {
+    void "cannot get unknown video"() {
         given:
-        def request = createStatusRequest(1234, uploadToken)
+        def request = requestFactory.getVideo(videosReadToken, 1234)
 
         when:
         def response = get(request)
 
         then:
-        response.status == 404
-    }
-
-    void "cannot check status if not the creator"() {
-        given:
-        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(uploadToken)
-        def differentUserToken = registerNewUserAndGetToken('notTheCreator', 'videos-write')
-
-        and:
-        def request = createStatusRequest(videoId, differentUserToken)
-
-        when:
-        def response = get(request)
-
-        then:
-        response.status == 403
+        responseChecker.assertSingleErrorMessageResponse(response, 404, 'Requested video was not found')
     }
 
     private RestRequest createUploadRequest(String token = null, Closure params = null) {
         new RestRequest(url: urlFactory.uploadUrl, token: token, isMultiPart: params != null, customizer: params)
-    }
-
-    private RestRequest createStatusRequest(Long videoId, String token) {
-        def statusUrl = urlFactory.getStatusUrl(videoId)
-        new RestRequest(url: statusUrl, token: token)
     }
 }

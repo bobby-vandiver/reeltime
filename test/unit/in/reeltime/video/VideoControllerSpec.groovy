@@ -137,29 +137,75 @@ class VideoControllerSpec extends AbstractControllerSpec {
         ProbeException          |   'videoCreation.probe.error'
     }
 
-    @Unroll
-    void "status [#statusCode] for video that exists [#exists], current user is creator [#isCreator] and video is available [#available]"() {
+    void "attempt to get video that does not exist"() {
         given:
         params.video_id = 1234
 
         when:
-        controller.status()
+        controller.getVideo()
 
         then:
-        response.status == statusCode
-        response.contentLength == 0
+        assertErrorMessageResponse(response, 404, TEST_MESSAGE)
 
         and:
-        videoService.videoExists(1234) >> exists
-        videoService.currentUserIsVideoCreator(1234) >> isCreator
-        videoService.videoIsAvailable(1234) >> available
+        1 * videoService.loadVideo(1234) >> { throw new VideoNotFoundException('') }
+        1 * localizedMessageService.getMessage('video.unknown', request.locale) >> TEST_MESSAGE
+    }
+
+    void "requested unavailable video should appear as not found to users who are not the creator"() {
+        given:
+        def notCreator = new User(username: currentUser.username + 'a')
+        controller.authenticationService = Stub(AuthenticationService) {
+            getCurrentUser() >> notCreator
+        }
+
+        def video = new Video(creator: currentUser, title: 'test', available: false).save(validate: false)
+        def videoId = video.id
+
+        and:
+        params.video_id = videoId
+
+        when:
+        controller.getVideo()
+
+        then:
+        assertErrorMessageResponse(response, 404, TEST_MESSAGE)
+
+        and:
+        1 * videoService.loadVideo(videoId) >> video
+        1 * localizedMessageService.getMessage('video.unknown', request.locale) >> TEST_MESSAGE
+    }
+
+    @Unroll
+    void "requested video is available [#available] and requested by creator"() {
+        given:
+        def video = new Video(creator: currentUser, title: 'test', available: available).save(validate: false)
+        def videoId = video.id
+
+        and:
+        params.video_id = videoId
+
+        when:
+        controller.getVideo()
+
+        then:
+        assertStatusCodeAndContentType(response, statusCode)
+
+        and:
+        def json = getJsonResponse(response)
+        json.size() == 2
+
+        and:
+        json.video_id == videoId
+        json.title == 'test'
+
+        and:
+        1 * videoService.loadVideo(videoId) >> video
 
         where:
-        statusCode  |   exists  |   isCreator   |   available
-        404         |   false   |   null        |   null
-        403         |   true    |   false       |   null
-        202         |   true    |   true        |   false
-        201         |   true    |   true        |   true
+        available   |   statusCode
+        false       |   202
+        true        |   200
     }
 
     void "pass videoId to service for removal"() {
@@ -167,7 +213,7 @@ class VideoControllerSpec extends AbstractControllerSpec {
         params.video_id = 1234
 
         when:
-        controller.remove()
+        controller.removeVideo()
 
         then:
         response.status == 200
@@ -184,7 +230,7 @@ class VideoControllerSpec extends AbstractControllerSpec {
         params.video_id = 1234
 
         when:
-        controller.remove()
+        controller.removeVideo()
 
         then:
         assertErrorMessageResponse(response, 404, message)

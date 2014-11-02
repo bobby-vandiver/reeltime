@@ -5,17 +5,7 @@ import in.reeltime.user.User
 
 class VideoService {
 
-    def authenticationService
     def maxVideosPerPage
-
-    boolean currentUserIsVideoCreator(Long videoId) {
-        def currentUser = authenticationService.currentUser
-        Video.findByIdAndCreator(videoId, currentUser) != null
-    }
-
-    boolean videoExists(Long videoId) {
-        Video.findById(videoId) != null
-    }
 
     List<Video> listVideos(int page) {
         int offset = (page - 1) * maxVideosPerPage

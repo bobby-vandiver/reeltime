@@ -44,24 +44,20 @@ class UrlMappingsSpec extends Specification {
         'error'         |   '/transcoder/notification/error'
     }
 
-    void "test video status endpoint mapping"() {
+    @Unroll
+    void "httpMethod [#httpMethod] for video url maps to action [#action]"() {
         given:
-        webRequest.currentRequest.method = 'GET'
+        webRequest.currentRequest.method = httpMethod
 
         expect:
-        assertForwardUrlMapping('/videos/1234/status', controller: 'video', action: 'status') {
+        assertForwardUrlMapping('/videos/1234', controller: 'video', action: action) {
             video_id = '1234'
         }
-    }
 
-    void "test video removal endpoint mapping"() {
-        given:
-        webRequest.currentRequest.method = 'DELETE'
-
-        expect:
-        assertForwardUrlMapping('/videos/1234', controller: 'video', action: 'remove') {
-            video_id = '1234'
-        }
+        where:
+        httpMethod  |   action
+        'GET'       |   'getVideo'
+        'DELETE'    |   'removeVideo'
     }
 
     void "test variant playlist streaming endpoint mapping"() {

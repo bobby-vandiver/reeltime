@@ -89,11 +89,11 @@ public class ReelTimeUrlFactory {
     }
 
     String getDeleteVideoUrl(videoId) {
-        getUrlForResource("videos/$videoId")
+        getVideoUrl(videoId)
     }
 
-    String getStatusUrl(videoId) {
-        getUrlForResource("videos/$videoId/status")
+    String getVideoUrl(videoId) {
+        getUrlForResource("videos/$videoId")
     }
 
     String getListReelsUrl() {

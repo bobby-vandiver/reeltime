@@ -132,13 +132,7 @@ class UrlMappings {
         }
 
         "/videos/$video_id" (controller: 'video') {
-            action = [DELETE: 'remove']
+            action = [GET: 'getVideo', DELETE: 'removeVideo']
         }
-
-        // TODO: This should be /videos/$video_id and return the video object
-        "/videos/$video_id/status" (controller: 'video') {
-            action = [GET: 'status']
-        }
-
     }
 }

@@ -140,8 +140,8 @@ class ReelTimeRequestFactory {
         new RestRequest(url: url, token: token)
     }
 
-    RestRequest videoStatus(String token, Long videoId) {
-        def url = urlFactory.getStatusUrl(videoId)
+    RestRequest getVideo(String token, videoId) {
+        def url = urlFactory.getVideoUrl(videoId)
         new RestRequest(url: url, token: token)
     }
 

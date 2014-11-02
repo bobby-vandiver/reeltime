@@ -5,7 +5,8 @@ import in.reeltime.FunctionalSpec
 
 class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
 
-    String uploadToken
+    String videosReadToken
+    String videosWriteToken
     String reelsReadToken
 
     // TODO: Define what an acceptable turn around time
@@ -13,13 +14,14 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
     private static final STATUS_RETRY_DELAY_IN_MILLIS = 5 * 1000
 
     void setup() {
-        uploadToken = getAccessTokenWithScopeForTestUser('videos-write')
+        videosReadToken = getAccessTokenWithScopeForTestUser('videos-read')
+        videosWriteToken = getAccessTokenWithScopeForTestUser('videos-write')
         reelsReadToken = getAccessTokenWithScopeForTestUser('reels-read')
     }
 
     void "minimum required params"() {
         given:
-        def request = createUploadRequest(uploadToken) {
+        def request = createUploadRequest(videosWriteToken) {
             reel = 'Uncategorized'
             title = 'minimum-viable-video'
             video = new File('test/files/small.mp4')
@@ -37,16 +39,16 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "successful upload polls for status"() {
         given:
-        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(uploadToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(videosWriteToken)
 
         expect:
-        reelTimeClient.pollForCreationComplete(uploadToken, videoId, MAX_POLL_COUNT, STATUS_RETRY_DELAY_IN_MILLIS) == 201
+        reelTimeClient.pollForCreationComplete(videosReadToken, videoId, MAX_POLL_COUNT, STATUS_RETRY_DELAY_IN_MILLIS) == 200
     }
 
     void "uploaded video is added to the specified reel"() {
         given:
         def reelId = reelTimeClient.getUncategorizedReelId(reelsReadToken)
-        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(uploadToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(videosWriteToken)
 
         expect:
         def list = reelTimeClient.listVideosInReel(reelsReadToken, reelId)

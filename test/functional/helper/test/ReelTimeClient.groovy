@@ -179,12 +179,12 @@ class ReelTimeClient {
     int pollForCreationComplete(String uploadToken, long videoId,
               int maxPollCount = DEFAULT_MAX_POLL_COUNT, long retryDelayMillis = DEFAULT_RETRY_DELAY_IN_MILLIS) {
 
-        def request = requestFactory.videoStatus(uploadToken, videoId)
+        def request = requestFactory.getVideo(uploadToken, videoId)
 
         int videoCreatedStatus = 0
         int pollCount = 0
 
-        while(videoCreatedStatus != 201 && pollCount < maxPollCount) {
+        while(videoCreatedStatus != 200 && pollCount < maxPollCount) {
             def response = get(request)
             videoCreatedStatus = response.status
 
