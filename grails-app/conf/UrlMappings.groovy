@@ -55,7 +55,7 @@ class UrlMappings {
             action = [POST: 'sendEmail']
         }
 
-        "/account/display" (controller: 'accountManagement') {
+        "/account/display_name" (controller: 'accountManagement') {
             action = [POST: 'changeDisplayName']
         }
 

@@ -57,7 +57,7 @@ public class ReelTimeUrlFactory {
     }
 
     String getChangeDisplayNameUrl() {
-        getUrlForResource('account/display')
+        getUrlForResource('account/display_name')
     }
 
     String getChangePasswordUrl() {
