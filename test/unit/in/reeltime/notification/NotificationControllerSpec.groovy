@@ -1,31 +1,23 @@
 package in.reeltime.notification
 
-import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import in.reeltime.transcoder.TranscoderJob
-import in.reeltime.video.Video
+import in.reeltime.video.VideoCreationService
 import org.apache.commons.logging.Log
 import spock.lang.Specification
 import spock.lang.Unroll
-import in.reeltime.transcoder.TranscoderJobService
-import in.reeltime.playlist.PlaylistService
 
 @TestFor(NotificationController)
-@Mock([TranscoderJob])
 class NotificationControllerSpec extends Specification {
 
     NotificationService notificationService
-    TranscoderJobService transcoderJobService
-    PlaylistService playlistService
+    VideoCreationService videoCreationService
 
     void setup() {
         notificationService = Mock(NotificationService)
-        transcoderJobService = Mock(TranscoderJobService)
-        playlistService = Mock(PlaylistService)
+        videoCreationService = Mock(VideoCreationService)
 
         controller.notificationService = notificationService
-        controller.transcoderJobService = transcoderJobService
-        controller.playlistService = playlistService
+        controller.videoCreationService = videoCreationService
     }
 
     @Unroll
@@ -199,16 +191,11 @@ class NotificationControllerSpec extends Specification {
         request.addHeader('x-amz-sns-message-type', 'Notification')
         request.content = message.bytes
 
-        and:
-        def video = new Video()
-        def transcoderJob = new TranscoderJob(video: video, jobId: '1388444889472-t01s28').save(validate: false)
-
         when:
         controller.completed()
 
         then:
-        1 * transcoderJobService.complete(transcoderJob)
-        1 * playlistService.addPlaylists(video, 'hls-small/', 'hls-small-master')
+        1 * videoCreationService.addPlaylistsToCompletedVideo('1388444889472-t01s28', 'hls-small/', 'hls-small-master')
 
         and:
         response.status == 200

@@ -15,7 +15,7 @@ class NotificationService {
 
     private static final AUTHENTICATE_ON_UNSUBSCRIBE = 'true'
 
-    def verifyMessage(Map<String, String> parsedMessage) {
+    boolean verifyMessage(Map<String, String> parsedMessage) {
         log.debug("Verifying parsedMessage [$parsedMessage]")
         try {
             def signingCertUrl = parsedMessage.SigningCertURL
@@ -54,7 +54,7 @@ class NotificationService {
         }
     }
 
-    def confirmSubscription(String topicArn, String token) {
+    void confirmSubscription(String topicArn, String token) {
         log.debug("Confirming subscription for topicArn [$topicArn] and token [$token]")
         try {
             def client = awsService.createClient(AmazonSNS) as AmazonSNS

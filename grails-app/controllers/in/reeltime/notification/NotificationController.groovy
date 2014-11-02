@@ -14,8 +14,7 @@ import static javax.servlet.http.HttpServletResponse.*
 class NotificationController {
 
     def notificationService
-    def transcoderJobService
-    def playlistService
+    def videoCreationService
 
     static allowedMethods = [completed: 'POST', progressing: 'POST', warning: 'POST', error: 'POST']
 
@@ -34,15 +33,12 @@ class NotificationController {
     def completed() {
         handleRequest {
             def message = messagesAsJson
-            def transcoderJob = TranscoderJob.findByJobId(message.jobId)
-            transcoderJobService.complete(transcoderJob)
 
-            def video = transcoderJob.video
-
+            def jobId = message.jobId
             def keyPrefix = message.outputKeyPrefix
             def variantPlaylistKey = message.playlists[0].name
 
-            playlistService.addPlaylists(video, keyPrefix, variantPlaylistKey)
+            videoCreationService.addPlaylistsToCompletedVideo(jobId, keyPrefix, variantPlaylistKey)
         }
     }
 
@@ -71,37 +67,25 @@ class NotificationController {
     }
 
     private void handleRequest(Closure notificationHandler) {
-
         log.debug(request.JSON)
+        def messageType = request.getHeader(MESSAGE_TYPE_HEADER)
 
-        if(subscriptionConfirmation) {
+        if(messageType == SUBSCRIPTION_CONFIRMATION) {
             confirmSubscription()
         }
-        else if(notification) {
+        else if(messageType == NOTIFICATION) {
             notificationHandler()
             render status: SC_OK
         }
         else {
-            log.warn("Received an invalid message type: $messageTypeHeader")
+            log.warn("Received an invalid message type: $messageType")
             render status: SC_BAD_REQUEST
         }
     }
 
-    private boolean isSubscriptionConfirmation() {
-        messageTypeHeader == SUBSCRIPTION_CONFIRMATION
-    }
-
-    private boolean isNotification() {
-        messageTypeHeader == NOTIFICATION
-    }
-
-    private String getMessageTypeHeader() {
-        request.getHeader(MESSAGE_TYPE_HEADER)
-    }
-
     private void confirmSubscription() {
-        def topicArn = topicArn
-        def token = token
+        def topicArn = request.JSON.TopicArn
+        def token = request.JSON.Token
 
         if (topicArn && token) {
             notificationService.confirmSubscription(topicArn, token)
@@ -110,13 +94,5 @@ class NotificationController {
         else {
             render status: SC_BAD_REQUEST
         }
-    }
-
-    private String getTopicArn() {
-        request.JSON.TopicArn
-    }
-
-    private String getToken() {
-        request.JSON.Token
     }
 }

@@ -3,7 +3,10 @@ package in.reeltime.video
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.metadata.StreamMetadata
+import in.reeltime.playlist.PlaylistService
 import in.reeltime.reel.Reel
+import in.reeltime.transcoder.TranscoderJob
+import in.reeltime.transcoder.TranscoderJobService
 import spock.lang.Specification
 import in.reeltime.storage.PathGenerationService
 import in.reeltime.user.User
@@ -15,7 +18,7 @@ import spock.lang.Unroll
 import test.helper.StreamMetadataListFactory
 
 @TestFor(VideoCreationService)
-@Mock([Video])
+@Mock([Video, TranscoderJob])
 class VideoCreationServiceSpec extends Specification {
 
     StreamMetadataService streamMetadataService
@@ -27,9 +30,12 @@ class VideoCreationServiceSpec extends Specification {
         streamMetadataService = Mock(StreamMetadataService) {
             extractStreams(_) >> StreamMetadataListFactory.createRequiredStreams()
         }
+
         service.inputStorageService = Mock(InputStorageService)
         service.pathGenerationService = Mock(PathGenerationService)
+        service.playlistService = Mock(PlaylistService)
         service.transcoderService = Mock(TranscoderService)
+        service.transcoderJobService = Mock(TranscoderJobService)
         service.streamMetadataService = streamMetadataService
         service.reelVideoManagementService = Mock(ReelVideoManagementService)
         service.videoService = Mock(VideoService)
@@ -216,6 +222,20 @@ class VideoCreationServiceSpec extends Specification {
         _   |   codec
         _   |   'h264'
         _   |   'aac'
+    }
+
+    void "add playlist to completed video delegates to other services"() {
+        given:
+        def video = new Video()
+        def transcoderJob = new TranscoderJob(video: video, jobId: '1388444889472-t01s28').save(validate: false)
+
+        when:
+        service.addPlaylistsToCompletedVideo('1388444889472-t01s28', 'hls-small/', 'hls-small-master')
+
+        then:
+        1 * service.transcoderJobService.loadJob('1388444889472-t01s28') >> transcoderJob
+        1 * service.transcoderJobService.complete(transcoderJob)
+        1 * service.playlistService.addPlaylists(video, 'hls-small/', 'hls-small-master')
     }
 
     private static VideoCreationCommand createCommandWithVideoStream(byte[] data) {

@@ -8,7 +8,10 @@ class VideoCreationService {
     def inputStorageService
 
     def transcoderService
+    def transcoderJobService
+
     def streamMetadataService
+    def playlistService
 
     def videoService
     def reelVideoManagementService
@@ -116,7 +119,7 @@ class VideoCreationService {
         }
     }
 
-    def createVideo(VideoCreationCommand command) {
+    Video createVideo(VideoCreationCommand command) {
 
         def creator = command.creator
         def title = command.title
@@ -135,5 +138,13 @@ class VideoCreationService {
 
         videoService.storeVideo(video)
         return video
+    }
+
+    void addPlaylistsToCompletedVideo(String transcoderJobId, String keyPrefix, String variantPlaylistKey) {
+        def transcoderJob = transcoderJobService.loadJob(transcoderJobId)
+        transcoderJobService.complete(transcoderJob)
+
+        def video = transcoderJob.video
+        playlistService.addPlaylists(video, keyPrefix, variantPlaylistKey)
     }
 }
