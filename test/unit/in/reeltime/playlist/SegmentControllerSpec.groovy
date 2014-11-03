@@ -4,33 +4,20 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.video.Video
 import spock.lang.Specification
-import spock.lang.Unroll
 import in.reeltime.storage.OutputStorageService
 
 @TestFor(SegmentController)
 @Mock([Video, Playlist, Segment])
 class SegmentControllerSpec extends Specification {
 
-    @Unroll
-    void "return a 404 if [#name] does not exist"() {
-        given:
-        params."${name}" = 12349
-
-        when:
-        controller.getSegment()
-
-        then:
-        response.status == 404
-
-        where:
-        name << ['segmentId', 'playlistId', 'video_id']
-    }
-
     void "return a 404 if the video exists but is not available"() {
         given:
         def video = new Video(title: 'test', available: false).save(validate: false)
-        params.videoId = video.id
+        params.video_id = video.id
         assert video.id
+
+        params.playlist_id = 1234
+        params.segment_id = 5678
 
         when:
         controller.getSegment()
@@ -60,9 +47,9 @@ class SegmentControllerSpec extends Specification {
         assert video1.id != video2.id
 
         and:
-        params.videoId = video2.id
-        params.playlistId = playlist.id
-        params.segmentId = segment.segmentId
+        params.video_id = video2.id
+        params.playlist_id = playlist.id
+        params.segment_id = segment.segmentId
 
         when:
         controller.getSegment()

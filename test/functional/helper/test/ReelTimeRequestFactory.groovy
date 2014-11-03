@@ -91,6 +91,21 @@ class ReelTimeRequestFactory {
         paginatedListRequest(token, pageNumber, urlFactory.newsfeedUrl)
     }
 
+    RestRequest variantPlaylist(String token, videoId) {
+        def url = urlFactory.getVariantPlaylistUrl(videoId)
+        new RestRequest(url: url, token: token)
+    }
+
+    RestRequest mediaPlaylist(String token, videoId, playlistId) {
+        def url = urlFactory.getMediaPlaylistUrl(videoId, playlistId)
+        new RestRequest(url: url, token: token)
+    }
+
+    RestRequest segment(String token, videoId, playlistId, segmentId) {
+        def url = urlFactory.getSegmentUrl(videoId, playlistId, segmentId)
+        new RestRequest(url: url, token: token)
+    }
+
     RestRequest userProfile(String token, username) {
         def url = urlFactory.getUserUrl(username)
         new RestRequest(url: url, token: token)

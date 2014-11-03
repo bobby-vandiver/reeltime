@@ -1,46 +1,49 @@
 package in.reeltime.playlist
 
 import grails.plugin.springsecurity.annotation.Secured
+import in.reeltime.common.AbstractController
 import in.reeltime.video.Video
+import in.reeltime.video.VideoCommand
+
 import static javax.servlet.http.HttpServletResponse.*
 
-class PlaylistController {
+class PlaylistController extends AbstractController {
 
     def playlistService
 
     static allowedMethods = [getVariantPlaylist: 'GET', getMediaPlaylist: 'GET']
 
     @Secured(["#oauth2.hasScope('videos-read')"])
-    def getVariantPlaylist(long video_id) {
+    def getVariantPlaylist(VideoCommand command) {
+        log.debug("Requested variant playlist for video [${command.video_id}]")
 
-        log.debug("Requested variant playlist for video [${video_id}]")
-        def video = Video.findByIdAndAvailable(video_id, true)
-
-        if(video) {
-            response.status = SC_OK
-            response.contentType = 'application/x-mpegURL'
-            response.outputStream << playlistService.generateVariantPlaylist(video)
-        }
-        else {
-            render status: SC_NOT_FOUND
+        handleCommandRequest(command) {
+            def video = Video.findByIdAndAvailable(command.video_id, true)
+            if (video) {
+                response.status = SC_OK
+                response.contentType = 'application/x-mpegURL'
+                response.outputStream << playlistService.generateVariantPlaylist(video)
+            } else {
+                render status: SC_NOT_FOUND
+            }
         }
     }
 
     @Secured(["#oauth2.hasScope('videos-read')"])
-    def getMediaPlaylist(long video_id, long playlist_id) {
+    def getMediaPlaylist(VideoCommand videoCommand, PlaylistCommand playlistCommand) {
+        log.debug("Requested media playlist [${playlistCommand.playlist_id}] for video [${videoCommand.video_id}]")
 
-        log.debug("Requested media playlist [${playlist_id}] for video [${video_id}]")
+        handleMultipleCommandRequest([videoCommand, playlistCommand]) {
+            def video = Video.findByIdAndAvailable(videoCommand.video_id, true)
+            def playlist = Playlist.findByIdAndVideo(playlistCommand.playlist_id, video)
 
-        def video = Video.findByIdAndAvailable(video_id, true)
-        def playlist = Playlist.findByIdAndVideo(playlist_id, video)
-
-        if(playlist) {
-            response.status = SC_OK
-            response.contentType = 'application/x-mpegURL'
-            response.outputStream << playlistService.generateMediaPlaylist(playlist, true)
-        }
-        else {
-            render status: SC_NOT_FOUND
+            if (playlist) {
+                response.status = SC_OK
+                response.contentType = 'application/x-mpegURL'
+                response.outputStream << playlistService.generateMediaPlaylist(playlist, true)
+            } else {
+                render status: SC_NOT_FOUND
+            }
         }
     }
 }

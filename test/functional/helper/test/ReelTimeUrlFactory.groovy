@@ -76,6 +76,18 @@ public class ReelTimeUrlFactory {
         getUrlForResource('newsfeed')
     }
 
+    String getVariantPlaylistUrl(videoId) {
+        getUrlForResource("playlists/$videoId")
+    }
+
+    String getMediaPlaylistUrl(videoId, playlistId) {
+        getUrlForResource("playlists/$videoId/$playlistId")
+    }
+
+    String getSegmentUrl(videoId, playlistId, segmentId) {
+        getUrlForResource("playlists/$videoId/$playlistId/$segmentId")
+    }
+
     String getListVideosUrl() {
         getVideosUrl()
     }

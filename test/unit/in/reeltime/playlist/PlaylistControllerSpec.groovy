@@ -2,13 +2,13 @@ package in.reeltime.playlist
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import spock.lang.Specification
+import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.video.Video
 import spock.lang.Unroll
 
 @TestFor(PlaylistController)
 @Mock([Video, Playlist])
-class PlaylistControllerSpec extends Specification {
+class PlaylistControllerSpec extends AbstractControllerSpec {
 
     void "return a 404 if the video does not exist"() {
         given:
@@ -40,21 +40,6 @@ class PlaylistControllerSpec extends Specification {
         response.status == 200
         response.contentType == 'application/x-mpegURL'
         response.contentAsString == 'variant playlist'
-    }
-
-    @Unroll
-    void "return a 404 if [#name] does not exist"() {
-        given:
-        params."${name}" = 4982
-
-        when:
-        controller.getMediaPlaylist()
-
-        then:
-        response.status == 404
-
-        where:
-        name << ['playlist_id', 'video_id']
     }
 
     void "return a 404 if the playlist does not belong to the video"() {
@@ -122,6 +107,8 @@ class PlaylistControllerSpec extends Specification {
         def video = new Video(title: 'test', available: false).save(validate: false)
         params.video_id = video.id
         assert video.id
+
+        params.playlist_id = 1234
 
         when:
         controller."$method"()
