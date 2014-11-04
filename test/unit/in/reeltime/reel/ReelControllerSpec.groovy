@@ -12,7 +12,7 @@ import in.reeltime.video.Video
 import spock.lang.Unroll
 
 @TestFor(ReelController)
-@Mock([Reel, Video])
+@Mock([Reel, Video, ReelVideo])
 class ReelControllerSpec extends AbstractControllerSpec {
 
     ReelService reelService
@@ -125,9 +125,11 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json.size() == 1
 
         and:
-        json[0].size() == 2
+        json[0].size() == 4
         json[0].reel_id == reel.id
         json[0].name == 'foo'
+        json[0].audience_size == 0
+        json[0].video_count == 0
 
         and:
         1 * reelService.listReelsByUsername('bob', _) >> [reel]
@@ -156,14 +158,18 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json.size() == 2
 
         and:
-        json[0].size() == 2
+        json[0].size() == 4
         json[0].reel_id == reel1.id
         json[0].name == 'foo'
+        json[0].audience_size == 0
+        json[0].video_count == 0
 
         and:
-        json[1].size() == 2
+        json[1].size() == 4
         json[1].reel_id == reel2.id
         json[1].name == 'bar'
+        json[1].audience_size == 0
+        json[1].video_count == 0
 
         and:
         1 * reelService.listReelsByUsername('bob', _) >> [reel1, reel2]
@@ -206,6 +212,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
         def json = getJsonResponse(response)
         json.reel_id == reel.id
         json.name == reelName
+        json.audience_size == 0
+        json.video_count == 0
 
         and:
         1 * reelService.addReel(reelName) >> reel

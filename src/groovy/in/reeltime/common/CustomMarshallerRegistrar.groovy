@@ -22,7 +22,8 @@ class CustomMarshallerRegistrar {
         },
 
         (Reel): { reel ->
-            return [reel_id: reel.id, name: reel.name]
+            return [reel_id: reel.id, name: reel.name, audience_size: reel.numberOfAudienceMembers,
+                    video_count: reel.numberOfVideos]
         },
 
         (Video): { video ->

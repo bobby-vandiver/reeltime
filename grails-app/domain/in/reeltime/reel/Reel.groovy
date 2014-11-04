@@ -16,9 +16,19 @@ class Reel {
     static belongsTo = [owner: User]
     static hasOne = [audience: Audience]
 
+    static transients = ['numberOfVideos', 'numberOfAudienceMembers']
+
     static constraints = {
         name nullable: false, blank: false, minSize: MINIMUM_NAME_LENGTH, maxSize: MAXIMUM_NAME_LENGTH
         owner nullable: false
         audience unique: true
+    }
+
+    int getNumberOfVideos() {
+        ReelVideo.countByReel(this)
+    }
+
+    int getNumberOfAudienceMembers() {
+        audience?.members?.size() ?: 0
     }
 }
