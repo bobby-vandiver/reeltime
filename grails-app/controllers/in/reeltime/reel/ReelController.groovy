@@ -21,6 +21,15 @@ class ReelController extends AbstractController {
             listVideos: 'GET', addVideo: 'POST', removeVideo: 'DELETE'
     ]
 
+    def getReel(ReelCommand command) {
+        log.debug "Getting reel [${command.reel_id}]"
+        handleCommandRequest(command) {
+            render(status: SC_OK, contentType: APPLICATION_JSON) {
+                marshall(reelService.loadReel(command.reel_id))
+            }
+        }
+    }
+
     @Secured(["#oauth2.hasScope('reels-read')"])
     def listReels(PagedListCommand command) {
         log.debug "Listing all reels on page [${command.page}]"
