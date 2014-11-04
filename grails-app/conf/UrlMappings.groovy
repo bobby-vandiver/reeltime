@@ -92,10 +92,14 @@ class UrlMappings {
         }
 
         "/reels/$reel_id" (controller: 'reel') {
-            action = [GET: 'listVideos', POST: 'addVideo', DELETE: 'deleteReel']
+            action = [GET: 'getReel', DELETE: 'deleteReel']
         }
 
-        "/reels/$reel_id/$video_id" (controller: 'reel') {
+        "/reels/$reel_id/videos" (controller: 'reel') {
+            action = [GET: 'listVideos', POST: 'addVideo']
+        }
+
+        "/reels/$reel_id/videos/$video_id" (controller: 'reel') {
             action = [DELETE: 'removeVideo']
         }
 

@@ -21,6 +21,7 @@ class ReelController extends AbstractController {
             listVideos: 'GET', addVideo: 'POST', removeVideo: 'DELETE'
     ]
 
+    @Secured(["#oauth2.hasScope('reels-read')"])
     def getReel(ReelCommand command) {
         log.debug "Getting reel [${command.reel_id}]"
         handleCommandRequest(command) {

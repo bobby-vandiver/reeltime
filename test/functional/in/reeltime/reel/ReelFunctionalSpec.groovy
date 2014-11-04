@@ -28,10 +28,11 @@ class ReelFunctionalSpec extends FunctionalSpec {
         responseChecker.assertInvalidHttpMethods(urlFactory.getUrlForResource(resource), methods, token)
 
         where:
-        resource            |   methods
-        'reels'             |   ['put', 'delete']
-        'reels/1234'        |   ['put']
-        'reels/1234/5678'   |   ['get', 'put', 'post']
+        resource                    |   methods
+        'reels'                     |   ['put', 'delete']
+        'reels/1234'                |   ['post', 'put']
+        'reels/1234/videos'         |   ['put', 'delete']
+        'reels/1234/videos/5678'    |   ['get', 'put', 'post']
     }
 
     @Unroll
@@ -79,11 +80,12 @@ class ReelFunctionalSpec extends FunctionalSpec {
         responseChecker.assertErrorMessageInResponse(response, 400, '[reel_id] is invalid')
 
         where:
-        resource                |   httpMethod
-        'reels/invalid123'      |   'get'
-        'reels/invalid123'      |   'post'
-        'reels/invalid123'      |   'delete'
-        'reels/invalid123/42'   |   'delete'
+        resource                        |   httpMethod
+        'reels/invalid123'              |   'get'
+        'reels/invalid123'              |   'delete'
+        'reels/invalid123/videos'       |   'get'
+        'reels/invalid123/videos'       |   'post'
+        'reels/invalid123/videos/42'    |   'delete'
     }
 
     void "invalid videoId when removing video from reel"() {
@@ -111,7 +113,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(readToken)
 
         and:
-        def addVideoToReelUrl = urlFactory.getReelUrl(uncategorizedReelId)
+        def addVideoToReelUrl = urlFactory.getAddVideoToReelUrl(uncategorizedReelId)
         def request = new RestRequest(url: addVideoToReelUrl, token: writeToken)
 
         when:
@@ -139,7 +141,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
     void "invalid page number for listing videos in reel"() {
         expect:
-        responseChecker.assertInvalidPageNumbers(urlFactory.getReelUrl(1234), readToken)
+        responseChecker.assertInvalidPageNumbers(urlFactory.getListVideosInReelUrl(1234), readToken)
     }
 
     void "attempt to add another uncategorized reel"() {
@@ -268,7 +270,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def reelId = reelTimeClient.getUncategorizedReelId(readToken)
 
         and:
-        def listVideosUrl = urlFactory.getReelUrl(reelId)
+        def listVideosUrl = urlFactory.getListVideosInReelUrl(reelId)
         def request = new RestRequest(url: listVideosUrl, token: readToken)
 
         when:
@@ -288,7 +290,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         reelTimeClient.addVideoToReel(writeToken, reelId, videoId)
 
         and:
-        def listVideosUrl = urlFactory.getReelUrl(reelId)
+        def listVideosUrl = urlFactory.getListVideosInReelUrl(reelId)
         def request = new RestRequest(url: listVideosUrl, token: readToken)
 
         when:

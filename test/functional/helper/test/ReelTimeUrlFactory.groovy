@@ -124,8 +124,24 @@ public class ReelTimeUrlFactory {
         getUrlForResource("reels/$reelId")
     }
 
+    String getDeleteReelUrl(reelId) {
+        getReelUrl(reelId)
+    }
+
+    String getAddVideoToReelUrl(reelId) {
+        getReelVideosUrl(reelId)
+    }
+
+    String getListVideosInReelUrl(reelId) {
+        getReelVideosUrl(reelId)
+    }
+
+    private String getReelVideosUrl(reelId) {
+        getUrlForResource("reels/$reelId/videos")
+    }
+
     String getRemoveVideoFromReelUrl(reelId, videoId) {
-        getUrlForResource("reels/$reelId/$videoId")
+        getUrlForResource("reels/$reelId/videos/$videoId")
     }
 
     String getAudienceUrl(reelId) {

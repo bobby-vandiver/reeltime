@@ -114,9 +114,24 @@ class UrlMappingsSpec extends Specification {
 
         where:
         httpMethod  |   action
+        'GET'       |   'getReel'
+        'DELETE'    |   'deleteReel'
+    }
+
+    @Unroll
+    void "httpMethod [#httpMethod] for reel video url maps to action [#action]"() {
+        given:
+        webRequest.currentRequest.method = httpMethod
+
+        expect:
+        assertForwardUrlMapping('/reels/1234/videos', controller: 'reel', action: action) {
+            reel_id = '1234'
+        }
+
+        where:
+        httpMethod  |   action
         'GET'       |   'listVideos'
         'POST'      |   'addVideo'
-        'DELETE'    |   'deleteReel'
     }
 
     void "test remove video from reel endpoint mapping"() {
@@ -124,7 +139,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'DELETE'
 
         expect:
-        assertForwardUrlMapping('/reels/1234/5678', controller: 'reel', action: 'removeVideo') {
+        assertForwardUrlMapping('/reels/1234/videos/5678', controller: 'reel', action: 'removeVideo') {
             reel_id = '1234'
             video_id = '5678'
         }
