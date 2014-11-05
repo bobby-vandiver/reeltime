@@ -7,7 +7,7 @@ class AccountRegistrationService {
     def userService
     def clientService
 
-    def reelService
+    def reelCreationService
     def accountConfirmationService
 
     RegistrationResult registerUserAndClient(AccountRegistrationCommand command, Locale locale) {
@@ -22,7 +22,7 @@ class AccountRegistrationService {
         def clientSecret = clientService.generateClientSecret()
 
         def client = clientService.createAndSaveClient(clientName, clientId, clientSecret)
-        def reel = reelService.createReel(UNCATEGORIZED_REEL_NAME)
+        def reel = reelCreationService.createReel(UNCATEGORIZED_REEL_NAME)
 
         def user = userService.createAndSaveUser(username, password, displayName, email, client, reel)
 

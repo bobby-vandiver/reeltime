@@ -11,7 +11,7 @@ import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 class ReelRemovalServiceIntegrationSpec extends IntegrationSpec {
 
     def reelRemovalService
-    def reelService
+    def reelCreationService
 
     User owner
     User notOwner
@@ -56,7 +56,7 @@ class ReelRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         SpringSecurityUtils.doWithAuth(owner.username) {
-            reelService.addReel(name)
+            reelCreationService.addReel(name)
         }
 
         and:

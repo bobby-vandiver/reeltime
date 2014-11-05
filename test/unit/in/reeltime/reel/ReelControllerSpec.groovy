@@ -16,6 +16,7 @@ import spock.lang.Unroll
 class ReelControllerSpec extends AbstractControllerSpec {
 
     ReelService reelService
+    ReelCreationService reelCreationService
     ReelRemovalService reelRemovalService
     ReelVideoManagementService reelVideoManagementService
 
@@ -24,10 +25,12 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     void setup() {
         reelService = Mock(ReelService)
+        reelCreationService = Mock(ReelCreationService)
         reelRemovalService = Mock(ReelRemovalService)
         reelVideoManagementService = Mock(ReelVideoManagementService)
 
         controller.reelService = reelService
+        controller.reelCreationService = reelCreationService
         controller.reelRemovalService = reelRemovalService
         controller.reelVideoManagementService = reelVideoManagementService
 
@@ -257,7 +260,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json.video_count == 0
 
         and:
-        1 * reelService.addReel(reelName) >> reel
+        1 * reelCreationService.addReel(reelName) >> reel
     }
 
     void "unable to add reel with invalid name"() {
@@ -275,7 +278,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         assertErrorMessageResponse(response, 400, message)
 
         and:
-        1 * reelService.addReel(reelName) >> { throw new InvalidReelNameException('TEST') }
+        1 * reelCreationService.addReel(reelName) >> { throw new InvalidReelNameException('TEST') }
         1 * localizedMessageService.getMessage('addReel.name.invalid', request.locale) >> message
     }
 

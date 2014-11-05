@@ -16,7 +16,7 @@ import test.helper.VideoFactory
 
 class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
 
-    def reelService
+    def reelCreationService
     def reelVideoManagementService
 
     def activityService
@@ -100,7 +100,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         def videoId = video.id
 
         and:
-        def reel = reelService.createReelForUser(owner, 'some reel').save()
+        def reel = ReelFactory.createReel(owner, 'some reel')
         def reelId = reel.id
 
         when:
@@ -129,11 +129,11 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         def videoId = video.id
 
         and:
-        def reel1 = reelService.createReelForUser(owner, 'reel1').save()
+        def reel1 = ReelFactory.createReel(owner, 'reel1')
         def reel1Id = reel1.id
 
         and:
-        def reel2 = reelService.createReelForUser(owner, 'reel2').save()
+        def reel2 = ReelFactory.createReel(owner, 'reel2')
         def reel2Id = reel2.id
 
         when:
@@ -153,7 +153,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         def videoId = video.id
 
         and:
-        def reel = reelService.createReelForUser(owner, 'some reel').save()
+        def reel = ReelFactory.createReel(owner, 'some reel')
         def reelId = reel.id
 
         when:
@@ -200,7 +200,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         def videoId = video.id
 
         and:
-        def reel = reelService.createReelForUser(owner, 'some reel').save()
+        def reel = ReelFactory.createReel(owner, 'some reel')
         def reelId = reel.id
 
         and:
@@ -318,7 +318,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         SpringSecurityUtils.doWithAuth(owner.username) {
-            reel = reelService.addReel(reelName)
+            reel = reelCreationService.addReel(reelName)
 
             reelVideoManagementService.addVideoToReel(reel, ownerVideo)
             reelVideoManagementService.addVideoToReel(reel, notOwnerVideo)
@@ -392,7 +392,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
     @Unroll
     void "reel contains [#count] videos"() {
         given:
-        def reel = reelService.createReelForUser(owner, "reel with $count videos").save()
+        def reel = ReelFactory.createReel(owner, "reel with $count videos")
         def videos = createVideos(reel, count)
 
         when:

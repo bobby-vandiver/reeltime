@@ -13,6 +13,7 @@ import static javax.servlet.http.HttpServletResponse.*
 class ReelController extends AbstractController {
 
     def reelService
+    def reelCreationService
     def reelRemovalService
     def reelVideoManagementService
 
@@ -58,7 +59,7 @@ class ReelController extends AbstractController {
         handleCommandRequest(command) {
             try {
                 render(status: SC_CREATED, contentType: APPLICATION_JSON) {
-                    marshall(reelService.addReel(command.name))
+                    marshall(reelCreationService.addReel(command.name))
                 }
             }
             catch(InvalidReelNameException e) {
