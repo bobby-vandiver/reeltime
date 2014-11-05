@@ -1,6 +1,7 @@
 package in.reeltime.oauth2
 
 import in.reeltime.exceptions.RegistrationException
+import in.reeltime.user.User
 
 class ClientService {
 
@@ -57,5 +58,18 @@ class ClientService {
 
     String generateClientSecret() {
         securityService.generateSecret(REQUIRED_SECRET_LENGTH, ALLOWED_CHARACTERS)
+    }
+
+    void removeClientsForUser(User user) {
+        def clientsToRemove = []
+        clientsToRemove.addAll(user.clients)
+
+        clientsToRemove.each { Client client ->
+            log.debug "Removing client [${client.id}] from user [${user.username}]"
+            user.removeFromClients(client)
+
+            log.debug "Deleting client [${client.id}]"
+            client.delete()
+        }
     }
 }

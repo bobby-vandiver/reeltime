@@ -1,5 +1,7 @@
 package in.reeltime.video
 
+import in.reeltime.user.User
+
 class VideoRemovalService {
 
     def videoService
@@ -47,5 +49,17 @@ class VideoRemovalService {
 
         log.info "Deleting video [$videoId]"
         video.delete()
+    }
+
+    void removeVideosForUser(User user) {
+        def videosToRemove = []
+        if(user?.videos) {
+            videosToRemove.addAll(user.videos)
+        }
+
+        videosToRemove.each { video ->
+            log.debug "Removing video [${video.id}]"
+            removeVideo(video)
+        }
     }
 }

@@ -1,27 +1,26 @@
 package in.reeltime.account
 
-import in.reeltime.oauth2.Client
-import in.reeltime.user.User
-import in.reeltime.reel.Reel
-
 class AccountRemovalService {
 
     def authenticationService
 
     def activityService
     def audienceService
+
+    def clientService
     def userFollowingService
 
+    def accountCodeRemovalService
+    def reelRemovalService
     def tokenRemovalService
     def videoRemovalService
-    def reelRemovalService
 
     void removeAccountForCurrentUser() {
         def currentUser = authenticationService.currentUser
         def username = currentUser.username
 
         log.info "Removing confirmation codes for user [${username}]"
-        deleteConfirmationCodesForUser(currentUser)
+        accountCodeRemovalService.removeConfirmationCodesForUser(currentUser)
 
         log.info "Removing tokens associated with user [${username}]"
         tokenRemovalService.removeAllTokensForUser(currentUser)
@@ -40,47 +39,14 @@ class AccountRemovalService {
         reelRemovalService.removeReelsForUser(currentUser)
 
         log.info "Removing videos for user [${username}]"
-        deleteVideosForUser(currentUser)
+        videoRemovalService.removeVideosForUser(currentUser)
 
         log.info "Removing clients for user [${username}]"
-        deleteClientsForUser(currentUser)
+        clientService.removeClientsForUser(currentUser)
 
         log.info "Deleting user [${username}]"
         currentUser.delete()
 
         log.info "Finished removing account for user [${username}]"
-    }
-
-    private static void deleteConfirmationCodesForUser(User user) {
-        def confirmationCodes = AccountCode.findAllByUser(user)
-        confirmationCodes.each { code ->
-            log.debug "Deleting account confirmation code [${code.id}]"
-            code.delete()
-        }
-    }
-
-    private static void deleteClientsForUser(User user) {
-        def clientsToRemove = []
-        clientsToRemove.addAll(user.clients)
-
-        clientsToRemove.each { Client client ->
-            log.debug "Removing client [${client.id}] from user [${user.username}]"
-            user.removeFromClients(client)
-
-            log.debug "Deleting client [${client.id}]"
-            client.delete()
-        }
-    }
-
-    private void deleteVideosForUser(User user) {
-        def videosToRemove = []
-        if(user?.videos) {
-            videosToRemove.addAll(user.videos)
-        }
-
-        videosToRemove.each { video ->
-            log.debug "Removing video [${video.id}]"
-            videoRemovalService.removeVideo(video)
-        }
     }
 }
