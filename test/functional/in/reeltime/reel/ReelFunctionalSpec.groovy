@@ -250,6 +250,54 @@ class ReelFunctionalSpec extends FunctionalSpec {
         response.json.reel_id != uncategorizedReelId
     }
 
+    void "get reel"() {
+        given:
+        def someReelId = reelTimeClient.addReel(writeToken, 'some reel')
+
+        and:
+        def request = requestFactory.getReel(readToken, someReelId)
+
+        when:
+        def response = get(request)
+
+        then:
+        response.status == 200
+
+        and:
+        response.json.name == 'some reel'
+        response.json.reel_id == someReelId
+        response.json.audience_size == 0
+        response.json.video_count == 0
+    }
+
+    void "get reel that has videos and audience members"() {
+        given:
+        def someReelId = reelTimeClient.addReel(writeToken, 'some reel')
+        reelTimeClient.uploadVideoToReel(uploadVideoToken, 'some reel', 'some video')
+
+        and:
+        def member1Token = registerNewUserAndGetToken('member1', ALL_SCOPES)
+        def member2Token = registerNewUserAndGetToken('member2', ALL_SCOPES)
+
+        reelTimeClient.addAudienceMember(member1Token, someReelId)
+        reelTimeClient.addAudienceMember(member2Token, someReelId)
+
+        and:
+        def request = requestFactory.getReel(readToken, someReelId)
+
+        when:
+        def response = get(request)
+
+        then:
+        response.status == 200
+
+        and:
+        response.json.name == 'some reel'
+        response.json.reel_id == someReelId
+        response.json.audience_size == 2
+        response.json.video_count == 1
+    }
+
     void "delete a reel"() {
         given:
         def reelId = reelTimeClient.addReel(writeToken, 'reel to delete')

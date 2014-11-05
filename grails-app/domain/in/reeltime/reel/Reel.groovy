@@ -31,4 +31,10 @@ class Reel {
     int getNumberOfAudienceMembers() {
         audience?.members?.size() ?: 0
     }
+
+    boolean containsVideo(Video video) {
+        Reel.exists(this?.id) && Video.exists(video?.id) &&
+                ReelVideo.findByReelAndVideo(this, video) != null
+
+    }
 }

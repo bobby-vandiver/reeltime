@@ -169,6 +169,11 @@ class ReelTimeRequestFactory {
         new RestRequest(url: url, token: token)
     }
 
+    RestRequest getReel(String token, reelId) {
+        def url = urlFactory.getReelUrl(reelId)
+        new RestRequest(url: url, token: token)
+    }
+
     RestRequest addReel(String token, String reelName) {
         new RestRequest(url: urlFactory.addReelUrl, token: token, customizer: {
             name = reelName

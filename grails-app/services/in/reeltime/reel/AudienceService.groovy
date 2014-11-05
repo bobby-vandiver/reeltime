@@ -59,6 +59,17 @@ class AudienceService {
         }
     }
 
+    void removeAllMembersFromAudience(Reel reel) {
+        def audience = reel.audience
+
+        def membersToRemove = []
+        membersToRemove.addAll(audience.members)
+
+        membersToRemove.each { member ->
+            removeMemberFromAudience(member, audience)
+        }
+    }
+
     private void removeMemberFromAudience(User member, Audience audience) {
         audience.removeFromMembers(member)
         storeAudience(audience)

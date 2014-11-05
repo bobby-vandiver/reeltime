@@ -2,6 +2,7 @@ package in.reeltime.account
 
 import in.reeltime.oauth2.Client
 import in.reeltime.user.User
+import in.reeltime.reel.Reel
 
 class AccountRemovalService {
 
@@ -13,6 +14,8 @@ class AccountRemovalService {
 
     def tokenRemovalService
     def videoRemovalService
+
+    def reelVideoManagementService
 
     void removeAccountForCurrentUser() {
         def currentUser = authenticationService.currentUser
@@ -34,6 +37,9 @@ class AccountRemovalService {
         log.info "Remove user [${username}] as an audience member from all reels"
         audienceService.removeMemberFromAllAudiences(currentUser)
 
+        log.info "Remove reels for user [${username}]"
+        deleteReelsForUser(currentUser)
+
         log.info "Removing videos for user [${username}]"
         deleteVideosForUser(currentUser)
 
@@ -44,6 +50,16 @@ class AccountRemovalService {
         currentUser.delete()
 
         log.info "Finished removing account for user [${username}]"
+    }
+
+    private void deleteReelsForUser(User user) {
+        def reelsToRemove = []
+        reelsToRemove.addAll(user.reels)
+
+        reelsToRemove.each { reel ->
+            reelVideoManagementService.removeAllVideosFromReel(reel)
+            audienceService.removeAllMembersFromAudience(reel)
+        }
     }
 
     private static void deleteConfirmationCodesForUser(User user) {

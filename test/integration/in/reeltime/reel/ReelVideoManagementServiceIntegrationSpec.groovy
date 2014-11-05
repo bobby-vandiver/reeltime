@@ -1,5 +1,6 @@
 package in.reeltime.reel
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import in.reeltime.activity.UserReelVideoActivity
@@ -307,6 +308,39 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         ReelVideo.findByReelAndVideo(reel, video) == null
     }
 
+    void "remove all videos from reel"() {
+        given:
+        def reelName = 'another reel'
+        def reel
+
+        def ownerVideo = VideoFactory.createVideo(owner, 'owner video')
+        def notOwnerVideo = VideoFactory.createVideo(notOwner, 'not owner video')
+
+        and:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reel = reelService.addReel(reelName)
+
+            reelVideoManagementService.addVideoToReel(reel, ownerVideo)
+            reelVideoManagementService.addVideoToReel(reel, notOwnerVideo)
+        }
+
+        when:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelVideoManagementService.removeAllVideosFromReel(reel)
+        }
+
+        then:
+        ReelVideo.findByReelAndVideo(reel, ownerVideo) == null
+        ReelVideo.findByReelAndVideo(reel, notOwnerVideo) == null
+
+        and:
+        Reel.findById(reel.id) != null
+
+        and:
+        Video.findById(ownerVideo.id) != null
+        Video.findById(notOwnerVideo.id) != null
+    }
+
     void "remove video from all reels"() {
         given:
         def video = createAndSaveVideo(owner)
@@ -321,7 +355,9 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         addVideoToReelForUser(notOwnerReelId, videoId, notOwner.username)
 
         when:
-        reelVideoManagementService.removeVideoFromAllReels(video)
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelVideoManagementService.removeVideoFromAllReels(video)
+        }
 
         then:
         assertVideoInReel(ownerReelId, videoId, false)

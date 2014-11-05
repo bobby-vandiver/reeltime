@@ -17,7 +17,6 @@ class ReelVideoManagementService {
     def maxVideosPerPage
 
     List<Video> listVideosInReel(Long reelId, int page) {
-
         def reel = reelService.loadReel(reelId)
         def videoIds = ReelVideo.findAllByReel(reel)?.collect { it.video*.id }?.flatten()
 
@@ -28,7 +27,6 @@ class ReelVideoManagementService {
     }
 
     void addVideo(Long reelId, Long videoId) {
-
         def reel = reelService.loadReel(reelId)
         def video = videoService.loadVideo(videoId)
 
@@ -36,11 +34,10 @@ class ReelVideoManagementService {
     }
 
     void addVideoToReel(Reel reel, Video video) {
-
         if(!reelAuthorizationService.currentUserIsReelOwner(reel)) {
             throw new AuthorizationException("Only the owner of a reel can add videos to it")
         }
-        else if(reelContainsVideo(reel, video)) {
+        else if(reel.containsVideo(video)) {
             throw new AuthorizationException("Cannot add a video to a reel multiple times")
         }
 
@@ -52,24 +49,26 @@ class ReelVideoManagementService {
     }
 
     void removeVideo(Long reelId, Long videoId) {
-
         def reel = reelService.loadReel(reelId)
         def video = videoService.loadVideo(videoId)
 
         if(!reelAuthorizationService.currentUserIsReelOwner(reel)) {
             throw new AuthorizationException("Only the owner of a reel can remove videos from it")
         }
-        else if(!reelContainsVideo(reel, video)) {
+        else if(!reel.containsVideo(video)) {
             throw new VideoNotFoundException("Reel [$reelId] does not contain video [$videoId]")
         }
 
         removeVideoFromReel(reel, video)
     }
 
-    private static boolean reelContainsVideo(Reel reel, Video video) {
+    void removeAllVideosFromReel(Reel reel) {
+        def reelVideos = ReelVideo.findAllByReel(reel)
 
-        Reel.exists(reel?.id) && Video.exists(video?.id) &&
-                ReelVideo.findByReelAndVideo(reel, video) != null
+        reelVideos.each { reelVideo ->
+            def video = reelVideo.video
+            removeVideoFromReel(reel, video)
+        }
     }
 
     void removeVideoFromAllReels(Video video) {
@@ -85,7 +84,7 @@ class ReelVideoManagementService {
         videoService.storeVideo(video)
     }
 
-    private void removeVideoFromReel(Reel reel, Video video) {
+    void removeVideoFromReel(Reel reel, Video video) {
         updateReelAndVideo(reel, video)
         ReelVideo.findByReelAndVideo(reel, video)?.delete()
         activityService.videoRemovedFromReel(reel.owner, reel, video)
