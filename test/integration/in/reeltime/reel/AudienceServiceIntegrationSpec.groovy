@@ -270,6 +270,33 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         !audience.members.contains(notMember)
     }
 
+    @Unroll
+    void "remove all [#count] members from audience"() {
+        given:
+        def reel = createReelWithEmptyAudience()
+        def reelId = reel.id
+
+        and:
+        addAudienceMembersToReel(reel, count)
+
+        when:
+        audienceService.removeAllMembersFromAudience(reel)
+
+        then:
+        Reel.findById(reelId) != null
+
+        and:
+        def audience = Audience.findByReel(reel)
+        audience.members.size() == 0
+
+        where:
+        _   |   count
+        _   |   0
+        _   |   1
+        _   |   2
+        _   |   10
+    }
+
     private Collection<User> addAudienceMembersToReel(Reel reel, int count) {
         def members = []
 
