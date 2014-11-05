@@ -13,6 +13,7 @@ import static javax.servlet.http.HttpServletResponse.*
 class ReelController extends AbstractController {
 
     def reelService
+    def reelRemovalService
     def reelVideoManagementService
 
     static allowedMethods = [
@@ -70,7 +71,8 @@ class ReelController extends AbstractController {
     def deleteReel(ReelCommand command) {
         log.debug "Deleting reel [${command.reel_id}]"
         handleCommandRequest(command) {
-            reelService.deleteReel(command.reel_id)
+            def reel = reelService.loadReel(command.reel_id)
+            reelRemovalService.removeReel(reel)
             render(status: SC_OK)
         }
     }

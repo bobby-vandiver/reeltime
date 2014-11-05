@@ -12,6 +12,9 @@ class AddReelCommandSpec extends Specification {
     void "name [#name] is valid [#valid] -- inherited from Reel domain class"() {
         given:
         def command = new AddReelCommand(name: name)
+        command.reelAuthorizationService = Stub(ReelAuthorizationService) {
+            reelNameIsReserved(_) >> false
+        }
 
         expect:
         command.validate(['name']) == valid
@@ -29,4 +32,19 @@ class AddReelCommandSpec extends Specification {
         'a' * 25    |   true    |   null
         'a' * 26    |   false   |   'maxSize.exceeded'
     }
+
+    @Unroll
+    void "reserved name is not valid"() {
+        def command = new AddReelCommand(name: 'uncategorized')
+        command.reelAuthorizationService = Stub(ReelAuthorizationService) {
+            reelNameIsReserved(_) >> true
+        }
+
+        expect:
+        !command.validate(['name'])
+
+        and:
+        command.errors.getFieldError('name')?.code == 'reserved'
+    }
+
 }

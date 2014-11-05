@@ -40,56 +40,6 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         reel.audience.members.size() == 0
     }
 
-    void "do not allow a reel to be deleted if owner is not current user"() {
-        given:
-        def reelId = owner.reels[0].id
-
-        when:
-        SpringSecurityUtils.doWithAuth(notOwner.username) {
-            reelService.deleteReel(reelId)
-        }
-
-        then:
-        def e = thrown(AuthorizationException)
-        e.message == "Only the owner of a reel can delete it"
-    }
-
-    void "do not allow the uncategorized reel to be deleted"() {
-        given:
-        def reelId = owner.reels[0].id
-        assert owner.reels[0].name == UNCATEGORIZED_REEL_NAME
-
-        when:
-        SpringSecurityUtils.doWithAuth(owner.username) {
-            reelService.deleteReel(reelId)
-        }
-
-        then:
-        def e = thrown(AuthorizationException)
-        e.message == "The Uncategorized reel cannot be deleted"
-    }
-
-    void "allow the owner to delete the reel"() {
-        given:
-        def name = 'another reel'
-
-        and:
-        SpringSecurityUtils.doWithAuth(owner.username) {
-            reelService.addReel(name)
-        }
-
-        and:
-        def reelId = Reel.findByName(name).id
-
-        when:
-        SpringSecurityUtils.doWithAuth(owner.username) {
-            reelService.deleteReel(reelId)
-        }
-
-        then:
-        Reel.findById(reelId) == null
-    }
-
     void "cannot list reels for an unknown user"() {
         when:
         reelService.listReelsByUsername('nobody', 1)
@@ -200,46 +150,6 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         then:
         def e = thrown(InvalidReelNameException)
         e.message == "Reel named [$reelName] already exists"
-    }
-
-    @Unroll
-    void "do not allow a user to add a reel named [#uncategorized]"() {
-        when:
-        SpringSecurityUtils.doWithAuth(owner.username) {
-            reelService.addReel(uncategorized)
-        }
-
-        then:
-        def e = thrown(InvalidReelNameException)
-        e.message == "Reel name [$uncategorized] is reserved"
-
-        where:
-        _   |   uncategorized
-        _   |   'Uncategorized'
-        _   |   'uncategorized'
-        _   |   'uNCatEgoriZED'
-        _   |   'UNCATEGORIZED'
-    }
-
-    @Unroll
-    void "do not allow a user to add a reel named [#name] that is an invalid length"() {
-        when:
-        SpringSecurityUtils.doWithAuth(owner.username) {
-            reelService.addReel(name)
-        }
-
-        then:
-        def e = thrown(InvalidReelNameException)
-        e.message == "Reel name [$name] length is invalid"
-
-        where:
-        _   |   name
-        _   |   null
-        _   |   ''
-        _   |   'a'
-        _   |   'abc'
-        _   |   'uhoh'
-        _   |   'c' * 26
     }
 
     void "list reels by page in order from newest to oldest"() {

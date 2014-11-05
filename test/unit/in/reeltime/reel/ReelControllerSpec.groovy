@@ -16,14 +16,27 @@ import spock.lang.Unroll
 class ReelControllerSpec extends AbstractControllerSpec {
 
     ReelService reelService
+    ReelRemovalService reelRemovalService
     ReelVideoManagementService reelVideoManagementService
+
+    Reel reel
+    Long reelId
 
     void setup() {
         reelService = Mock(ReelService)
+        reelRemovalService = Mock(ReelRemovalService)
         reelVideoManagementService = Mock(ReelVideoManagementService)
 
         controller.reelService = reelService
+        controller.reelRemovalService = reelRemovalService
         controller.reelVideoManagementService = reelVideoManagementService
+
+        reel = new Reel(name: 'test').save(validate: false)
+        reelId = reel.id
+
+        defineBeans {
+            reelAuthorizationService(ReelAuthorizationService)
+        }
     }
 
     void "get reel"() {
@@ -268,7 +281,6 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     void "successfully delete a reel"() {
         given:
-        def reelId = 8675309
         params.reel_id = reelId
 
         when:
@@ -279,29 +291,12 @@ class ReelControllerSpec extends AbstractControllerSpec {
         response.contentLength == 0
 
         and:
-        1 * reelService.deleteReel(reelId)
-    }
-
-    void "unauthorized delete reel request"() {
-        given:
-        def reelId = 1234
-        params.reel_id = reelId
-
-        when:
-        controller.deleteReel()
-
-        then:
-        assertStatusCodeOnlyResponse(response, 403)
-
-        and:
-        1 * reelService.deleteReel(reelId) >> { throw new AuthorizationException('TEST') }
+        1 * reelService.loadReel(reelId) >> reel
+        1 * reelRemovalService.removeReel(reel)
     }
 
     void "attempt to delete an unknown reel"() {
         given:
-        def message = 'unknown reel'
-
-        and:
         def reelId = 9431
         params.reel_id = reelId
 
@@ -309,11 +304,11 @@ class ReelControllerSpec extends AbstractControllerSpec {
         controller.deleteReel()
 
         then:
-        assertErrorMessageResponse(response, 404, message)
+        assertErrorMessageResponse(response, 404, TEST_MESSAGE)
 
         and:
-        1 * reelService.deleteReel(reelId) >> { throw new ReelNotFoundException('TEST') }
-        1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> message
+        1 * reelService.loadReel(reelId) >> { throw new ReelNotFoundException('TEST') }
+        1 * localizedMessageService.getMessage('reel.unknown', request.locale) >> TEST_MESSAGE
     }
 
     void "use page 1 for videos in reel list if page param is omitted"() {

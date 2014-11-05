@@ -154,7 +154,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        responseChecker.assertSingleErrorMessageResponse(response, 400, 'Requested reel name is not allowed')
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[name] is reserved')
     }
 
     @Unroll

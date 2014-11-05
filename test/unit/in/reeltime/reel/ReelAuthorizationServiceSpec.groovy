@@ -44,22 +44,6 @@ class ReelAuthorizationServiceSpec extends Specification {
         null                            |   false
     }
 
-    @Unroll
-    void "reel name [#name] is valid length [#valid]"() {
-        expect:
-        service.reelNameIsValidLength(name) == valid
-
-        where:
-        name        |   valid
-        null        |   false
-        ''          |   false
-        'a'         |   false
-        'a' * 4     |   false
-        'a' * 5     |   true
-        'a' * 25    |   true
-        'a' * 26    |   false
-    }
-
     void "reel owner is not the current user"() {
         given:
         def reel = new Reel(owner: owner)

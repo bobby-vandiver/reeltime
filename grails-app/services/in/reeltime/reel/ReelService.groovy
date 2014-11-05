@@ -53,8 +53,6 @@ class ReelService {
     }
 
     Reel addReel(String reelName) {
-        validateReelName(reelName)
-
         def currentUser = authenticationService.currentUser
         if(currentUser.hasReel(reelName)) {
             throw new InvalidReelNameException("Reel named [$reelName] already exists")
@@ -68,34 +66,5 @@ class ReelService {
 
         activityService.reelCreated(currentUser, reel)
         return reel
-    }
-
-    private void validateReelName(String reelName) {
-        if(reelAuthorizationService.reelNameIsReserved(reelName)) {
-            throw new InvalidReelNameException("Reel name [$reelName] is reserved")
-        }
-        else if(!reelAuthorizationService.reelNameIsValidLength(reelName)) {
-            throw new InvalidReelNameException("Reel name [$reelName] length is invalid")
-        }
-    }
-
-    // TODO: Make sure reel does not have videos before deleting
-    void deleteReel(Long reelId) {
-        def reel = loadReel(reelId)
-        def name = reel.name
-
-        if(!reelAuthorizationService.currentUserIsReelOwner(reel)) {
-            throw new AuthorizationException("Only the owner of a reel can delete it")
-        }
-        else if(reelAuthorizationService.reelNameIsReserved(name)) {
-            throw new AuthorizationException("The ${name} reel cannot be deleted")
-        }
-
-        def owner = reel.owner
-        activityService.reelDeleted(owner, reel)
-
-        owner.removeFromReels(reel)
-        reel.delete()
-        userService.storeUser(owner)
     }
 }

@@ -14,8 +14,7 @@ class AccountRemovalService {
 
     def tokenRemovalService
     def videoRemovalService
-
-    def reelVideoManagementService
+    def reelRemovalService
 
     void removeAccountForCurrentUser() {
         def currentUser = authenticationService.currentUser
@@ -38,7 +37,7 @@ class AccountRemovalService {
         audienceService.removeMemberFromAllAudiences(currentUser)
 
         log.info "Remove reels for user [${username}]"
-        deleteReelsForUser(currentUser)
+        reelRemovalService.removeReelsForUser(currentUser)
 
         log.info "Removing videos for user [${username}]"
         deleteVideosForUser(currentUser)
@@ -50,16 +49,6 @@ class AccountRemovalService {
         currentUser.delete()
 
         log.info "Finished removing account for user [${username}]"
-    }
-
-    private void deleteReelsForUser(User user) {
-        def reelsToRemove = []
-        reelsToRemove.addAll(user.reels)
-
-        reelsToRemove.each { reel ->
-            reelVideoManagementService.removeAllVideosFromReel(reel)
-            audienceService.removeAllMembersFromAudience(reel)
-        }
     }
 
     private static void deleteConfirmationCodesForUser(User user) {
