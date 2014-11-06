@@ -1,10 +1,13 @@
 package in.reeltime.reel
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
 import test.helper.UserFactory
 import in.reeltime.exceptions.AuthorizationException
+import test.helper.VideoFactory
+import in.reeltime.video.Video
 
 import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
@@ -12,6 +15,9 @@ class ReelRemovalServiceIntegrationSpec extends IntegrationSpec {
 
     def reelRemovalService
     def reelCreationService
+
+    def reelVideoManagementService
+    def audienceService
 
     User owner
     User notOwner
@@ -70,5 +76,81 @@ class ReelRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         Reel.findById(reelId) == null
+    }
+
+    void "remove all when user only has uncategorized reel"() {
+        given:
+        def uncategorizedReel = owner.reels[0]
+        def video = VideoFactory.createVideo(notOwner, 'test')
+
+        SpringSecurityUtils.doWithAuth(notOwner.username) {
+            audienceService.addCurrentUserToAudience(uncategorizedReel.id)
+        }
+
+        when:
+        def targetUser = owner
+
+        and:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelRemovalService.removeReelsForUser(targetUser)
+        }
+
+        then:
+        owner.reels.size() == 1
+        owner.hasReel(UNCATEGORIZED_REEL_NAME)
+
+        and:
+        def audience = Audience.findByReel(uncategorizedReel)
+        audience.members.size() == 0
+
+        and:
+        Video.findById(video.id) != null
+
+        and:
+        ReelVideo.findAllByReelAndVideo(uncategorizedReel, video).size() == 0
+    }
+
+    void "removing all reels only removes videos and audience members from the uncategorized reel and deletes others"() {
+        given:
+        def uncategorizedReel = owner.reels[0]
+        def video = VideoFactory.createVideo(notOwner, 'test')
+
+        SpringSecurityUtils.doWithAuth(notOwner.username) {
+            audienceService.addCurrentUserToAudience(uncategorizedReel.id)
+        }
+
+        def otherReel
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            otherReel = reelCreationService.addReel('other')
+            reelVideoManagementService.addVideoToReel(uncategorizedReel, video)
+        }
+
+        and:
+        assert owner.reels.size() == 2
+
+        when:
+        def targetUser = owner
+
+        and:
+        SpringSecurityUtils.doWithAuth(owner.username) {
+            reelRemovalService.removeReelsForUser(targetUser)
+        }
+
+        then:
+        owner.reels.size() == 1
+
+        and:
+        owner.hasReel(UNCATEGORIZED_REEL_NAME)
+        !owner.hasReel('other')
+
+        and:
+        def audience = Audience.findByReel(uncategorizedReel)
+        audience.members.size() == 0
+
+        and:
+        Video.findById(video.id) != null
+
+        and:
+        ReelVideo.findAllByReelAndVideo(uncategorizedReel, video).size() == 0
     }
 }
