@@ -39,6 +39,10 @@ abstract class FunctionalSpec extends Specification {
         'videos-read', 'videos-write'
     ]
 
+    protected static final List<String> USERS_SCOPES = [
+        'users-read', 'users-write',
+    ]
+
     protected static final String CREATE_REEL_ACTIVITY_TYPE = 'create-reel'
     protected static final String JOIN_REEL_AUDIENCE_ACTIVITY_TYPE = 'join-reel-audience'
     protected static final String ADD_VIDEO_TO_REEL_ACTIVITY_TYPE = 'add-video-to-reel'
@@ -115,6 +119,18 @@ abstract class FunctionalSpec extends Specification {
 
     protected String registerNewUserAndGetToken(String username, String scope) {
         registerNewUserAndGetToken(username, [scope])
+    }
+
+    protected String registerNewUserAndGetToken(String username, String password, String displayName,
+                                                Collection<String> scopes) {
+        def registrationResult = registerUser(username, password, displayName).json
+
+        def clientId = registrationResult.client_id
+        def clientSecret = registrationResult.client_secret
+
+        def accessRequest = createAccessTokenRequest(username, clientId, clientSecret, scopes)
+        accessRequest.password = password
+        getAccessTokenWithScope(accessRequest)
     }
 
     protected String registerNewUserAndGetToken(String username, Collection<String> scopes) {

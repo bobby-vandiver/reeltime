@@ -42,6 +42,34 @@ class UserFunctionalSpec extends FunctionalSpec {
         response.status == 200
         response.json.username == 'someone'
         response.json.display_name == 'Cowboy Bob'
+        response.json.follower_count == 0
+        response.json.followee_count == 0
+    }
+
+    void "user is following other users and is being followed by other users"() {
+        given:
+        def someoneToken = registerNewUserAndGetToken('someone', 'secret', 'Cowboy Bob', USERS_SCOPES)
+
+        and:
+        def follower1Token = registerNewUserAndGetToken('follower1', USERS_SCOPES)
+        def follower2Token = registerNewUserAndGetToken('follower2', USERS_SCOPES)
+
+        reelTimeClient.followUser(follower1Token, 'someone')
+        reelTimeClient.followUser(follower2Token, 'someone')
+
+        and:
+        registerNewUserAndGetToken('followee1', USERS_SCOPES)
+        reelTimeClient.followUser(someoneToken, 'followee1')
+
+        when:
+        def response = reelTimeClient.userProfile(token, 'someone')
+
+        then:
+        response.status == 200
+        response.json.username == 'someone'
+        response.json.display_name == 'Cowboy Bob'
+        response.json.follower_count == 2
+        response.json.followee_count == 1
     }
 
     @Unroll

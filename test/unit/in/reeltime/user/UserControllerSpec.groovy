@@ -1,9 +1,11 @@
 package in.reeltime.user
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 
 @TestFor(UserController)
+@Mock([UserFollowing])
 class UserControllerSpec extends AbstractControllerSpec {
 
     UserService userService
@@ -31,11 +33,15 @@ class UserControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 2
+        json.size() == 4
 
         and:
         json.username == username
         json.display_name == displayName
+
+        and:
+        json.follower_count == 0
+        json.followee_count == 0
 
         and:
         1 * userService.loadUser(username) >> user

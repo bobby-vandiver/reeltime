@@ -25,7 +25,7 @@ class User {
 
     static hasMany = [videos: Video, clients: Client, reels: Reel]
 
-	static transients = ['springSecurityService']
+	static transients = ['springSecurityService', 'numberOfFollowees', 'numberOfFollowers']
 
     static List<User> findAllByIdInListInAlphabeticalOrderByPage(List<Long> userIds, int page, int maxUsersPerPage) {
         int offset = (page - 1) * maxUsersPerPage
@@ -65,7 +65,15 @@ class User {
         reels.find { reel -> reel.name == reelName }
     }
 
-	Set<Role> getAuthorities() {
+    int getNumberOfFollowees() {
+        UserFollowing.countByFollower(this)
+    }
+
+    int getNumberOfFollowers() {
+        UserFollowing.countByFollowee(this)
+    }
+
+    Set<Role> getAuthorities() {
 		UserRole.findAllByUser(this).collect { it.role } as Set
 	}
 

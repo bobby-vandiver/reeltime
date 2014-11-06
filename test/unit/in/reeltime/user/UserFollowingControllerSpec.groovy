@@ -1,5 +1,6 @@
 package in.reeltime.user
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.UserNotFoundException
@@ -7,6 +8,7 @@ import in.reeltime.security.AuthenticationService
 import spock.lang.Unroll
 
 @TestFor(UserFollowingController)
+@Mock([UserFollowing])
 class UserFollowingControllerSpec extends AbstractControllerSpec {
 
     UserService userService

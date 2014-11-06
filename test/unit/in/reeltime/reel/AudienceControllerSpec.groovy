@@ -1,14 +1,15 @@
 package in.reeltime.reel
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ReelNotFoundException
-import in.reeltime.message.LocalizedMessageService
 import in.reeltime.user.User
-import spock.lang.Unroll
+import in.reeltime.user.UserFollowing
 
 @TestFor(AudienceController)
+@Mock([UserFollowing])
 class AudienceControllerSpec extends AbstractControllerSpec {
 
     AudienceService audienceService
@@ -130,7 +131,6 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         json.size() == 1
 
         and:
-        json[0].size() == 2
         json[0].username == 'member'
         json[0].display_name == 'member display'
 
@@ -153,12 +153,10 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         json.size() == 2
 
         and:
-        json[0].size() == 2
         json[0].username == 'member1'
         json[0].display_name == 'member1 display'
 
         and:
-        json[1].size() == 2
         json[1].username == 'member2'
         json[1].display_name == 'member2 display'
 
