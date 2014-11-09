@@ -74,21 +74,22 @@ getConfigurationOptionSettings = {
     return configurationOptions
 }
 
+// Only one security group can be specified for the initial launch
+// Additional security groups must be added to the instance post-launch
 private Collection<ConfigurationOptionSetting> collectSecurityGroups() {
 
     Collection<ConfigurationOptionSetting> securityGroups = []
-    List<String> securityGroupNames = deployConfig.launch.securityGroupNames
+    String securityGroup = deployConfig.launch.securityGroup
 
-    securityGroupNames.each { groupName ->
-        String securityGroup = groupName
-
+    if(securityGroup) {
         // Security Group ID must be used for a VPC environment
         if(targetEnvironmentIsInVpc()) {
-            securityGroup = ec2.findSecurityGroupIdByGroupName(groupName).groupId
+            securityGroup = ec2.findSecurityGroupByGroupName(securityGroup).groupId
         }
 
         securityGroups << new ConfigurationOptionSetting(LAUNCH_CONFIGURATION_NAMESPACE, SECURITY_GROUPS, securityGroup)
     }
+
     return securityGroups
 }
 

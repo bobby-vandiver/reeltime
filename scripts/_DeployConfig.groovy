@@ -42,7 +42,7 @@ Map loadProductionConfig() {
 
             launch: [
                     instanceProfileName: 'EC2-Instance-Production-Role',
-                    securityGroupNames: ['NAT-SG']
+                    securityGroup: 'NAT-SG'
             ],
 
             vpc: [
@@ -93,12 +93,18 @@ Map loadSingleInstanceConfig() {
 
             launch: [
                     instanceProfileName: 'EC2-Instance-Acceptance-Role',
-                    securityGroupNames: ['HTTPS-Only-For-Acceptance-Tests-SG']
+            ],
+
+            postLaunch: [
+                    securityGroups: ['SNS-HTTP-Access-US-and-EU', 'SNS-HTTP-Access-AP-and-SA',
+                                     'Internal-Developer-Only', 'Demo-Access']
             ],
 
             environment: [
                     name: 'reeltime-acceptance',
                     type: 'SingleInstance',
+
+                    // TODO: Change to 64bit Amazon Linux 2014.09 v1.0.9 running Tomcat 7 Java 7
                     solutionStackName: '64bit Amazon Linux 2014.03 v1.0.4 running Tomcat 7 Java 7',
             ],
 

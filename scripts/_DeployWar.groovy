@@ -1,4 +1,6 @@
+import com.amazonaws.services.ec2.model.Instance
 import com.amazonaws.services.ec2.model.IpPermission
+import com.amazonaws.services.ec2.model.ModifyInstanceAttributeRequest
 import com.amazonaws.services.ec2.model.RevokeSecurityGroupIngressRequest
 import com.amazonaws.services.ec2.model.SecurityGroup
 import com.amazonaws.services.elasticbeanstalk.model.CreateApplicationRequest
@@ -89,7 +91,11 @@ target(deployWar: "Builds and deploys the WAR") {
     // AWS will set up the EC2 instances so they only accept traffic on port 80 from the load balancer
     // this is required for the load balancer to perform health checks on the running instances
     if(!targetEnvironmentIsLoadBalanced()) {
-        disableHttpAccess(environment)
+        disableHttpAccessFromAnywhere(environment)
+
+        // The endpointUrl will be the public IP address for single instances
+        Instance instance = ec2.findInstanceByPublicIpAddress(environment.endpointURL)
+        addPostLaunchSecurityGroups(instance)
     }
 
     subscribeToTranscoderTopic(environment)
@@ -122,24 +128,32 @@ void waitUntilEnvironmentIsReady(String applicationName, String environmentName,
 }
 
 void subscribeToTranscoderTopic(EnvironmentDescription environment) {
-    String endpoint = 'https://' + environment.CNAME + '/transcoder/notification'
+    String protocol = 'https'
+
+    // SNS will only publish notifications over HTTPS if the app has a valid certificate
+    // and will not allow self-signed certs, so we allow HTTP for the acceptance environment.
+    if(!targetEnvironmentIsLoadBalanced() && !targetEnvironmentIsProduction()) {
+        protocol = 'http'
+    }
+
+    String endpoint = protocol + '://' + environment.CNAME + '/transcoder/notification'
 
     ['completed', 'progressing', 'warning', 'error'].each { action ->
-        SubscribeRequest request = new SubscribeRequest(transcoderTopicArn, 'https', "${endpoint}/${action}")
+        SubscribeRequest request = new SubscribeRequest(transcoderTopicArn, protocol, "${endpoint}/${action}")
 
         displayStatus("Subscribing endpoint [$endpoint] to topic [$transcoderTopicArn]: $request")
         sns.subscribe(request)
     }
 }
 
-void disableHttpAccess(EnvironmentDescription environment) {
+void disableHttpAccessFromAnywhere(EnvironmentDescription environment) {
     String environmentId = environment.environmentId
     Collection<SecurityGroup> securityGroups = ec2.findSecurityGroupsByEnvironmentId(environmentId)
 
     securityGroups.each { securityGroup ->
 
         IpPermission httpAccess = securityGroup?.ipPermissions?.find { rule ->
-            rule.toPort == 80 && rule.fromPort == 80 && rule.ipProtocol == 'tcp'
+            rule.toPort == 80 && rule.fromPort == 80 && rule.ipProtocol == 'tcp' && rule.ipRanges == ['0.0.0.0/0']
         }
 
         if(httpAccess) {
@@ -150,6 +164,45 @@ void disableHttpAccess(EnvironmentDescription environment) {
             ec2.revokeSecurityGroupIngress(request)
         }
     }
+}
+
+void addPostLaunchSecurityGroups(Instance instance) {
+    if(!instance) {
+        displayStatus("Invalid instance specified!")
+        System.exit(1)
+    }
+
+    Collection<String> securityGroupIds = instance.securityGroups.collect { it.groupId }
+    Collection<String> securityGroupsToAdd = deployConfig.postLaunch.securityGroups
+
+    if(securityGroupsToAdd.empty) {
+        displayStatus("No additional security groups to add to instance ${instance.instanceId}")
+        return
+    }
+
+    securityGroupsToAdd.each { groupName ->
+        def securityGroup = ec2.findSecurityGroupByGroupName(groupName)
+
+        if(securityGroup) {
+            def groupId = securityGroup.groupId
+
+            if(!securityGroupIds.contains(groupId)) {
+                displayStatus("Adding [$groupName] to list of security groups to apply")
+                securityGroupIds << groupId
+            }
+            else {
+                displayStatus("Instance already contains security group [$groupName]")
+            }
+        }
+        else {
+            displayStatus("Could not find security group named [$groupName]")
+        }
+    }
+
+    ModifyInstanceAttributeRequest request = new ModifyInstanceAttributeRequest(instanceId: instance.instanceId, groups: securityGroupIds)
+
+    displayStatus("Modifying instance ${instance.instanceId}: ${request}")
+    ec2.modifyInstanceAttribute(request)
 }
 
 void terminateEnvironment(String applicationName, String environmentName, String version) {

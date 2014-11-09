@@ -1,5 +1,6 @@
 import com.amazonaws.services.elastictranscoder.model.CreatePipelineRequest
 import com.amazonaws.services.elastictranscoder.model.Notifications
+import com.amazonaws.services.s3.model.S3ObjectSummary
 import com.amazonaws.services.sns.model.CreateTopicResult
 
 includeTargets << new File("${basedir}/scripts/_DeployConfig.groovy")
@@ -85,6 +86,12 @@ void ensureBucketIsAvailable(String bucketName) {
 
     if(s3.bucketExists(bucketName)) {
         if(resetResourcesIsAllowed()) {
+
+            displayStatus("Emptying existing bucket [$bucketName]")
+            s3.listObjects(bucketName).objectSummaries.each { S3ObjectSummary obj ->
+                s3.deleteObject(bucketName, obj.key)
+            }
+
             displayStatus("Deleting existing bucket [$bucketName]")
             s3.deleteBucket(bucketName)
         }

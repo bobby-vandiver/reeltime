@@ -3,6 +3,9 @@ import com.amazonaws.auth.AWSCredentials
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.ec2.AmazonEC2
 import com.amazonaws.services.ec2.AmazonEC2Client
+import com.amazonaws.services.ec2.model.Instance
+import com.amazonaws.services.ec2.model.Reservation
+import com.amazonaws.services.ec2.model.SecurityGroup
 import com.amazonaws.services.elasticbeanstalk.AWSElasticBeanstalk
 import com.amazonaws.services.elasticbeanstalk.AWSElasticBeanstalkClient
 import com.amazonaws.services.elasticbeanstalk.model.EnvironmentDescription
@@ -138,15 +141,28 @@ AmazonEC2 createEC2Client(AWSCredentials credentials) {
 
     def ec2 = new AmazonEC2Client(credentials)
 
+    ec2.metaClass.findInstanceByPublicIpAddress = { String ipAddress ->
+        Instance foundInstance = null
+        delegate.describeInstances().reservations.each { Reservation reservation ->
+            def temp = reservation.instances.find { Instance instance ->
+                instance.publicIpAddress == ipAddress
+            }
+            if(temp) {
+                foundInstance = temp
+            }
+        }
+        return foundInstance
+    }
+
     ec2.metaClass.findSecurityGroupsByEnvironmentId = { String environmentId ->
         delegate.describeSecurityGroups().securityGroups.findAll { securityGroup ->
             securityGroup.tags.find { tag -> tag.key == 'elasticbeanstalk:environment-id' }
         }
     }
 
-    ec2.metaClass.findSecurityGroupIdByGroupName = { String groupName ->
-        delegate.describeSecurityGroups().securityGroups.find { securityGroup ->
-            securityGroup.tags.find { tag -> tag.key == 'Name' && tag.value == groupName }
+    ec2.metaClass.findSecurityGroupByGroupName = { String groupName ->
+        delegate.describeSecurityGroups().securityGroups.find { SecurityGroup securityGroup ->
+            securityGroup.groupName == groupName
         }
     }
 
