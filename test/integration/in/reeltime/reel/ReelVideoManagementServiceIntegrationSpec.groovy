@@ -59,9 +59,9 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         def reelId = reel.id
 
         and:
-        def first = VideoFactory.createVideo(owner, 'first')
-        def second = VideoFactory.createVideo(owner, 'second')
-        def third = VideoFactory.createVideo(owner, 'third')
+        def first = VideoFactory.createVideoAndWait(owner, 'first', 1000)
+        def second = VideoFactory.createVideoAndWait(owner, 'second', 1000)
+        def third = VideoFactory.createVideoAndWait(owner, 'third', 1000)
 
         and:
         SpringSecurityUtils.doWithAuth(owner.username) {
