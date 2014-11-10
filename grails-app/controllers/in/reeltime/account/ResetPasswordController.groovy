@@ -2,6 +2,7 @@ package in.reeltime.account
 
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
+import in.reeltime.exceptions.AccountCodeException
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.RegistrationException
 import in.reeltime.exceptions.UserNotFoundException
@@ -22,9 +23,14 @@ class ResetPasswordController extends AbstractController {
     @Secured(["permitAll"])
     def sendEmail(UsernameCommand command) {
         handleCommandRequest(command) {
-            def user = userService.loadUser(command.username)
-            resetPasswordService.sendResetPasswordEmail(user, request.locale)
-            render(status: SC_OK)
+            try {
+                def user = userService.loadUser(command.username)
+                resetPasswordService.sendResetPasswordEmail(user, request.locale)
+                render(status: SC_OK)
+            }
+            catch(AccountCodeException e) {
+                exceptionErrorMessageResponse(e, 'resetPasswordEmail.internal.error', SC_SERVICE_UNAVAILABLE)
+            }
         }
     }
 

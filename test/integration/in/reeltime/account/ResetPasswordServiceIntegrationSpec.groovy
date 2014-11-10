@@ -10,6 +10,8 @@ import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ResetPasswordException
 import test.spec.MailServiceDependentIntegrationSpec
 
+import java.security.SecureRandom
+
 class ResetPasswordServiceIntegrationSpec extends MailServiceDependentIntegrationSpec {
 
     def resetPasswordService
@@ -221,7 +223,11 @@ class ResetPasswordServiceIntegrationSpec extends MailServiceDependentIntegratio
     }
 
     private static AccountCode createResetPasswordCode(User user, String rawCode) {
-        def salt = ('a' * AccountCode.SALT_LENGTH).bytes
+        def secureRandom = new SecureRandom()
+
+        byte[] salt = new byte[AccountCode.SALT_LENGTH]
+        secureRandom.nextBytes(salt)
+
         new AccountCode(user: user, code: rawCode, salt: salt,
                 type: AccountCodeType.ResetPassword).save(flush: true)
     }

@@ -17,10 +17,14 @@ class AccountCode {
     AccountCodeType type
     Date dateCreated
 
+    static boolean saltIsUnique(byte[] salt) {
+        AccountCode.countBySalt(salt) == 0
+    }
+
     static constraints = {
         user nullable: false
         code blank: false, nullable: false
-        salt nullable: false, minSize: SALT_LENGTH, maxSize: SALT_LENGTH
+        salt nullable: false, unique: true, minSize: SALT_LENGTH, maxSize: SALT_LENGTH
         type nullable: false
     }
 

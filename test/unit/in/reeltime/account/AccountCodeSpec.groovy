@@ -63,6 +63,38 @@ class AccountCodeSpec extends Specification {
         'b' * 33    |   false
     }
 
+    void "salt must be unique"() {
+        given:
+        byte[] salt = ('b' * 32).bytes
+
+        and:
+        def existingCode = new AccountCode(salt: salt)
+        mockForConstraintsTests(AccountCode, [existingCode])
+
+        and:
+        def accountCode = new AccountCode(salt: salt)
+
+        expect:
+        !accountCode.validate(['salt'])
+    }
+
+    void "check salt is unique"() {
+        given:
+        byte[] salt = ('b' * 32).bytes
+
+        expect:
+        AccountCode.saltIsUnique(salt)
+    }
+
+    void "check salt is not unique"() {
+        given:
+        byte[] salt = ('b' * 32).bytes
+        new AccountCode(code: 'abcdefgh', salt: salt).save(validate: false)
+
+        expect:
+        !AccountCode.saltIsUnique(salt)
+    }
+
     @Unroll
     void "type [#type] is valid [#valid]"() {
         given:
