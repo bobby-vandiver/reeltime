@@ -6,6 +6,7 @@ import in.reeltime.playlist.PlaylistType
 import in.reeltime.playlist.Segment
 import in.reeltime.reel.Reel
 import in.reeltime.reel.ReelVideo
+import in.reeltime.transcoder.TranscoderJob
 import in.reeltime.user.User
 import in.reeltime.maintenance.ResourceRemovalTarget
 import spock.lang.Unroll
@@ -52,8 +53,10 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         video.save(validate: false)
 
+        def transcoderJob = new TranscoderJob(video: video, jobId: '1234567890123-ABCDEF').save()
+
         and:
-        [playlist, reel, video].each {
+        [playlist, reel, transcoderJob, video].each {
             println "Asserting id for [$it]"
             assert it?.id > 0
         }
@@ -65,6 +68,7 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
         def segment2Id = playlist.segments[1].id
 
         def reelId = reel.id
+        def transcoderJobId = transcoderJob.id
 
         when:
         if(removeById) {
@@ -84,6 +88,9 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
         and:
         Reel.findById(reelId) != null
         ReelVideo.findByReelAndVideo(reel, video) == null
+
+        and:
+        TranscoderJob.findById(transcoderJobId) == null
 
         and:
         ResourceRemovalTarget.findByBaseAndRelative(inputBase, 'something.mp4') != null

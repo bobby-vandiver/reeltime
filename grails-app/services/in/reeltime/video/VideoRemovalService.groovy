@@ -10,6 +10,7 @@ class VideoRemovalService {
     def resourceRemovalService
     def pathGenerationService
 
+    def transcoderJobService
     def userService
 
     void removeVideoById(Long videoId) {
@@ -40,6 +41,9 @@ class VideoRemovalService {
                 resourceRemovalService.scheduleForRemoval(playlistAndSegmentBase, segment.uri)
             }
         }
+
+        log.info "Removing the transcoder jobs associated with video [$videoId]"
+        transcoderJobService.removeJobForVideo(video)
 
         def creator = video.creator
 

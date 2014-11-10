@@ -14,6 +14,10 @@ class TranscoderJobService {
         TranscoderJob.findByJobId(jobId)
     }
 
+    void removeJobForVideo(Video video) {
+        TranscoderJob.findByVideo(video)?.delete()
+    }
+
     void complete(TranscoderJob job) {
         log.info("Transcoder job [${job.jobId}] is complete")
         job.status = Complete
