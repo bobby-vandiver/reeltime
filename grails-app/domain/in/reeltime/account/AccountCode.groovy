@@ -24,7 +24,7 @@ class AccountCode {
     static constraints = {
         user nullable: false
         code blank: false, nullable: false
-        salt nullable: false, unique: true, minSize: SALT_LENGTH, maxSize: SALT_LENGTH
+        salt nullable: false, minSize: SALT_LENGTH, maxSize: SALT_LENGTH
         type nullable: false
     }
 
