@@ -24,9 +24,15 @@ environments {
         }
     }
     acceptance {
+        // TODO: Database connection info should be passed in via environment variables
         dataSource {
-            dbCreate = "update"
-            url = "jdbc:h2:acceptanceDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+            dbCreate = "create-drop"
+
+            username = "acceptance"
+            password = "EGQu3kbNqQ2XYrnJ"
+
+            driverClassName = "com.mysql.jdbc.Driver"
+            url = "jdbc:mysql://reeltime-acceptance.ck88z1jzf5bj.us-east-1.rds.amazonaws.com:3306/acceptance_database"
         }
     }
     production {

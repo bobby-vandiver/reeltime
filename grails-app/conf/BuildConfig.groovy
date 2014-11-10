@@ -56,7 +56,7 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
 
-        // runtime 'mysql:mysql-connector-java:5.1.22'
+        runtime 'mysql:mysql-connector-java:5.1.34'
 
         compile 'commons-codec:commons-codec:1.9'
         compile 'com.amazonaws:aws-java-sdk:1.7.13'
