@@ -33,7 +33,7 @@ target(deployWar: "Builds and deploys the WAR") {
     String projectName = applicationProperties.app.name
     String projectVersion = applicationProperties.app.version
 
-    String applicationName = 'ReelTime'
+    String applicationName = applicationName()
     String applicationVersion = projectVersion + '-' + grailsEnvironmentName()
 
     displayStatus("Deploying application [$applicationName] version [$applicationVersion]...")

@@ -6,6 +6,10 @@ displayStatus = { String status ->
     println "[${timestamp()}] $status"
 }
 
+applicationName = {
+    return 'ReelTime'
+}
+
 grailsEnvironmentName = {
     return Environment.currentEnvironment.name
 }
