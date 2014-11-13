@@ -90,8 +90,14 @@ grails.project.dependency.resolution = {
 
         compile ":codenarc:0.21"
 
+        // This has to be a compile time dependency otherwise we will be unable to start
+        // functional tests from Gant scripts.
+        //
+        // The exception thrown:
+        // java.lang.ClassNotFoundException: grails.plugin.functional.spock.SpecTestTypeLoader
+        compile ":functional-spock:0.7"
+
         test ":code-coverage:1.2.7"
-        test ":functional-spock:0.7"
         test ":rest-client-builder:2.0.1"
     }
 }
