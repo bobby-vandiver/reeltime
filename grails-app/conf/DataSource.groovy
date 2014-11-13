@@ -33,6 +33,20 @@ environments {
 
             driverClassName = "com.mysql.jdbc.Driver"
             url = "jdbc:mysql://reeltime-acceptance.ck88z1jzf5bj.us-east-1.rds.amazonaws.com:3306/acceptance_database"
+
+            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+
+            pooled = true
+            properties {
+                maxActive = -1
+                minEvictableIdleTimeMillis=1800000
+                timeBetweenEvictionRunsMillis=1800000
+                numTestsPerEvictionRun=3
+                testOnBorrow=true
+                testWhileIdle=true
+                testOnReturn=true
+                validationQuery="SELECT 1"
+            }
         }
     }
     production {
