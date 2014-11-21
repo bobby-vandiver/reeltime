@@ -8,11 +8,17 @@ class PlaylistParserService {
     def outputStorageService
 
     def parseVariantPlaylist(String path) {
-        parse(path) { reader -> VariantPlaylistParser.parse(reader) }
+        parse(path) { reader ->
+            log.debug "Parsing variant playlist at [$path]"
+            VariantPlaylistParser.parse(reader)
+        }
     }
 
     def parseMediaPlaylist(String path) {
-        parse(path) { reader -> MediaPlaylistParser.parse(reader) }
+        parse(path) { reader ->
+            log.debug "Parsing media playlist at [$path]"
+            MediaPlaylistParser.parse(reader)
+        }
     }
 
     private def parse(String path, Closure parser) {

@@ -11,10 +11,12 @@ class TranscoderJobService {
     }
 
     TranscoderJob loadJob(String jobId) {
+        log.debug "Loading transcoder job [$jobId]"
         TranscoderJob.findByJobId(jobId)
     }
 
     void removeJobForVideo(Video video) {
+        log.debug "Removing transcoder job for video [${video?.id}]"
         TranscoderJob.findByVideo(video)?.delete()
     }
 

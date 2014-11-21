@@ -141,6 +141,8 @@ class VideoCreationService {
     }
 
     void addPlaylistsToCompletedVideo(String transcoderJobId, String keyPrefix, String variantPlaylistKey) {
+        log.debug "Adding playlists from transcoder job [$transcoderJobId] with keyPrefix [$keyPrefix] and variantPlaylistKey [$variantPlaylistKey]"
+
         def transcoderJob = transcoderJobService.loadJob(transcoderJobId)
         transcoderJobService.complete(transcoderJob)
 
