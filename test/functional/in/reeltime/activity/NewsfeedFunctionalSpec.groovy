@@ -337,8 +337,6 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
 
         then:
-
-
         newsfeed.activities.size() == 5
 
         and:

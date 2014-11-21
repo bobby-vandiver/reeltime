@@ -30,14 +30,18 @@ class PlaylistParserService {
     }
 
     private void waitUntilPlaylistIsAvailable(String path) {
-        final MAX_RETRIES = 5
-        final INTERVAL_IN_MILLS = 2000
+        final MAX_RETRIES = 24
+        final INTERVAL_IN_MILLS = 5000
 
         int attempt = 0
         while(!outputStorageService.exists(path) && attempt < MAX_RETRIES) {
             log.debug("Sleeping ${INTERVAL_IN_MILLS} milliseconds until [$path] is available")
             sleep(INTERVAL_IN_MILLS)
             attempt++
+        }
+
+        if(!outputStorageService.exists(path)) {
+            throw new IllegalArgumentException("[$path] does not exist!")
         }
     }
 }
