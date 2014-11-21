@@ -173,10 +173,12 @@ class ReelTimeClient {
 
         assertStatusOrFail(response, 202, "Failed to upload video.")
 
-        return response.json.video_id
+        long videoId = response.json.video_id
+        pollForCreationComplete(token, videoId)
+        return videoId
     }
 
-    int pollForCreationComplete(String uploadToken, long videoId,
+    private int pollForCreationComplete(String uploadToken, long videoId,
               int maxPollCount = DEFAULT_MAX_POLL_COUNT, long retryDelayMillis = DEFAULT_RETRY_DELAY_IN_MILLIS) {
 
         def request = requestFactory.getVideo(uploadToken, videoId)

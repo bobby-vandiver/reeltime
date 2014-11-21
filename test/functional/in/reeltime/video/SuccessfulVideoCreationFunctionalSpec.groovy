@@ -21,11 +21,8 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "minimum required params"() {
         given:
-        def request = createUploadRequest(videosWriteToken) {
-            reel = 'Uncategorized'
-            title = 'minimum-viable-video'
-            video = new File('test/files/small.mp4')
-        }
+        def video = new File('test/files/small.mp4')
+        def request = requestFactory.uploadVideo(videosWriteToken, 'minimum-viable-video', 'Uncategorized', video)
 
         when:
         def response = post(request)
@@ -37,14 +34,6 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
         response.json.title == 'minimum-viable-video'
     }
 
-    void "successful upload polls for status"() {
-        given:
-        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(videosWriteToken)
-
-        expect:
-        reelTimeClient.pollForCreationComplete(videosReadToken, videoId, MAX_POLL_COUNT, STATUS_RETRY_DELAY_IN_MILLIS) == 200
-    }
-
     void "uploaded video is added to the specified reel"() {
         given:
         def reelId = reelTimeClient.getUncategorizedReelId(reelsReadToken)
@@ -53,9 +42,5 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
         expect:
         def list = reelTimeClient.listVideosInReel(reelsReadToken, reelId)
         responseChecker.assertVideoIdInList(list, videoId)
-    }
-
-    private RestRequest createUploadRequest(String token = null, Closure params = null) {
-        new RestRequest(url: urlFactory.uploadUrl, token: token, isMultiPart: params != null, customizer: params)
     }
 }
