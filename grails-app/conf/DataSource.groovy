@@ -26,7 +26,7 @@ environments {
     acceptance {
         // TODO: Database connection info should be passed in via environment variables
         dataSource {
-            dbCreate = "create-drop"
+            dbCreate = "create"
 
             username = "acceptance"
             password = "EGQu3kbNqQ2XYrnJ"
