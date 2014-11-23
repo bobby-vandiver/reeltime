@@ -2,6 +2,7 @@ import grails.util.Environment
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler
 import in.reeltime.common.CustomMarshallerRegistrar
 import in.reeltime.mail.EmailManager
+import in.reeltime.common.deadlock.RetryableOnDeadlockAspect
 
 beans = {
 
@@ -13,6 +14,11 @@ beans = {
 
     emailManager(EmailManager) {
         mailService = ref('mailService')
+    }
+
+    retryableOnDeadlockAspect(RetryableOnDeadlockAspect) {
+        sessionFactory = ref('sessionFactory')
+        transactionManager = ref('transactionManager')
     }
 
     String environmentName = Environment.currentEnvironment.name

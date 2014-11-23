@@ -58,6 +58,8 @@ grails.project.dependency.resolution = {
 
         runtime 'mysql:mysql-connector-java:5.1.34'
 
+        compile 'org.springframework:spring-aop:3.2.12.RELEASE'
+
         compile 'commons-codec:commons-codec:1.9'
         compile 'com.amazonaws:aws-java-sdk:1.7.13'
 
