@@ -17,7 +17,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         readToken = getAccessTokenWithScopeForTestUser('reels-read')
         writeToken = getAccessTokenWithScopeForTestUser('reels-write')
 
-        uploadVideoToken = getAccessTokenWithScopeForTestUser('videos-write')
+        uploadVideoToken = getAccessTokenWithScopesForTestUser(['videos-read', 'videos-write'])
 
         token = getAccessTokenWithScopesForTestUser(['reels-read', 'reels-write'])
     }

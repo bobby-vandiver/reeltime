@@ -196,6 +196,8 @@ class ReelTimeClient {
             }
             pollCount++
         }
+
+        assert videoCreatedStatus == 200 : "Exceeded polling limit for uploading video."
         return videoCreatedStatus
     }
 

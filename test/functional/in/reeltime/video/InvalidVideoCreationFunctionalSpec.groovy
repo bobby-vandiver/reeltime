@@ -8,11 +8,13 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
     String invalidToken
     String videosReadToken
     String videosWriteToken
+    String videosReadWriteToken
 
     void setup() {
         invalidToken = 'bad-mojo'
         videosReadToken = getAccessTokenWithScopeForTestUser('videos-read')
         videosWriteToken = getAccessTokenWithScopeForTestUser('videos-write')
+        videosReadWriteToken = getAccessTokenWithScopesForTestUser(['videos-read', 'videos-write'])
     }
 
     void "no token present"() {
@@ -178,7 +180,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
 
     void "invalid http method for video url"() {
         given:
-        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(videosWriteToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(videosReadWriteToken)
 
         expect:
         responseChecker.assertInvalidHttpMethods(urlFactory.getVideoUrl(videoId), ['post', 'put'], videosWriteToken)

@@ -69,7 +69,7 @@ class VideoFunctionalSpec extends FunctionalSpec {
         reelTimeClient.addReel(token, 'some reel')
 
         and:
-        def otherToken = registerNewUserAndGetToken('other', ['videos-write', 'reels-write'])
+        def otherToken = registerNewUserAndGetToken('other', ['videos-read', 'videos-write', 'reels-write'])
         reelTimeClient.addReel(otherToken, 'other reel')
 
         and:

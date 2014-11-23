@@ -6,11 +6,13 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
 
     String videosReadToken
     String videosWriteToken
+    String videosReadWriteToken
     String reelsReadToken
 
     void setup() {
         videosReadToken = getAccessTokenWithScopeForTestUser('videos-read')
         videosWriteToken = getAccessTokenWithScopeForTestUser('videos-write')
+        videosReadWriteToken = getAccessTokenWithScopesForTestUser(['videos-read', 'videos-write'])
         reelsReadToken = getAccessTokenWithScopeForTestUser('reels-read')
     }
 
@@ -58,7 +60,7 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
     void "successfully delete video"() {
         given:
         def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(reelsReadToken)
-        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(videosWriteToken)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(videosReadWriteToken)
 
         def beforeList = reelTimeClient.listVideosInReel(reelsReadToken, uncategorizedReelId)
         responseChecker.assertVideoIdInList(beforeList, videoId)
