@@ -1,5 +1,6 @@
 package in.reeltime.transcoder
 
+import in.reeltime.exceptions.TranscoderJobNotFoundException
 import in.reeltime.video.Video
 import static in.reeltime.transcoder.TranscoderJobStatus.*
 
@@ -12,7 +13,11 @@ class TranscoderJobService {
 
     TranscoderJob loadJob(String jobId) {
         log.debug "Loading transcoder job [$jobId]"
-        TranscoderJob.findByJobId(jobId)
+        def job = TranscoderJob.findByJobId(jobId)
+        if(!job) {
+            throw new TranscoderJobNotFoundException("Could not find transcoder job [$jobId]")
+        }
+        return job
     }
 
     void removeJobForVideo(Video video) {

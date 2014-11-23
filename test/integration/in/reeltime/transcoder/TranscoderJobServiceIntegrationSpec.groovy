@@ -4,6 +4,7 @@ import grails.test.spock.IntegrationSpec
 import in.reeltime.video.Video
 import test.helper.UserFactory
 import test.helper.VideoFactory
+import in.reeltime.exceptions.TranscoderJobNotFoundException
 
 import static in.reeltime.transcoder.TranscoderJobStatus.Complete
 
@@ -30,6 +31,15 @@ class TranscoderJobServiceIntegrationSpec extends IntegrationSpec {
         and:
         job.jobId == jobId
         job.video == video
+    }
+
+    void "attempt to load job that does not exist"() {
+        when:
+        transcoderJobService.loadJob(jobId)
+
+        then:
+        def e = thrown(TranscoderJobNotFoundException)
+        e.message == "Could not find transcoder job [$jobId]"
     }
 
     void "mark job complete"() {
