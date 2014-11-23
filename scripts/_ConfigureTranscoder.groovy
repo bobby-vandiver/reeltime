@@ -20,7 +20,7 @@ String createTranscoderNotificationTopic() {
     String topicArn = null
 
     if(resetResourcesIsAllowed()) {
-        displayStatus("Fetchin subscription ARNs for all subscriptions for topic [$topicName]")
+        displayStatus("Fetching subscription ARNs for all subscriptions for topic [$topicName]")
         Collection<String> subscriptionArns = sns.findSubscriptionArnsByTopicName(topicName)
 
         subscriptionArns.each { subscriptionArn ->
