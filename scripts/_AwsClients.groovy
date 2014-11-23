@@ -255,6 +255,11 @@ AmazonSNS createSNSClient(AWSCredentials credentials) {
         return topic?.topicArn
     }
 
+    sns.metaClass.findSubscriptionArnsByTopicName = { String topicName ->
+        def subscriptions = delegate.listSubscriptions().subscriptions.findAll { it.topicArn.endsWith(topicName) }
+        return subscriptions*.subscriptionArn
+    }
+
     return sns
 }
 

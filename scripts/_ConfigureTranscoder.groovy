@@ -19,6 +19,16 @@ String createTranscoderNotificationTopic() {
     String topicName = deployConfig.transcoder.topicName
     String topicArn = null
 
+    if(resetResourcesIsAllowed()) {
+        displayStatus("Fetchin subscription ARNs for all subscriptions for topic [$topicName]")
+        Collection<String> subscriptionArns = sns.findSubscriptionArnsByTopicName(topicName)
+
+        subscriptionArns.each { subscriptionArn ->
+            displayStatus("Unsubscribing [$subscriptionArn]")
+            sns.unsubscribe(subscriptionArn)
+        }
+    }
+
     if(sns.topicExists(topicName)) {
         displayStatus("Topic [$topicName] already exists -- fetching topic ARN")
         topicArn = sns.findTopicArnByName(topicName)
