@@ -177,6 +177,15 @@ reeltime {
         }
     }
 
+    // Playlist parser configuration
+    playlistParser {
+        // Number of times to attempt retrieval of playlist before giving up
+        maxRetries = 24
+
+        // Length of time between each attempt
+        internalInMillis = 5000
+    }
+
     // Video metadata configuration
     metadata {
         // Use ffprobe to extract video metadata

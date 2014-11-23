@@ -9,6 +9,16 @@ import in.reeltime.storage.OutputStorageService
 @TestFor(PlaylistParserService)
 class PlaylistParserServiceSpec extends Specification {
 
+    OutputStorageService outputStorageService
+
+    void setup() {
+        outputStorageService = Mock(OutputStorageService)
+        service.outputStorageService = outputStorageService
+
+        service.maxRetries = 5
+        service.intervalInMillis = 500
+    }
+
     void "load variant playlist from storage and parse it"() {
         given:
         def text = '''#EXTM3U
@@ -21,14 +31,13 @@ class PlaylistParserServiceSpec extends Specification {
 
         and:
         def path = 'holy-streaming-video-batman/hls-bats-master.m3u8'
-        service.outputStorageService = Mock(OutputStorageService)
 
         when:
         def variantPlaylist = service.parseVariantPlaylist(path) as VariantPlaylist
 
         then:
-        1 * service.outputStorageService.load(path) >> playlistStream
-        2 * service.outputStorageService.exists(path) >>> [false, true]
+        1 * outputStorageService.load(path) >> playlistStream
+        3 * outputStorageService.exists(path) >>> [false, true]
 
         and:
         variantPlaylist.streams.size() == 2
@@ -85,14 +94,13 @@ class PlaylistParserServiceSpec extends Specification {
 
         and:
         def path = 'holy-streaming-video-batman/hls-bats-400k.m3u8'
-        service.outputStorageService = Mock(OutputStorageService)
 
         when:
         def mediaPlaylist = service.parseMediaPlaylist(path) as MediaPlaylist
 
         then:
-        1 * service.outputStorageService.load(path) >> playlistStream
-        2 * service.outputStorageService.exists(path) >>> [false, true]
+        1 * outputStorageService.load(path) >> playlistStream
+        3 * outputStorageService.exists(path) >>> [false, true]
 
         and:
         mediaPlaylist.version == 3
@@ -145,4 +153,15 @@ class PlaylistParserServiceSpec extends Specification {
         segments[9].duration == '0.792889'
     }
 
+    void "exceed max number of retries when waiting for playlist to become available"() {
+        when:
+        service.waitUntilPlaylistIsAvailable('somewhere')
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == '[somewhere] does not exist!'
+
+        and:
+        outputStorageService.exists('somewhere') >> false
+    }
 }

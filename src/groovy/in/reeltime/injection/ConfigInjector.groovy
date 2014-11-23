@@ -37,6 +37,11 @@ class ConfigInjector {
             playlistFormat = config.reeltime.transcoder.output.format
         }
 
+        ctx.playlistParserService.with {
+            maxRetries = config.reeltime.playlistParser.maxRetries
+            intervalInMillis = config.reeltime.playlistParser.intervalInMillis
+        }
+
         ctx.localFileSystemService.with {
             inputBasePath = config.reeltime.storage.input
             outputBasePath = config.reeltime.storage.output

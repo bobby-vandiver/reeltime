@@ -7,6 +7,9 @@ class PlaylistParserService {
 
     def outputStorageService
 
+    def maxRetries
+    def intervalInMillis
+
     def parseVariantPlaylist(String path) {
         parse(path) { reader ->
             log.debug "Parsing variant playlist at [$path]"
@@ -30,13 +33,10 @@ class PlaylistParserService {
     }
 
     private void waitUntilPlaylistIsAvailable(String path) {
-        final MAX_RETRIES = 24
-        final INTERVAL_IN_MILLS = 5000
-
         int attempt = 0
-        while(!outputStorageService.exists(path) && attempt < MAX_RETRIES) {
-            log.debug("Sleeping ${INTERVAL_IN_MILLS} milliseconds until [$path] is available")
-            sleep(INTERVAL_IN_MILLS)
+        while(!outputStorageService.exists(path) && attempt < maxRetries) {
+            log.debug("Sleeping ${intervalInMillis} milliseconds until [$path] is available")
+            sleep(intervalInMillis)
             attempt++
         }
 
