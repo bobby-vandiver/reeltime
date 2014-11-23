@@ -133,7 +133,10 @@ class NotificationControllerSpec extends Specification {
         controller.log = Mock(Log)
 
         and:
-        def message = '{foo: bar}'
+        def message = """{
+                        |    "Message": "{\\n  \\"state\\" : \\"$state\\",\\n  \\"version\\" : \\"2012-09-25\\",\\n  \\"jobId\\" : \\"1388444889472-t01s28\\",\\n  \\"pipelineId\\" : \\"1388441748515-gvt196\\",\\n  \\"input\\" : {\\n    \\"key\\" : \\"small.mp4\\",\\n    \\"frameRate\\" : \\"auto\\",\\n    \\"resolution\\" : \\"auto\\",\\n    \\"aspectRatio\\" : \\"auto\\",\\n    \\"interlaced\\" : \\"auto\\",\\n    \\"container\\" : \\"auto\\"\\n  },\\n  \\"outputKeyPrefix\\" : \\"hls-small/\\",\\n  \\"outputs\\" : [ {\\n    \\"id\\" : \\"1\\",\\n    \\"presetId\\" : \\"1351620000001-200050\\",\\n    \\"key\\" : \\"hls-small-400k\\",\\n    \\"thumbnailPattern\\" : \\"\\",\\n    \\"rotate\\" : \\"auto\\",\\n    \\"segmentDuration\\" : 10.0,\\n    \\"status\\" : \\"Progressing\\"\\n  } ],\\n  \\"playlists\\" : [ {\\n    \\"name\\" : \\"hls-small-master\\",\\n    \\"format\\" : \\"HLSv3\\",\\n    \\"outputKeys\\" : [ \\"hls-small-400k\\" ],\\n    \\"status\\" : \\"Progressing\\"\\n  } ]\\n}",
+                        |    "Type": "Notification"
+                        |}""".stripMargin()
 
         and:
         request.addHeader('x-amz-sns-message-type', 'Notification')
@@ -149,9 +152,9 @@ class NotificationControllerSpec extends Specification {
         response.status == 200
 
         where:
-        action      |   method
-        'warning'   |   'warn'
-        'error'     |   'error'
+        state       |   action      |   method
+        'WARNING'   |   'warning'   |   'warn'
+        'ERROR'     |   'error'     |   'error'
     }
 
     void "log the elastic transcoder jobId when progressing notification occurs"() {

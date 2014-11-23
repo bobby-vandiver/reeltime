@@ -2,7 +2,6 @@ package in.reeltime.notification
 
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonSlurper
-import in.reeltime.transcoder.TranscoderJob
 
 import static MessageType.MESSAGE_TYPE_HEADER
 import static MessageType.SUBSCRIPTION_CONFIRMATION
@@ -31,9 +30,7 @@ class NotificationController {
     }
 
     def completed() {
-        handleRequest {
-            def message = messagesAsJson
-
+        handleRequest('COMPLETED') { message ->
             def jobId = message.jobId
             def keyPrefix = message.outputKeyPrefix
             def variantPlaylistKey = message.playlists[0].name
@@ -43,30 +40,24 @@ class NotificationController {
     }
 
     def progressing() {
-        handleRequest {
-            def message = messagesAsJson
+        handleRequest('PROGRESSING') { message ->
             log.debug("Elastic Transcoder job [${message.jobId}] is progressing")
         }
     }
 
-    private def getMessagesAsJson() {
-        def message = request.JSON.Message
-        new JsonSlurper().parseText(message)
-    }
-
     def warning() {
-        handleRequest {
+        handleRequest('WARNING') { message ->
             log.warn(request.inputStream.text)
         }
     }
 
     def error() {
-        handleRequest {
+        handleRequest('ERROR') { message ->
             log.error(request.inputStream.text)
         }
     }
 
-    private void handleRequest(Closure notificationHandler) {
+    private void handleRequest(String expectedState, Closure notificationHandler) {
         log.debug(request.JSON)
         def messageType = request.getHeader(MESSAGE_TYPE_HEADER)
 
@@ -74,7 +65,15 @@ class NotificationController {
             confirmSubscription()
         }
         else if(messageType == NOTIFICATION) {
-            notificationHandler()
+            def message = messagesAsJson
+            def state = message.state
+
+            if(state == expectedState) {
+                notificationHandler(message)
+            }
+            else {
+                log.debug("Expected to recieve message with state [${expectedState}] but got [${state}] instead!")
+            }
             render status: SC_OK
         }
         else {
@@ -94,5 +93,10 @@ class NotificationController {
         else {
             render status: SC_BAD_REQUEST
         }
+    }
+
+    private def getMessagesAsJson() {
+        def message = request.JSON.Message
+        new JsonSlurper().parseText(message)
     }
 }
