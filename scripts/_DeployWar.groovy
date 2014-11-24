@@ -137,7 +137,7 @@ void subscribeToTranscoderTopic(EnvironmentDescription environment) {
     }
 
     String endpoint = protocol + '://' + environment.CNAME + '/transcoder/notification'
-    SubscribeRequest request = new SubscribeRequest(transcoderTopicArn, protocol, "${endpoint}/${action}")
+    SubscribeRequest request = new SubscribeRequest(transcoderTopicArn, protocol, endpoint)
 
     displayStatus("Subscribing endpoint [$endpoint] to topic [$transcoderTopicArn]: $request")
     sns.subscribe(request)
