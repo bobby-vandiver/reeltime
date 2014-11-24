@@ -2,6 +2,7 @@ package in.reeltime.notification
 
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonSlurper
+import in.reeltime.exceptions.TranscoderJobNotFoundException
 
 import static MessageType.MESSAGE_TYPE_HEADER
 import static MessageType.SUBSCRIPTION_CONFIRMATION
@@ -66,10 +67,15 @@ class NotificationController {
 
         switch(state) {
             case 'COMPLETED':
-                def keyPrefix = message.outputKeyPrefix
-                def variantPlaylistKey = message.playlists[0].name
+                try {
+                    def keyPrefix = message.outputKeyPrefix
+                    def variantPlaylistKey = message.playlists[0].name
 
-                videoCreationService.addPlaylistsToCompletedVideo(jobId, keyPrefix, variantPlaylistKey)
+                    videoCreationService.addPlaylistsToCompletedVideo(jobId, keyPrefix, variantPlaylistKey)
+                }
+                catch(TranscoderJobNotFoundException e) {
+                    log.warn("Could not find transcoder job [$jobId] -- assuming it was already removed")
+                }
                 break
 
             case 'PROGRESSING':
