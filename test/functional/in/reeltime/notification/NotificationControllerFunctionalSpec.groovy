@@ -7,10 +7,9 @@ import spock.lang.Unroll
 class NotificationControllerFunctionalSpec extends FunctionalSpec {
 
     @Unroll
-    void "invalid http method [#method] for action [#action]"() {
+    void "invalid http method [#method]"() {
         given:
-        def notificationUrl = urlFactory.getNotificationUrl(action)
-        def request = new RestRequest(url: notificationUrl)
+        def request = new RestRequest(url: urlFactory.notificationUrl)
 
         when:
         def response = "$method"(request)
@@ -20,6 +19,6 @@ class NotificationControllerFunctionalSpec extends FunctionalSpec {
         response.body == ''
 
         where:
-        [action, method] << [['completed', 'progressing', 'warning', 'error'], ['get', 'put', 'delete']].combinations()
+        method << ['get', 'put', 'delete']
     }
 }

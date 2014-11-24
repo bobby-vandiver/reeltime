@@ -18,20 +18,8 @@ class UrlMappings {
         /* AWS integration */
         "/available" (controller: 'applicationStatus', action: 'available')
 
-        "/transcoder/notification/completed" (controller: 'notification') {
-            action = [POST: 'completed']
-        }
-
-        "/transcoder/notification/progressing" (controller: 'notification') {
-            action = [POST: 'progressing']
-        }
-
-        "/transcoder/notification/warning" (controller: 'notification') {
-            action = [POST: 'warning']
-        }
-
-        "/transcoder/notification/error" (controller: 'notification') {
-            action = [POST: 'error']
+        "/transcoder/notification" (controller: 'notification') {
+            action = [POST: 'handleMessage']
         }
 
         /* ReelTime API */

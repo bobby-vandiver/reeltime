@@ -52,59 +52,46 @@ class NotificationControllerSpec extends Specification {
         false       |   false           |   true            |   true
     }
 
-    @Unroll
-    void "return 400 if AWS SNS message type header is not in request for [#action]"() {
+    void "return 400 if AWS SNS message type header is not in request"() {
         when:
-        controller."$action"()
+        controller.handleMessage()
+
+        then:
+        response.status == 400
+    }
+
+    @Unroll
+    void "return 400 for invalid message type [#type]"() {
+        given:
+        request.addHeader('x-amz-sns-message-type', type)
+        request.content = '{}'.bytes
+
+        when:
+        controller.handleMessage()
 
         then:
         response.status == 400
 
         where:
-        action << ['completed', 'progressing', 'warning', 'error']
-    }
-
-    @Unroll
-    void "return 400 for invalid message type [#type]"() {
-        expect:
-        assertActionReturns400ForInvalidMessageType('completed', type)
-        assertActionReturns400ForInvalidMessageType('progressing', type)
-        assertActionReturns400ForInvalidMessageType('warning', type)
-        assertActionReturns400ForInvalidMessageType('error', type)
-
-        where:
         type << ['UnsubscribeConfirmation', 'BadConfirmation', 'Notifications', '']
     }
 
-    private void assertActionReturns400ForInvalidMessageType(action, messageType) {
-        response.reset()
-        request.addHeader('x-amz-sns-message-type', messageType)
-
-        controller."$action"()
-        assert response.status == 400
-    }
-
-    @Unroll
-    void "return 400 if SubscriptionConfirmation message is empty for action [#action]"() {
+    void "return 400 if SubscriptionConfirmation message is empty"() {
         given:
         request.addHeader('x-amz-sns-message-type', 'SubscriptionConfirmation')
         request.content = '{}'.bytes
 
         when:
-        controller."$action"()
+        controller.handleMessage()
 
         then:
         response.status == 400
 
         and:
         0 * notificationService.confirmSubscription(*_)
-
-        where:
-        action << ['completed', 'progressing', 'warning', 'error']
     }
 
-    @Unroll
-    void "return 200 after confirming subscription for action [#action]"() {
+    void "return 200 after confirming subscription"() {
         given:
         def token = '2336412f37fb687f5d51e6e241d164b051479845a45fd1e10f1287fbc675dba8bb330f79de4343d9bc6e25954e0b9b47c04d6f9d46d7f52460b8f253675f7909d0d801fa1fb7af7aac2400e9491e815b2b506921d04a2a918d70a75f5768b654b6ad6da9bce8c4c98eb6f16857123e51'
         def topicArn = 'arn:aws:sns:us-east-1:166209233708:ets-listener'
@@ -115,20 +102,17 @@ class NotificationControllerSpec extends Specification {
         request.content = message.bytes
 
         when:
-        controller."$action"()
+        controller.handleMessage()
 
         then:
         response.status == 200
 
         and:
         1 * notificationService.confirmSubscription(topicArn, token)
-
-        where:
-        action << ['completed', 'progressing', 'warning', 'error']
     }
 
     @Unroll
-    void "log entire message when [#action] notification occurs"() {
+    void "log entire message when [#state] notification occurs"() {
         given:
         controller.log = Mock(Log)
 
@@ -139,22 +123,52 @@ class NotificationControllerSpec extends Specification {
                         |}""".stripMargin()
 
         and:
+        def expectedLogMessage = "Received ${state.toLowerCase()} notification for job [1388444889472-t01s28]: $message"
+
+        and:
         request.addHeader('x-amz-sns-message-type', 'Notification')
         request.content = message.bytes
 
         when:
-        controller."$action"()
+        controller.handleMessage()
 
         then:
-        1 * controller.log."$method"(message)
+        1 * controller.log."$method"(expectedLogMessage)
 
         and:
         response.status == 200
 
         where:
-        state       |   action      |   method
-        'WARNING'   |   'warning'   |   'warn'
-        'ERROR'     |   'error'     |   'error'
+        state       |   method
+        'WARNING'   |   'warn'
+        'ERROR'     |   'error'
+    }
+
+    void "log message for message with unknown state"() {
+        given:
+        controller.log = Mock(Log)
+
+        and:
+        def message = """{
+                        |    "Message": "{\\n  \\"state\\" : \\"UNKNOWN\\",\\n  \\"version\\" : \\"2012-09-25\\",\\n  \\"jobId\\" : \\"1388444889472-t01s28\\",\\n  \\"pipelineId\\" : \\"1388441748515-gvt196\\",\\n  \\"input\\" : {\\n    \\"key\\" : \\"small.mp4\\",\\n    \\"frameRate\\" : \\"auto\\",\\n    \\"resolution\\" : \\"auto\\",\\n    \\"aspectRatio\\" : \\"auto\\",\\n    \\"interlaced\\" : \\"auto\\",\\n    \\"container\\" : \\"auto\\"\\n  },\\n  \\"outputKeyPrefix\\" : \\"hls-small/\\",\\n  \\"outputs\\" : [ {\\n    \\"id\\" : \\"1\\",\\n    \\"presetId\\" : \\"1351620000001-200050\\",\\n    \\"key\\" : \\"hls-small-400k\\",\\n    \\"thumbnailPattern\\" : \\"\\",\\n    \\"rotate\\" : \\"auto\\",\\n    \\"segmentDuration\\" : 10.0,\\n    \\"status\\" : \\"Progressing\\"\\n  } ],\\n  \\"playlists\\" : [ {\\n    \\"name\\" : \\"hls-small-master\\",\\n    \\"format\\" : \\"HLSv3\\",\\n    \\"outputKeys\\" : [ \\"hls-small-400k\\" ],\\n    \\"status\\" : \\"Progressing\\"\\n  } ]\\n}",
+                        |    "Type": "Notification"
+                        |}""".stripMargin()
+
+        and:
+        def expectedLogMessage = "Received unknown state [UNKNOWN] for job [1388444889472-t01s28]: $message"
+
+        and:
+        request.addHeader('x-amz-sns-message-type', 'Notification')
+        request.content = message.bytes
+
+        when:
+        controller.handleMessage()
+
+        then:
+        1 * controller.log.warn(expectedLogMessage)
+
+        and:
+        response.status == 200
     }
 
     void "log the elastic transcoder jobId when progressing notification occurs"() {
@@ -173,7 +187,7 @@ class NotificationControllerSpec extends Specification {
         request.content = message.bytes
 
         when:
-        controller.progressing()
+        controller.handleMessage()
 
         then:
         1 * controller.log.debug('Elastic Transcoder job [1388444889472-t01s28] is progressing')
@@ -195,7 +209,7 @@ class NotificationControllerSpec extends Specification {
         request.content = message.bytes
 
         when:
-        controller.completed()
+        controller.handleMessage()
 
         then:
         1 * videoCreationService.addPlaylistsToCompletedVideo('1388444889472-t01s28', 'hls-small/', 'hls-small-master')

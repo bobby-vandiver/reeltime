@@ -29,22 +29,6 @@ import spock.lang.Unroll
 class UrlMappingsSpec extends Specification {
 
     @Unroll
-    void "test notification [#action] endpoint mapping"() {
-        given:
-        webRequest.currentRequest.method = 'POST'
-
-        expect:
-        assertForwardUrlMapping(url, controller: 'notification', action: action)
-
-        where:
-        action          |   url
-        'completed'     |   '/transcoder/notification/completed'
-        'progressing'   |   '/transcoder/notification/progressing'
-        'warning'       |   '/transcoder/notification/warning'
-        'error'         |   '/transcoder/notification/error'
-    }
-
-    @Unroll
     void "httpMethod [#httpMethod] for video url maps to action [#action]"() {
         given:
         webRequest.currentRequest.method = httpMethod
@@ -254,6 +238,7 @@ class UrlMappingsSpec extends Specification {
         '/videos'                   |   'POST'      |   'video'                 |   'upload'
         '/reels'                    |   'GET'       |   'reel'                  |   'listReels'
         '/reels'                    |   'POST'      |   'reel'                  |   'addReel'
+        '/transcoder/notification'  |   'POST'      |   'notification'          |   'handleMessage'
         '/account'                  |   'POST'      |   'account'               |   'registerAccount'
         '/account'                  |   'DELETE'    |   'account'               |   'removeAccount'
         '/account/confirm'          |   'POST'      |   'accountConfirmation'   |   'confirmAccount'

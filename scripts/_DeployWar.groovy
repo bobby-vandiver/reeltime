@@ -137,13 +137,10 @@ void subscribeToTranscoderTopic(EnvironmentDescription environment) {
     }
 
     String endpoint = protocol + '://' + environment.CNAME + '/transcoder/notification'
+    SubscribeRequest request = new SubscribeRequest(transcoderTopicArn, protocol, "${endpoint}/${action}")
 
-    ['completed', 'progressing', 'warning', 'error'].each { action ->
-        SubscribeRequest request = new SubscribeRequest(transcoderTopicArn, protocol, "${endpoint}/${action}")
-
-        displayStatus("Subscribing endpoint [$endpoint] to topic [$transcoderTopicArn]: $request")
-        sns.subscribe(request)
-    }
+    displayStatus("Subscribing endpoint [$endpoint] to topic [$transcoderTopicArn]: $request")
+    sns.subscribe(request)
 }
 
 void disableHttpAccessFromAnywhere(EnvironmentDescription environment) {

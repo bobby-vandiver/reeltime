@@ -28,8 +28,8 @@ public class ReelTimeUrlFactory {
         getUrlForResource('available')
     }
 
-    String getNotificationUrl(action) {
-        getUrlForResource("transcoder/notification/$action")
+    String getNotificationUrl() {
+        getUrlForResource("transcoder/notification")
     }
 
     String getRegisterUrl() {
