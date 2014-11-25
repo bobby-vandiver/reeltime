@@ -4,6 +4,7 @@ import grails.test.spock.IntegrationSpec
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.video.Video
+import test.helper.ReelFactory
 import test.helper.UserFactory
 
 class ActivityServiceIntegrationSpec extends IntegrationSpec {
@@ -11,6 +12,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
     def activityService
 
     User user
+    Reel uncategorizedReel
     Reel reel
     Video video
 
@@ -19,7 +21,8 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
     void setup() {
         user = UserFactory.createTestUser()
-        reel = user.reels[0]
+        uncategorizedReel = user.reels[0]
+        reel = ReelFactory.createReel(user, 'activity-test')
         video = new Video(creator: user, title: 'title', masterPath: 'masterPath', available: true).save()
 
         savedMaxActivitiesPerPage = activityService.maxActivitiesPerPage
@@ -35,10 +38,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         activityService.reelCreated(user, reel)
 
         then:
-        def activity = UserReelActivity.findByUserAndReel(user, reel)
-        activity != null
-
-        activity.type == ActivityType.CreateReel
+        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.CreateReel) != null
     }
 
     void "attempt to add real creation activity multiple times"() {
@@ -50,7 +50,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         def e = thrown(IllegalArgumentException)
-        e.message == "Reel creation activity already exists"
+        e.message == "Reel creation activity already exists for reel [${reel.id}]"
     }
 
     void "delete create reel activity"() {
@@ -61,22 +61,32 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         activityService.reelDeleted(user, reel)
 
         then:
-        UserReelActivity.findByUserAndReel(user, reel) == null
+        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.CreateReel) == null
     }
 
     void "save join reel audience activity"() {
+        given:
+        activityService.reelCreated(user, reel)
+
         when:
         activityService.userJoinedAudience(user, reel.audience)
 
         then:
-        def activity = UserReelActivity.findByUserAndReel(user, reel)
-        activity != null
+        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience) != null
+    }
 
-        activity.type == ActivityType.JoinReelAudience
+    void "attempt to add join reel audience for reel with no create-reel activity"() {
+        when:
+        activityService.userJoinedAudience(user, reel.audience)
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == "Create reel activity must exist before a join reel audience activity can be created for reel [${reel.id}]"
     }
 
     void "attempt to add join reel audience activity multiple times"() {
         given:
+        activityService.reelCreated(user, reel)
         activityService.userJoinedAudience(user, reel.audience)
 
         when:
@@ -84,33 +94,44 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         def e = thrown(IllegalArgumentException)
-        e.message == "Join reel audience activity already exists"
+        e.message == "Join reel audience activity already exists for reel [${reel.id}]"
     }
 
     void "delete join reel audience activity"() {
         given:
+        activityService.reelCreated(user, reel)
         activityService.userJoinedAudience(user, reel.audience)
 
         when:
         activityService.userLeftAudience(user, reel.audience)
 
         then:
-        UserReelActivity.findByUserAndReel(user, reel) == null
+        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience) == null
     }
 
     void "save video added to reel activity"() {
+        given:
+        activityService.reelCreated(user, reel)
+
         when:
         activityService.videoAddedToReel(user, reel, video)
 
         then:
-        def activity = UserReelActivity.findByUserAndReel(user, reel)
-        activity != null
+        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.AddVideoToReel) != null
+    }
 
-        activity instanceof UserReelVideoActivity
+    void "attempt to add video added to reel activity for reel with no create-reel activity"() {
+        when:
+        activityService.videoAddedToReel(user, reel, video)
+
+        then:
+        def e = thrown(IllegalArgumentException)
+        e.message == "Create reel activity must exist before a video added to reel activity can be created for reel [${reel.id}]"
     }
 
     void "attempt to add video added to reel activity multiple times"() {
         given:
+        activityService.reelCreated(user, reel)
         activityService.videoAddedToReel(user, reel, video)
 
         when:
@@ -118,18 +139,19 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         def e = thrown(IllegalArgumentException)
-        e.message == "Video added to reel activity already exists"
+        e.message == "Video added to reel activity already exists for reel [${reel.id}]"
     }
 
     void "delete add video to reel activity"() {
         given:
+        activityService.reelCreated(user, reel)
         activityService.videoAddedToReel(user, reel, video)
 
         when:
         activityService.videoRemovedFromReel(user, reel, video)
 
         then:
-        UserReelActivity.findByUserAndReel(user, reel) == null
+        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.AddVideoToReel) == null
     }
 
     void "no user activities to delete"() {

@@ -16,7 +16,7 @@ class Reel {
     static belongsTo = [owner: User]
     static hasOne = [audience: Audience]
 
-    static transients = ['numberOfVideos', 'numberOfAudienceMembers']
+    static transients = ['numberOfVideos', 'numberOfAudienceMembers', 'uncategorizedReel']
 
     static constraints = {
         name nullable: false, blank: false, minSize: MINIMUM_NAME_LENGTH, maxSize: MAXIMUM_NAME_LENGTH
@@ -30,6 +30,10 @@ class Reel {
 
     int getNumberOfAudienceMembers() {
         audience?.members?.size() ?: 0
+    }
+
+    boolean isUncategorizedReel() {
+        name == UNCATEGORIZED_REEL_NAME
     }
 
     boolean containsVideo(Video video) {

@@ -10,11 +10,15 @@ class ActivityService {
     def maxActivitiesPerPage
 
     void reelCreated(User user, Reel reel) {
-        if(UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.CreateReel)) {
-            throw new IllegalArgumentException("Reel creation activity already exists")
+        if(createReelActivityExists(reel)) {
+            throw new IllegalArgumentException("Reel creation activity already exists for reel [${reel.id}]")
         }
         log.info "Reel [${reel.id}] has been created by user [${user.username}]"
         new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel).save()
+    }
+
+    private boolean createReelActivityExists(Reel reel) {
+        UserReelActivity.findByReelAndType(reel, ActivityType.CreateReel) != null
     }
 
     void reelDeleted(User user, Reel reel) {
@@ -24,8 +28,11 @@ class ActivityService {
 
     void userJoinedAudience(User user, Audience audience) {
         def reel = audience.reel
+        if(!createReelActivityExists(reel) && !reel.isUncategorizedReel()) {
+            throw new IllegalArgumentException("Create reel activity must exist before a join reel audience activity can be created for reel [${reel.id}]")
+        }
         if(UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience)) {
-            throw new IllegalArgumentException("Join reel audience activity already exists")
+            throw new IllegalArgumentException("Join reel audience activity already exists for reel [${reel.id}]")
         }
         log.info "User [${user.username}] has joined the audience for reel [${reel.id}]"
         new UserReelActivity(user: user, reel: reel, type: ActivityType.JoinReelAudience).save()
@@ -38,8 +45,11 @@ class ActivityService {
     }
 
     void videoAddedToReel(User user, Reel reel, Video video) {
+        if(!createReelActivityExists(reel) && !reel.isUncategorizedReel()) {
+            throw new IllegalArgumentException("Create reel activity must exist before a video added to reel activity can be created for reel [${reel.id}]")
+        }
         if(UserReelVideoActivity.findByUserAndReelAndVideo(user, reel, video)) {
-            throw new IllegalArgumentException("Video added to reel activity already exists")
+            throw new IllegalArgumentException("Video added to reel activity already exists for reel [${reel.id}]")
         }
         log.info "Video [${video.id}] has been added to reel [${reel.id}] by user [${user.username}]"
         new UserReelVideoActivity(user: user, reel: reel, video: video, type: ActivityType.AddVideoToReel).save()
