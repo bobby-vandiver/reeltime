@@ -32,6 +32,7 @@ class VideoController extends AbstractController {
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('videos-write')"])
     def upload(VideoCreationCommand command) {
+        log.debug("Uploading video [${command.title}]")
         bindAdditionalData(command)
 
         try {
