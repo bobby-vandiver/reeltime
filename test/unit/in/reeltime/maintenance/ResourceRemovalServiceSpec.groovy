@@ -49,7 +49,12 @@ class ResourceRemovalServiceSpec extends Specification {
         Collection<ResourceRemovalTarget> targets = []
 
         for(int i = 0; i < count; i++) {
-            def target = new ResourceRemovalTarget(base: BASE, relative: RELATIVE_PREFIX + i).save(flush: true)
+            def creation = new Date()
+            def target = new ResourceRemovalTarget(base: BASE, relative: RELATIVE_PREFIX + i)
+
+            target.metaClass.getDateCreated = { -> creation }
+            target.save(flush: true)
+
             assert target.dateCreated != null
 
             targets << target

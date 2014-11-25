@@ -42,6 +42,21 @@ class ReelSpec extends Specification {
     }
 
     @Unroll
+    void "name [#name] is uncategorized [#uncategorized]"() {
+        given:
+        def reel = new Reel(name: name)
+
+        expect:
+        reel.isUncategorizedReel() == uncategorized
+
+        where:
+        name            |   uncategorized
+        null            |   false
+        'something'     |   false
+        'Uncategorized' |   true
+    }
+
+    @Unroll
     void "name [#name] is valid [#valid]"() {
         given:
         def reel = new Reel(name: name)

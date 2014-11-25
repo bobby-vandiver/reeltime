@@ -1,6 +1,5 @@
 package in.reeltime.reel
 
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import in.reeltime.activity.UserReelVideoActivity
@@ -13,6 +12,7 @@ import spock.lang.Unroll
 import test.helper.ReelFactory
 import test.helper.UserFactory
 import test.helper.VideoFactory
+import in.reeltime.activity.ActivityType
 
 class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
 
@@ -103,6 +103,8 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         def reel = ReelFactory.createReel(owner, 'some reel')
         def reelId = reel.id
 
+        activityService.reelCreated(owner, reel)
+
         when:
         SpringSecurityUtils.doWithAuth(owner.username) {
             reelVideoManagementService.addVideo(reelId, videoId)
@@ -113,11 +115,16 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def activities = activityService.findActivities([], [reel])
-        activities.size() == 1
-        activities[0] instanceof UserReelVideoActivity
+        activities.size() == 2
 
         and:
-        def activity = activities[0] as UserReelVideoActivity
+        activities.find { it.type == ActivityType.CreateReel } != null
+
+        and:
+        def activity = activities.find { it.type == ActivityType.AddVideoToReel }
+        activity instanceof UserReelVideoActivity
+
+        and:
         activity.user == owner
         activity.reel == reel
         activity.video == video
@@ -135,6 +142,10 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         and:
         def reel2 = ReelFactory.createReel(owner, 'reel2')
         def reel2Id = reel2.id
+
+        and:
+        activityService.reelCreated(owner, reel1)
+        activityService.reelCreated(owner, reel2)
 
         when:
         SpringSecurityUtils.doWithAuth(owner.username) {
@@ -202,6 +213,8 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         and:
         def reel = ReelFactory.createReel(owner, 'some reel')
         def reelId = reel.id
+
+        activityService.reelCreated(owner, reel)
 
         and:
         SpringSecurityUtils.doWithAuth(owner.username) {

@@ -4,6 +4,7 @@ import grails.test.spock.IntegrationSpec
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.video.Video
+import spock.lang.Unroll
 import test.helper.ReelFactory
 import test.helper.UserFactory
 
@@ -64,15 +65,24 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.CreateReel) == null
     }
 
-    void "save join reel audience activity"() {
+    @Unroll
+    void "save join reel audience activity -- use uncategorized reel [#useUncategorizedReel]"() {
         given:
-        activityService.reelCreated(user, reel)
+        def reelToUse = uncategorizedReel
+
+        if(!useUncategorizedReel) {
+            reelToUse = reel
+            activityService.reelCreated(user, reel)
+        }
 
         when:
-        activityService.userJoinedAudience(user, reel.audience)
+        activityService.userJoinedAudience(user, reelToUse.audience)
 
         then:
-        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience) != null
+        UserReelActivity.findByUserAndReelAndType(user, reelToUse, ActivityType.JoinReelAudience) != null
+
+        where:
+        useUncategorizedReel << [true, false]
     }
 
     void "attempt to add join reel audience for reel with no create-reel activity"() {
@@ -109,15 +119,24 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience) == null
     }
 
-    void "save video added to reel activity"() {
+    @Unroll
+    void "save video added to reel activity -- use uncategorized reel [#useUncategorizedReel]"() {
         given:
-        activityService.reelCreated(user, reel)
+        def reelToUse = uncategorizedReel
+
+        if(!useUncategorizedReel) {
+            reelToUse = reel
+            activityService.reelCreated(user, reel)
+        }
 
         when:
-        activityService.videoAddedToReel(user, reel, video)
+        activityService.videoAddedToReel(user, reelToUse, video)
 
         then:
-        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.AddVideoToReel) != null
+        UserReelActivity.findByUserAndReelAndType(user, reelToUse, ActivityType.AddVideoToReel) != null
+
+        where:
+        useUncategorizedReel << [true, false]
     }
 
     void "attempt to add video added to reel activity for reel with no create-reel activity"() {
