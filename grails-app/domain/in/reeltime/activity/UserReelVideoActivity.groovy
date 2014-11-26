@@ -9,4 +9,14 @@ class UserReelVideoActivity extends UserReelActivity {
     static constraints = {
         video nullable: false
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " " +
+                "UserReelVideoActivity{" +
+                "id=" + id +
+                ", video=" + video +
+                ", version=" + version +
+                '}';
+    }
 }

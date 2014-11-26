@@ -13,4 +13,15 @@ abstract class UserActivity {
         user nullable: false
         type nullable: false
     }
+
+    @Override
+    public String toString() {
+        return "UserActivity{" +
+                "id=" + id +
+                ", user=" + user +
+                ", type=" + type +
+                ", dateCreated=" + dateCreated +
+                ", version=" + version +
+                '}';
+    }
 }

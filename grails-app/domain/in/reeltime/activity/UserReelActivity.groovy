@@ -10,4 +10,14 @@ class UserReelActivity extends UserActivity {
     static constraints = {
         reel nullable: false
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " " +
+                "UserReelActivity{" +
+                "id=" + id +
+                ", reel=" + reel +
+                ", version=" + version +
+                '}';
+    }
 }

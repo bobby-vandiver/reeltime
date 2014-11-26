@@ -463,7 +463,7 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
 
         dependentActivities.each { activity ->
             def position = newsfeedActivities.indexOf(activity)
-            assert position < createReelPosition
+            assert position < createReelPosition : "create reel: $createReelActivity\nactivity: $activity"
         }
     }
 }

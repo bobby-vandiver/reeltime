@@ -17,7 +17,13 @@ class NewsfeedService {
         def reelsFollowed = audienceService.listReelsForAudienceMember(currentUser)
         def usersFollowed = userFollowingService.listAllFolloweesForFollower(currentUser)
 
-        return activityService.findActivities(usersFollowed, reelsFollowed, pageNumber)
+        log.debug("reelsFollowed: $reelsFollowed")
+        log.debug("usersFollowed: $usersFollowed")
+
+        def activities = activityService.findActivities(usersFollowed, reelsFollowed, pageNumber)
+        log.debug("activities: $activities")
+
+        return activities
     }
 
     private static void validatePageNumber(int pageNumber) {
