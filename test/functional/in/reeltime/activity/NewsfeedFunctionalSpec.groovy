@@ -1,12 +1,19 @@
 package in.reeltime.activity
 
-import helper.rest.RestRequest
 import in.reeltime.FunctionalSpec
 import spock.lang.Unroll
 
 class NewsfeedFunctionalSpec extends FunctionalSpec {
 
     String testUserToken
+
+    private static final String someone = 'someone'
+    private static final String someReelName = 'some reel'
+    private static final String someVideoTitle = 'some video'
+
+    private static final String anyone = 'anyone'
+    private static final String anyReelName = 'any reel'
+    private static final String anyVideoTitle = 'any video'
 
     void setup() {
         testUserToken = getAccessTokenWithScopesForTestUser(ALL_SCOPES)
@@ -67,12 +74,12 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
 
     void "user is following a single reel"() {
         given:
-        def someUserToken = registerNewUserAndGetToken('someone', ALL_SCOPES)
+        def someUserToken = registerNewUserAndGetToken(someone, ALL_SCOPES)
 
-        def reelId = reelTimeClient.addReel(someUserToken, 'some reel')
-        def videoId = reelTimeClient.uploadVideoToReel(someUserToken, 'some reel', 'some video')
+        def reelId = reelTimeClient.addReel(someUserToken, someReelName)
+        def videoId = reelTimeClient.uploadVideoToReel(someUserToken, someReelName, someVideoTitle)
 
-        def additionalVideoId = reelTimeClient.uploadVideoToReel(someUserToken, 'some reel', 'another video')
+        def additionalVideoId = reelTimeClient.uploadVideoToReel(someUserToken, someReelName, 'another video')
 
         and:
         reelTimeClient.addReel(someUserToken, 'not followed')
@@ -84,53 +91,50 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
 
         then:
-        newsfeed.activities.size() == 4
+        def activities = newsfeed.activities
+        activities.size() == 4
 
         and:
-        newsfeed.activities[0].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
-        newsfeed.activities[0].user.username == TEST_USER
+        def joinSomeReel = findReelActivity(activities, [
+                type: JOIN_REEL_AUDIENCE_ACTIVITY_TYPE, username: TEST_USER,
+                reelId: reelId, reelName: someReelName
+        ])
 
-        newsfeed.activities[0].reel.reel_id == reelId
-        newsfeed.activities[0].reel.name == 'some reel'
+        def addAnotherVideoToSomeReel = findReelVideoActivity(activities, [
+            type: ADD_VIDEO_TO_REEL_ACTIVITY_TYPE, username: someone,
+            reelId: reelId, reelName: someReelName,
+            videoId: additionalVideoId, videoTitle: 'another video'
+        ])
 
-        and:
-        newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[1].user.username == 'someone'
+        def addSomeVideoToSomeReel = findReelVideoActivity(activities, [
+                type: ADD_VIDEO_TO_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: reelId, reelName: someReelName,
+                videoId: videoId, videoTitle: someVideoTitle
+        ])
 
-        newsfeed.activities[1].reel.reel_id == reelId
-        newsfeed.activities[1].reel.name == 'some reel'
-
-        newsfeed.activities[1].video.video_id == additionalVideoId
-        newsfeed.activities[1].video.title == 'another video'
-
-        and:
-        newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[2].user.username == 'someone'
-
-        newsfeed.activities[2].reel.reel_id == reelId
-        newsfeed.activities[2].reel.name == 'some reel'
-
-        newsfeed.activities[2].video.video_id == videoId
-        newsfeed.activities[2].video.title == 'some video'
+        def createSomeReel = findReelActivity(activities, [
+                type: CREATE_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: reelId, reelName: someReelName
+        ])
 
         and:
-        newsfeed.activities[3].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[3].user.username == 'someone'
+        newsfeedContainsActivities(activities,
+                [joinSomeReel, addAnotherVideoToSomeReel, addSomeVideoToSomeReel, createSomeReel])
 
-        newsfeed.activities[3].reel.reel_id == reelId
-        newsfeed.activities[3].reel.name == 'some reel'
+        createReelAppearsChronologicallyBeforeDependentActivities(activities, createSomeReel,
+                [joinSomeReel, addAnotherVideoToSomeReel, addSomeVideoToSomeReel])
     }
 
     void "user is following multiple reels"() {
         given:
-        def someoneToken = registerNewUserAndGetToken('someone', ALL_SCOPES)
-        def someReelId = reelTimeClient.addReel(someoneToken, 'some reel')
+        def someoneToken = registerNewUserAndGetToken(someone, ALL_SCOPES)
+        def someReelId = reelTimeClient.addReel(someoneToken, someReelName)
 
-        def anyoneToken = registerNewUserAndGetToken('anyone', ALL_SCOPES)
-        def anyReelId = reelTimeClient.addReel(anyoneToken, 'any reel')
+        def anyoneToken = registerNewUserAndGetToken(anyone, ALL_SCOPES)
+        def anyReelId = reelTimeClient.addReel(anyoneToken, anyReelName)
 
-        def anyVideoId = reelTimeClient.uploadVideoToReel(anyoneToken, 'any reel', 'any video')
-        def someVideoId = reelTimeClient.uploadVideoToReel(someoneToken, 'some reel', 'some video')
+        def anyVideoId = reelTimeClient.uploadVideoToReel(anyoneToken, anyReelName, anyVideoTitle)
+        def someVideoId = reelTimeClient.uploadVideoToReel(someoneToken, someReelName, someVideoTitle)
 
         and:
         reelTimeClient.addAudienceMember(testUserToken, someReelId)
@@ -143,66 +147,63 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
 
         then:
-        newsfeed.activities.size() == 6
+        def activities = newsfeed.activities
+        activities.size() == 6
 
         and:
-        newsfeed.activities[0].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
-        newsfeed.activities[0].user.username == TEST_USER
+        def joinAnyReel = findReelActivity(activities, [
+                type: JOIN_REEL_AUDIENCE_ACTIVITY_TYPE, username: TEST_USER,
+                reelId: anyReelId, reelName: anyReelName
+        ])
 
-        newsfeed.activities[0].reel.reel_id == anyReelId
-        newsfeed.activities[0].reel.name == 'any reel'
+        def joinSomeReel = findReelActivity(activities, [
+                type: JOIN_REEL_AUDIENCE_ACTIVITY_TYPE, username: TEST_USER,
+                reelId: someReelId, reelName: someReelName
+        ])
 
-        and:
-        newsfeed.activities[1].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
-        newsfeed.activities[1].user.username == TEST_USER
+        def addSomeVideoToSomeReel = findReelVideoActivity(activities, [
+                type: ADD_VIDEO_TO_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: someReelId, reelName: someReelName,
+                videoId: someVideoId, videoTitle: someVideoTitle
+        ])
 
-        newsfeed.activities[1].reel.reel_id == someReelId
-        newsfeed.activities[1].reel.name == 'some reel'
+        def addAnyVideoToAnyReel = findReelVideoActivity(activities, [
+                type: ADD_VIDEO_TO_REEL_ACTIVITY_TYPE, username: anyone,
+                reelId: anyReelId, reelName: anyReelName,
+                videoId: anyVideoId, videoTitle: anyVideoTitle
+        ])
 
-        and:
-        newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[2].user.username == 'someone'
+        def createAnyReel = findReelActivity(activities, [
+                type: CREATE_REEL_ACTIVITY_TYPE, username: anyone,
+                reelId: anyReelId, reelName: anyReelName
+        ])
 
-        newsfeed.activities[2].reel.reel_id == someReelId
-        newsfeed.activities[2].reel.name == 'some reel'
-
-        newsfeed.activities[2].video.video_id == someVideoId
-        newsfeed.activities[2].video.title == 'some video'
-
-        and:
-        newsfeed.activities[3].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[3].user.username == 'anyone'
-
-        newsfeed.activities[3].reel.reel_id == anyReelId
-        newsfeed.activities[3].reel.name == 'any reel'
-
-        newsfeed.activities[3].video.video_id == anyVideoId
-        newsfeed.activities[3].video.title == 'any video'
-
-        and:
-        newsfeed.activities[4].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[4].user.username == 'anyone'
-
-        newsfeed.activities[4].reel.reel_id == anyReelId
-        newsfeed.activities[4].reel.name == 'any reel'
+        def createSomeReel = findReelActivity(activities, [
+                type: CREATE_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: someReelId, reelName: someReelName
+        ])
 
         and:
-        newsfeed.activities[5].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[5].user.username == 'someone'
+        newsfeedContainsActivities(activities,
+                [joinAnyReel, joinSomeReel, addSomeVideoToSomeReel, addAnyVideoToAnyReel, createAnyReel, createSomeReel])
 
-        newsfeed.activities[5].reel.reel_id == someReelId
-        newsfeed.activities[5].reel.name == 'some reel'
+        and:
+        createReelAppearsChronologicallyBeforeDependentActivities(activities, createAnyReel,
+                [joinAnyReel, addAnyVideoToAnyReel])
+
+        createReelAppearsChronologicallyBeforeDependentActivities(activities, createSomeReel,
+                [joinSomeReel, addSomeVideoToSomeReel])
     }
 
     void "user is following a single user"() {
         given:
-        def someUserToken = registerNewUserAndGetToken('someone', ALL_SCOPES)
+        def someUserToken = registerNewUserAndGetToken(someone, ALL_SCOPES)
 
-        def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(someUserToken, 'someone')
-        def reelId = reelTimeClient.addReel(someUserToken, 'some reel')
+        def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(someUserToken, someone)
+        def reelId = reelTimeClient.addReel(someUserToken, someReelName)
 
-        def videoId = reelTimeClient.uploadVideoToReel(someUserToken, 'some reel', 'some video')
-        def additionalVideoId = reelTimeClient.uploadVideoToReel(someUserToken, 'some reel', 'another video')
+        def videoId = reelTimeClient.uploadVideoToReel(someUserToken, someReelName, someVideoTitle)
+        def additionalVideoId = reelTimeClient.uploadVideoToReel(someUserToken, someReelName, 'another video')
 
         def uncategorizedVideoId = reelTimeClient.uploadVideoToUncategorizedReel(someUserToken, 'uncategorized video')
 
@@ -210,66 +211,61 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         registerNewUserAndGetToken('nobody', ALL_SCOPES)
 
         and:
-        reelTimeClient.followUser(testUserToken, 'someone')
+        reelTimeClient.followUser(testUserToken, someone)
 
         when:
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
 
         then:
-        newsfeed.activities.size() == 4
+        def activities = newsfeed.activities
+        activities.size() == 4
 
         and:
-        newsfeed.activities[0].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[0].user.username == 'someone'
+        def addUncategorizedVideoToUncategorizedReel = findReelVideoActivity(activities, [
+                type: ADD_VIDEO_TO_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: uncategorizedReelId, reelName: 'Uncategorized',
+                videoId: uncategorizedVideoId, videoTitle: 'uncategorized video'
+        ])
 
-        newsfeed.activities[0].reel.reel_id == uncategorizedReelId
-        newsfeed.activities[0].reel.name == 'Uncategorized'
+        def addAnotherVideoToSomeReel = findReelVideoActivity(activities, [
+                type: ADD_VIDEO_TO_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: reelId, reelName: someReelName,
+                videoId: additionalVideoId, videoTitle: 'another video'
+        ])
 
-        newsfeed.activities[0].video.video_id == uncategorizedVideoId
-        newsfeed.activities[0].video.title == 'uncategorized video'
+        def addSomeVideoToSomeReel = findReelVideoActivity(activities, [
+                type: ADD_VIDEO_TO_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: reelId, reelName: someReelName,
+                videoId: videoId, videoTitle: someVideoTitle
+        ])
 
-        and:
-        newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[1].user.username == 'someone'
-
-        newsfeed.activities[1].reel.reel_id == reelId
-        newsfeed.activities[1].reel.name == 'some reel'
-
-        newsfeed.activities[1].video.video_id == additionalVideoId
-        newsfeed.activities[1].video.title == 'another video'
-
-        and:
-        newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[2].user.username == 'someone'
-
-        newsfeed.activities[2].reel.reel_id == reelId
-        newsfeed.activities[2].reel.name == 'some reel'
-
-        newsfeed.activities[2].video.video_id == videoId
-        newsfeed.activities[2].video.title == 'some video'
+        def createSomeReel = findReelActivity(activities, [
+                type: CREATE_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: reelId, reelName: someReelName
+        ])
 
         and:
-        newsfeed.activities[3].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[3].user.username == 'someone'
+        newsfeedContainsActivities(activities,
+                [addUncategorizedVideoToUncategorizedReel, addAnotherVideoToSomeReel, addSomeVideoToSomeReel, createSomeReel])
 
-        newsfeed.activities[3].reel.reel_id == reelId
-        newsfeed.activities[3].reel.name == 'some reel'
+        createReelAppearsChronologicallyBeforeDependentActivities(activities, createSomeReel,
+                [addUncategorizedVideoToUncategorizedReel, addAnotherVideoToSomeReel, addSomeVideoToSomeReel])
     }
 
     void "user is following multiple users"() {
         given:
-        def someoneToken = registerNewUserAndGetToken('someone', ALL_SCOPES)
-        def someReelId = reelTimeClient.addReel(someoneToken, 'some reel')
+        def someoneToken = registerNewUserAndGetToken(someone, ALL_SCOPES)
+        def someReelId = reelTimeClient.addReel(someoneToken, someReelName)
 
-        def anyoneToken = registerNewUserAndGetToken('anyone', ALL_SCOPES)
-        def anyReelId = reelTimeClient.addReel(anyoneToken, 'any reel')
+        def anyoneToken = registerNewUserAndGetToken(anyone, ALL_SCOPES)
+        def anyReelId = reelTimeClient.addReel(anyoneToken, anyReelName)
 
-        def anyVideoId = reelTimeClient.uploadVideoToReel(anyoneToken, 'any reel', 'any video')
-        def someVideoId = reelTimeClient.uploadVideoToReel(someoneToken, 'some reel', 'some video')
+        def anyVideoId = reelTimeClient.uploadVideoToReel(anyoneToken, anyReelName, anyVideoTitle)
+        def someVideoId = reelTimeClient.uploadVideoToReel(someoneToken, someReelName, someVideoTitle)
 
         and:
-        reelTimeClient.followUser(testUserToken, 'someone')
-        reelTimeClient.followUser(testUserToken, 'anyone')
+        reelTimeClient.followUser(testUserToken, someone)
+        reelTimeClient.followUser(testUserToken, anyone)
 
         and:
         reelTimeClient.addReel(testUserToken, 'excludeUserReels')
@@ -278,57 +274,55 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
 
         then:
-        newsfeed.activities.size() == 4
+        def activities = newsfeed.activities
+        activities.size() == 4
 
         and:
-        newsfeed.activities[0].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[0].user.username == 'someone'
+        def addSomeVideoToSomeReel = findReelVideoActivity(activities, [
+                type: ADD_VIDEO_TO_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: someReelId, reelName: someReelName,
+                videoId: someVideoId, videoTitle: someVideoTitle
+        ])
 
-        newsfeed.activities[0].reel.reel_id == someReelId
-        newsfeed.activities[0].reel.name == 'some reel'
+        def addAnyVideoToAnyReel = findReelVideoActivity(activities, [
+                type: ADD_VIDEO_TO_REEL_ACTIVITY_TYPE, username: anyone,
+                reelId: anyReelId, reelName: anyReelName,
+                videoId: anyVideoId, videoTitle: anyVideoTitle
+        ])
 
-        newsfeed.activities[0].video.video_id == someVideoId
-        newsfeed.activities[0].video.title == 'some video'
+        def createAnyReel = findReelActivity(activities, [
+                type: CREATE_REEL_ACTIVITY_TYPE, username: anyone,
+                reelId: anyReelId, reelName: anyReelName
+        ])
 
-        and:
-        newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[1].user.username == 'anyone'
-
-        newsfeed.activities[1].reel.reel_id == anyReelId
-        newsfeed.activities[1].reel.name == 'any reel'
-
-        newsfeed.activities[1].video.video_id == anyVideoId
-        newsfeed.activities[1].video.title == 'any video'
-
-        and:
-        newsfeed.activities[2].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[2].user.username == 'anyone'
-
-        newsfeed.activities[2].reel.reel_id == anyReelId
-        newsfeed.activities[2].reel.name == 'any reel'
+        def createSomeReel = findReelActivity(activities, [
+                type: CREATE_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: someReelId, reelName: someReelName
+        ])
 
         and:
-        newsfeed.activities[3].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[3].user.username == 'someone'
+        newsfeedContainsActivities(activities,
+                [addSomeVideoToSomeReel, addAnyVideoToAnyReel, createAnyReel, createSomeReel])
 
-        newsfeed.activities[3].reel.reel_id == someReelId
-        newsfeed.activities[3].reel.name == 'some reel'
+        and:
+        createReelAppearsChronologicallyBeforeDependentActivities(activities, createAnyReel, [addAnyVideoToAnyReel])
+        createReelAppearsChronologicallyBeforeDependentActivities(activities, createSomeReel, [addSomeVideoToSomeReel])
     }
 
     void "user is following a mix of users and reels"() {
         given:
-        def someoneToken = registerNewUserAndGetToken('someone', ALL_SCOPES)
-        def someReelId = reelTimeClient.addReel(someoneToken, 'some reel')
+        def someoneToken = registerNewUserAndGetToken(someone, ALL_SCOPES)
+        def someReelId = reelTimeClient.addReel(someoneToken, someReelName)
 
-        def anyoneToken = registerNewUserAndGetToken('anyone', ALL_SCOPES)
-        def anyReelId = reelTimeClient.addReel(anyoneToken, 'any reel')
+        def anyoneToken = registerNewUserAndGetToken(anyone, ALL_SCOPES)
+        def anyReelId = reelTimeClient.addReel(anyoneToken, anyReelName)
 
-        def anyVideoId = reelTimeClient.uploadVideoToReel(anyoneToken, 'any reel', 'any video')
-        def someVideoId = reelTimeClient.uploadVideoToReel(someoneToken, 'some reel', 'some video')
+        def anyVideoId = reelTimeClient.uploadVideoToReel(anyoneToken, anyReelName, anyVideoTitle)
+        def someVideoId = reelTimeClient.uploadVideoToReel(someoneToken, someReelName, someVideoTitle)
 
         and:
         reelTimeClient.addAudienceMember(testUserToken, someReelId)
-        reelTimeClient.followUser(testUserToken, 'anyone')
+        reelTimeClient.followUser(testUserToken, anyone)
 
         and:
         reelTimeClient.addReel(testUserToken, 'excludeUserReels')
@@ -337,54 +331,53 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
 
         then:
-        newsfeed.activities.size() == 5
+        def activities = newsfeed.activities
+        activities.size() == 5
 
         and:
-        newsfeed.activities[0].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
-        newsfeed.activities[0].user.username == TEST_USER
+        def joinSomeReel = findReelActivity(activities, [
+                type: JOIN_REEL_AUDIENCE_ACTIVITY_TYPE, username: TEST_USER,
+                reelId: someReelId, reelName: someReelName
+        ])
 
-        newsfeed.activities[0].reel.reel_id == someReelId
-        newsfeed.activities[0].reel.name == 'some reel'
+        def addSomeVideoToSomeReel = findReelVideoActivity(activities, [
+                type: ADD_VIDEO_TO_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: someReelId, reelName: someReelName,
+                videoId: someVideoId, videoTitle: someVideoTitle
+        ])
 
-        and:
-        newsfeed.activities[1].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[1].user.username == 'someone'
+        def addAnyVideoToAnyReel = findReelVideoActivity(activities, [
+                type: ADD_VIDEO_TO_REEL_ACTIVITY_TYPE, username: anyone,
+                reelId: anyReelId, reelName: anyReelName,
+                videoId: anyVideoId, videoTitle: anyVideoTitle
+        ])
 
-        newsfeed.activities[1].reel.reel_id == someReelId
-        newsfeed.activities[1].reel.name == 'some reel'
+        def createAnyReel = findReelActivity(activities, [
+                type: CREATE_REEL_ACTIVITY_TYPE, username: anyone,
+                reelId: anyReelId, reelName: anyReelName
+        ])
 
-        newsfeed.activities[1].video.video_id == someVideoId
-        newsfeed.activities[1].video.title == 'some video'
-
-        and:
-        newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[2].user.username == 'anyone'
-
-        newsfeed.activities[2].reel.reel_id == anyReelId
-        newsfeed.activities[2].reel.name == 'any reel'
-
-        newsfeed.activities[2].video.video_id == anyVideoId
-        newsfeed.activities[2].video.title == 'any video'
-
-        and:
-        newsfeed.activities[3].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[3].user.username == 'anyone'
-
-        newsfeed.activities[3].reel.reel_id == anyReelId
-        newsfeed.activities[3].reel.name == 'any reel'
+        def createSomeReel = findReelActivity(activities, [
+                type: CREATE_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: someReelId, reelName: someReelName
+        ])
 
         and:
-        newsfeed.activities[4].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[4].user.username == 'someone'
+        newsfeedContainsActivities(activities,
+                [joinSomeReel, addSomeVideoToSomeReel,addAnyVideoToAnyReel, createAnyReel, createSomeReel])
 
-        newsfeed.activities[4].reel.reel_id == someReelId
-        newsfeed.activities[4].reel.name == 'some reel'
+        and:
+        createReelAppearsChronologicallyBeforeDependentActivities(activities, createAnyReel,
+                [addAnyVideoToAnyReel])
+
+        createReelAppearsChronologicallyBeforeDependentActivities(activities, createSomeReel,
+                [joinSomeReel, addSomeVideoToSomeReel])
     }
 
     void "user is following a user who hasn't done anything"() {
         given:
-        registerNewUserAndGetToken('someone', ALL_SCOPES)
-        reelTimeClient.followUser(testUserToken, 'someone')
+        registerNewUserAndGetToken(someone, ALL_SCOPES)
+        reelTimeClient.followUser(testUserToken, someone)
 
         when:
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
@@ -395,11 +388,11 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
 
     void "user is following a user and one of the followed user's reels -- overlapping activities are only reported once"() {
         given:
-        def someUserToken = registerNewUserAndGetToken('someone', ALL_SCOPES)
-        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(someUserToken, 'some video')
+        def someUserToken = registerNewUserAndGetToken(someone, ALL_SCOPES)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(someUserToken, someVideoTitle)
 
-        def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(someUserToken, 'someone')
-        def reelId = reelTimeClient.addReel(someUserToken, 'some reel')
+        def uncategorizedReelId = reelTimeClient.getUncategorizedReelId(someUserToken, someone)
+        def reelId = reelTimeClient.addReel(someUserToken, someReelName)
 
         and:
         def nobodyToken = registerNewUserAndGetToken('nobody', ALL_SCOPES)
@@ -407,36 +400,70 @@ class NewsfeedFunctionalSpec extends FunctionalSpec {
 
         and:
         reelTimeClient.addAudienceMember(testUserToken, reelId)
-        reelTimeClient.followUser(testUserToken, 'someone')
+        reelTimeClient.followUser(testUserToken, someone)
 
         when:
         def newsfeed = reelTimeClient.newsfeed(testUserToken)
 
         then:
-        newsfeed.activities.size() == 3
+        def activities = newsfeed.activities
+        activities.size() == 3
 
         and:
-        newsfeed.activities[0].type == JOIN_REEL_AUDIENCE_ACTIVITY_TYPE
-        newsfeed.activities[0].user.username == TEST_USER
+        def joinSomeReel = findReelActivity(activities, [
+                type: JOIN_REEL_AUDIENCE_ACTIVITY_TYPE, username: TEST_USER,
+                reelId: reelId, reelName: someReelName
+        ])
 
-        newsfeed.activities[0].reel.reel_id == reelId
-        newsfeed.activities[0].reel.name == 'some reel'
+        def createSomeReel = findReelActivity(activities, [
+                type: CREATE_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: reelId, reelName: someReelName
+        ])
+
+        def addSomeVideoToUncategorizedReel = findReelVideoActivity(activities, [
+                type: ADD_VIDEO_TO_REEL_ACTIVITY_TYPE, username: someone,
+                reelId: uncategorizedReelId, reelName: 'Uncategorized',
+                videoId: videoId, videoTitle: someVideoTitle
+        ])
 
         and:
-        newsfeed.activities[1].type == CREATE_REEL_ACTIVITY_TYPE
-        newsfeed.activities[1].user.username == 'someone'
+        newsfeedContainsActivities(activities,
+                [joinSomeReel, createSomeReel, addSomeVideoToUncategorizedReel])
 
-        newsfeed.activities[1].reel.reel_id == reelId
-        newsfeed.activities[1].reel.name == 'some reel'
+        createReelAppearsChronologicallyBeforeDependentActivities(activities, createSomeReel, [joinSomeReel])
+    }
 
-        and:
-        newsfeed.activities[2].type == ADD_VIDEO_TO_REEL_ACTIVITY_TYPE
-        newsfeed.activities[2].user.username == 'someone'
+    private Object findReelActivity(activities, criteria) {
+        def activity = activities.find {
+            it.type == criteria.type && it.user.username == criteria.username &&
+                    it.reel.reel_id == criteria.reelId && it.reel.name == criteria.reelName
+        }
+        assert activity != null
+        return activity
+    }
 
-        newsfeed.activities[2].reel.reel_id == uncategorizedReelId
-        newsfeed.activities[2].reel.name == 'Uncategorized'
+    private Object findReelVideoActivity(activities, criteria) {
+        def activity = activities.find {
+            it.type == criteria.type && it.user.username == criteria.username &&
+                    it.reel.reel_id == criteria.reelId && it.reel.name == criteria.reelName &&
+                    it.video.video_id == criteria.videoId && it.video.title == criteria.videoTitle
+        }
+        assert activity != null
+        return activity
+    }
 
-        newsfeed.activities[2].video.video_id == videoId
-        newsfeed.activities[2].video.title == 'some video'
+    private void newsfeedContainsActivities(newsfeedActivities, activities) {
+        activities.each {
+            assert newsfeedActivities.contains(it)
+        }
+    }
+
+    private void createReelAppearsChronologicallyBeforeDependentActivities(newsfeedActivities, createReelActivity, dependentActivities) {
+        def createReelPosition = newsfeedActivities.indexOf(createReelActivity)
+
+        dependentActivities.each { activity ->
+            def position = newsfeedActivities.indexOf(activity)
+            assert position < createReelPosition
+        }
     }
 }
