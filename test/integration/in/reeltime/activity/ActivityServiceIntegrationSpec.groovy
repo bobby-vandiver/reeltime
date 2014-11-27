@@ -4,18 +4,23 @@ import grails.test.spock.IntegrationSpec
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.video.Video
+import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import spock.lang.Unroll
+import test.helper.AutoTimeStampSuppressor
 import test.helper.ReelFactory
 import test.helper.UserFactory
 
 class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
     def activityService
+    def grailsApplication
 
     User user
     Reel uncategorizedReel
     Reel reel
     Video video
+
+    AutoTimeStampSuppressor timeStampSuppressor
 
     static final int TEST_MAX_ACTIVITIES_PER_PAGE = 3
     int savedMaxActivitiesPerPage
@@ -28,6 +33,8 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
         savedMaxActivitiesPerPage = activityService.maxActivitiesPerPage
         activityService.maxActivitiesPerPage = TEST_MAX_ACTIVITIES_PER_PAGE
+
+        timeStampSuppressor = new AutoTimeStampSuppressor(grailsApplication: grailsApplication)
     }
 
     void cleanup() {
@@ -235,6 +242,43 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
         assert list[0].type == ActivityType.AddVideoToReel
         assert list[1].type == ActivityType.CreateReel
+    }
+
+    void "create reel activity appears before others"() {
+        given:
+        def now = new Date()
+
+        def createReel = new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel)
+        timeStampSuppressor.withAutoTimestampSuppression(createReel) {
+            createReel.dateCreated = now
+            createReel.save(flush: true)
+        }
+        assert UserActivity.findByType(ActivityType.CreateReel) != null
+
+        def userJoinedAudience = new UserReelActivity(user: user, reel: reel, type: ActivityType.JoinReelAudience)
+        timeStampSuppressor.withAutoTimestampSuppression(userJoinedAudience) {
+            userJoinedAudience.dateCreated = now
+            userJoinedAudience.save(flush: true)
+        }
+        assert UserActivity.findByType(ActivityType.JoinReelAudience) != null
+
+        def videoAddedToReel = new UserReelVideoActivity(user: user, reel: reel, video: video, type: ActivityType.AddVideoToReel)
+        timeStampSuppressor.withAutoTimestampSuppression(videoAddedToReel) {
+            videoAddedToReel.dateCreated = now
+            videoAddedToReel.save()
+        }
+        assert UserActivity.findByType(ActivityType.AddVideoToReel) != null
+
+        when:
+        def activities = activityService.findActivities([user], [reel])
+
+        then:
+        activities.size() == 3
+
+        and:
+        activities[0] == videoAddedToReel
+        activities[1] == userJoinedAudience
+        activities[2] == createReel
     }
 
     void "list first page of activity if no page is specified"() {
