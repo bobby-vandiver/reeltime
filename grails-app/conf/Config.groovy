@@ -75,6 +75,10 @@ environments {
 }
 
 log4j = {
+    if(System.getProperty('ENABLE_SQL_LOGGING') == 'true') {
+        trace 'org.hibernate.type'
+        debug 'org.hibernate.SQL'
+    }
 
     debug  'in.reeltime',
            'grails.app'

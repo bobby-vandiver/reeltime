@@ -3,6 +3,10 @@ dataSource {
     driverClassName = "org.h2.Driver"
     username = "sa"
     password = ""
+
+    if(System.getProperty('ENABLE_SQL_LOGGING') == 'true') {
+        logSql = true
+    }
 }
 hibernate {
     cache.use_second_level_cache = true
