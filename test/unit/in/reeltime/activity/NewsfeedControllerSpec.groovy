@@ -58,8 +58,8 @@ class NewsfeedControllerSpec extends AbstractControllerSpec {
         def videoId = video.id
 
         def activities = [
-                new UserReelVideoActivity(user: user, reel: reel, video: video, type: ActivityType.AddVideoToReel),
-                new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel)
+                new UserReelVideoActivity(user: user, reel: reel, video: video, type: ActivityType.AddVideoToReel.value),
+                new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel.value)
         ]
 
         when:

@@ -46,7 +46,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         activityService.reelCreated(user, reel)
 
         then:
-        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.CreateReel) != null
+        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.CreateReel.value) != null
     }
 
     void "attempt to add real creation activity multiple times"() {
@@ -69,7 +69,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         activityService.reelDeleted(user, reel)
 
         then:
-        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.CreateReel) == null
+        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.CreateReel.value) == null
     }
 
     @Unroll
@@ -86,7 +86,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         activityService.userJoinedAudience(user, reelToUse.audience)
 
         then:
-        UserReelActivity.findByUserAndReelAndType(user, reelToUse, ActivityType.JoinReelAudience) != null
+        UserReelActivity.findByUserAndReelAndType(user, reelToUse, ActivityType.JoinReelAudience.value) != null
 
         where:
         useUncategorizedReel << [true, false]
@@ -123,7 +123,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         activityService.userLeftAudience(user, reel.audience)
 
         then:
-        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience) == null
+        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience.value) == null
     }
 
     @Unroll
@@ -140,7 +140,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         activityService.videoAddedToReel(user, reelToUse, video)
 
         then:
-        UserReelActivity.findByUserAndReelAndType(user, reelToUse, ActivityType.AddVideoToReel) != null
+        UserReelActivity.findByUserAndReelAndType(user, reelToUse, ActivityType.AddVideoToReel.value) != null
 
         where:
         useUncategorizedReel << [true, false]
@@ -177,7 +177,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         activityService.videoRemovedFromReel(user, reel, video)
 
         then:
-        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.AddVideoToReel) == null
+        UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.AddVideoToReel.value) == null
     }
 
     void "no user activities to delete"() {
@@ -190,8 +190,8 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
     void "delete all user activity"() {
         given:
-        def activity1 = new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel).save()
-        def activity2 = new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel).save()
+        def activity1 = new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel.value).save()
+        def activity2 = new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel.value).save()
 
         and:
         def activityId1 = activity1.id
@@ -240,34 +240,34 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         def list = activityService.findActivities(users, reels)
         assert list.size() == 2
 
-        assert list[0].type == ActivityType.AddVideoToReel
-        assert list[1].type == ActivityType.CreateReel
+        assert list[0].type == ActivityType.AddVideoToReel.value
+        assert list[1].type == ActivityType.CreateReel.value
     }
 
     void "create reel activity appears before others"() {
         given:
         def now = new Date()
 
-        def createReel = new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel)
+        def createReel = new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel.value)
         timeStampSuppressor.withAutoTimestampSuppression(createReel) {
             createReel.dateCreated = now
             createReel.save(flush: true)
         }
-        assert UserActivity.findByType(ActivityType.CreateReel) != null
+        assert UserActivity.findByType(ActivityType.CreateReel.value) != null
 
-        def userJoinedAudience = new UserReelActivity(user: user, reel: reel, type: ActivityType.JoinReelAudience)
+        def userJoinedAudience = new UserReelActivity(user: user, reel: reel, type: ActivityType.JoinReelAudience.value)
         timeStampSuppressor.withAutoTimestampSuppression(userJoinedAudience) {
             userJoinedAudience.dateCreated = now
             userJoinedAudience.save(flush: true)
         }
-        assert UserActivity.findByType(ActivityType.JoinReelAudience) != null
+        assert UserActivity.findByType(ActivityType.JoinReelAudience.value) != null
 
-        def videoAddedToReel = new UserReelVideoActivity(user: user, reel: reel, video: video, type: ActivityType.AddVideoToReel)
+        def videoAddedToReel = new UserReelVideoActivity(user: user, reel: reel, video: video, type: ActivityType.AddVideoToReel.value)
         timeStampSuppressor.withAutoTimestampSuppression(videoAddedToReel) {
             videoAddedToReel.dateCreated = now
             videoAddedToReel.save()
         }
-        assert UserActivity.findByType(ActivityType.AddVideoToReel) != null
+        assert UserActivity.findByType(ActivityType.AddVideoToReel.value) != null
 
         when:
         def activities = activityService.findActivities([user], [reel])
@@ -318,7 +318,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
     private List<UserReelActivity> createActivityPage() {
         List<UserReelActivity> activities = []
         TEST_MAX_ACTIVITIES_PER_PAGE.times {
-            activities << new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel).save(validate: false)
+            activities << new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel.value).save(validate: false)
             sleep(2 * 1000)
         }
         activities.sort { a, b -> b.dateCreated <=> a.dateCreated }

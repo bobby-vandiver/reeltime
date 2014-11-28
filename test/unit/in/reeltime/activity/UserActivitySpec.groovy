@@ -2,6 +2,7 @@ package in.reeltime.activity
 
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+import spock.lang.Unroll
 
 @TestFor(UserActivity)
 class UserActivitySpec extends Specification {
@@ -26,5 +27,34 @@ class UserActivitySpec extends Specification {
 
         expect:
         !activity.validate(['type'])
+    }
+
+    @Unroll
+    void "type [#type] maps to an ActivityType"() {
+        given:
+        activity.type = type
+
+        expect:
+        activity.validate(['type'])
+
+        where:
+        type << ActivityType.values()*.value
+    }
+
+    @Unroll
+    void "type [#type] does not map to an ActivityType"() {
+        given:
+        activity.type = type
+
+        expect:
+        !activity.validate(['type'])
+
+        where:
+        _   |   type
+        _   |   1
+        _   |   25
+        _   |   75
+        _   |   51
+        _   |   99
     }
 }

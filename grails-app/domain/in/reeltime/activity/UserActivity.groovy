@@ -5,13 +5,13 @@ import in.reeltime.user.User
 abstract class UserActivity {
 
     User user
-    ActivityType type
+    Integer type
 
     Date dateCreated
 
     static constraints = {
         user nullable: false
-        type nullable: false
+        type nullable: false, inList: ActivityType.values()*.value
     }
 
     @Override

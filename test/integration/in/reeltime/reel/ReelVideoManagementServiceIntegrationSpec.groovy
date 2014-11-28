@@ -118,10 +118,10 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         activities.size() == 2
 
         and:
-        activities.find { it.type == ActivityType.CreateReel } != null
+        activities.find { it.type == ActivityType.CreateReel.value } != null
 
         and:
-        def activity = activities.find { it.type == ActivityType.AddVideoToReel }
+        def activity = activities.find { it.type == ActivityType.AddVideoToReel.value }
         activity instanceof UserReelVideoActivity
 
         and:

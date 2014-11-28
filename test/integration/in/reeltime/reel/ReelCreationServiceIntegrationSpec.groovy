@@ -62,7 +62,7 @@ class ReelCreationServiceIntegrationSpec extends IntegrationSpec {
         def activities = activityService.findActivities([retrieved], [])
         activities.size() == 1
 
-        activities[0].type == ActivityType.CreateReel
+        activities[0].type == ActivityType.CreateReel.value
         activities[0].user == owner
         activities[0].reel == newReel
     }

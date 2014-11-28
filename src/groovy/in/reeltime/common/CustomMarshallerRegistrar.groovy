@@ -48,7 +48,9 @@ class CustomMarshallerRegistrar {
             (ActivityType.AddVideoToReel): 'add-video-to-reel'
     ]
 
-    private String convertActivityType(ActivityType type) {
+    private String convertActivityType(Integer activityType) {
+        def type = ActivityType.byValue(activityType)
+
         if(activityTypes.containsKey(type)) {
             return activityTypes[type]
         }

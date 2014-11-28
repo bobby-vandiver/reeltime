@@ -195,7 +195,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         def activities = activityService.findActivities([member], [])
         activities.size() == 1
 
-        activities[0].type == ActivityType.JoinReelAudience
+        activities[0].type == ActivityType.JoinReelAudience.value
         activities[0].user == member
         activities[0].reel == reel
     }
