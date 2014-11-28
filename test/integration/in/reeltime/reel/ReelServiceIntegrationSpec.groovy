@@ -4,19 +4,25 @@ import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
 import in.reeltime.exceptions.UserNotFoundException
 import spock.lang.Unroll
+import test.helper.AutoTimeStampSuppressor
 import test.helper.ReelFactory
 import test.helper.UserFactory
 
 class ReelServiceIntegrationSpec extends IntegrationSpec {
 
     def reelService
+    def grailsApplication
 
     User owner
     User notOwner
 
+    AutoTimeStampSuppressor timeStampSuppressor
+
     void setup() {
         owner = UserFactory.createUser('theOwner')
         notOwner = UserFactory.createUser('notTheOwner')
+
+        timeStampSuppressor = new AutoTimeStampSuppressor(grailsApplication: grailsApplication)
     }
 
     void "cannot list reels for an unknown user"() {
@@ -54,8 +60,14 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def ownerUncategorizedReel = owner.reels[0]
+
         def someReel = ReelFactory.createReel(owner, 'some reel')
         def anotherReel = ReelFactory.createReel(owner, 'another reel')
+
+        and:
+        ageReel(ownerUncategorizedReel, 0)
+        ageReel(someReel, 1)
+        ageReel(anotherReel, 2)
 
         when:
         def pageOne = reelService.listReelsByUsername(owner.username, 1)
@@ -93,6 +105,13 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
         def someReel = ReelFactory.createReel(owner, 'some reel')
         def anotherReel = ReelFactory.createReel(owner, 'another reel')
 
+        and:
+        ageReel(ownerUncategorizedReel, 0)
+        ageReel(notOwnerUncategorizedReel, 1)
+
+        ageReel(someReel, 2)
+        ageReel(anotherReel, 3)
+
         when:
         def pageOne = reelService.listReels(1)
 
@@ -123,11 +142,19 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
 
         for(int i = initialCount; i < count; i++) {
             def reel = ReelFactory.createReel(owner, "reel $i")
+            ageReel(reel, i)
             reels << reel
             owner.addToReels(reel)
         }
         owner.save()
         return reels
+    }
+
+    private void ageReel(Reel reel, int daysInTheFuture) {
+        timeStampSuppressor.withAutoTimestampSuppression(reel) {
+            reel.dateCreated = new Date() + daysInTheFuture
+            reel.save()
+        }
     }
 
     private static void assertListsContainSameElements(Collection<?> actual, Collection<?> expected) {

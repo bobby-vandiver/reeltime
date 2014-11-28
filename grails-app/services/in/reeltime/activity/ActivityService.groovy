@@ -69,10 +69,13 @@ class ActivityService {
         def offset = pageNumber ? (pageNumber - 1) * maxActivitiesPerPage : 0
         UserReelActivity.withCriteria {
             or {
-                inList('user', users)
-                inList('reel', reels)
+                if(users && !users.empty) {
+                    inList('user', users)
+                }
+                if(reels && !reels.empty) {
+                    inList('reel', reels)
+                }
             }
-
             order('dateCreated', 'desc')
             order('type', 'desc')
 

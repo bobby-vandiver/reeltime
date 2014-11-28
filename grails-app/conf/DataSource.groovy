@@ -23,8 +23,34 @@ environments {
     }
     test {
         dataSource {
-            dbCreate = "update"
-            url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+            // TODO: Determine some way to refactor common MySQL configuration
+            if(System.getProperty('USE_LOCAL_MYSQL') == 'true') {
+                dbCreate = "create"
+
+                username = "root"
+                password = "mysql"
+
+                driverClassName = "com.mysql.jdbc.Driver"
+                url = "jdbc:mysql://127.0.0.1:33066/test"
+
+                dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+
+                pooled = true
+                properties {
+                    maxActive = -1
+                    minEvictableIdleTimeMillis=1800000
+                    timeBetweenEvictionRunsMillis=1800000
+                    numTestsPerEvictionRun=3
+                    testOnBorrow=true
+                    testWhileIdle=true
+                    testOnReturn=true
+                    validationQuery="SELECT 1"
+                }
+            }
+            else {
+                dbCreate = "update"
+                url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+            }
         }
     }
     acceptance {
@@ -71,3 +97,5 @@ environments {
         }
     }
 }
+
+

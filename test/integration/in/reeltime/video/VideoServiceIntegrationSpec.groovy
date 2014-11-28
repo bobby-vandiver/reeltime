@@ -2,23 +2,29 @@ package in.reeltime.video
 
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
+import test.helper.AutoTimeStampSuppressor
 import test.helper.UserFactory
 import test.helper.VideoFactory
 
 class VideoServiceIntegrationSpec extends IntegrationSpec {
 
     def videoService
+    def grailsApplication
 
     User creator
 
     static final int TEST_MAX_VIDEOS_PER_PAGE = 3
     int savedMaxVideosPerPage
 
+    AutoTimeStampSuppressor timeStampSuppressor
+
     void setup() {
         creator = UserFactory.createUser('creator')
 
         savedMaxVideosPerPage = videoService.maxVideosPerPage
         videoService.maxVideosPerPage = TEST_MAX_VIDEOS_PER_PAGE
+
+        timeStampSuppressor = new AutoTimeStampSuppressor(grailsApplication: grailsApplication)
     }
 
     void cleanup() {
@@ -43,10 +49,10 @@ class VideoServiceIntegrationSpec extends IntegrationSpec {
 
     void "list videos by page in order of creation from newest to oldest"() {
         given:
-        def first = VideoFactory.createVideoAndWait(creator, 'first', 500)
-        def second = VideoFactory.createVideoAndWait(creator, 'second', 500)
-        def third = VideoFactory.createVideoAndWait(creator, 'third', 500)
-        def fourth = VideoFactory.createVideoAndWait(creator, 'fourth', 500)
+        def first = createAndAgeVideo('first', 0)
+        def second = createAndAgeVideo('second', 1)
+        def third = createAndAgeVideo('third', 2)
+        def fourth = createAndAgeVideo('fourth', 3)
 
         when:
         def pageOne = videoService.listVideos(1)
@@ -67,5 +73,14 @@ class VideoServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         pageTwo[0] == first
+    }
+
+    private createAndAgeVideo(String title, int daysInFuture) {
+        def video = VideoFactory.createVideo(creator, title)
+        timeStampSuppressor.withAutoTimestampSuppression(video) {
+            video.dateCreated = new Date() + daysInFuture
+            video.save()
+        }
+        return video
     }
 }

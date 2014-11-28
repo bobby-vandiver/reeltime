@@ -9,6 +9,7 @@ import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.exceptions.AuthorizationException
 import spock.lang.Unroll
+import test.helper.AutoTimeStampSuppressor
 import test.helper.ReelFactory
 import test.helper.UserFactory
 import test.helper.VideoFactory
@@ -20,13 +21,18 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
     def reelVideoManagementService
 
     def activityService
+    def grailsApplication
 
     User owner
     User notOwner
 
+    AutoTimeStampSuppressor timeStampSuppressor
+
     void setup() {
         owner = UserFactory.createUser('theOwner')
         notOwner = UserFactory.createUser('notTheOwner')
+
+        timeStampSuppressor = new AutoTimeStampSuppressor(grailsApplication: grailsApplication)
     }
 
     void "do not list videos that are not available for streaming"() {
@@ -59,9 +65,9 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         def reelId = reel.id
 
         and:
-        def first = VideoFactory.createVideoAndWait(owner, 'first', 1000)
-        def second = VideoFactory.createVideoAndWait(owner, 'second', 1000)
-        def third = VideoFactory.createVideoAndWait(owner, 'third', 1000)
+        def first = createAndAgeVideo(owner, 'first', 0)
+        def second = createAndAgeVideo(owner, 'second', 1)
+        def third = createAndAgeVideo(owner, 'third', 2)
 
         and:
         SpringSecurityUtils.doWithAuth(owner.username) {
@@ -426,7 +432,7 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
     private Collection<Video> createVideos(Reel reel, int count) {
         def videos = []
         for(int i = 0; i < count; i++) {
-            def video = createAndSaveVideo(owner, reel, "test video $i", "path $i")
+            def video = createAndAgeVideo(owner, "test video $i", i)
             videos << video
             new ReelVideo(reel: reel, video: video).save()
         }
@@ -434,10 +440,16 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
         return videos
     }
 
-    private static Video createAndSaveVideo(User creator, Reel reel = null, String title = 'some video', String path = 'somewhere') {
-        if(!reel) {
-            reel = creator.reels[0]
+    private createAndAgeVideo(User creator, String title, int daysInFuture) {
+        def video = VideoFactory.createVideo(creator, title)
+        timeStampSuppressor.withAutoTimestampSuppression(video) {
+            video.dateCreated = new Date() + daysInFuture
+            video.save()
         }
+        return video
+    }
+
+    private static Video createAndSaveVideo(User creator, String title = 'some video', String path = 'somewhere') {
         new Video(creator: creator, title: title, masterPath: path, available: true).save()
     }
 

@@ -32,12 +32,13 @@ class ReelService {
     }
 
     List<Reel> listReelsByUsername(String username, int page) {
-        def reelIds = userService.loadUser(username).reels.toList().collect { it.id }
-        Reel.findAllByIdInList(reelIds, paginationParams(page))
+        def user = userService.loadUser(username)
+        def params = paginationParams(page)
+        Reel.findAllByOwner(user, params)
     }
 
     private paginationParams(int page) {
         int offset = (page - 1) * maxReelsPerPage
-        [max: maxReelsPerPage, offset: offset, sort: 'dateCreated', order: 'desc']
+        [max: maxReelsPerPage as int, offset: offset, sort: 'dateCreated', order: 'desc']
     }
 }

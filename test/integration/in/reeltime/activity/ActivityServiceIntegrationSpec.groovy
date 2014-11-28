@@ -209,12 +209,20 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         UserReelActivity.findById(activityId2) == null
     }
 
-    void "empty criteria for activities"() {
+    @Unroll
+    void "empty criteria for activities -- users [#users], reels [#reels]"() {
         when:
-        def list = activityService.findActivities([], [])
+        def list = activityService.findActivities(users, users)
 
         then:
         list.size() == 0
+
+        where:
+        users   |   reels
+        null    |   null
+        []      |   null
+        null    |   []
+        []      |   []
     }
 
     void "no activities matching criteria"() {
