@@ -1,6 +1,8 @@
 package in.reeltime.playlist
 
 import in.reeltime.FunctionalSpec
+import in.reeltime.hls.playlist.MediaSegment
+import in.reeltime.hls.playlist.StreamAttributes
 import spock.lang.Unroll
 
 class PlaylistFunctionalSpec extends FunctionalSpec {
@@ -70,4 +72,34 @@ class PlaylistFunctionalSpec extends FunctionalSpec {
         -1          |   1234        |   5678
         1234        |   -1          |   5678
         1234        |   5678        |   -1
-    }}
+    }
+
+    void "upload and stream video"() {
+        given:
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(token)
+
+        when:
+        def variantPlaylist = reelTimeClient.variantPlaylist(token, videoId)
+
+        then:
+        variantPlaylist.streams.size() > 0
+
+        for(StreamAttributes stream in variantPlaylist.streams) {
+            def playlistId = extractIdFromUri(stream.uri)
+            def mediaPlaylist = reelTimeClient.mediaPlaylist(token, videoId, playlistId)
+
+            assert mediaPlaylist.segments.size() > 0
+
+            for(MediaSegment segment in mediaPlaylist.segments) {
+                def segmentId = extractIdFromUri(segment.uri)
+                assert reelTimeClient.mediaSegment(token, videoId, playlistId, segmentId)
+            }
+        }
+    }
+
+    private Long extractIdFromUri(String uri) {
+        def position = uri.lastIndexOf('/') + 1
+        def id = uri.substring(position)
+        Long.parseLong(id)
+    }
+}

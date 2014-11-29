@@ -2,7 +2,11 @@ package helper.test
 
 import grails.plugins.rest.client.RestResponse
 import helper.rest.AuthorizationAwareRestClient
+import in.reeltime.hls.playlist.MediaPlaylist
+import in.reeltime.hls.playlist.VariantPlaylist
 import org.codehaus.groovy.grails.web.json.JSONElement
+import in.reeltime.hls.playlist.parser.VariantPlaylistParser
+import in.reeltime.hls.playlist.parser.MediaPlaylistParser
 
 class ReelTimeClient {
 
@@ -199,6 +203,35 @@ class ReelTimeClient {
 
         assert videoCreatedStatus == 200 : "Exceeded polling limit for uploading video."
         return videoCreatedStatus
+    }
+
+    VariantPlaylist variantPlaylist(String token, Long videoId) {
+        def request = requestFactory.variantPlaylist(token, videoId)
+        def response = get(request)
+
+        assertStatusOrFail(response, 200, "Failed to retrieve variant playlist for video [$videoId].")
+
+        def baos = new ByteArrayInputStream(response.body as byte[])
+        return VariantPlaylistParser.parse(baos.newReader())
+    }
+
+    MediaPlaylist mediaPlaylist(String token, Long videoId, Long playlistId) {
+        def request = requestFactory.mediaPlaylist(token, videoId, playlistId)
+        def response = get(request)
+
+        assertStatusOrFail(response, 200, "Failed to retrieve media playlist [$playlistId] for video [$videoId].")
+
+        def baos = new ByteArrayInputStream(response.body as byte[])
+        return MediaPlaylistParser.parse(baos.newReader())
+    }
+
+    InputStream mediaSegment(String token, Long videoId, Long playlistId, Long segmentId) {
+        def request = requestFactory.segment(token, videoId, playlistId, segmentId)
+        def response = get(request)
+
+        assertStatusOrFail(response, 200, "Failed to retrieve segment [$segmentId] for playlist [$playlistId] belonging to video [$videoId].")
+
+        return new ByteArrayInputStream(response.body as byte[])
     }
 
     // TODO: Update existing invocations to specify username
