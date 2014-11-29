@@ -18,10 +18,9 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
     void "transcode video file using ffmpeg"() {
         given:
         def creator = UserFactory.createTestUser()
-        def reel = creator.reels[0]
 
         def masterPath = pathGenerationService.uniqueInputPath
-        def video = new Video(creator: creator, title: 'change peter parker', masterPath:  masterPath, reels: [reel]).save()
+        def video = new Video(creator: creator, title: 'change peter parker', masterPath:  masterPath).save()
 
         and:
         def videoFilePath = 'test/files/spidey.mp4'
@@ -35,6 +34,7 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
 
         then:
         video.available
+        video.playlists.size() == 1
 
         and:
         assertDirectoryContainsPlaylistAndSegments(outputPath)

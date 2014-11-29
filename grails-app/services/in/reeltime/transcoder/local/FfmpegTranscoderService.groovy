@@ -7,6 +7,8 @@ import in.reeltime.video.Video
 class FfmpegTranscoderService implements TranscoderService {
 
     def localFileSystemService
+    def playlistService
+
     def ffmpeg
 
     def segmentDuration
@@ -25,7 +27,7 @@ class FfmpegTranscoderService implements TranscoderService {
             def segment = String.format(segmentFormat, video.hashCode())
 
             def videoPath = localFileSystemService.getAbsolutePathToInputFile(video.masterPath)
-            def command = """${ffmpeg} -i ${videoPath} -vcodec libx264 -acodec libfaac -profile:v
+            def command = """${ffmpeg} -i ${videoPath} -s 480x270 -vcodec libx264 -acodec libfaac -profile:v
                          |baseline -flags -global_header -map 0:0 -map 0:1 -f segment -segment_time ${segmentDuration}
                          |-segment_list ${playlist} -segment_format mpegts ${segment}""".stripMargin()
 
@@ -37,9 +39,14 @@ class FfmpegTranscoderService implements TranscoderService {
             log.info("Completed ffmpeg transcoding for video [${video.id}]")
             log.debug(process.err.text)
 
-            log.info("Making video [${video.id}] available for streaming shortly")
-            sleep(4 * 1000)
-            video.available = true
+            def variantPlaylistKey = video.hashCode() + '-variant'
+            def variant = variantPlaylistKey + '.m3u8'
+
+            log.info("Generating variant playlist")
+            generateVariantPlaylist(outputPath, variant, playlist)
+
+            log.info("Making video [${video.id}] available for streaming")
+            playlistService.addPlaylists(video, output + File.separator, variantPlaylistKey)
         }
         catch(Exception e) {
             throw new TranscoderException(e)
@@ -49,5 +56,13 @@ class FfmpegTranscoderService implements TranscoderService {
     private static void ensurePathToFfmpegIsDefined(ffmpeg) {
         if(!ffmpeg)
             throw new IllegalStateException('ffmpeg could not be found')
+    }
+
+    private static void generateVariantPlaylist(String outputPath, String variantPlaylist, String mediaPlaylist) {
+        new File(outputPath, variantPlaylist).withWriter { BufferedWriter writer ->
+            writer.writeLine('#EXTM3U')
+            writer.writeLine('#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=480x270,CODECS="avc1.42001e,mp4a.40.2",BANDWIDTH=663000')
+            writer.writeLine(mediaPlaylist)
+        }
     }
 }
