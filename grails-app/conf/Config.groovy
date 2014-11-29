@@ -187,7 +187,7 @@ reeltime {
         maxRetries = 24
 
         // Length of time between each attempt
-        internalInMillis = 5000
+        intervalInMillis = 5000
     }
 
     // Video metadata configuration
