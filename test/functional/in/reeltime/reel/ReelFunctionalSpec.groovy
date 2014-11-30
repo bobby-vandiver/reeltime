@@ -25,7 +25,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "invalid http methods #methods for [#resource]"() {
         expect:
-        responseChecker.assertInvalidHttpMethods(urlFactory.getUrlForResource(resource), methods, token)
+        responseChecker.assertInvalidHttpMethods(urlFactory.getUrlForApiResource(resource), methods, token)
 
         where:
         resource                    |   methods
@@ -39,7 +39,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     void "use token to access [#resource] via [#httpMethod] requiring write access [#useReadToken]"() {
         given:
         def tokenToUse = useReadToken ? readToken : writeToken
-        def request = new RestRequest(url: urlFactory.getUrlForResource(resource), token: tokenToUse)
+        def request = new RestRequest(url: urlFactory.getUrlForApiResource(resource), token: tokenToUse)
 
         when:
         def response = "$httpMethod"(request)
@@ -71,7 +71,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
     @Unroll
     void "invalid reelId in [#resource] when performing a [#httpMethod]"() {
         given:
-        def request = new RestRequest(url: urlFactory.getUrlForResource(resource), token: token)
+        def request = new RestRequest(url: urlFactory.getUrlForApiResource(resource), token: token)
 
         when:
         def response = "$httpMethod"(request)

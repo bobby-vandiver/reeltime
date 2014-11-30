@@ -208,6 +208,7 @@ class ResetPasswordServiceIntegrationSpec extends MailServiceDependentIntegratio
                 refreshToken: 'refresh',
                 tokenType: 'test',
                 scope: ['scope'],
+                expiration: new Date(),
                 authenticationKey: 'authKey',
                 authentication: [1, 2, 3, 4] as byte[]).save()
 

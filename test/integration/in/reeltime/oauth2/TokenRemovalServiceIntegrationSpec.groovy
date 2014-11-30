@@ -173,12 +173,13 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         def authenticationKey = 'authKey' + randomNumberGenerator.nextInt()
         new AccessToken(username: username, clientId: clientId, value: tokenValue, refreshToken: refreshTokenValue,
-                tokenType: 'test', scope: ['scope'], authenticationKey: authenticationKey, authentication: [1, 2, 3, 4] as byte[]).save()
+                tokenType: 'test', scope: ['scope'], expiration: new Date(),
+                authenticationKey: authenticationKey, authentication: [1, 2, 3, 4] as byte[]).save()
     }
 
     private RefreshToken createRefreshToken() {
         def tokenValue = 'REFRESH-TOKEN-TEST' + randomNumberGenerator.nextInt()
         println "Creating refresh token [$tokenValue]"
-        new RefreshToken(value: tokenValue, authentication: [5, 6, 7, 8] as byte[]).save()
+        new RefreshToken(value: tokenValue, expiration: new Date(), authentication: [5, 6, 7, 8] as byte[]).save()
     }
 }

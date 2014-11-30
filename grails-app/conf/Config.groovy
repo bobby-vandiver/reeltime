@@ -106,15 +106,16 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
     '/oauth/token.dispatch':          ["isFullyAuthenticated() and request.getMethod().equals('POST')"]
 ]
 
-// Remove the form login filter
-grails.plugin.springsecurity.filterChain.chainMap = [
-    '/**': 'JOINED_FILTERS,-authenticationProcessingFilter'
-]
+String sharedStatelessFilterChain = 'JOINED_FILTERS,-securityContextPersistenceFilter,-logoutFilter,-rememberMeAuthenticationFilter,-authenticationProcessingFilter'
 
-// Do not create a session
-grails.plugin.springsecurity.apf.allowSessionCreation = false
-grails.plugin.springsecurity.scr.allowSessionCreation = false
-grails.plugin.springsecurity.requestCache.createSession = false
+// TODO: Configure filter chain for admin backend when available
+grails.plugin.springsecurity.filterChain.chainMap = [
+    '/oauth/token': "$sharedStatelessFilterChain,-oauth2ProviderFilter",
+    '/internal/**': sharedStatelessFilterChain,
+    '/aws/**': "$sharedStatelessFilterChain,-oauth2ProviderFilter,-clientCredentialsTokenEndpointFilter",
+    '/api/**': sharedStatelessFilterChain,
+    '/**': sharedStatelessFilterChain
+]
 
 // Added by the Spring Security OAuth2 Provider plugin:
 grails.plugin.springsecurity.oauthProvider.clientLookup.className = 'in.reeltime.oauth2.Client'

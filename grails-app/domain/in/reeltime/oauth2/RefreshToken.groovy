@@ -2,12 +2,14 @@ package in.reeltime.oauth2
 
 class RefreshToken {
 
-    byte[] authentication
     String value
+    Date expiration
+    byte[] authentication
 
     static constraints = {
         value nullable: false, blank: false, unique: true
-        authentication nullable: false, maxSize: 1024 * 4, validator: { val, obj -> val.size() > 0 }
+        expiration nullable: false
+        authentication nullable: false, minSize: 1, maxSize: 1024 * 4
     }
 
     static mapping = {

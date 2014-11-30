@@ -62,7 +62,7 @@ Map loadProductionConfig() {
             ],
 
             application: [
-                    healthCheckUrl: '/available'
+                    healthCheckUrl: '/aws/available'
             ],
 
             jvm: [
@@ -109,7 +109,7 @@ Map loadSingleInstanceConfig() {
             ],
 
             application: [
-                    healthCheckUrl: '/available'
+                    healthCheckUrl: '/aws/available'
             ],
 
             jvm: [

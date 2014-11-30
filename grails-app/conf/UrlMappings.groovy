@@ -16,114 +16,114 @@ class UrlMappings {
         }
 
         /* AWS integration */
-        "/available" (controller: 'applicationStatus', action: 'available')
+        "/aws/available" (controller: 'applicationStatus', action: 'available')
 
-        "/transcoder/notification" (controller: 'notification') {
+        "/aws/transcoder/notification" (controller: 'notification') {
             action = [POST: 'handleMessage']
         }
 
         /* ReelTime API */
-        "/account" (controller: 'account') {
+        "/api/account" (controller: 'account') {
             action = [POST: 'registerAccount', DELETE: 'removeAccount']
         }
 
-        "/account/client" (controller: 'clientManagement') {
+        "/api/account/client" (controller: 'clientManagement') {
             action = [POST: 'registerClient']
         }
 
-        "/account/client/$client_id" (controller: 'clientManagement') {
+        "/api/account/client/$client_id" (controller: 'clientManagement') {
             action = [DELETE: 'revokeClient']
         }
 
-        "/account/confirm" (controller: 'accountConfirmation') {
+        "/api/account/confirm" (controller: 'accountConfirmation') {
             action = [POST:  'confirmAccount']
         }
 
-        "/account/confirm/email" (controller: 'accountConfirmation') {
+        "/api/account/confirm/email" (controller: 'accountConfirmation') {
             action = [POST: 'sendEmail']
         }
 
-        "/account/display_name" (controller: 'accountManagement') {
+        "/api/account/display_name" (controller: 'accountManagement') {
             action = [POST: 'changeDisplayName']
         }
 
-        "/account/password" (controller: 'accountManagement') {
+        "/api/account/password" (controller: 'accountManagement') {
             action = [POST: 'changePassword']
         }
 
-        "/account/password/email" (controller: 'resetPassword') {
+        "/api/account/password/email" (controller: 'resetPassword') {
             action = [POST: 'sendEmail']
         }
 
-        "/account/password/reset" (controller: 'resetPassword') {
+        "/api/account/password/reset" (controller: 'resetPassword') {
             action = [POST: 'resetPassword']
         }
 
-        "/newsfeed" (controller: 'newsfeed') {
+        "/api/newsfeed" (controller: 'newsfeed') {
             action = [GET: 'listRecentActivity']
         }
 
-        "/playlists/$video_id" (controller: 'playlist') {
+        "/api/playlists/$video_id" (controller: 'playlist') {
             action = [GET: 'getVariantPlaylist']
         }
 
-        "/playlists/$video_id/$playlist_id" (controller: 'playlist') {
+        "/api/playlists/$video_id/$playlist_id" (controller: 'playlist') {
             action = [GET: 'getMediaPlaylist']
         }
 
-        "/playlists/$video_id/$playlist_id/$segment_id" (controller: 'segment') {
+        "/api/playlists/$video_id/$playlist_id/$segment_id" (controller: 'segment') {
             action = [GET: 'getSegment']
         }
 
-        "/reels" (controller: 'reel') {
+        "/api/reels" (controller: 'reel') {
             action = [GET: 'listReels', POST: 'addReel']
         }
 
-        "/reels/$reel_id" (controller: 'reel') {
+        "/api/reels/$reel_id" (controller: 'reel') {
             action = [GET: 'getReel', DELETE: 'deleteReel']
         }
 
-        "/reels/$reel_id/videos" (controller: 'reel') {
+        "/api/reels/$reel_id/videos" (controller: 'reel') {
             action = [GET: 'listVideos', POST: 'addVideo']
         }
 
-        "/reels/$reel_id/videos/$video_id" (controller: 'reel') {
+        "/api/reels/$reel_id/videos/$video_id" (controller: 'reel') {
             action = [DELETE: 'removeVideo']
         }
 
-        "/reels/$reel_id/audience" (controller: 'audience') {
+        "/api/reels/$reel_id/audience" (controller: 'audience') {
             action = [GET: 'listMembers', POST: 'addMember', DELETE: 'removeMember']
         }
 
-        "/users" (controller: 'user') {
+        "/api/users" (controller: 'user') {
             action = [GET: 'listUsers']
         }
 
-        "/users/$username" (controller: 'user') {
+        "/api/users/$username" (controller: 'user') {
             action = [GET: 'getUser']
         }
 
-        "/users/$username/reels" (controller: 'reel') {
+        "/api/users/$username/reels" (controller: 'reel') {
             action = [GET: 'listUserReels']
         }
 
-        "/users/$username/follow" (controller: 'userFollowing') {
+        "/api/users/$username/follow" (controller: 'userFollowing') {
             action = [POST: 'followUser', DELETE: 'unfollowUser']
         }
 
-        "/users/$username/followers" (controller: 'userFollowing') {
+        "/api/users/$username/followers" (controller: 'userFollowing') {
             action = [GET: 'listFollowers']
         }
 
-        "/users/$username/followees" (controller: 'userFollowing') {
+        "/api/users/$username/followees" (controller: 'userFollowing') {
             action = [GET: 'listFollowees']
         }
 
-        "/videos" (controller: 'video') {
+        "/api/videos" (controller: 'video') {
             action = [GET: 'listVideos', POST: 'upload']
         }
 
-        "/videos/$video_id" (controller: 'video') {
+        "/api/videos/$video_id" (controller: 'video') {
             action = [GET: 'getVideo', DELETE: 'removeVideo']
         }
     }

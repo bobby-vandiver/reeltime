@@ -8,28 +8,40 @@ public class ReelTimeUrlFactory {
         this.baseUrl = baseUrl
     }
 
-    String getUrlForResource(String resource) {
+    String getUrlForApiResource(String resource) {
+        return baseUrl + 'api/' + resource
+    }
+
+    String getUrlForWebResource(String resource) {
         return baseUrl + resource
     }
 
+    String getUrlForInternalResource(String resource) {
+        return baseUrl + 'internal/' + resource
+    }
+
+    String getUrlForAwsResource(String resource) {
+        return baseUrl + 'aws/' + resource
+    }
+
     String getSpringSecurityCheckUrl() {
-        getUrlForResource('j_spring_security_check')
+        getUrlForWebResource('j_spring_security_check')
     }
 
     String getInternalConfirmAccountUrl(username) {
-        getUrlForResource("internal/$username/confirm")
+        getUrlForInternalResource("$username/confirm")
     }
 
     String getInternalResetPasswordUrl(username) {
-        getUrlForResource("internal/$username/password")
+        getUrlForApiResource("$username/password")
     }
 
     String getHealthCheckUrl() {
-        getUrlForResource('available')
+        getUrlForAwsResource('available')
     }
 
     String getNotificationUrl() {
-        getUrlForResource("transcoder/notification")
+        getUrlForAwsResource("transcoder/notification")
     }
 
     String getRegisterUrl() {
@@ -41,51 +53,51 @@ public class ReelTimeUrlFactory {
     }
 
     String getAccountUrl() {
-        getUrlForResource('account')
+        getUrlForApiResource('account')
     }
 
     String getRegisterClientUrl() {
-        getUrlForResource('account/client')
+        getUrlForApiResource('account/client')
     }
 
     String getRevokeClientUrl(clientId) {
-        getUrlForResource("account/client/$clientId")
+        getUrlForApiResource("account/client/$clientId")
     }
 
     String getConfirmationUrl() {
-        getUrlForResource("account/confirm")
+        getUrlForApiResource("account/confirm")
     }
 
     String getChangeDisplayNameUrl() {
-        getUrlForResource('account/display_name')
+        getUrlForApiResource('account/display_name')
     }
 
     String getChangePasswordUrl() {
-        getUrlForResource('account/password')
+        getUrlForApiResource('account/password')
     }
 
     String getSendResetPasswordEmailUrl() {
-        getUrlForResource('account/password/email')
+        getUrlForApiResource('account/password/email')
     }
 
     String getResetPasswordUrl() {
-        getUrlForResource('account/password/reset')
+        getUrlForApiResource('account/password/reset')
     }
 
     String getNewsfeedUrl() {
-        getUrlForResource('newsfeed')
+        getUrlForApiResource('newsfeed')
     }
 
     String getVariantPlaylistUrl(videoId) {
-        getUrlForResource("playlists/$videoId")
+        getUrlForApiResource("playlists/$videoId")
     }
 
     String getMediaPlaylistUrl(videoId, playlistId) {
-        getUrlForResource("playlists/$videoId/$playlistId")
+        getUrlForApiResource("playlists/$videoId/$playlistId")
     }
 
     String getSegmentUrl(videoId, playlistId, segmentId) {
-        getUrlForResource("playlists/$videoId/$playlistId/$segmentId")
+        getUrlForApiResource("playlists/$videoId/$playlistId/$segmentId")
     }
 
     String getListVideosUrl() {
@@ -97,7 +109,7 @@ public class ReelTimeUrlFactory {
     }
 
     String getVideosUrl() {
-        getUrlForResource('videos')
+        getUrlForApiResource('videos')
     }
 
     String getDeleteVideoUrl(videoId) {
@@ -105,7 +117,7 @@ public class ReelTimeUrlFactory {
     }
 
     String getVideoUrl(videoId) {
-        getUrlForResource("videos/$videoId")
+        getUrlForApiResource("videos/$videoId")
     }
 
     String getListReelsUrl() {
@@ -117,11 +129,11 @@ public class ReelTimeUrlFactory {
     }
 
     String getReelsUrl() {
-        getUrlForResource('reels')
+        getUrlForApiResource('reels')
     }
 
     String getReelUrl(reelId) {
-        getUrlForResource("reels/$reelId")
+        getUrlForApiResource("reels/$reelId")
     }
 
     String getDeleteReelUrl(reelId) {
@@ -137,38 +149,38 @@ public class ReelTimeUrlFactory {
     }
 
     private String getReelVideosUrl(reelId) {
-        getUrlForResource("reels/$reelId/videos")
+        getUrlForApiResource("reels/$reelId/videos")
     }
 
     String getRemoveVideoFromReelUrl(reelId, videoId) {
-        getUrlForResource("reels/$reelId/videos/$videoId")
+        getUrlForApiResource("reels/$reelId/videos/$videoId")
     }
 
     String getAudienceUrl(reelId) {
-        getUrlForResource("reels/$reelId/audience")
+        getUrlForApiResource("reels/$reelId/audience")
     }
 
     String getListUsersUrl() {
-        getUrlForResource("users")
+        getUrlForApiResource("users")
     }
 
     String getUserUrl(username) {
-        getUrlForResource("users/$username")
+        getUrlForApiResource("users/$username")
     }
 
     String getReelsListUrl(username) {
-        getUrlForResource("users/$username/reels")
+        getUrlForApiResource("users/$username/reels")
     }
 
     String getFollowUrl(username) {
-        getUrlForResource("users/$username/follow")
+        getUrlForApiResource("users/$username/follow")
     }
 
     String getListFollowersUrl(username) {
-        getUrlForResource("users/$username/followers")
+        getUrlForApiResource("users/$username/followers")
     }
 
     String getListFolloweesUrl(username) {
-        getUrlForResource("users/$username/followees")
+        getUrlForApiResource("users/$username/followees")
     }
 }

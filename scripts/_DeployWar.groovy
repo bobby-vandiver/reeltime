@@ -136,7 +136,7 @@ void subscribeToTranscoderTopic(EnvironmentDescription environment) {
         protocol = 'http'
     }
 
-    String endpoint = protocol + '://' + environment.CNAME + '/transcoder/notification'
+    String endpoint = protocol + '://' + environment.CNAME + '/aws/transcoder/notification'
     SubscribeRequest request = new SubscribeRequest(transcoderTopicArn, protocol, endpoint)
 
     displayStatus("Subscribing endpoint [$endpoint] to topic [$transcoderTopicArn]: $request")
