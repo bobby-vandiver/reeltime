@@ -5,11 +5,11 @@ import in.reeltime.user.User
 
 @Validateable
 class VideoCreationCommand {
-    User creator
-    String reel
 
+    User creator
+
+    String reel
     String title
-    String description
 
     InputStream videoStream
 

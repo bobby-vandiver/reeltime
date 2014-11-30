@@ -21,7 +21,6 @@ class VideoSpec extends Specification {
         def video = new Video(
                 creator: user,
                 title: 'foo',
-                description: 'bar',
                 masterPath: 'sample.mp4',
                 playlists: [playlist],
                 playlistUris: [playlistUri],
@@ -34,7 +33,6 @@ class VideoSpec extends Specification {
         !video.available
         video.creator == user
         video.title == 'foo'
-        video.description == 'bar'
         video.masterPath == 'sample.mp4'
         video.playlists == [playlist] as Set
         video.playlistUris == [playlistUri] as Set
@@ -58,14 +56,6 @@ class VideoSpec extends Specification {
 
         where:
         title << ['', null]
-    }
-
-    void "description can be blank"() {
-        when:
-        def video = new Video(description: '')
-
-        then:
-        video.validate(['description'])
     }
 
     @Unroll

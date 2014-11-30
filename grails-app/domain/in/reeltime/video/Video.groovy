@@ -8,11 +8,9 @@ import in.reeltime.reel.Reel
 class Video {
 
     String title
-    String description
-
     String masterPath
-    boolean available
 
+    boolean available
     Date dateCreated
 
     static belongsTo = [creator: User]
@@ -25,7 +23,6 @@ class Video {
     static constraints = {
         creator nullable: false
         title nullable: false, blank: false
-        description nullable: true, blank: true
         masterPath nullable: false, blank: false
     }
 }
