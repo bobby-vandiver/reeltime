@@ -136,6 +136,10 @@ environments {
         grails.plugin.databasemigration.updateOnStart = true
         grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
     }
+    acceptance {
+        grails.plugin.databasemigration.updateOnStart = true
+        grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
+    }
 }
 
 // The following ReelTime settings must NOT be exposed in an external configuration:
