@@ -2,12 +2,10 @@ package in.reeltime.video
 
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
-import in.reeltime.metadata.StreamMetadata
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
-import test.helper.StreamMetadataListFactory
 
 @TestMixin(GrailsUnitTestMixin)
 class VideoCreationCommandSpec extends Specification {

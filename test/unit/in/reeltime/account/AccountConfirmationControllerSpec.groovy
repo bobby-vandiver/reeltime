@@ -6,7 +6,6 @@ import in.reeltime.exceptions.AccountCodeException
 import in.reeltime.exceptions.ConfirmationException
 import in.reeltime.security.AuthenticationService
 import in.reeltime.user.User
-import spock.lang.Unroll
 
 @TestFor(AccountConfirmationController)
 class AccountConfirmationControllerSpec extends AbstractControllerSpec {

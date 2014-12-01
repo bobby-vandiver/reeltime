@@ -3,17 +3,17 @@ package in.reeltime.video
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.metadata.StreamMetadata
+import in.reeltime.metadata.StreamMetadataService
 import in.reeltime.playlist.PlaylistService
 import in.reeltime.reel.Reel
+import in.reeltime.reel.ReelVideoManagementService
+import in.reeltime.storage.InputStorageService
+import in.reeltime.storage.PathGenerationService
 import in.reeltime.transcoder.TranscoderJob
 import in.reeltime.transcoder.TranscoderJobService
-import spock.lang.Specification
-import in.reeltime.storage.PathGenerationService
-import in.reeltime.user.User
-import in.reeltime.storage.InputStorageService
 import in.reeltime.transcoder.TranscoderService
-import in.reeltime.metadata.StreamMetadataService
-import in.reeltime.reel.ReelVideoManagementService
+import in.reeltime.user.User
+import spock.lang.Specification
 import spock.lang.Unroll
 import test.helper.StreamMetadataListFactory
 

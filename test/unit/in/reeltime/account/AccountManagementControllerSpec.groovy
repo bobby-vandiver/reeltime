@@ -4,7 +4,6 @@ import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.security.AuthenticationService
 import in.reeltime.user.User
-import spock.lang.Unroll
 
 @TestFor(AccountManagementController)
 class AccountManagementControllerSpec extends AbstractControllerSpec {

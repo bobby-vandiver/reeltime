@@ -1,9 +1,6 @@
 package in.reeltime.reel
 
-import in.reeltime.exceptions.AuthorizationException
-import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.exceptions.ReelNotFoundException
-import in.reeltime.user.User
 
 class ReelService {
 

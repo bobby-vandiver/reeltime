@@ -9,7 +9,6 @@ import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionStatus
-import spock.lang.Unroll
 
 @TestFor(ClientManagementController)
 class ClientManagementControllerSpec extends AbstractControllerSpec {

@@ -1,9 +1,9 @@
 package in.reeltime.metadata
 
 import grails.test.mixin.TestFor
+import in.reeltime.exceptions.ProbeException
 import spock.lang.Specification
 import spock.lang.Unroll
-import in.reeltime.exceptions.ProbeException
 
 @TestFor(FfprobeService)
 class FfprobeServiceSpec extends Specification {

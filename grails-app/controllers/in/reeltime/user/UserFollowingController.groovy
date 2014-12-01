@@ -2,7 +2,6 @@ package in.reeltime.user
 
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
-import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.search.PagedListCommand
 
 import static javax.servlet.http.HttpServletResponse.*

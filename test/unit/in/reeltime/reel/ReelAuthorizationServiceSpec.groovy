@@ -1,8 +1,8 @@
 package in.reeltime.reel
 
 import grails.test.mixin.TestFor
-import in.reeltime.user.User
 import in.reeltime.security.AuthenticationService
+import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 

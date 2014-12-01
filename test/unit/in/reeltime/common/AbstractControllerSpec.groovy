@@ -4,6 +4,7 @@ import groovy.json.JsonSlurper
 import in.reeltime.message.LocalizedMessageService
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
+
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
 
 abstract class AbstractControllerSpec extends Specification {

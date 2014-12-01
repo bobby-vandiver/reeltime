@@ -1,10 +1,9 @@
 package in.reeltime.video
 
 import grails.test.mixin.TestFor
-import in.reeltime.playlist.PlaylistUri
-import in.reeltime.reel.Reel
-import in.reeltime.user.User
 import in.reeltime.playlist.Playlist
+import in.reeltime.playlist.PlaylistUri
+import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 

@@ -2,7 +2,6 @@ package in.reeltime.storage.local
 
 import grails.test.mixin.TestFor
 import in.reeltime.storage.StorageService
-import org.apache.commons.logging.Log
 import spock.lang.Specification
 import spock.lang.Unroll
 

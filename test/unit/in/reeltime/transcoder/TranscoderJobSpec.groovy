@@ -2,8 +2,8 @@ package in.reeltime.transcoder
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import spock.lang.Specification
 import in.reeltime.video.Video
+import spock.lang.Specification
 import spock.lang.Unroll
 
 import static in.reeltime.transcoder.TranscoderJobStatus.*

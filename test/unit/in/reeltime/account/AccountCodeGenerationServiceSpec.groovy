@@ -2,11 +2,12 @@ package in.reeltime.account
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import in.reeltime.exceptions.AccountCodeException
 import in.reeltime.security.SecurityService
 import in.reeltime.user.User
 import spock.lang.Specification
-import in.reeltime.exceptions.AccountCodeException
 import spock.lang.Unroll
+
 import static in.reeltime.account.AccountCode.*
 
 @TestFor(AccountCodeGenerationService)

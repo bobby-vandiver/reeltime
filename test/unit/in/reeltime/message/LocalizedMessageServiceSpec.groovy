@@ -2,8 +2,8 @@ package in.reeltime.message
 
 import grails.test.mixin.TestFor
 import grails.validation.Validateable
-import spock.lang.Specification
 import org.springframework.context.MessageSource
+import spock.lang.Specification
 
 @TestFor(LocalizedMessageService)
 class LocalizedMessageServiceSpec extends Specification {

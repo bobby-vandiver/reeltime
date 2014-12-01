@@ -4,7 +4,6 @@ import grails.test.spock.IntegrationSpec
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.video.Video
-import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import spock.lang.Unroll
 import test.helper.AutoTimeStampSuppressor
 import test.helper.ReelFactory

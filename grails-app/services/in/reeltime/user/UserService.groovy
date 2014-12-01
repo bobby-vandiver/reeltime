@@ -3,7 +3,6 @@ package in.reeltime.user
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
-import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
 class UserService {
 

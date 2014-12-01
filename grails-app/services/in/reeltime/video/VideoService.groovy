@@ -1,7 +1,6 @@
 package in.reeltime.video
 
 import in.reeltime.exceptions.VideoNotFoundException
-import in.reeltime.user.User
 
 class VideoService {
 

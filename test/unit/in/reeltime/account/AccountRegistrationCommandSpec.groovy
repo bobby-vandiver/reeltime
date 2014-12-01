@@ -3,9 +3,9 @@ package in.reeltime.account
 import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
+import in.reeltime.user.User
 import in.reeltime.user.UserService
 import spock.lang.Specification
-import in.reeltime.user.User
 import spock.lang.Unroll
 
 @TestMixin(GrailsUnitTestMixin)

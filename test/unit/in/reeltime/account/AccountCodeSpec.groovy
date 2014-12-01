@@ -1,6 +1,5 @@
 package in.reeltime.account
 
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.user.User

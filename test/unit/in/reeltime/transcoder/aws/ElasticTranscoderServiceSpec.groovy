@@ -1,18 +1,14 @@
 package in.reeltime.transcoder.aws
 
 import com.amazonaws.services.elastictranscoder.AmazonElasticTranscoder
-import com.amazonaws.services.elastictranscoder.model.CreateJobRequest
-import com.amazonaws.services.elastictranscoder.model.CreateJobResult
-import com.amazonaws.services.elastictranscoder.model.Job
-import com.amazonaws.services.elastictranscoder.model.ListPipelinesResult
-import com.amazonaws.services.elastictranscoder.model.Pipeline
+import com.amazonaws.services.elastictranscoder.model.*
 import grails.test.mixin.TestFor
+import in.reeltime.aws.AwsService
+import in.reeltime.exceptions.TranscoderException
+import in.reeltime.storage.PathGenerationService
 import in.reeltime.transcoder.TranscoderJobService
 import in.reeltime.transcoder.TranscoderService
-import in.reeltime.exceptions.TranscoderException
-import in.reeltime.aws.AwsService
 import in.reeltime.video.Video
-import in.reeltime.storage.PathGenerationService
 import spock.lang.Specification
 import spock.lang.Unroll
 

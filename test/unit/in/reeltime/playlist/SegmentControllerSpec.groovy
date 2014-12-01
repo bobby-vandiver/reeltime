@@ -2,9 +2,9 @@ package in.reeltime.playlist
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import in.reeltime.storage.OutputStorageService
 import in.reeltime.video.Video
 import spock.lang.Specification
-import in.reeltime.storage.OutputStorageService
 
 @TestFor(SegmentController)
 @Mock([Video, Playlist, Segment])

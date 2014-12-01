@@ -3,8 +3,8 @@ package in.reeltime.playlist
 import grails.test.mixin.TestFor
 import in.reeltime.hls.playlist.MediaPlaylist
 import in.reeltime.hls.playlist.VariantPlaylist
-import spock.lang.Specification
 import in.reeltime.storage.OutputStorageService
+import spock.lang.Specification
 
 @TestFor(PlaylistParserService)
 class PlaylistParserServiceSpec extends Specification {

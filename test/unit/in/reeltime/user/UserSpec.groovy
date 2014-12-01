@@ -3,9 +3,9 @@ package in.reeltime.user
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
-import in.reeltime.exceptions.ReelNotFoundException
 import spock.lang.Specification
 import spock.lang.Unroll
 

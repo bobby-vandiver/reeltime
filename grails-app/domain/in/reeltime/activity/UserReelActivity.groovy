@@ -1,7 +1,6 @@
 package in.reeltime.activity
 
 import in.reeltime.reel.Reel
-import in.reeltime.user.User
 
 class UserReelActivity extends UserActivity {
 

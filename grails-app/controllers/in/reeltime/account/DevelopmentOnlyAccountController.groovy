@@ -2,11 +2,12 @@ package in.reeltime.account
 
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Environment
+import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.UserNotFoundException
 
 import static javax.servlet.http.HttpServletResponse.*
 
-class DevelopmentOnlyAccountController {
+class DevelopmentOnlyAccountController extends AbstractController {
 
     def developmentOnlyAccountService
 
@@ -35,6 +36,6 @@ class DevelopmentOnlyAccountController {
     }
 
     def handleUserNotFoundException(UserNotFoundException e) {
-        render(status: SC_NOT_FOUND)
+        exceptionStatusCodeOnlyResponse(e, SC_NOT_FOUND)
     }
 }

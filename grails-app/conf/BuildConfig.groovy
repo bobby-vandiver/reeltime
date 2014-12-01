@@ -111,6 +111,25 @@ codenarc {
 
         // IntelliJ will automatically squash multiple imports from the same package into a wildcard import
         NoWildcardImports.enabled = false
+
+        // The instances that Exception is caught is for wrapping and rethrowing
+        CatchException.enabled = false
+
+        // Returning null from a catch block is done intentionally in order to allow Grails to perform validation
+        ReturnNullFromCatchBlock.enabled = false
+
+        // Violations of this rules are for local development purposes (InMemoryMailService) or
+        // the violation occurs as a result of properties being injected at runtime
+        GrailsStatelessService.enabled = false
+
+        // The flagged field names are not reserved by H2 or MySQL
+        GrailsDomainReservedSqlKeywordName.doNotApplyToClassNames='ResourceRemovalTarget,AccessToken,RefreshToken'
+
+        // The Client and User need access to the springSecurityService for encoding client secrets and passwords
+        GrailsDomainWithServiceReference.doNotApplyToClassNames='Client,User'
+
+        // The UserRole class is provided by Spring Security Core and we do not want to modify the provided methods
+        UnusedMethodParameter.doNotApplyToClassNames='UserRole'
     }
 
     reports = {

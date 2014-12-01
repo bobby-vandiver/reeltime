@@ -2,8 +2,8 @@ package in.reeltime.reel
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import spock.lang.Specification
 import in.reeltime.exceptions.AuthorizationException
+import spock.lang.Specification
 
 @TestFor(ReelRemovalService)
 @Mock([Reel])

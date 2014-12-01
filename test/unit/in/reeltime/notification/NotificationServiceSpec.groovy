@@ -3,16 +3,12 @@ package in.reeltime.notification
 import com.amazonaws.AmazonClientException
 import com.amazonaws.AmazonServiceException
 import com.amazonaws.services.sns.AmazonSNS
-import com.amazonaws.services.sns.model.AuthorizationErrorException
-import com.amazonaws.services.sns.model.ConfirmSubscriptionRequest
-import com.amazonaws.services.sns.model.InternalErrorException
-import com.amazonaws.services.sns.model.NotFoundException
-import com.amazonaws.services.sns.model.SubscriptionLimitExceededException
+import com.amazonaws.services.sns.model.*
+import grails.test.mixin.TestFor
 import in.reeltime.aws.AwsService
 import in.reeltime.exceptions.NotificationException
-import spock.lang.Unroll
-import grails.test.mixin.TestFor
 import spock.lang.Specification
+import spock.lang.Unroll
 
 @TestFor(NotificationService)
 class NotificationServiceSpec extends Specification {

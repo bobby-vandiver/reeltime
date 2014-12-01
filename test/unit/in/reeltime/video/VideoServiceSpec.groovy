@@ -1,13 +1,10 @@
 package in.reeltime.video
 
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import in.reeltime.security.AuthenticationService
-import in.reeltime.user.User
 import in.reeltime.exceptions.VideoNotFoundException
+import in.reeltime.user.User
 import spock.lang.Specification
-import spock.lang.Unroll
 
 @TestFor(VideoService)
 @Mock([Video, User])

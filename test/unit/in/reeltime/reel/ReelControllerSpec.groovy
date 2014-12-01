@@ -3,11 +3,7 @@ package in.reeltime.reel
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
-import in.reeltime.exceptions.AuthorizationException
-import in.reeltime.exceptions.InvalidReelNameException
-import in.reeltime.exceptions.ReelNotFoundException
-import in.reeltime.exceptions.UserNotFoundException
-import in.reeltime.exceptions.VideoNotFoundException
+import in.reeltime.exceptions.*
 import in.reeltime.video.Video
 import spock.lang.Unroll
 

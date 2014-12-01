@@ -3,9 +3,7 @@ package in.reeltime.account
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.AccountCodeException
-import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.RegistrationException
-import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.user.UsernameCommand
 
 import static javax.servlet.http.HttpServletResponse.*

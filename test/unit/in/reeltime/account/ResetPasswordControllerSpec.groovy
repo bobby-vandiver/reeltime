@@ -4,10 +4,8 @@ import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.AccountCodeException
 import in.reeltime.exceptions.RegistrationException
-import in.reeltime.security.AuthenticationService
 import in.reeltime.user.User
 import in.reeltime.user.UserService
-import spock.lang.Unroll
 
 @TestFor(ResetPasswordController)
 class ResetPasswordControllerSpec extends AbstractControllerSpec {

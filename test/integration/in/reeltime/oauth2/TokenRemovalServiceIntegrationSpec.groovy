@@ -64,7 +64,7 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def client = createClient(clientId)
-        def user = createUser(username, clientId)
+        createUser(username, clientId)
 
         and:
         def tokenIds = createAccessTokensAndRefreshTokens(username, [clientId], accessTokenCount, refreshTokenCount)

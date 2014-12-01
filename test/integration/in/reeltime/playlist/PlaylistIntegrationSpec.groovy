@@ -1,7 +1,6 @@
 package in.reeltime.playlist
 
 import grails.test.spock.IntegrationSpec
-import in.reeltime.user.User
 import in.reeltime.video.Video
 import test.helper.UserFactory
 

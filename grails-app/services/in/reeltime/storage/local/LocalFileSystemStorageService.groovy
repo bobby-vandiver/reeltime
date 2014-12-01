@@ -2,8 +2,6 @@ package in.reeltime.storage.local
 
 import in.reeltime.storage.StorageService
 
-import static java.io.File.separator
-
 class LocalFileSystemStorageService implements StorageService {
 
     def localFileSystemService

@@ -4,7 +4,6 @@ import com.amazonaws.services.elastictranscoder.AmazonElasticTranscoder
 import com.amazonaws.services.elastictranscoder.AmazonElasticTranscoderClient
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.s3.transfer.TransferManager
 import com.amazonaws.services.sns.AmazonSNS
 import com.amazonaws.services.sns.AmazonSNSClient
 import grails.test.spock.IntegrationSpec

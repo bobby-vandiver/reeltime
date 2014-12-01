@@ -5,11 +5,9 @@ import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.S3Object
 import com.amazonaws.services.s3.model.S3ObjectInputStream
-import com.amazonaws.services.s3.transfer.TransferManager
-import com.amazonaws.services.s3.transfer.Upload
 import grails.test.mixin.TestFor
-import in.reeltime.storage.StorageService
 import in.reeltime.aws.AwsService
+import in.reeltime.storage.StorageService
 import spock.lang.Specification
 
 @TestFor(S3StorageService)

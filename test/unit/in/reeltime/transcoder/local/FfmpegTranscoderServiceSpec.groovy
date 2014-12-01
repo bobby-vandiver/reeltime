@@ -1,8 +1,8 @@
 package in.reeltime.transcoder.local
 
 import grails.test.mixin.TestFor
-import in.reeltime.transcoder.TranscoderService
 import in.reeltime.exceptions.TranscoderException
+import in.reeltime.transcoder.TranscoderService
 import in.reeltime.video.Video
 import spock.lang.Specification
 

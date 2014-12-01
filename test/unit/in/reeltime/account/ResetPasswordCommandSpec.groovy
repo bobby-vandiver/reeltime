@@ -3,11 +3,11 @@ package in.reeltime.account
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import in.reeltime.oauth2.Client
+import in.reeltime.security.AuthenticationService
 import in.reeltime.user.User
+import in.reeltime.user.UserService
 import spock.lang.Specification
 import spock.lang.Unroll
-import in.reeltime.security.AuthenticationService
-import in.reeltime.user.UserService
 
 @TestMixin(GrailsUnitTestMixin)
 class ResetPasswordCommandSpec extends Specification {
