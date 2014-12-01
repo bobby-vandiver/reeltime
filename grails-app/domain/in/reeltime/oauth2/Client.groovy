@@ -1,5 +1,8 @@
 package in.reeltime.oauth2
 
+import groovy.transform.ToString
+
+@ToString(includeNames = true, includes = ['clientName', 'clientId'])
 class Client {
 
     private static final String NO_CLIENT_SECRET = ''

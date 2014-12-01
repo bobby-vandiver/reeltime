@@ -1,8 +1,10 @@
 package in.reeltime.transcoder
 
+import groovy.transform.ToString
 import in.reeltime.video.Video
 import static in.reeltime.transcoder.TranscoderJobStatus.*
 
+@ToString(includeNames = true)
 class TranscoderJob {
 
     Video video

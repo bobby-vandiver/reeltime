@@ -1,9 +1,11 @@
 package in.reeltime.video
 
+import groovy.transform.ToString
 import in.reeltime.user.User
 import in.reeltime.playlist.Playlist
 import in.reeltime.playlist.PlaylistUri
 
+@ToString(includeNames = true)
 class Video {
 
     String title

@@ -1,5 +1,8 @@
 package in.reeltime.user
 
+import groovy.transform.ToString
+
+@ToString(includeNames = true)
 class UserFollowing {
 
     User follower

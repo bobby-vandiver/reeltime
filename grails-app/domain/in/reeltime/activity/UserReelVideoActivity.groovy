@@ -1,22 +1,14 @@
 package in.reeltime.activity
 
+import groovy.transform.ToString
 import in.reeltime.video.Video
 
+@ToString(includeNames = true, includeSuper = true)
 class UserReelVideoActivity extends UserReelActivity {
 
     Video video
 
     static constraints = {
         video nullable: false
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + " " +
-                "UserReelVideoActivity{" +
-                "id=" + id +
-                ", video=" + video +
-                ", version=" + version +
-                '}';
     }
 }

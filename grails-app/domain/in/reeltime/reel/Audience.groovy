@@ -1,7 +1,9 @@
 package in.reeltime.reel
 
+import groovy.transform.ToString
 import in.reeltime.user.User
 
+@ToString(includeNames = true)
 class Audience {
 
     static belongsTo = [reel: Reel]

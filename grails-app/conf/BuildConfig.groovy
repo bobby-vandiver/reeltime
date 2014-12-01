@@ -128,6 +128,10 @@ codenarc {
         // The Client and User need access to the springSecurityService for encoding client secrets and passwords
         GrailsDomainWithServiceReference.doNotApplyToClassNames='Client,User'
 
+        // Exclude classes provided by the Spring Security Core or OAuth2 plugin
+        GrailsDomainHasEquals.doNotApplyToClassNames='AccessToken, AuthorizationCode, Client, RefreshToken, User, Role, UserRole'
+        GrailsDomainHasToString.doNotApplyToClassNames='AccessToken, AuthorizationCode, Client, RefreshToken, User, Role, UserRole'
+
         // The UserRole class is provided by Spring Security Core and we do not want to modify the provided methods
         UnusedMethodParameter.doNotApplyToClassNames='UserRole'
     }

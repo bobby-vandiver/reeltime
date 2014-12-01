@@ -1,7 +1,9 @@
 package in.reeltime.playlist
 
+import groovy.transform.ToString
 import in.reeltime.video.Video
 
+@ToString(includeNames = true)
 class Playlist {
 
     int programId

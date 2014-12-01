@@ -1,7 +1,9 @@
 package in.reeltime.activity
 
+import groovy.transform.ToString
 import in.reeltime.user.User
 
+@ToString(includeNames = true)
 abstract class UserActivity {
 
     User user
@@ -12,16 +14,5 @@ abstract class UserActivity {
     static constraints = {
         user nullable: false
         type nullable: false, inList: ActivityType.values()*.value
-    }
-
-    @Override
-    public String toString() {
-        return "UserActivity{" +
-                "id=" + id +
-                ", user=" + user +
-                ", type=" + type +
-                ", dateCreated=" + dateCreated +
-                ", version=" + version +
-                '}';
     }
 }

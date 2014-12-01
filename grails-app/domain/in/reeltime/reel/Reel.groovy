@@ -1,8 +1,10 @@
 package in.reeltime.reel
 
+import groovy.transform.ToString
 import in.reeltime.user.User
 import in.reeltime.video.Video
 
+@ToString(includeNames = true)
 class Reel {
 
     static final UNCATEGORIZED_REEL_NAME = 'Uncategorized'

@@ -1,5 +1,8 @@
 package in.reeltime.maintenance
 
+import groovy.transform.ToString
+
+@ToString(includeNames = true)
 class ResourceRemovalTarget {
 
     Date dateCreated

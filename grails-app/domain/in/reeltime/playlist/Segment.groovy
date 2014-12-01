@@ -1,5 +1,8 @@
 package in.reeltime.playlist
 
+import groovy.transform.ToString
+
+@ToString(includeNames = true)
 class Segment implements Comparable {
 
     int segmentId
