@@ -1,9 +1,11 @@
 package in.reeltime.activity
 
+import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.user.User
 
 @ToString(includeNames = true)
+@EqualsAndHashCode(includes = ['user', 'type'])
 abstract class UserActivity {
 
     User user

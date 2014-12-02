@@ -37,6 +37,18 @@ class PlaylistUriSpec extends Specification {
         _   |   PlaylistType.Media
     }
 
+    void "uri must be unique"() {
+        given:
+        def existingUri = new PlaylistUri(uri: 'somewhere')
+        mockForConstraintsTests(PlaylistUri, [existingUri])
+
+        when:
+        def uri = new PlaylistUri(uri: 'somewhere')
+
+        then:
+        !uri.validate(['uri'])
+    }
+
     void "uri not associated with a video"() {
         given:
         def uri = new PlaylistUri(video: null)

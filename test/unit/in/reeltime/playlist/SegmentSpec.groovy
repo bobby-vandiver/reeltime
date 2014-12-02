@@ -62,6 +62,18 @@ class SegmentSpec extends Specification {
         'http://www.foo.com/bar/baz'    |   true
     }
 
+    void "uri must be unique"() {
+        given:
+        def existingSegment = new Segment(uri: 'somewhere')
+        mockForConstraintsTests(Segment, [existingSegment])
+
+        when:
+        def segment = new Segment(uri: 'somewhere')
+
+        then:
+        !segment.validate(['uri'])
+    }
+
     @Unroll
     void "duration [#length] is [#valid]"() {
         when:

@@ -1,10 +1,12 @@
 package in.reeltime.transcoder
 
+import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.video.Video
 import static in.reeltime.transcoder.TranscoderJobStatus.*
 
 @ToString(includeNames = true)
+@EqualsAndHashCode(includes = ['video'])
 class TranscoderJob {
 
     Video video

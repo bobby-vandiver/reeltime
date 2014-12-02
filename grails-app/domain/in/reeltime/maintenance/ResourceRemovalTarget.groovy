@@ -1,8 +1,10 @@
 package in.reeltime.maintenance
 
+import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
 @ToString(includeNames = true)
+@EqualsAndHashCode(includes = ['base', 'relative'])
 class ResourceRemovalTarget {
 
     Date dateCreated

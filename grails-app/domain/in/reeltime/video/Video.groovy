@@ -1,11 +1,13 @@
 package in.reeltime.video
 
+import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.user.User
 import in.reeltime.playlist.Playlist
 import in.reeltime.playlist.PlaylistUri
 
 @ToString(includeNames = true)
+@EqualsAndHashCode(includes = ['masterPath'])
 class Video {
 
     String title
@@ -24,6 +26,6 @@ class Video {
     static constraints = {
         creator nullable: false
         title nullable: false, blank: false
-        masterPath nullable: false, blank: false
+        masterPath nullable: false, blank: false, unique: true
     }
 }

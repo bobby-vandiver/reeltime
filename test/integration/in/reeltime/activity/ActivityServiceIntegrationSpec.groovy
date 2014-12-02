@@ -8,6 +8,7 @@ import spock.lang.Unroll
 import test.helper.AutoTimeStampSuppressor
 import test.helper.ReelFactory
 import test.helper.UserFactory
+import test.helper.VideoFactory
 
 class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
@@ -325,7 +326,11 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
     private List<UserReelActivity> createActivityPage() {
         List<UserReelActivity> activities = []
         TEST_MAX_ACTIVITIES_PER_PAGE.times {
-            activities << new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel.value).save(validate: false)
+            def video = VideoFactory.createVideo(user, "test $it")
+
+            activities << new UserReelVideoActivity(user: user, reel: reel, video: video,
+                    type: ActivityType.AddVideoToReel.value).save()
+
             sleep(2 * 1000)
         }
         activities.sort { a, b -> b.dateCreated <=> a.dateCreated }

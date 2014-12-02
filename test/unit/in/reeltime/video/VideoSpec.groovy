@@ -68,4 +68,16 @@ class VideoSpec extends Specification {
         where:
         path << ['', null]
     }
+
+    void "masterPath must be unique"() {
+        given:
+        def existingVideo = new Video(masterPath: 'something')
+        mockForConstraintsTests(Video, [existingVideo])
+
+        when:
+        def video = new Video(masterPath: 'something')
+
+        then:
+        !video.validate(['masterPath'])
+    }
 }

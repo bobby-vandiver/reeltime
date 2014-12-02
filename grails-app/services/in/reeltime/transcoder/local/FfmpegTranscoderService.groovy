@@ -23,8 +23,10 @@ class FfmpegTranscoderService implements TranscoderService {
             def outputPath = localFileSystemService.getAbsolutePathToOutputFile(output)
             def directory = localFileSystemService.createDirectory(outputPath)
 
-            def playlist = video.hashCode() + '.m3u8'
-            def segment = String.format(segmentFormat, video.hashCode())
+            def baseFilename = (video.title + '-' + video.id).replace(' ', '-')
+
+            def playlist = baseFilename + '.m3u8'
+            def segment = String.format(segmentFormat, baseFilename)
 
             def videoPath = localFileSystemService.getAbsolutePathToInputFile(video.masterPath)
             def command = """${ffmpeg} -i ${videoPath} -s 480x270 -vcodec libx264 -acodec libfaac -profile:v
@@ -39,7 +41,7 @@ class FfmpegTranscoderService implements TranscoderService {
             log.info("Completed ffmpeg transcoding for video [${video.id}]")
             log.debug(process.err.text)
 
-            def variantPlaylistKey = video.hashCode() + '-variant'
+            def variantPlaylistKey = baseFilename + '-variant'
             def variant = variantPlaylistKey + '.m3u8'
 
             log.info("Generating variant playlist")

@@ -1,8 +1,10 @@
 package in.reeltime.playlist
 
+import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
 @ToString(includeNames = true)
+@EqualsAndHashCode(includes = ['uri'])
 class Segment implements Comparable {
 
     int segmentId
@@ -13,7 +15,7 @@ class Segment implements Comparable {
 
     static constraints = {
         segmentId min: 0
-        uri blank: false, nullable: false
+        uri blank: false, nullable: false, unique: true
         duration blank: false, nullable: false,  matches: /^\d+(.\d+)?/
     }
 

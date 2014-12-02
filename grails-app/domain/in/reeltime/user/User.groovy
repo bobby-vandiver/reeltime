@@ -1,5 +1,6 @@
 package in.reeltime.user
 
+import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.video.Video
@@ -7,6 +8,7 @@ import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
 
 @ToString(includeNames = true, includes = ['displayName', 'username'])
+@EqualsAndHashCode(includes = ['username'])
 class User {
 
     static final USERNAME_REGEX = /^\w{2,15}$/

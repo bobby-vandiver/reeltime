@@ -1,11 +1,13 @@
 package in.reeltime.account
 
+import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.user.User
 
 import java.security.MessageDigest
 
 @ToString(includeNames = true, excludes = 'code,salt')
+@EqualsAndHashCode(includes = ['user', 'code', 'salt'])
 class AccountCode {
 
     static final SALT_LENGTH = 32

@@ -14,7 +14,7 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
     def pathGenerationService
     def inputStorageService
 
-    @IgnoreIf({!System.getProperty('ffmpeg') && !System.getenv('FFMPEG')})
+    @IgnoreIf({!System.getProperty('FFMPEG') && !System.getenv('FFMPEG')})
     void "transcode video file using ffmpeg"() {
         given:
         def creator = UserFactory.createTestUser()

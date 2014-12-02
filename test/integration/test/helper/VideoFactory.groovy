@@ -6,7 +6,7 @@ import in.reeltime.video.Video
 class VideoFactory {
 
     static Video createVideo(User creator, String title, boolean available = true) {
-        def video = new Video(title: title, masterPath: title + '-path', available: available)
+        def video = new Video(title: title, masterPath: title + '-' + System.currentTimeMillis(), available: available)
         creator.addToVideos(video)
         video.save()
     }
