@@ -71,6 +71,15 @@ class UserFollowingServiceIntegrationSpec extends IntegrationSpec {
         e.message == "[${follower.username}] is not following [${followee.username}]"
     }
 
+    void "follower can follow followee and followee can follow follower"() {
+        when:
+        userFollowingService.startFollowingUser(follower, followee)
+        userFollowingService.startFollowingUser(followee, follower)
+
+        then:
+        notThrown(Exception)
+    }
+
     @Unroll
     void "list [#count] users being followed"() {
         given:

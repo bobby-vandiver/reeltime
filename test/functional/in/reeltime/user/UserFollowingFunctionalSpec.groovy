@@ -86,4 +86,14 @@ class UserFollowingFunctionalSpec extends FunctionalSpec {
         reelTimeClient.listFollowees(followerToken, 'follower').size() == 0
         reelTimeClient.listFollowers(followerToken, 'followee').size() == 0
     }
+
+    void "follower can follow followee and followee can follow follower"() {
+        when:
+        reelTimeClient.followUser(followerToken, 'followee')
+        reelTimeClient.followUser(followeeToken, 'follower')
+
+        then:
+        reelTimeClient.listFollowees(followerToken, 'follower').size() == 1
+        reelTimeClient.listFollowers(followeeToken, 'followee').size() == 1
+    }
 }
