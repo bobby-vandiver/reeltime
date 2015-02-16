@@ -16,7 +16,7 @@ class ReelTimeClient {
     private ReelTimeRequestFactory requestFactory
 
     // Video creation completion polling defaults
-    private static final DEFAULT_MAX_POLL_COUNT = 12
+    private static final DEFAULT_MAX_POLL_COUNT = 20
     private static final DEFAULT_RETRY_DELAY_IN_MILLIS = 5 * 1000
 
     ReelTimeClient(AuthorizationAwareRestClient restClient, ReelTimeRequestFactory requestFactory) {
