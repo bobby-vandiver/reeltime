@@ -64,7 +64,7 @@ class ReelTimeClient {
         def request = requestFactory.resetPasswordForNewClient(username, newPassword, resetCode, clientName)
         def response = post(request)
 
-        assertStatusOrFail(response, 200, "Failed to reset password for new client.")
+        assertStatusOrFail(response, 201, "Failed to reset password for new client.")
 
         return response
     }

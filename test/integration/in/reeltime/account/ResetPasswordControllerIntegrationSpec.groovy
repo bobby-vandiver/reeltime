@@ -103,7 +103,7 @@ class ResetPasswordControllerIntegrationSpec extends AbstractControllerIntegrati
         controller.resetPassword()
 
         then:
-        assertStatusCodeAndContentType(controller.response, 200)
+        assertStatusCodeAndContentType(controller.response, 201)
 
         and:
         def json = getJsonResponse(controller.response)
