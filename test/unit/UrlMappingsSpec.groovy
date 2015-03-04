@@ -216,23 +216,23 @@ class UrlMappingsSpec extends Specification {
         assertForwardUrlMapping(url, controller: controller, action: action)
 
         where:
-        url                             |   httpMethod  |   controller              |   action
-        '/api/users'                    |   'GET'       |   'user'                  |   'listUsers'
-        '/api/videos'                   |   'GET'       |   'video'                 |   'listVideos'
-        '/api/videos'                   |   'POST'      |   'video'                 |   'upload'
-        '/api/reels'                    |   'GET'       |   'reel'                  |   'listReels'
-        '/api/reels'                    |   'POST'      |   'reel'                  |   'addReel'
-        '/api/newsfeed'                 |   'GET'       |   'newsfeed'              |   'listRecentActivity'
-        '/api/account'                  |   'POST'      |   'account'               |   'registerAccount'
-        '/api/account'                  |   'DELETE'    |   'account'               |   'removeAccount'
-        '/api/account/confirm'          |   'POST'      |   'accountConfirmation'   |   'confirmAccount'
-        '/api/account/confirm/email'    |   'POST'      |   'accountConfirmation'   |   'sendEmail'
-        '/api/account/display_name'     |   'POST'      |   'accountManagement'     |   'changeDisplayName'
-        '/api/account/password'         |   'POST'      |   'accountManagement'     |   'changePassword'
-        '/api/account/password/email'   |   'POST'      |   'resetPassword'         |   'sendEmail'
-        '/api/account/password/reset'   |   'POST'      |   'resetPassword'         |   'resetPassword'
-        '/aws/available'                |   'GET'       |   'applicationStatus'     |   'available'
-        '/aws/transcoder/notification'  |   'POST'      |   'notification'          |   'handleMessage'
+        url                                 |   httpMethod  |   controller              |   action
+        '/api/users'                        |   'GET'       |   'user'                  |   'listUsers'
+        '/api/videos'                       |   'GET'       |   'video'                 |   'listVideos'
+        '/api/videos'                       |   'POST'      |   'video'                 |   'upload'
+        '/api/reels'                        |   'GET'       |   'reel'                  |   'listReels'
+        '/api/reels'                        |   'POST'      |   'reel'                  |   'addReel'
+        '/api/newsfeed'                     |   'GET'       |   'newsfeed'              |   'listRecentActivity'
+        '/api/account'                      |   'POST'      |   'account'               |   'registerAccount'
+        '/api/account'                      |   'DELETE'    |   'account'               |   'removeAccount'
+        '/api/account/confirm'              |   'POST'      |   'accountConfirmation'   |   'confirmAccount'
+        '/api/account/confirm/email'        |   'POST'      |   'accountConfirmation'   |   'sendEmail'
+        '/api/account/display_name'         |   'POST'      |   'accountManagement'     |   'changeDisplayName'
+        '/api/account/password'             |   'POST'      |   'accountManagement'     |   'changePassword'
+        '/api/account/password/reset'       |   'POST'      |   'resetPassword'         |   'resetPassword'
+        '/api/account/password/reset/email' |   'POST'      |   'resetPassword'         |   'sendEmail'
+        '/aws/available'                    |   'GET'       |   'applicationStatus'     |   'available'
+        '/aws/transcoder/notification'      |   'POST'      |   'notification'          |   'handleMessage'
     }
 
     @Unroll

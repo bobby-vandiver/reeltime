@@ -76,12 +76,12 @@ public class ReelTimeUrlFactory {
         getUrlForApiResource('account/password')
     }
 
-    String getSendResetPasswordEmailUrl() {
-        getUrlForApiResource('account/password/email')
-    }
-
     String getResetPasswordUrl() {
         getUrlForApiResource('account/password/reset')
+    }
+
+    String getSendResetPasswordEmailUrl() {
+        getUrlForApiResource('account/password/reset/email')
     }
 
     String getNewsfeedUrl() {

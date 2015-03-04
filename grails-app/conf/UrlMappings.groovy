@@ -51,12 +51,12 @@ class UrlMappings {
             action = [POST: 'changePassword']
         }
 
-        "/api/account/password/email" (controller: 'resetPassword') {
-            action = [POST: 'sendEmail']
-        }
-
         "/api/account/password/reset" (controller: 'resetPassword') {
             action = [POST: 'resetPassword']
+        }
+
+        "/api/account/password/reset/email" (controller: 'resetPassword') {
+            action = [POST: 'sendEmail']
         }
 
         "/api/newsfeed" (controller: 'newsfeed') {
