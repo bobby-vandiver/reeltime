@@ -38,7 +38,7 @@ class ReelController extends AbstractController {
         log.debug "Listing all reels on page [${command.page}]"
         handleCommandRequest(command) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(reelService.listReels(command.page))
+                marshall(reels: reelService.listReels(command.page))
             }
         }
     }
@@ -48,7 +48,7 @@ class ReelController extends AbstractController {
         log.debug "Listing reels for user [${usernameCommand.username}] on page [${pagedListCommand.page}]"
         handleMultipleCommandRequest([usernameCommand, pagedListCommand]) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(reelService.listReelsByUsername(usernameCommand.username, pagedListCommand.page))
+                marshall(reels: reelService.listReelsByUsername(usernameCommand.username, pagedListCommand.page))
             }
         }
     }
@@ -83,7 +83,7 @@ class ReelController extends AbstractController {
         log.debug "Listing videos in reel [${reelCommand.reel_id}] on page [${pagedListCommand.page}]"
         handleMultipleCommandRequest([reelCommand, pagedListCommand]) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(reelVideoManagementService.listVideosInReel(reelCommand.reel_id, pagedListCommand.page))
+                marshall(videos: reelVideoManagementService.listVideosInReel(reelCommand.reel_id, pagedListCommand.page))
             }
         }
     }

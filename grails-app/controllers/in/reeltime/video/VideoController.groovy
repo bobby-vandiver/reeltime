@@ -25,7 +25,7 @@ class VideoController extends AbstractController {
         log.debug "Listing all videos on page [${command.page}]"
         handleCommandRequest(command) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(videoService.listVideos(command.page))
+                marshall(videos: videoService.listVideos(command.page))
             }
         }
     }

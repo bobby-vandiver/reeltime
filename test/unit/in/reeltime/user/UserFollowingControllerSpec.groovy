@@ -127,10 +127,10 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 1
+        json.users.size() == 1
 
         and:
-        json[0].username == follower.username
+        json.users[0].username == follower.username
 
         and:
         1 * userService.loadUser('followee') >> followee
@@ -149,10 +149,10 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 1
+        json.users.size() == 1
 
         and:
-        json[0].username == followee.username
+        json.users[0].username == followee.username
 
         and:
         1 * userService.loadUser('follower') >> follower

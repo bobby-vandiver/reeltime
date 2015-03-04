@@ -33,7 +33,7 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
         def videoId = reelTimeClient.uploadVideoToUncategorizedReel(videosToken)
 
         expect:
-        def list = reelTimeClient.listVideosInReel(reelsReadToken, reelId)
+        def list = reelTimeClient.listVideosInReel(reelsReadToken, reelId).videos
         responseChecker.assertVideoIdInList(list, videoId)
     }
 }

@@ -70,11 +70,11 @@ class UserControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 1
+        json.users.size() == 1
 
         and:
-        json[0].username == 'foo'
-        json[0].display_name == 'bar'
+        json.users[0].username == 'foo'
+        json.users[0].display_name == 'bar'
 
         and:
         1 * userService.listUsers(3) >> [user]

@@ -241,7 +241,7 @@ class ReelTimeClient {
 
         assertStatusOrFail(response, 200, "Failed to list reels.")
 
-        def uncategorizedReel = response.json.find { it.name == 'Uncategorized' }
+        def uncategorizedReel = response.json.reels.find { it.name == 'Uncategorized' }
         return uncategorizedReel.reel_id
     }
 

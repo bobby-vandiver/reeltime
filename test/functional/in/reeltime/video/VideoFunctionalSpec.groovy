@@ -40,7 +40,7 @@ class VideoFunctionalSpec extends FunctionalSpec {
 
     void "no videos have been uploaded"() {
         when:
-        def list = reelTimeClient.listVideos(token)
+        def list = reelTimeClient.listVideos(token).videos
 
         then:
         list.size() == 0
@@ -53,7 +53,7 @@ class VideoFunctionalSpec extends FunctionalSpec {
         def thirdId = reelTimeClient.uploadVideoToUncategorizedReel(token, 'third')
 
         when:
-        def list = reelTimeClient.listVideos(token)
+        def list = reelTimeClient.listVideos(token).videos
 
         then:
         list.size() == 3
@@ -79,7 +79,7 @@ class VideoFunctionalSpec extends FunctionalSpec {
         def fourthId = reelTimeClient.uploadVideoToReel(otherToken, 'other reel', 'fourth')
 
         when:
-        def list = reelTimeClient.listVideos(token)
+        def list = reelTimeClient.listVideos(token).videos
 
         then:
         list.size() == 4

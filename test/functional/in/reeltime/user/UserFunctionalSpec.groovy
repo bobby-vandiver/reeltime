@@ -92,7 +92,7 @@ class UserFunctionalSpec extends FunctionalSpec {
 
     void "list users contains the current user"() {
         when:
-        def list = reelTimeClient.listUsers(token)
+        def list = reelTimeClient.listUsers(token).users
 
         then:
         responseChecker.assertUsernameInList(list, username)
@@ -104,7 +104,7 @@ class UserFunctionalSpec extends FunctionalSpec {
         names.each { registerUser(it) }
 
         when:
-        def list = reelTimeClient.listUsers(token)
+        def list = reelTimeClient.listUsers(token).users
 
         then:
         names.each { responseChecker.assertUsernameInList(list, it) }

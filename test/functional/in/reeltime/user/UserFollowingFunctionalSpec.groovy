@@ -55,24 +55,24 @@ class UserFollowingFunctionalSpec extends FunctionalSpec {
         reelTimeClient.followUser(followerToken, 'followee')
 
         then:
-        reelTimeClient.listFollowers(followerToken, 'follower').size() == 0
-        reelTimeClient.listFollowees(followerToken, 'followee').size() == 0
+        reelTimeClient.listFollowers(followerToken, 'follower').users.size() == 0
+        reelTimeClient.listFollowees(followerToken, 'followee').users.size() == 0
 
         and:
         def followees = reelTimeClient.listFollowees(followerToken, 'follower')
-        followees.size() == 1
+        followees.users.size() == 1
 
         and:
-        followees[0].username == 'followee'
-        followees[0].display_name == 'followee'
+        followees.users[0].username == 'followee'
+        followees.users[0].display_name == 'followee'
 
         and:
         def followers = reelTimeClient.listFollowers(followerToken, 'followee')
-        followers.size() == 1
+        followers.users.size() == 1
 
         and:
-        followers[0].username == 'follower'
-        followers[0].display_name == 'follower'
+        followers.users[0].username == 'follower'
+        followers.users[0].display_name == 'follower'
     }
 
     void "stop following a user"() {
@@ -83,8 +83,8 @@ class UserFollowingFunctionalSpec extends FunctionalSpec {
         reelTimeClient.unfollowUser(followerToken, 'followee')
 
         then:
-        reelTimeClient.listFollowees(followerToken, 'follower').size() == 0
-        reelTimeClient.listFollowers(followerToken, 'followee').size() == 0
+        reelTimeClient.listFollowees(followerToken, 'follower').users.size() == 0
+        reelTimeClient.listFollowers(followerToken, 'followee').users.size() == 0
     }
 
     void "follower can follow followee and followee can follow follower"() {
@@ -93,7 +93,7 @@ class UserFollowingFunctionalSpec extends FunctionalSpec {
         reelTimeClient.followUser(followeeToken, 'follower')
 
         then:
-        reelTimeClient.listFollowees(followerToken, 'follower').size() == 1
-        reelTimeClient.listFollowers(followeeToken, 'followee').size() == 1
+        reelTimeClient.listFollowees(followerToken, 'follower').users.size() == 1
+        reelTimeClient.listFollowers(followeeToken, 'followee').users.size() == 1
     }
 }

@@ -27,7 +27,7 @@ class UserController extends AbstractController {
         log.debug "Listing all users on page [${command.page}]"
         handleCommandRequest(command) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(userService.listUsers(command.page))
+                marshall(users: userService.listUsers(command.page))
             }
         }
     }

@@ -18,7 +18,7 @@ class AudienceController extends AbstractController {
         log.debug "List audience members for reel [${reelCommand.reel_id}] on page [${pagedListCommand.page}]"
         handleMultipleCommandRequest([reelCommand, pagedListCommand]) {
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(audienceService.listMembers(reelCommand.reel_id, pagedListCommand.page))
+                marshall(users: audienceService.listMembers(reelCommand.reel_id, pagedListCommand.page))
             }
         }
     }

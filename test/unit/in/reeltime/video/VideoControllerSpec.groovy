@@ -60,11 +60,11 @@ class VideoControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 1
+        json.videos.size() == 1
 
         and:
-        json[0].video_id == video.id
-        json[0].title == 'buzz'
+        json.videos[0].video_id == video.id
+        json.videos[0].title == 'buzz'
 
         and:
         1 * videoService.listVideos(3) >> [video]

@@ -89,11 +89,11 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 1
+        json.reels.size() == 1
 
         and:
-        json[0].reel_id == reel.id
-        json[0].name == 'foo'
+        json.reels[0].reel_id == reel.id
+        json.reels[0].name == 'foo'
 
         and:
         1 * reelService.listReels(3) >> [reel]
@@ -140,7 +140,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 0
+        json.reels.size() == 0
 
         and:
         1 * reelService.listReelsByUsername('bob', _) >> []
@@ -162,14 +162,14 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 1
+        json.reels.size() == 1
 
         and:
-        json[0].size() == 4
-        json[0].reel_id == reel.id
-        json[0].name == 'foo'
-        json[0].audience_size == 0
-        json[0].video_count == 0
+        json.reels[0].size() == 4
+        json.reels[0].reel_id == reel.id
+        json.reels[0].name == 'foo'
+        json.reels[0].audience_size == 0
+        json.reels[0].video_count == 0
 
         and:
         1 * reelService.listReelsByUsername('bob', _) >> [reel]
@@ -195,21 +195,21 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 2
+        json.reels.size() == 2
 
         and:
-        json[0].size() == 4
-        json[0].reel_id == reel1.id
-        json[0].name == 'foo'
-        json[0].audience_size == 0
-        json[0].video_count == 0
+        json.reels[0].size() == 4
+        json.reels[0].reel_id == reel1.id
+        json.reels[0].name == 'foo'
+        json.reels[0].audience_size == 0
+        json.reels[0].video_count == 0
 
         and:
-        json[1].size() == 4
-        json[1].reel_id == reel2.id
-        json[1].name == 'bar'
-        json[1].audience_size == 0
-        json[1].video_count == 0
+        json.reels[1].size() == 4
+        json.reels[1].reel_id == reel2.id
+        json.reels[1].name == 'bar'
+        json.reels[1].audience_size == 0
+        json.reels[1].video_count == 0
 
         and:
         1 * reelService.listReelsByUsername('bob', _) >> [reel1, reel2]
@@ -351,7 +351,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 0
+        json.videos.size() == 0
 
         and:
         1 * reelVideoManagementService.listVideosInReel(1234, _) >> []
@@ -373,12 +373,12 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 1
+        json.videos.size() == 1
 
         and:
-        json[0].size() == 2
-        json[0].video_id == video.id
-        json[0].title == 'one'
+        json.videos[0].size() == 2
+        json.videos[0].video_id == video.id
+        json.videos[0].title == 'one'
 
         and:
         1 * reelVideoManagementService.listVideosInReel(1234, _) >> [video]
@@ -404,17 +404,17 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 2
+        json.videos.size() == 2
 
         and:
-        json[0].size() == 2
-        json[0].video_id == video1.id
-        json[0].title == 'first'
+        json.videos[0].size() == 2
+        json.videos[0].video_id == video1.id
+        json.videos[0].title == 'first'
 
         and:
-        json[1].size() == 2
-        json[1].video_id == video2.id
-        json[1].title == 'second'
+        json.videos[1].size() == 2
+        json.videos[1].video_id == video2.id
+        json.videos[1].title == 'second'
 
         and:
         1 * reelVideoManagementService.listVideosInReel(1234, _) >> [video1, video2]

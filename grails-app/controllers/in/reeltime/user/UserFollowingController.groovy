@@ -47,7 +47,7 @@ class UserFollowingController extends AbstractController {
         handleMultipleCommandRequest([usernameCommand, pagedListCommand]) {
             def user = userService.loadUser(usernameCommand.username)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(userFollowingService.listFollowersForFollowee(user, pagedListCommand.page))
+                marshall(users: userFollowingService.listFollowersForFollowee(user, pagedListCommand.page))
             }
         }
     }
@@ -59,7 +59,7 @@ class UserFollowingController extends AbstractController {
         handleMultipleCommandRequest([usernameCommand, pagedListCommand]) {
             def user = userService.loadUser(usernameCommand.username)
             render(status: SC_OK, contentType: APPLICATION_JSON) {
-                marshall(userFollowingService.listFolloweesForFollower(user, pagedListCommand.page))
+                marshall(users: userFollowingService.listFolloweesForFollower(user, pagedListCommand.page))
             }
         }
     }

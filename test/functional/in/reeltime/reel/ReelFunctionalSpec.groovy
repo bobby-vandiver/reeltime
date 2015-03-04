@@ -222,9 +222,9 @@ class ReelFunctionalSpec extends FunctionalSpec {
         response.status == 200
 
         and:
-        response.json.size() == 1
-        response.json[0].name == 'Uncategorized'
-        response.json[0].reel_id > 0
+        response.json.reels.size() == 1
+        response.json.reels[0].name == 'Uncategorized'
+        response.json.reels[0].reel_id > 0
     }
 
     void "add a new reel"() {
@@ -326,7 +326,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
         then:
         response.status == 200
-        response.json.size() == 0
+        response.json.videos.size() == 0
     }
 
     void "add video to multiple reels"() {
@@ -346,8 +346,8 @@ class ReelFunctionalSpec extends FunctionalSpec {
 
         then:
         response.status == 200
-        response.json.size() == 1
-        response.json[0].video_id == videoId
+        response.json.videos.size() == 1
+        response.json.videos[0].video_id == videoId
     }
 
     void "uploaded video is added to another person's reel"() {
@@ -362,7 +362,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         reelTimeClient.addVideoToReel(otherUserToken, reelId, videoId)
 
         then:
-        def list = reelTimeClient.listVideosInReel(otherUserToken, reelId)
+        def list = reelTimeClient.listVideosInReel(otherUserToken, reelId).videos
         responseChecker.assertVideoIdInList(list, videoId)
     }
 
@@ -386,7 +386,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         response.status == 200
 
         and:
-        reelTimeClient.listVideosInReel(readToken, reelId).size() == 0
+        reelTimeClient.listVideosInReel(readToken, reelId).videos.size() == 0
     }
 
     void "invalid page requested"() {
@@ -411,7 +411,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         def uncategorizedId = reelTimeClient.getUncategorizedReelId(token)
 
         when:
-        def list = reelTimeClient.listReels(readToken)
+        def list = reelTimeClient.listReels(readToken).reels
 
         then:
         list.size() == 7

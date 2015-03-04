@@ -106,7 +106,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def reelId = reelTimeClient.getUncategorizedReelId(listReelsToken)
 
         when:
-        def list = reelTimeClient.listAudienceMembers(readToken, reelId)
+        def list = reelTimeClient.listAudienceMembers(readToken, reelId).users
 
         then:
         list.size() == 0
@@ -121,12 +121,12 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         reelTimeClient.addAudienceMember(nonTestUserWriteToken, reelId)
 
         then:
-        reelTimeClient.listAudienceMembers(readToken, reelId).size() == 1
+        reelTimeClient.listAudienceMembers(readToken, reelId).users.size() == 1
 
         when:
         reelTimeClient.removeAudienceMember(nonTestUserWriteToken, reelId)
 
         then:
-        reelTimeClient.listAudienceMembers(readToken, reelId).size() == 0
+        reelTimeClient.listAudienceMembers(readToken, reelId).users.size() == 0
     }
 }

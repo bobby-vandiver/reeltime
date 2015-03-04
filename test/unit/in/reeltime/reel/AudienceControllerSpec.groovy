@@ -33,7 +33,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 0
+        json.users.size() == 0
 
         1 * audienceService.listMembers(reelId, 1) >> []
     }
@@ -50,7 +50,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 0
+        json.users.size() == 0
 
         1 * audienceService.listMembers(reelId, 39) >> []
     }
@@ -111,7 +111,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 0
+        json.users.size() == 0
 
         1 * audienceService.listMembers(reelId, _) >> []
     }
@@ -128,11 +128,11 @@ class AudienceControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 1
+        json.users.size() == 1
 
         and:
-        json[0].username == 'member'
-        json[0].display_name == 'member display'
+        json.users[0].username == 'member'
+        json.users[0].display_name == 'member display'
 
         1 * audienceService.listMembers(reelId, _) >> [member]
     }
@@ -150,15 +150,15 @@ class AudienceControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 2
+        json.users.size() == 2
 
         and:
-        json[0].username == 'member1'
-        json[0].display_name == 'member1 display'
+        json.users[0].username == 'member1'
+        json.users[0].display_name == 'member1 display'
 
         and:
-        json[1].username == 'member2'
-        json[1].display_name == 'member2 display'
+        json.users[1].username == 'member2'
+        json.users[1].display_name == 'member2 display'
 
         1 * audienceService.listMembers(reelId, _) >> [member1, member2]
     }
