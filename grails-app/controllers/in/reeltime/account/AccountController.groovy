@@ -30,7 +30,9 @@ class AccountController extends AbstractController {
 
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-write')"])
     def removeAccount() {
-        accountRemovalService.removeAccountForCurrentUser()
-        render(status: SC_OK)
+        handleRequest {
+            accountRemovalService.removeAccountForCurrentUser()
+            render(status: SC_OK)
+        }
     }
 }

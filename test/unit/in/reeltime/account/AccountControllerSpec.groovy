@@ -5,6 +5,7 @@ import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.RegistrationException
+import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.user.User
 import in.reeltime.user.UserService
 
@@ -108,5 +109,16 @@ class AccountControllerSpec extends AbstractControllerSpec {
 
         and:
         1 * accountRemovalService.removeAccountForCurrentUser()
+    }
+
+    void "authorization exception is thrown"() {
+        when:
+        controller.removeAccount()
+
+        then:
+        assertStatusCodeOnlyResponse(response, 403)
+
+        and:
+        1 * accountRemovalService.removeAccountForCurrentUser() >> { throw new AuthorizationException('TEST') }
     }
 }
