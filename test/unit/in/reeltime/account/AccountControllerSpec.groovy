@@ -105,7 +105,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
         controller.removeAccount()
 
         then:
-        assertStatusCodeOnlyResponse(response, 200)
+        assertStatusCode(response, 200)
 
         and:
         1 * accountRemovalService.removeAccountForCurrentUser()
@@ -116,7 +116,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
         controller.removeAccount()
 
         then:
-        assertStatusCodeOnlyResponse(response, 403)
+        assertStatusCode(response, 403)
 
         and:
         1 * accountRemovalService.removeAccountForCurrentUser() >> { throw new AuthorizationException('TEST') }

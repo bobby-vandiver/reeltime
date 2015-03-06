@@ -32,7 +32,7 @@ class AccountManagementControllerSpec extends AbstractControllerSpec {
         controller.changePassword()
 
         then:
-        assertStatusCodeOnlyResponse(response, 200)
+        assertStatusCode(response, 200)
 
         and:
         1 * authenticationService.getCurrentUser() >> user
@@ -48,7 +48,7 @@ class AccountManagementControllerSpec extends AbstractControllerSpec {
         controller.changeDisplayName()
 
         then:
-        assertStatusCodeOnlyResponse(response, 200)
+        assertStatusCode(response, 200)
 
         and:
         1 * authenticationService.getCurrentUser() >> user

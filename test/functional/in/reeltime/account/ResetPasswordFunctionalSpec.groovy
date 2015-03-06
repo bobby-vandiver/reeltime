@@ -109,7 +109,7 @@ class ResetPasswordFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        responseChecker.assertNoErrorMessages(response, 403)
+        responseChecker.assertUnauthorizedError(response)
     }
 
     void "authentic client not associated with user"() {

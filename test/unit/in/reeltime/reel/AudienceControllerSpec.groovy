@@ -96,7 +96,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
         controller.removeMember()
 
         then:
-        assertStatusCodeOnlyResponse(response, 403)
+        assertStatusCode(response, 403)
 
         and:
         1 * audienceService.removeCurrentUserFromAudience(reelId) >> { throw new AuthorizationException('TEST') }

@@ -33,7 +33,7 @@ class ResetPasswordControllerSpec extends AbstractControllerSpec {
         controller.sendEmail()
 
         then:
-        assertStatusCodeOnlyResponse(response, 200)
+        assertStatusCode(response, 200)
 
         and:
         1 * userService.loadUser(user.username) >> user

@@ -30,9 +30,8 @@ abstract class AbstractControllerSpec extends Specification {
         assert response.contentType.startsWith(APPLICATION_JSON)
     }
 
-    protected void assertStatusCodeOnlyResponse(GrailsMockHttpServletResponse response, int statusCode) {
+    protected void assertStatusCode(GrailsMockHttpServletResponse response, int statusCode) {
         assert response.status == statusCode
-        assert response.contentLength == 0
     }
 
     protected void assertErrorMessageResponse(GrailsMockHttpServletResponse response, int statusCode, String message) {

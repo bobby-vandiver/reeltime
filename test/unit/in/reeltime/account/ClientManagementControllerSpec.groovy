@@ -99,7 +99,7 @@ class ClientManagementControllerSpec extends AbstractControllerSpec {
         controller.revokeClient()
 
         then:
-        assertStatusCodeOnlyResponse(response, 200)
+        assertStatusCode(response, 200)
 
         and:
         1 * authenticationService.getCurrentUser() >> user

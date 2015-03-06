@@ -82,7 +82,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        responseChecker.assertStatusCode(response, 403)
+        responseChecker.assertUnauthorizedError(response)
     }
 
     void "current user is not a member of the audience"() {
@@ -98,7 +98,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
         def response = delete(request)
 
         then:
-        responseChecker.assertStatusCode(response, 403)
+        responseChecker.assertUnauthorizedError(response)
     }
 
     void "no audience members"() {

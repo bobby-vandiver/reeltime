@@ -472,7 +472,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         controller.addVideo()
 
         then:
-        assertStatusCodeOnlyResponse(response, 403)
+        assertStatusCode(response, 403)
 
         and:
         1 * reelVideoManagementService.addVideo(reelId, videoId) >> { throw new AuthorizationException('TEST') }
@@ -540,7 +540,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         controller.removeVideo()
 
         then:
-        assertStatusCodeOnlyResponse(response, 403)
+        assertStatusCode(response, 403)
 
         and:
         1 * reelVideoManagementService.removeVideo(reelId, videoId) >> { throw new AuthorizationException('TEST') }

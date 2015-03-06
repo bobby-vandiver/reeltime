@@ -30,7 +30,7 @@ class AccountConfirmationControllerSpec extends AbstractControllerSpec {
         controller.sendEmail()
 
         then:
-        assertStatusCodeOnlyResponse(response, 200)
+        assertStatusCode(response, 200)
 
         and:
         1 * authenticationService.getCurrentUser() >> user
@@ -58,7 +58,7 @@ class AccountConfirmationControllerSpec extends AbstractControllerSpec {
         controller.confirmAccount()
 
         then:
-        assertStatusCodeOnlyResponse(response, 200)
+        assertStatusCode(response, 200)
 
         and:
         1 * accountConfirmationService.confirmAccount('let-me-in')
@@ -72,7 +72,7 @@ class AccountConfirmationControllerSpec extends AbstractControllerSpec {
         controller.confirmAccount()
 
         then:
-        assertStatusCodeOnlyResponse(response, 403)
+        assertStatusCode(response, 403)
 
         and:
         1 * accountConfirmationService.confirmAccount(_) >> { throw new ConfirmationException('TEST') }

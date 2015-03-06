@@ -77,9 +77,8 @@ class ResponseChecker {
         assert matches.size() == 1
     }
 
-    void assertNoErrorMessages(RestResponse response, int expectedStatus) {
-        assertStatusCode(response, expectedStatus)
-        assert response.json == null
+    void assertUnauthorizedError(RestResponse response) {
+        assertErrorMessageInResponse(response, 403, 'Unauthorized operation requested')
     }
 
     void assertStatusCode(RestResponse response, int expected) {

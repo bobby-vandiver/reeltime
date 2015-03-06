@@ -182,7 +182,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        responseChecker.assertStatusCode(response, 403)
+        responseChecker.assertUnauthorizedError(response)
     }
 
     void "register client with bad credentials"() {

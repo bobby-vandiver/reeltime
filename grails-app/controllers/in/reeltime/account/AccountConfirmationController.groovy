@@ -3,6 +3,7 @@ package in.reeltime.account
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.AccountCodeException
+import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ConfirmationException
 
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
@@ -36,7 +37,7 @@ class AccountConfirmationController extends AbstractController {
                 render(status: SC_OK)
             }
             catch(ConfirmationException e) {
-                exceptionStatusCodeOnlyResponse(e, SC_FORBIDDEN)
+                throw new AuthorizationException("Account confirmation failed", e)
             }
         }
     }

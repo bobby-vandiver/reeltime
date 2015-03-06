@@ -39,7 +39,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         controller.followUser()
 
         then:
-        assertStatusCodeOnlyResponse(response, 201)
+        assertStatusCode(response, 201)
 
         and:
         1 * authenticationService.currentUser >> follower
@@ -57,7 +57,7 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         controller.unfollowUser()
 
         then:
-        assertStatusCodeOnlyResponse(response, 200)
+        assertStatusCode(response, 200)
 
         and:
         1 * authenticationService.currentUser >> follower

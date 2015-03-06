@@ -77,7 +77,7 @@ abstract class AbstractController {
             action()
         }
         catch(AuthorizationException e) {
-            exceptionStatusCodeOnlyResponse(e, SC_FORBIDDEN)
+            exceptionErrorMessageResponse(e, 'request.forbidden', SC_FORBIDDEN)
         }
         catch(UserNotFoundException e) {
             exceptionErrorMessageResponse(e, 'user.unknown', SC_NOT_FOUND)

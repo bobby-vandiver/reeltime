@@ -80,7 +80,7 @@ class AccountManagementFunctionalSpec extends FunctionalSpec {
         def response = delete(request)
 
         then:
-        responseChecker.assertStatusCode(response, 403)
+        responseChecker.assertUnauthorizedError(response)
     }
 
     void "successfully change password"() {
