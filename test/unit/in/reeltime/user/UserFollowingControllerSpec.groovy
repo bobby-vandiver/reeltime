@@ -4,6 +4,7 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.UserNotFoundException
+import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.security.AuthenticationService
 import spock.lang.Unroll
 
@@ -99,15 +100,14 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         controller."$actionName"()
 
         then:
-        assertErrorMessageResponse(response, 400, TEST_MESSAGE)
+        assertStatusCode(response, 403)
 
         and:
         1 * authenticationService.currentUser >> follower
         1 * userService.loadUser('followee') >> followee
 
         and:
-        1 * userFollowingService."$methodName"(follower, followee) >> { throw new IllegalArgumentException('TEST') }
-        1 * localizedMessageService.getMessage('following.invalid.request', request.locale) >> TEST_MESSAGE
+        1 * userFollowingService."$methodName"(follower, followee) >> { throw new AuthorizationException('TEST') }
 
         where:
         actionName      |   methodName

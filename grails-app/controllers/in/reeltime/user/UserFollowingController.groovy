@@ -63,8 +63,4 @@ class UserFollowingController extends AbstractController {
             }
         }
     }
-
-    def handleIllegalArgumentException(IllegalArgumentException e) {
-        exceptionErrorMessageResponse(e, 'following.invalid.request', SC_BAD_REQUEST)
-    }
 }

@@ -1,5 +1,7 @@
 package in.reeltime.user
 
+import in.reeltime.exceptions.AuthorizationException
+
 class UserFollowingService {
 
     def maxUsersPerPage
@@ -9,12 +11,12 @@ class UserFollowingService {
 
         if(follower == followee) {
             def message = "Cannot add follower [${follower.username}] as a followee"
-            throw new IllegalArgumentException(message)
+            throw new AuthorizationException(message)
         }
 
         if(UserFollowing.findByFollowerAndFollowee(follower, followee)) {
             def message = "User [${follower.username}] cannot follow user [${followee.username}] multiple times"
-            throw new IllegalArgumentException(message)
+            throw new AuthorizationException(message)
         }
 
         log.info "User [${follower.username}] is now following user [${followee.username}]"
@@ -27,7 +29,7 @@ class UserFollowingService {
 
         if(!following) {
             def message = "[${follower.username}] is not following [${followee.username}]"
-            throw new IllegalArgumentException(message)
+            throw new AuthorizationException(message)
         }
 
         log.info "User [${follower.username}] is no longer follow user [${followee.username}]"

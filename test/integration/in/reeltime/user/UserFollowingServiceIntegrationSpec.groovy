@@ -4,6 +4,7 @@ import grails.test.spock.IntegrationSpec
 import spock.lang.Unroll
 import test.helper.UserFactory
 import test.helper.UserFollowingHelper
+import in.reeltime.exceptions.AuthorizationException
 
 class UserFollowingServiceIntegrationSpec extends IntegrationSpec {
     
@@ -38,7 +39,7 @@ class UserFollowingServiceIntegrationSpec extends IntegrationSpec {
         userFollowingService.startFollowingUser(follower, followee)
 
         then:
-        def e = thrown(IllegalArgumentException)
+        def e = thrown(AuthorizationException)
         e.message == "User [${follower.username}] cannot follow user [${followee.username}] multiple times"
     }
 
@@ -47,7 +48,7 @@ class UserFollowingServiceIntegrationSpec extends IntegrationSpec {
         userFollowingService.startFollowingUser(follower, follower)
 
         then:
-        def e = thrown(IllegalArgumentException)
+        def e = thrown(AuthorizationException)
         e.message == "Cannot add follower [${follower.username}] as a followee"
     }
 
@@ -67,7 +68,7 @@ class UserFollowingServiceIntegrationSpec extends IntegrationSpec {
         userFollowingService.stopFollowingUser(follower, followee)
 
         then:
-        def e = thrown(IllegalArgumentException)
+        def e = thrown(AuthorizationException)
         e.message == "[${follower.username}] is not following [${followee.username}]"
     }
 
