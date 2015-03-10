@@ -25,7 +25,7 @@ class ReelTimeClient {
     }
 
     RestResponse registerUser(String username, String password, String clientName, String displayName) {
-        def email = username + '@test.com'
+        def email = EmailFormatter.emailForUsername(username)
 
         def request = requestFactory.registerUser(username, password, displayName, email, clientName)
         def response = post(request)

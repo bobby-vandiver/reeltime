@@ -16,7 +16,7 @@ class AccountRegistrationCommandSpec extends Specification {
     void "username [#username] is valid [#valid] -- inherited from User domain class"() {
         given:
         def command = new AccountRegistrationCommand(username: username)
-        command.userService = mockUserService(username, false)
+        command.userService = mockUserServiceForUserExists(username, false)
 
         expect:
         command.validate(['username']) == valid
@@ -48,13 +48,37 @@ class AccountRegistrationCommandSpec extends Specification {
 
         and:
         def command = new AccountRegistrationCommand(username: 'foo')
-        command.userService = mockUserService('foo', true)
+        command.userService = mockUserServiceForUserExists('foo', true)
 
         expect:
         !command.validate(['username'])
 
         and:
         command.errors.getFieldError('username').code == 'unavailable'
+    }
+
+    @Unroll
+    void "email must be available -- email in use [#emailInUse] is valid [#valid]"() {
+        given:
+        def email = 'foo@test.com'
+
+        def existingUser = new User(username: 'foo', password: 'bar', email: email).save(validate: false)
+        assert existingUser.id
+
+        and:
+        def command = new AccountRegistrationCommand(email: email)
+        command.userService = mockUserServiceForEmailInUse(email, emailInUse)
+
+        expect:
+        command.validate(['email']) == valid
+
+        and:
+        command.errors.getFieldError('email')?.code == code
+
+        where:
+        emailInUse  |   valid   |   code
+        true        |   false   |   'unavailable'
+        false       |   true    |   null
     }
 
     @Unroll
@@ -135,6 +159,7 @@ class AccountRegistrationCommandSpec extends Specification {
     void "email [#email] is valid [#valid]"() {
         given:
         def command = new AccountRegistrationCommand(email: email)
+        command.userService = mockUserServiceForEmailInUse(email, false)
 
         expect:
         command.validate(['email']) == valid
@@ -173,9 +198,16 @@ class AccountRegistrationCommandSpec extends Specification {
         null        |   false   |   'nullable'
     }
 
-    private UserService mockUserService(String username, boolean exists) {
+    private UserService mockUserServiceForUserExists(String username, boolean exists) {
         def userService = Mock(UserService) {
             userExists(username) >> exists
+        }
+        return userService
+    }
+
+    private UserService mockUserServiceForEmailInUse(String email, boolean inUse) {
+        def userService = Mock(UserService) {
+            emailInUse(email) >> inUse
         }
         return userService
     }

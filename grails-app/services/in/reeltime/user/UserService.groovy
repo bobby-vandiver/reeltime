@@ -12,6 +12,10 @@ class UserService {
         User.findByUsername(username) != null
     }
 
+    boolean emailInUse(String email) {
+        User.findByEmail(email) != null
+    }
+
     List<User> listUsers(int page) {
         int offset = (page - 1) * maxUsersPerPage
         User.list(max: maxUsersPerPage, offset: offset, sort: 'username')

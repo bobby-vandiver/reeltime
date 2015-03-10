@@ -2,6 +2,7 @@ package in.reeltime.account
 
 import helper.oauth2.AccessTokenRequest
 import helper.rest.RestRequest
+import helper.test.EmailFormatter
 import in.reeltime.FunctionalSpec
 import spock.lang.Unroll
 
@@ -87,6 +88,27 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         response.status == 400
         response.json.errors.size() == 1
         response.json.errors[0] == '[username] is not available'
+    }
+
+    void "email is not available"() {
+        given:
+        def name = 'someone'
+        registerUser(name)
+
+        and:
+        def request = createRegisterRequest {
+            email = EmailFormatter.emailForUsername(name)
+            username = 'anyone'
+            password = 'password'
+            display_name = 'display'
+            client_name = 'client'
+        }
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertErrorMessageInResponse(response, 400, '[email] is not available')
     }
 
     @Unroll

@@ -52,6 +52,19 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         !userService.userExists('newUser')
     }
 
+    void "email in use"() {
+        given:
+        UserFactory.createUser('someone', 'secret', 'display', 'someone@test.com')
+
+        expect:
+        userService.emailInUse('someone@test.com')
+    }
+
+    void "email not in use"() {
+        expect:
+        !userService.emailInUse('unknown@test.com')
+    }
+
     void "create new user"() {
         given:
         def email = 'foo@test.com'
