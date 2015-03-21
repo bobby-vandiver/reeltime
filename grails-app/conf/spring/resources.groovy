@@ -1,6 +1,5 @@
 import grails.util.Environment
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler
-import org.springframework.security.web.savedrequest.NullRequestCache
 import in.reeltime.common.CustomMarshallerRegistrar
 import in.reeltime.mail.EmailManager
 
@@ -10,11 +9,6 @@ beans = {
     authenticationEntryPoint { it.parent = ref('oauth2AuthenticationEntryPoint') }
     accessDeniedHandler(OAuth2AccessDeniedHandler)
     
-    // Ensure a session isn't created by Spring Security
-    // This is a temporary fix until the permanent fix is added to the
-    // OAuth2 provider plugin and a new version is release
-    requestCache(NullRequestCache)
-     
     customMarshallerRegistrar(CustomMarshallerRegistrar)
 
     emailManager(EmailManager) {
