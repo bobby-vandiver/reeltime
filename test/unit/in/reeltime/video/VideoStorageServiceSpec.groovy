@@ -11,7 +11,7 @@ class VideoStorageServiceSpec extends Specification {
     PathGenerationService pathGenerationService
     StorageService storageService
 
-    String inputBase = 'master-videos'
+    String inputBase
 
     void setup() {
         inputBase = 'master-videos'
