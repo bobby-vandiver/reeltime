@@ -91,7 +91,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         given:
         def request = createUploadRequest(videosWriteToken) {
             reel = 'Uncategorized'
-            video = new File('test/files/small.mp4')
+            video = new File('test/files/videos/small.mp4')
         }
 
         when:
@@ -105,7 +105,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         given:
         def request = createUploadRequest(videosWriteToken) {
             title = 'no-reel'
-            video = new File('test/files/small.mp4')
+            video = new File('test/files/videos/small.mp4')
         }
 
         when:
@@ -120,7 +120,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def request = createUploadRequest(videosWriteToken) {
             reel = 'unknown-reel'
             title = 'unknown reel test'
-            video = new File('test/files/small.mp4')
+            video = new File('test/files/videos/small.mp4')
         }
 
         when:
@@ -135,7 +135,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def request = createUploadRequest(videosWriteToken) {
             reel = 'Uncategorized'
             title = 'video-is-only-aac'
-            video = new File('test/files/sample_mpeg4.mp4')
+            video = new File('test/files/videos/sample_mpeg4.mp4')
         }
 
         when:
@@ -153,7 +153,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def request = createUploadRequest(videosWriteToken) {
             reel = 'Uncategorized'
             title = 'video-has-no-valid-streams'
-            video = new File('test/files/empty')
+            video = new File('test/files/videos/empty')
         }
 
         when:
@@ -168,7 +168,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def request = createUploadRequest(videosWriteToken) {
             reel = 'Uncategorized'
             title = 'video-exceeds-max-length'
-            video = new File('test/files/spidey.mp4')
+            video = new File('test/files/videos/spidey.mp4')
         }
 
         when:

@@ -170,7 +170,7 @@ class ReelTimeClient {
     }
 
     Long uploadVideoToReel(String token, String reel, String title) {
-        def video = new File('test/files/small.mp4')
+        def video = new File('test/files/videos/small.mp4')
 
         def request = requestFactory.uploadVideo(token, title, reel, video)
         def response = post(request)

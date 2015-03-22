@@ -23,7 +23,7 @@ class VideoCreationServiceIntegrationSpec extends IntegrationSpec {
         given:
         def reelName = reel.name
         def title = 'fun times'
-        def videoStream = new File('test/files/small.mp4').newInputStream()
+        def videoStream = new File('test/files/videos/small.mp4').newInputStream()
 
         and:
         def command = new VideoCreationCommand(creator: creator, title: title, reel: reelName, videoStream: videoStream)

@@ -124,7 +124,7 @@ class SegmentControllerSpec extends Specification {
         params.segment_id = segment1.segmentId
 
         and:
-        def data = new File('test/files/sample.ts')
+        def data = new File('test/files/videos/sample.ts')
         def segmentStream = data.newInputStream()
 
         and:

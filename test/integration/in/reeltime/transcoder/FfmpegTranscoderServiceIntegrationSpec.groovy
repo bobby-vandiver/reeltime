@@ -23,7 +23,7 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
         def video = new Video(creator: creator, title: 'change peter parker', masterPath:  masterPath).save()
 
         and:
-        def videoFilePath = 'test/files/spidey.mp4'
+        def videoFilePath = 'test/files/videos/spidey.mp4'
         storeTestVideo(masterPath, videoFilePath)
 
         and:

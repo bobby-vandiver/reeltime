@@ -21,6 +21,6 @@ class FfprobeServiceIntegrationSpec extends IntegrationSpec {
 
         where:
         codec   |   duration        |   path
-        'h264'  |   '147.188856'    |   'test/files/spidey.mp4'
+        'h264'  |   '147.188856'    |   'test/files/videos/spidey.mp4'
     }
 }
