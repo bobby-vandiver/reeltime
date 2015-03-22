@@ -16,6 +16,60 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
         randomNumberGenerator = new Random(0)
     }
 
+    void "attempt to remove unknown access token"() {
+        when:
+        tokenRemovalService.removeAccessToken('unknown')
+
+        then:
+        notThrown(Exception)
+    }
+
+    void "remove access token with no refresh token"() {
+        given:
+        def username = 'user'
+        def clientId = 'client'
+
+        and:
+        def accessToken = createAccessToken(username, clientId)
+
+        and:
+        def tokenValue = accessToken.value
+        assert AccessToken.findByValue(tokenValue) != null
+
+        when:
+        tokenRemovalService.removeAccessToken(tokenValue)
+
+        then:
+        AccessToken.findByValue(tokenValue) == null
+    }
+
+    void "remove access token and associated refresh token"() {
+        given:
+        def username = 'user'
+        def clientId = 'client'
+
+        and:
+        def refreshToken = createRefreshToken()
+
+        and:
+        def refreshTokenValue = refreshToken.value
+        assert RefreshToken.findByValue(refreshTokenValue) != null
+
+        and:
+        def accessToken = createAccessToken(username, clientId, refreshTokenValue)
+
+        and:
+        def accessTokenValue = accessToken.value
+        assert AccessToken.findByValue(accessTokenValue) != null
+
+        when:
+        tokenRemovalService.removeAccessToken(accessTokenValue)
+
+        then:
+        AccessToken.findByValue(accessTokenValue) == null
+        RefreshToken.findByValue(refreshTokenValue) == null
+    }
+
     @Unroll
     void "remove all tokens associated with the specified user - [#clientCount] clients, [#accessTokenCount] access tokens and [#refreshTokenCount] refresh tokens"() {
         given:

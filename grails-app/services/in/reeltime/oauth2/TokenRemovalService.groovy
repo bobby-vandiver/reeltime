@@ -4,6 +4,22 @@ import in.reeltime.user.User
 
 class TokenRemovalService {
 
+    void removeAccessToken(String token) {
+        def accessToken = AccessToken.findByValue(token)
+
+        if(accessToken) {
+            def refreshToken = RefreshToken.findByValue(accessToken.refreshToken)
+
+            if(refreshToken) {
+                log.info "Removing refresh token [${refreshToken.value}]"
+                refreshToken.delete()
+            }
+
+            log.info "Removing access token [${accessToken.value}]"
+            accessToken.delete()
+        }
+    }
+
     void removeAllTokensForUser(User user) {
         def clientIds = collectClientIdsForUser(user)
         removeAllTokens(user, clientIds)
