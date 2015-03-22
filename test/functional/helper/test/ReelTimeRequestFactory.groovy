@@ -87,6 +87,11 @@ class ReelTimeRequestFactory {
         })
     }
 
+    RestRequest revokeToken(String token, String tokenToRevoke) {
+        def url = urlFactory.getTokenRevocationUrl(tokenToRevoke)
+        new RestRequest(url: url, token: token)
+    }
+
     RestRequest newsfeed(String token, pageNumber) {
         paginatedListRequest(token, pageNumber, urlFactory.newsfeedUrl)
     }

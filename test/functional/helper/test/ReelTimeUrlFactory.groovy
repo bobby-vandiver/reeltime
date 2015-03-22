@@ -100,6 +100,10 @@ public class ReelTimeUrlFactory {
         getUrlForApiResource("playlists/$videoId/$playlistId/$segmentId")
     }
 
+    String getTokenRevocationUrl(token) {
+        getUrlForApiResource("tokens/$token")
+    }
+
     String getListVideosUrl() {
         getVideosUrl()
     }
