@@ -1,6 +1,8 @@
-package in.reeltime.storage
+package in.reeltime.playlist
 
 import grails.test.mixin.TestFor
+import in.reeltime.storage.PathGenerationService
+import in.reeltime.storage.StorageService
 import spock.lang.Specification
 
 @TestFor(PlaylistAndSegmentStorageService)
@@ -9,6 +11,7 @@ class PlaylistAndSegmentStorageServiceSpec extends Specification {
     String path
     String outputBase
 
+    PathGenerationService pathGenerationService
     StorageService storageService
 
     void setup() {
@@ -17,8 +20,19 @@ class PlaylistAndSegmentStorageServiceSpec extends Specification {
         outputBase = 'playlist-and-segments'
         service.playlistBase = outputBase
 
+        pathGenerationService = Mock(PathGenerationService)
+        service.pathGenerationService = pathGenerationService
+
         storageService = Mock(StorageService)
         service.storageService = storageService
+    }
+
+    void "generate unique playlist path"() {
+        when:
+        service.uniquePlaylistPath
+
+        then:
+        1 * pathGenerationService.generateRandomUniquePath(outputBase)
     }
 
     void "load storage output base path from config and load stream"() {

@@ -11,7 +11,7 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
 
     def grailsApplication
 
-    def pathGenerationService
+    def playlistAndSegmentStorageService
     def videoStorageService
 
     @IgnoreIf({!System.getProperty('FFMPEG') && !System.getenv('FFMPEG')})
@@ -19,7 +19,7 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
         given:
         def creator = UserFactory.createTestUser()
 
-        def masterPath = pathGenerationService.uniqueVideoPath
+        def masterPath = videoStorageService.uniqueVideoPath
         def video = new Video(creator: creator, title: 'change peter parker', masterPath:  masterPath).save()
 
         and:
@@ -27,7 +27,7 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
         storeTestVideo(masterPath, videoFilePath)
 
         and:
-        def outputPath = pathGenerationService.uniquePlaylistPath
+        def outputPath = playlistAndSegmentStorageService.uniquePlaylistPath
 
         when:
         ffmpegTranscoderService.transcode(video, outputPath)

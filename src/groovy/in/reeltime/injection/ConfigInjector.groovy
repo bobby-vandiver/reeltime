@@ -55,11 +55,6 @@ class ConfigInjector {
             playlistBase = config.reeltime.storage.playlists
         }
 
-        ctx.pathGenerationService.with {
-            videoBase = config.reeltime.storage.videos
-            playlistBase = config.reeltime.storage.playlists
-        }
-
         ctx.accountConfirmationService.with {
             fromAddress = config.reeltime.accountManagement.fromAddress
             confirmationCodeValidityLengthInDays = config.reeltime.accountManagement.confirmationCodeValidityLengthInDays

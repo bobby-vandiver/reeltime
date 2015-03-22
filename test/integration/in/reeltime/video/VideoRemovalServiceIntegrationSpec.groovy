@@ -15,7 +15,9 @@ import test.helper.UserFactory
 class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
 
     def videoRemovalService
-    def pathGenerationService
+
+    def videoStorageService
+    def playlistAndSegmentStorageService
 
     User creator
     Reel reel
@@ -27,8 +29,8 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
         creator = UserFactory.createTestUser()
         reel = creator.reels[0]
 
-        videoBase = pathGenerationService.videoBase
-        playlistBase = pathGenerationService.playlistBase
+        videoBase = videoStorageService.videoBase
+        playlistBase = playlistAndSegmentStorageService.playlistBase
     }
 
     @Unroll

@@ -13,7 +13,7 @@ class ElasticTranscoderService implements TranscoderService {
 
     def awsService
     def transcoderJobService
-    def pathGenerationService
+    def playlistAndSegmentStorageService
 
     def pipelineName
 
@@ -69,13 +69,13 @@ class ElasticTranscoderService implements TranscoderService {
     }
 
     private def createJobOutput(String presetId) {
-        def key = pathGenerationService.uniquePlaylistPath
+        def key = playlistAndSegmentStorageService.uniquePlaylistPath
         log.debug("Job output settings -- key [$key] -- presetId [$presetId] -- duration [$segmentDuration]")
         new CreateJobOutput(key: key, presetId: presetId, segmentDuration: segmentDuration)
     }
 
     private def createJobPlaylist(Collection<String> outputKeys) {
-        def name = pathGenerationService.uniquePlaylistPath
+        def name = playlistAndSegmentStorageService.uniquePlaylistPath
         log.debug("Job playlist settings -- name [$name] -- format [$playlistFormat] -- outputKeys [$outputKeys]")
         new CreateJobPlaylist(format: playlistFormat, name: name, outputKeys: outputKeys)
     }

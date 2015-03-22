@@ -8,7 +8,9 @@ class VideoRemovalService {
     def reelVideoManagementService
 
     def resourceRemovalService
-    def pathGenerationService
+
+    def videoStorageService
+    def playlistAndSegmentStorageService
 
     def transcoderJobService
     def userService
@@ -25,10 +27,10 @@ class VideoRemovalService {
         reelVideoManagementService.removeVideoFromAllReels(video)
 
         log.info "Scheduling removal of master video for video [$videoId]"
-        def masterVideoBase = pathGenerationService.videoBase
+        def masterVideoBase = videoStorageService.videoBase
         resourceRemovalService.scheduleForRemoval(masterVideoBase, video.masterPath)
 
-        def playlistAndSegmentBase = pathGenerationService.playlistBase
+        def playlistAndSegmentBase = playlistAndSegmentStorageService.playlistBase
 
         log.info "Scheduling removal of playlists for video [$videoId]"
         video.playlistUris.each { playlistUri ->

@@ -4,7 +4,7 @@ import in.reeltime.metadata.StreamMetadata
 
 class VideoCreationService {
 
-    def pathGenerationService
+    def playlistAndSegmentStorageService
     def videoStorageService
 
     def transcoderService
@@ -125,7 +125,7 @@ class VideoCreationService {
         def title = command.title
         def videoStream = command.videoStream
 
-        def masterPath = pathGenerationService.uniqueVideoPath
+        def masterPath = videoStorageService.uniqueVideoPath
         videoStorageService.store(videoStream, masterPath)
 
         def reel = creator.getReel(command.reel)
@@ -133,7 +133,7 @@ class VideoCreationService {
         reelVideoManagementService.addVideoToReel(reel, video)
 
         log.info("Created video with id [${video.id}] for user [${creator.username}]")
-        def outputPath = pathGenerationService.uniquePlaylistPath
+        def outputPath = playlistAndSegmentStorageService.uniquePlaylistPath
         transcoderService.transcode(video, outputPath)
 
         videoService.storeVideo(video)

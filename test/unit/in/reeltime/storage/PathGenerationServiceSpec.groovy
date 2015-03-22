@@ -9,49 +9,32 @@ class PathGenerationServiceSpec extends Specification {
 
     private static final UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
 
-    @Unroll
-    void "unique file generated the first time for [#configName]"() {
-        given:
-        service."${propertyName}" = base
+    StorageService storageService
 
-        and:
-        service.storageService = Mock(StorageService)
-
-        when:
-        def name = service."$methodName"()
-
-        then:
-        name.matches(UUID_REGEX)
-
-        and:
-        1 * service.storageService.exists(base, _) >> false
-
-        where:
-        propertyName    |   base            |   methodName
-        'videoBase'     |   'videos'        |   'getUniqueVideoPath'
-        'playlistBase'  |   'playlists'     |   'getUniquePlaylistPath'
+    void setup() {
+        storageService = Mock(StorageService)
+        service.storageService = storageService
     }
 
-    @Unroll
-    void "unique file generated after the second time for [#configName]"() {
-        given:
-        service."${propertyName}" = base
-
-        and:
-        service.storageService = Mock(StorageService)
-
+    void "unique file generated the first time"() {
         when:
-        def name = service."$methodName"()
+        def name = service.generateRandomUniquePath('base')
 
         then:
         name.matches(UUID_REGEX)
 
         and:
-        2 * service.storageService.exists(base, _) >>> [true, false]
+        1 * storageService.exists('base', _) >> false
+    }
 
-        where:
-        propertyName    |   base            |   methodName
-        'videoBase'     |   'videos'        |   'getUniqueVideoPath'
-        'playlistBase'  |   'playlists'     |   'getUniquePlaylistPath'
+    void "unique file generated after the second time"() {
+        when:
+        def name = service.generateRandomUniquePath('base')
+
+        then:
+        name.matches(UUID_REGEX)
+
+        and:
+        2 * storageService.exists('base', _) >>> [true, false]
     }
 }

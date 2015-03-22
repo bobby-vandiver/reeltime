@@ -1,9 +1,15 @@
-package in.reeltime.storage
+package in.reeltime.playlist
 
 class PlaylistAndSegmentStorageService {
 
+    def pathGenerationService
     def storageService
+
     def playlistBase
+
+    String getUniquePlaylistPath() {
+        pathGenerationService.generateRandomUniquePath(playlistBase)
+    }
 
     InputStream load(String path) {
         storageService.load(playlistBase, path)

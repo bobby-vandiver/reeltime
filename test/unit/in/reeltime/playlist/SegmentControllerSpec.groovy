@@ -2,7 +2,6 @@ package in.reeltime.playlist
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import in.reeltime.storage.PlaylistAndSegmentStorageService
 import in.reeltime.video.Video
 import spock.lang.Specification
 

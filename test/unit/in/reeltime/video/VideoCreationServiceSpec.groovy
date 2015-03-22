@@ -7,8 +7,7 @@ import in.reeltime.metadata.StreamMetadataService
 import in.reeltime.playlist.PlaylistService
 import in.reeltime.reel.Reel
 import in.reeltime.reel.ReelVideoManagementService
-import in.reeltime.storage.VideoStorageService
-import in.reeltime.storage.PathGenerationService
+import in.reeltime.playlist.PlaylistAndSegmentStorageService
 import in.reeltime.transcoder.TranscoderJob
 import in.reeltime.transcoder.TranscoderJobService
 import in.reeltime.transcoder.TranscoderService
@@ -32,7 +31,7 @@ class VideoCreationServiceSpec extends Specification {
         }
 
         service.videoStorageService = Mock(VideoStorageService)
-        service.pathGenerationService = Mock(PathGenerationService)
+        service.playlistAndSegmentStorageService = Mock(PlaylistAndSegmentStorageService)
         service.playlistService = Mock(PlaylistService)
         service.transcoderService = Mock(TranscoderService)
         service.transcoderJobService = Mock(TranscoderJobService)
@@ -75,11 +74,11 @@ class VideoCreationServiceSpec extends Specification {
         def video = service.createVideo(command)
 
         then:
-        1 * service.pathGenerationService.getUniqueVideoPath() >> masterPath
+        1 * service.videoStorageService.getUniqueVideoPath() >> masterPath
         1 * service.videoStorageService.store(videoStream, masterPath)
 
         and:
-        1 * service.pathGenerationService.getUniquePlaylistPath() >> outputPath
+        1 * service.playlistAndSegmentStorageService.getUniquePlaylistPath() >> outputPath
         1 * service.transcoderService.transcode(_ as Video, outputPath) >> { args -> validateVideoArg(args[0])}
 
         and:

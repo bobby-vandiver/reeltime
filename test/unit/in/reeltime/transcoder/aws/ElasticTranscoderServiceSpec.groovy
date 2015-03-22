@@ -5,7 +5,7 @@ import com.amazonaws.services.elastictranscoder.model.*
 import grails.test.mixin.TestFor
 import in.reeltime.aws.AwsService
 import in.reeltime.exceptions.TranscoderException
-import in.reeltime.storage.PathGenerationService
+import in.reeltime.playlist.PlaylistAndSegmentStorageService
 import in.reeltime.transcoder.TranscoderJobService
 import in.reeltime.transcoder.TranscoderService
 import in.reeltime.video.Video
@@ -40,7 +40,7 @@ class ElasticTranscoderServiceSpec extends Specification {
         service.transcoderJobService = Mock(TranscoderJobService)
         service.awsService = Mock(AwsService)
 
-        service.pathGenerationService = Stub(PathGenerationService) {
+        service.playlistAndSegmentStorageService = Stub(PlaylistAndSegmentStorageService) {
             getUniquePlaylistPath() >> UUID.randomUUID()
         }
     }
