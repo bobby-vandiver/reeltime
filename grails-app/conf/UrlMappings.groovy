@@ -75,6 +75,10 @@ class UrlMappings {
             action = [GET: 'getSegment']
         }
 
+        "/api/tokens/$access_token" (controller: 'token') {
+            action = [DELETE: 'revokeAccessToken']
+        }
+
         "/api/reels" (controller: 'reel') {
             action = [GET: 'listReels', POST: 'addReel']
         }

@@ -18,13 +18,14 @@ import in.reeltime.reel.AudienceController
 import in.reeltime.activity.NewsfeedController
 import in.reeltime.user.UserController
 import in.reeltime.user.UserFollowingController
+import in.reeltime.oauth2.TokenController
 import spock.lang.Unroll
 
 @TestMixin(UrlMappingsUnitTestMixin)
 @Mock([VideoController, PlaylistController, SegmentController, ReelController, AudienceController,
         AccountController, AccountConfirmationController, AccountManagementController,
         ClientManagementController, ResetPasswordController, NewsfeedController,
-        UserController, UserFollowingController,
+        UserController, UserFollowingController, TokenController,
         DevelopmentOnlyAccountController, NotificationController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
 
@@ -206,7 +207,16 @@ class UrlMappingsSpec extends Specification {
         }
     }
 
-    // TODO: Consolidate the above simple tests into this one
+    void "test token revocation mapping"() {
+        given:
+        webRequest.currentRequest.method = 'DELETE'
+
+        expect:
+        assertForwardUrlMapping('/api/tokens/unique', controller: 'token', action: 'revokeAccessToken') {
+            access_token = 'unique'
+        }
+    }
+
     @Unroll
     void "http method [#httpMethod] on [#url] url maps to controller [#controller] action [#action]"() {
         given:
