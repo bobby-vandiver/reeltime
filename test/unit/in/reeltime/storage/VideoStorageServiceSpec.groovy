@@ -3,13 +3,13 @@ package in.reeltime.storage
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
-@TestFor(InputStorageService)
-class InputStorageServiceSpec extends Specification {
+@TestFor(VideoStorageService)
+class VideoStorageServiceSpec extends Specification {
 
     void "load storage input base path from config and store stream"() {
         given:
         def inputBase = 'master-videos'
-        service.inputBase = inputBase
+        service.videoBase = inputBase
 
         and:
         service.storageService = Mock(StorageService)

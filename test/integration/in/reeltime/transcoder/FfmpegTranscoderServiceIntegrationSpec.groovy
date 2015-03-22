@@ -12,14 +12,14 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
     def grailsApplication
 
     def pathGenerationService
-    def inputStorageService
+    def videoStorageService
 
     @IgnoreIf({!System.getProperty('FFMPEG') && !System.getenv('FFMPEG')})
     void "transcode video file using ffmpeg"() {
         given:
         def creator = UserFactory.createTestUser()
 
-        def masterPath = pathGenerationService.uniqueInputPath
+        def masterPath = pathGenerationService.uniqueVideoPath
         def video = new Video(creator: creator, title: 'change peter parker', masterPath:  masterPath).save()
 
         and:
@@ -27,7 +27,7 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
         storeTestVideo(masterPath, videoFilePath)
 
         and:
-        def outputPath = pathGenerationService.uniqueOutputPath
+        def outputPath = pathGenerationService.uniquePlaylistPath
 
         when:
         ffmpegTranscoderService.transcode(video, outputPath)
@@ -49,12 +49,12 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
 
     private void storeTestVideo(String storagePath, String filePath) {
         new File(filePath).withInputStream { videoStream ->
-            inputStorageService.store(videoStream, storagePath)
+            videoStorageService.store(videoStream, storagePath)
         }
     }
 
     private void assertDirectoryContainsPlaylistAndSegments(String path) {
-        def output = grailsApplication.config.reeltime.storage.output
+        def output = grailsApplication.config.reeltime.storage.playlists
         def fullPath = "$output${File.separator}$path"
 
         def directory = new File(fullPath)

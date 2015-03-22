@@ -5,7 +5,7 @@ import in.reeltime.hls.playlist.parser.MediaPlaylistParser
 
 class PlaylistParserService {
 
-    def outputStorageService
+    def playlistAndSegmentStorageService
 
     def maxRetries
     def intervalInMillis
@@ -28,19 +28,19 @@ class PlaylistParserService {
         waitUntilPlaylistIsAvailable(path)
 
         log.debug("Parsing playlist at path [$path]")
-        def playlistStream = outputStorageService.load(path) as InputStream
+        def playlistStream = playlistAndSegmentStorageService.load(path) as InputStream
         playlistStream.withReader { reader -> parser(reader) }
     }
 
     private void waitUntilPlaylistIsAvailable(String path) {
         int attempt = 0
-        while(!outputStorageService.exists(path) && attempt < maxRetries) {
+        while(!playlistAndSegmentStorageService.exists(path) && attempt < maxRetries) {
             log.debug("Sleeping ${intervalInMillis} milliseconds until [$path] is available")
             sleep(intervalInMillis)
             attempt++
         }
 
-        if(!outputStorageService.exists(path)) {
+        if(!playlistAndSegmentStorageService.exists(path)) {
             throw new IllegalArgumentException("[$path] does not exist!")
         }
     }

@@ -43,21 +43,21 @@ class ConfigInjector {
         }
 
         ctx.localFileSystemService.with {
-            inputBasePath = config.reeltime.storage.input
-            outputBasePath = config.reeltime.storage.output
+            inputBasePath = config.reeltime.storage.videos
+            outputBasePath = config.reeltime.storage.playlists
         }
 
-        ctx.inputStorageService.with {
-            inputBase = config.reeltime.storage.input
+        ctx.videoStorageService.with {
+            videoBase = config.reeltime.storage.videos
         }
 
-        ctx.outputStorageService.with {
-            outputBase = config.reeltime.storage.output
+        ctx.playlistAndSegmentStorageService.with {
+            playlistBase = config.reeltime.storage.playlists
         }
 
         ctx.pathGenerationService.with {
-            inputBase = config.reeltime.storage.input
-            outputBase = config.reeltime.storage.output
+            videoBase = config.reeltime.storage.videos
+            playlistBase = config.reeltime.storage.playlists
         }
 
         ctx.accountConfirmationService.with {

@@ -1,11 +1,11 @@
 package in.reeltime.storage
 
-class InputStorageService {
+class VideoStorageService {
 
     def storageService
-    def inputBase
+    def videoBase
 
     def store(InputStream inputStream, String path) {
-        storageService.store(inputStream, inputBase, path)
+        storageService.store(inputStream, videoBase, path)
     }
 }

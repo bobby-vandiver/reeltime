@@ -3,8 +3,8 @@ package in.reeltime.storage
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
-@TestFor(OutputStorageService)
-class OutputStorageServiceSpec extends Specification {
+@TestFor(PlaylistAndSegmentStorageService)
+class PlaylistAndSegmentStorageServiceSpec extends Specification {
 
     String path
     String outputBase
@@ -15,7 +15,7 @@ class OutputStorageServiceSpec extends Specification {
         path = 'some-file'
 
         outputBase = 'playlist-and-segments'
-        service.outputBase = outputBase
+        service.playlistBase = outputBase
 
         storageService = Mock(StorageService)
         service.storageService = storageService

@@ -3,17 +3,17 @@ package in.reeltime.playlist
 import grails.test.mixin.TestFor
 import in.reeltime.hls.playlist.MediaPlaylist
 import in.reeltime.hls.playlist.VariantPlaylist
-import in.reeltime.storage.OutputStorageService
+import in.reeltime.storage.PlaylistAndSegmentStorageService
 import spock.lang.Specification
 
 @TestFor(PlaylistParserService)
 class PlaylistParserServiceSpec extends Specification {
 
-    OutputStorageService outputStorageService
+    PlaylistAndSegmentStorageService playlistAndSegmentStorageService
 
     void setup() {
-        outputStorageService = Mock(OutputStorageService)
-        service.outputStorageService = outputStorageService
+        playlistAndSegmentStorageService = Mock(PlaylistAndSegmentStorageService)
+        service.playlistAndSegmentStorageService = playlistAndSegmentStorageService
 
         service.maxRetries = 5
         service.intervalInMillis = 500
@@ -36,8 +36,8 @@ class PlaylistParserServiceSpec extends Specification {
         def variantPlaylist = service.parseVariantPlaylist(path) as VariantPlaylist
 
         then:
-        1 * outputStorageService.load(path) >> playlistStream
-        3 * outputStorageService.exists(path) >>> [false, true]
+        1 * playlistAndSegmentStorageService.load(path) >> playlistStream
+        3 * playlistAndSegmentStorageService.exists(path) >>> [false, true]
 
         and:
         variantPlaylist.streams.size() == 2
@@ -99,8 +99,8 @@ class PlaylistParserServiceSpec extends Specification {
         def mediaPlaylist = service.parseMediaPlaylist(path) as MediaPlaylist
 
         then:
-        1 * outputStorageService.load(path) >> playlistStream
-        3 * outputStorageService.exists(path) >>> [false, true]
+        1 * playlistAndSegmentStorageService.load(path) >> playlistStream
+        3 * playlistAndSegmentStorageService.exists(path) >>> [false, true]
 
         and:
         mediaPlaylist.version == 3
@@ -162,6 +162,6 @@ class PlaylistParserServiceSpec extends Specification {
         e.message == '[somewhere] does not exist!'
 
         and:
-        outputStorageService.exists('somewhere') >> false
+        playlistAndSegmentStorageService.exists('somewhere') >> false
     }
 }

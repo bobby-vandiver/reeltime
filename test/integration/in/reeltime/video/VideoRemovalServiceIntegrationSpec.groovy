@@ -20,15 +20,15 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
     User creator
     Reel reel
 
-    String inputBase
-    String outputBase
+    String videoBase
+    String playlistBase
 
     void setup() {
         creator = UserFactory.createTestUser()
         reel = creator.reels[0]
 
-        inputBase = pathGenerationService.inputBase
-        outputBase = pathGenerationService.outputBase
+        videoBase = pathGenerationService.videoBase
+        playlistBase = pathGenerationService.playlistBase
     }
 
     @Unroll
@@ -93,13 +93,13 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
         TranscoderJob.findById(transcoderJobId) == null
 
         and:
-        ResourceRemovalTarget.findByBaseAndRelative(inputBase, 'something.mp4') != null
+        ResourceRemovalTarget.findByBaseAndRelative(videoBase, 'something.mp4') != null
 
-        ResourceRemovalTarget.findByBaseAndRelative(outputBase, 'seg1.ts') != null
-        ResourceRemovalTarget.findByBaseAndRelative(outputBase, 'seg2.ts') != null
+        ResourceRemovalTarget.findByBaseAndRelative(playlistBase, 'seg1.ts') != null
+        ResourceRemovalTarget.findByBaseAndRelative(playlistBase, 'seg2.ts') != null
 
-        ResourceRemovalTarget.findByBaseAndRelative(outputBase, 'variant.m3u8') != null
-        ResourceRemovalTarget.findByBaseAndRelative(outputBase, 'media.m3u8') != null
+        ResourceRemovalTarget.findByBaseAndRelative(playlistBase, 'variant.m3u8') != null
+        ResourceRemovalTarget.findByBaseAndRelative(playlistBase, 'media.m3u8') != null
 
         where:
         _   |   removeById

@@ -2,7 +2,7 @@ package in.reeltime.playlist
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import in.reeltime.storage.OutputStorageService
+import in.reeltime.storage.PlaylistAndSegmentStorageService
 import in.reeltime.video.Video
 import spock.lang.Specification
 
@@ -84,13 +84,13 @@ class SegmentControllerSpec extends Specification {
         def segmentStream = new ByteArrayInputStream('media segment'.bytes)
 
         and:
-        controller.outputStorageService = Mock(OutputStorageService)
+        controller.playlistAndSegmentStorageService = Mock(PlaylistAndSegmentStorageService)
 
         when:
         controller.getSegment()
 
         then:
-        1 * controller.outputStorageService.load(segment.uri) >> segmentStream
+        1 * controller.playlistAndSegmentStorageService.load(segment.uri) >> segmentStream
 
         and:
         response.status == 200
@@ -128,13 +128,13 @@ class SegmentControllerSpec extends Specification {
         def segmentStream = data.newInputStream()
 
         and:
-        controller.outputStorageService = Mock(OutputStorageService)
+        controller.playlistAndSegmentStorageService = Mock(PlaylistAndSegmentStorageService)
 
         when:
         controller.getSegment()
 
         then:
-        1 * controller.outputStorageService.load(segment1.uri) >> segmentStream
+        1 * controller.playlistAndSegmentStorageService.load(segment1.uri) >> segmentStream
 
         and:
         response.status == 200

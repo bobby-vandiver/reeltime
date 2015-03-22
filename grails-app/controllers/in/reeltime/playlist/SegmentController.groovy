@@ -9,7 +9,7 @@ import static javax.servlet.http.HttpServletResponse.*
 
 class SegmentController extends AbstractController {
 
-    def outputStorageService
+    def playlistAndSegmentStorageService
 
     static allowedMethods = [getSegment: 'GET']
 
@@ -29,7 +29,7 @@ class SegmentController extends AbstractController {
             def segment = Segment.findBySegmentIdAndPlaylist(segment_id, playlist)
 
             if (segment) {
-                def stream = outputStorageService.load(segment.uri) as InputStream
+                def stream = playlistAndSegmentStorageService.load(segment.uri) as InputStream
                 def content = stream.bytes
 
                 response.status = SC_OK

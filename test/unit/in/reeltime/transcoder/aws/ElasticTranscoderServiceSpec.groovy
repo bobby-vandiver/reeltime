@@ -41,7 +41,7 @@ class ElasticTranscoderServiceSpec extends Specification {
         service.awsService = Mock(AwsService)
 
         service.pathGenerationService = Stub(PathGenerationService) {
-            getUniqueOutputPath() >> UUID.randomUUID()
+            getUniquePlaylistPath() >> UUID.randomUUID()
         }
     }
 

@@ -27,9 +27,9 @@ class PathGenerationServiceSpec extends Specification {
         1 * service.storageService.exists(base, _) >> false
 
         where:
-        propertyName    |   base        |   methodName
-        'inputBase'     |   'inbox'     |   'getUniqueInputPath'
-        'outputBase'    |   'outbox'    |   'getUniqueOutputPath'
+        propertyName    |   base            |   methodName
+        'videoBase'     |   'videos'        |   'getUniqueVideoPath'
+        'playlistBase'  |   'playlists'     |   'getUniquePlaylistPath'
     }
 
     @Unroll
@@ -50,8 +50,8 @@ class PathGenerationServiceSpec extends Specification {
         2 * service.storageService.exists(base, _) >>> [true, false]
 
         where:
-        propertyName    |   base        |   methodName
-        'inputBase'     |   'inbox'     |   'getUniqueInputPath'
-        'outputBase'    |   'outbox'    |   'getUniqueOutputPath'
+        propertyName    |   base            |   methodName
+        'videoBase'     |   'videos'        |   'getUniqueVideoPath'
+        'playlistBase'  |   'playlists'     |   'getUniquePlaylistPath'
     }
 }

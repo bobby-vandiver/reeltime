@@ -146,10 +146,10 @@ reeltime {
     // S3 configuration
     storage {
         // The S3 bucket name where the master video files are stored
-        input = 'master-videos-production'
+        videos = 'master-videos-production'
 
         // The S3 bucket name where the video segments and playlist are stored
-        output = 'playlists-and-segments-production'
+        playlists = 'playlists-and-segments-production'
     }
 
     // Elastic Transcoder configuration
@@ -242,8 +242,8 @@ environments {
         reeltime {
 
             storage {
-                input = System.getProperty('java.io.tmpdir') + File.separator + 'master-videos'
-                output = System.getProperty('java.io.tmpdir') + File.separator + 'playlist-and-segments'
+                videos = System.getProperty('java.io.tmpdir') + File.separator + 'master-videos'
+                playlists = System.getProperty('java.io.tmpdir') + File.separator + 'playlist-and-segments'
             }
 
             transcoder {
@@ -260,8 +260,8 @@ environments {
         reeltime {
 
             storage {
-                input = System.getProperty('java.io.tmpdir') + File.separator + 'master-videos'
-                output = System.getProperty('java.io.tmpdir') + File.separator + 'playlist-and-segments'
+                videos = System.getProperty('java.io.tmpdir') + File.separator + 'master-videos'
+                playlists = System.getProperty('java.io.tmpdir') + File.separator + 'playlist-and-segments'
             }
 
             transcoder {
@@ -278,8 +278,8 @@ environments {
         reeltime {
 
             storage {
-                input = 'master-videos-acceptance'
-                output = 'playlists-and-segments-acceptance'
+                videos = 'master-videos-acceptance'
+                playlists = 'playlists-and-segments-acceptance'
             }
 
             transcoder {

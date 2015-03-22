@@ -69,13 +69,13 @@ class ElasticTranscoderService implements TranscoderService {
     }
 
     private def createJobOutput(String presetId) {
-        def key = pathGenerationService.uniqueOutputPath
+        def key = pathGenerationService.uniquePlaylistPath
         log.debug("Job output settings -- key [$key] -- presetId [$presetId] -- duration [$segmentDuration]")
         new CreateJobOutput(key: key, presetId: presetId, segmentDuration: segmentDuration)
     }
 
     private def createJobPlaylist(Collection<String> outputKeys) {
-        def name = pathGenerationService.uniqueOutputPath
+        def name = pathGenerationService.uniquePlaylistPath
         log.debug("Job playlist settings -- name [$name] -- format [$playlistFormat] -- outputKeys [$outputKeys]")
         new CreateJobPlaylist(format: playlistFormat, name: name, outputKeys: outputKeys)
     }

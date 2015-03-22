@@ -4,15 +4,15 @@ class PathGenerationService {
 
     def storageService
 
-    def inputBase
-    def outputBase
+    def videoBase
+    def playlistBase
 
-    String getUniqueInputPath() {
-        generateRandomUniquePath(inputBase)
+    String getUniqueVideoPath() {
+        generateRandomUniquePath(videoBase)
     }
 
-    String getUniqueOutputPath() {
-        generateRandomUniquePath(outputBase)
+    String getUniquePlaylistPath() {
+        generateRandomUniquePath(playlistBase)
     }
 
     private String generateRandomUniquePath(base) {

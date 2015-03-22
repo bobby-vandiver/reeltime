@@ -25,10 +25,10 @@ class VideoRemovalService {
         reelVideoManagementService.removeVideoFromAllReels(video)
 
         log.info "Scheduling removal of master video for video [$videoId]"
-        def masterVideoBase = pathGenerationService.inputBase
+        def masterVideoBase = pathGenerationService.videoBase
         resourceRemovalService.scheduleForRemoval(masterVideoBase, video.masterPath)
 
-        def playlistAndSegmentBase = pathGenerationService.outputBase
+        def playlistAndSegmentBase = pathGenerationService.playlistBase
 
         log.info "Scheduling removal of playlists for video [$videoId]"
         video.playlistUris.each { playlistUri ->
