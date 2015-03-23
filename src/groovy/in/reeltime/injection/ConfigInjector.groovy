@@ -42,6 +42,10 @@ class ConfigInjector {
             intervalInMillis = config.reeltime.playlistParser.intervalInMillis
         }
 
+        ctx.pathGenerationService.with {
+            maxRetries = config.reeltime.storage.pathGenerationMaxRetries
+        }
+
         ctx.localFileSystemService.with {
             inputBasePath = config.reeltime.storage.videos
             outputBasePath = config.reeltime.storage.playlists

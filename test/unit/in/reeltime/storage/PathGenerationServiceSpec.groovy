@@ -14,6 +14,7 @@ class PathGenerationServiceSpec extends Specification {
     void setup() {
         storageService = Mock(StorageService)
         service.storageService = storageService
+        service.maxRetries = 5
     }
 
     void "unique file generated the first time"() {
@@ -36,5 +37,17 @@ class PathGenerationServiceSpec extends Specification {
 
         and:
         2 * storageService.exists('base', _) >>> [true, false]
+    }
+
+    void "unable to generate random path"() {
+        when:
+        service.generateRandomUniquePath('unknown')
+
+        then:
+        def e = thrown(IllegalStateException)
+        e.message == 'Path generation for base [unknown] exceeded max retries'
+
+        and:
+        storageService.exists('unknown', _) >> true
     }
 }

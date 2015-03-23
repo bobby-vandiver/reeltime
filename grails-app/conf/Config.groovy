@@ -150,6 +150,9 @@ reeltime {
 
         // The S3 bucket name where the video segments and playlist are stored
         playlists = 'playlists-and-segments-production'
+
+        // Number of times to attempt to generate a unique path before giving up
+        pathGenerationMaxRetries = 5
     }
 
     // Elastic Transcoder configuration
