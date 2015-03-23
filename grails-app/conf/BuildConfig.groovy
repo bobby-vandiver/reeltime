@@ -45,9 +45,6 @@ grails.project.dependency.resolution = {
         // Repository for Spring Security RC plugin
         mavenRepo "http://repo.spring.io/milestone/"
 
-        // Repository for Searchable plugin
-        mavenRepo "http://repo.grails.org/grails/core"
-
         // Repository for disable optimization JAR
         // Source: https://github.com/renataogarcia/disableOptimizationsTransformation/issues/1
         mavenRepo "https://raw.github.com/thecleancoder/mavenrepo/master/"
