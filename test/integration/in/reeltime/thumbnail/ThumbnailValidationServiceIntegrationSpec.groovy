@@ -8,6 +8,11 @@ class ThumbnailValidationServiceIntegrationSpec extends IntegrationSpec {
 
     def thumbnailValidationService
 
+    void "null stream is invalid"() {
+        expect:
+        !thumbnailValidationService.validateThumbnailStream(null)
+    }
+
     @Unroll
     void "thumbnail [#filename] is valid [#valid]"() {
         given:

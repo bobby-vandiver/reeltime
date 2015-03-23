@@ -11,6 +11,7 @@ class VideoCreationCommand {
     String reel
     String title
 
+    InputStream thumbnailStream
     InputStream videoStream
 
     Boolean videoStreamSizeIsValid
@@ -23,9 +24,11 @@ class VideoCreationCommand {
 
     static constraints = {
         creator nullable: false
-        reel nullable: false, blank: false, validator: reelNameValidator
 
+        reel nullable: false, blank: false, validator: reelNameValidator
         title nullable: false, blank: false
+
+        thumbnailStream nullable: false
         videoStream nullable: false
 
         videoStreamSizeIsValid nullable: true, validator: videoStreamSizeIsValidValidator

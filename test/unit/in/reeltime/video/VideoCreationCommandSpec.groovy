@@ -91,6 +91,16 @@ class VideoCreationCommandSpec extends Specification {
         !command.validate(['creator'])
     }
 
+    void "thumbnail stream cannot be null"() {
+        def command = new VideoCreationCommand(thumbnailStream: null)
+
+        expect:
+        !command.validate(['thumbnailStream'])
+
+        and:
+        command.errors.getFieldError('thumbnailStream').code == 'nullable'
+    }
+
     @Unroll
     void "video stream size flag [#validSize] is valid [#valid]"() {
         given:

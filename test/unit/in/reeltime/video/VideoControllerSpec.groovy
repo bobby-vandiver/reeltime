@@ -72,9 +72,13 @@ class VideoControllerSpec extends AbstractControllerSpec {
 
     void "return 202 and video id after video has been uploaded with minimum params"() {
         given:
-        def videoData = 'foo'.bytes
+        def videoData = 'VIDEO'.bytes
         def videoParam = new GrailsMockMultipartFile('video', videoData)
         request.addFile(videoParam)
+
+        def thumbnailData = 'THUMBNAIL'.bytes
+        def thumbnailParam = new GrailsMockMultipartFile('thumbnail', thumbnailData)
+        request.addFile(thumbnailParam)
 
         def title = 'some title'
         params.title = title
@@ -84,12 +88,14 @@ class VideoControllerSpec extends AbstractControllerSpec {
             assert command.creator == currentUser
             assert command.title == title
             assert command.videoStream.bytes == videoData
+            assert command.thumbnailStream.bytes == thumbnailData
             return new Video(title: title).save(validate: false)
         }
 
         def allowCommand = { VideoCreationCommand command ->
             validateCommand(command)
             command.videoStream = new ByteArrayInputStream(videoData)
+            command.thumbnailStream = new ByteArrayInputStream(thumbnailData)
             return true
         }
 

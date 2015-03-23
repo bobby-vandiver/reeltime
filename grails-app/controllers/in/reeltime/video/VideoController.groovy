@@ -55,7 +55,8 @@ class VideoController extends AbstractController {
     private void bindAdditionalData(VideoCreationCommand command) {
         sanitizePrivateData(command)
         command.creator = authenticationService.currentUser
-        command.videoStream = getVideoStreamFromRequest()
+        command.videoStream = getInputStreamParamFromRequest('video')
+        command.thumbnailStream = getInputStreamParamFromRequest('thumbnail')
     }
 
     private void sanitizePrivateData(VideoCreationCommand command) {
@@ -65,9 +66,9 @@ class VideoController extends AbstractController {
         command.aacStreamIsPresent = null
     }
 
-    private InputStream getVideoStreamFromRequest() {
+    private InputStream getInputStreamParamFromRequest(String param) {
         if(request instanceof MultipartRequest) {
-            return request.getFile('video')?.inputStream
+            return request.getFile(param)?.inputStream
         }
         else {
             return null

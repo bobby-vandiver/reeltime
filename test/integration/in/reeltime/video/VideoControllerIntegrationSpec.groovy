@@ -26,7 +26,9 @@ class VideoControllerIntegrationSpec extends IntegrationSpec {
     void "param [#param] is missing from request"() {
         given:
         setupForCreationRequest()
+
         addStubVideoFile()
+        addThumbnailFile()
 
         and:
         controller.params.remove(param)
@@ -49,6 +51,7 @@ class VideoControllerIntegrationSpec extends IntegrationSpec {
         given:
         setupForCreationRequest()
         addFileAsVideo(path)
+        addThumbnailFile()
 
         when:
         controller.upload()
@@ -85,6 +88,12 @@ class VideoControllerIntegrationSpec extends IntegrationSpec {
     private void addStubVideoFile() {
         def video = new GrailsMockMultipartFile('video', 'test-video'.bytes)
         controller.request.addFile(video)
+    }
+
+    private void addThumbnailFile() {
+        def stream = new FileInputStream('test/files/images/boogie2988-rage.png')
+        def thumbnail = new GrailsMockMultipartFile('thumbnail', stream)
+        controller.request.addFile(thumbnail)
     }
 
     private void addFileAsVideo(String path) {

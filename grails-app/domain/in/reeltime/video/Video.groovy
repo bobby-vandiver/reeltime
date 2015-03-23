@@ -11,7 +11,9 @@ import in.reeltime.playlist.PlaylistUri
 class Video {
 
     String title
+
     String masterPath
+    String masterThumbnailPath
 
     boolean available
     Date dateCreated
@@ -27,5 +29,6 @@ class Video {
         creator nullable: false
         title nullable: false, blank: false
         masterPath nullable: false, blank: false, unique: true
+        masterThumbnailPath nullable: false, blank: false, unique: true
     }
 }

@@ -9,9 +9,11 @@ class ThumbnailValidationService {
         Tika tika = new Tika()
 
         try {
-            def bufferedStream = new BufferedInputStream(thumbnailStream)
-            def mimeType = tika.detect(bufferedStream)
-            valid = (mimeType == 'image/png')
+            if(thumbnailStream) {
+                def bufferedStream = new BufferedInputStream(thumbnailStream)
+                def mimeType = tika.detect(bufferedStream)
+                valid = (mimeType == 'image/png')
+            }
         }
         catch(IOException e) {
             log.warn("Exception occurred while validating thumbnail stream:", e)

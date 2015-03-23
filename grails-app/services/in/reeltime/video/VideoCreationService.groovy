@@ -16,6 +16,9 @@ class VideoCreationService {
     def videoService
     def reelVideoManagementService
 
+    def thumbnailStorageService
+    def thumbnailValidationService
+
     def maxVideoStreamSizeInBytes
 
     private static final int BUFFER_SIZE = 8 * 1024
@@ -26,9 +29,13 @@ class VideoCreationService {
         setVideoStreamSizeIsValid(command, temp)
 
         if(temp) {
-            extractStreamsFromVideo(command, temp)
-            reloadVideoStreamFromTempFile(command, temp)
-            deleteTempFile(temp)
+            boolean validThumbnail = thumbnailValidationService.validateThumbnailStream(command.thumbnailStream)
+
+            if(validThumbnail) {
+                extractStreamsFromVideo(command, temp)
+                reloadVideoStreamFromTempFile(command, temp)
+                deleteTempFile(temp)
+            }
         }
         return command.validate()
     }
@@ -123,13 +130,20 @@ class VideoCreationService {
 
         def creator = command.creator
         def title = command.title
+
         def videoStream = command.videoStream
+        def thumbnailStream = command.thumbnailStream
+
+        def masterThumbnailPath = thumbnailStorageService.uniqueThumbnailPath
+        thumbnailStorageService.store(thumbnailStream, masterThumbnailPath)
 
         def masterPath = videoStorageService.uniqueVideoPath
         videoStorageService.store(videoStream, masterPath)
 
         def reel = creator.getReel(command.reel)
-        def video = new Video(creator: creator, title: title, masterPath: masterPath)
+        def video = new Video(creator: creator, title: title,
+                masterPath: masterPath, masterThumbnailPath: masterThumbnailPath)
+
         reelVideoManagementService.addVideoToReel(reel, video)
 
         log.info("Created video with id [${video.id}] for user [${creator.username}]")

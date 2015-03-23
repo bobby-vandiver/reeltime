@@ -46,38 +46,37 @@ class VideoSpec extends Specification {
     }
 
     @Unroll
-    void "title cannot be [#title]"() {
+    void "[#key] cannot be [#value]"() {
         when:
-        def video = new Video(title: title)
+        def video = new Video((key): value)
 
         then:
-        !video.validate(['title'])
+        !video.validate([key])
 
         where:
-        title << ['', null]
+        key                     |   value
+        'title'                 |   ''
+        'title'                 |   null
+        'masterPath'            |   ''
+        'masterPath'            |   null
+        'masterThumbnailPath'   |   ''
+        'masterThumbnailPath'   |   null
     }
 
-    @Unroll
-    void "masterPath cannot be [#path]"() {
-        when:
-        def video = new Video(masterPath: path)
-
-        then:
-        !video.validate(['masterPath'])
-
-        where:
-        path << ['', null]
-    }
-
-    void "masterPath must be unique"() {
+    void "[#key] must be unique"() {
         given:
-        def existingVideo = new Video(masterPath: 'something')
+        def existingVideo = new Video((key): 'something')
         mockForConstraintsTests(Video, [existingVideo])
 
         when:
-        def video = new Video(masterPath: 'something')
+        def video = new Video((key): 'something')
 
         then:
-        !video.validate(['masterPath'])
+        !video.validate([key])
+
+        where:
+        _   |   key
+        _   |   'masterPath'
+        _   |   'masterThumbnailPath'
     }
 }

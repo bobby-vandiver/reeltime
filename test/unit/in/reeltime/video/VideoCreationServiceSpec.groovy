@@ -15,6 +15,8 @@ import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 import test.helper.StreamMetadataListFactory
+import in.reeltime.thumbnail.ThumbnailStorageService
+import in.reeltime.thumbnail.ThumbnailValidationService
 
 @TestFor(VideoCreationService)
 @Mock([Video, TranscoderJob])
@@ -30,14 +32,23 @@ class VideoCreationServiceSpec extends Specification {
             extractStreams(_) >> StreamMetadataListFactory.createRequiredStreams()
         }
 
+        service.videoService = Mock(VideoService)
         service.videoStorageService = Mock(VideoStorageService)
+
         service.playlistAndSegmentStorageService = Mock(PlaylistAndSegmentStorageService)
         service.playlistService = Mock(PlaylistService)
+
         service.transcoderService = Mock(TranscoderService)
         service.transcoderJobService = Mock(TranscoderJobService)
+
         service.streamMetadataService = streamMetadataService
+
         service.reelVideoManagementService = Mock(ReelVideoManagementService)
-        service.videoService = Mock(VideoService)
+
+        service.thumbnailStorageService = Mock(ThumbnailStorageService)
+        service.thumbnailValidationService = Mock(ThumbnailValidationService) {
+            validateThumbnailStream(_) >> true
+        }
 
         VideoCreationCommand.maxDuration = MAX_DURATION
         service.maxVideoStreamSizeInBytes = MAX_VIDEO_STREAM_SIZE
@@ -50,19 +61,23 @@ class VideoCreationServiceSpec extends Specification {
         def creator = new User(username: 'bob', reels: [reel])
         def title = 'fun times'
         def videoStream = new ByteArrayInputStream('yay'.bytes)
+        def thumbnailStream = new ByteArrayInputStream('woo'.bytes)
 
         and:
-        def command = new VideoCreationCommand(creator: creator, title: title, reel: reelName, videoStream: videoStream)
+        def command = new VideoCreationCommand(creator: creator, title: title, reel: reelName,
+                videoStream: videoStream, thumbnailStream: thumbnailStream)
 
         and:
         def masterPath = 'foo'
-        def outputPath = 'bar'
+        def playlistPath = 'bar'
+        def masterThumbnailPath = 'buzz'
 
         and:
         def validateVideoArg = { Video v ->
             assert v.creator == creator
             assert v.title == title
             assert v.masterPath == masterPath
+            assert v.masterThumbnailPath == masterThumbnailPath
         }
 
         and:
@@ -78,8 +93,12 @@ class VideoCreationServiceSpec extends Specification {
         1 * service.videoStorageService.store(videoStream, masterPath)
 
         and:
-        1 * service.playlistAndSegmentStorageService.getUniquePlaylistPath() >> outputPath
-        1 * service.transcoderService.transcode(_ as Video, outputPath) >> { args -> validateVideoArg(args[0])}
+        1 * service.playlistAndSegmentStorageService.getUniquePlaylistPath() >> playlistPath
+        1 * service.transcoderService.transcode(_ as Video, playlistPath) >> { args -> validateVideoArg(args[0])}
+
+        and:
+        1 * service.thumbnailStorageService.getUniqueThumbnailPath() >> masterThumbnailPath
+        1 * service.thumbnailStorageService.store(thumbnailStream, masterThumbnailPath)
 
         and:
         1 * service.reelVideoManagementService.addVideoToReel(_ as Reel, _ as Video) >> { args ->
@@ -223,6 +242,21 @@ class VideoCreationServiceSpec extends Specification {
         _   |   'aac'
     }
 
+    void "invalid thumbnail stream"() {
+        given:
+        def command = createCommandWithVideoStream('VIDEO'.bytes)
+        command.thumbnailStream = null
+
+        when:
+        def allowed = service.allowCreation(command)
+
+        then:
+        !allowed
+
+        and:
+        1 * service.thumbnailValidationService.validateThumbnailStream(_) >> false
+    }
+
     void "add playlist to completed video delegates to other services"() {
         given:
         def video = new Video()
@@ -241,6 +275,8 @@ class VideoCreationServiceSpec extends Specification {
         def reel = new Reel(name: 'test-reel')
         def creator = new User(username: 'videoCreationTestUser', reels: [reel])
         def videoStream = new ByteArrayInputStream(data)
-        new VideoCreationCommand(creator: creator, videoStream: videoStream, title: 'test-title', reel: 'test-reel')
+        def thumbnailStream = new ByteArrayInputStream('THUMBNAIL'.bytes)
+        new VideoCreationCommand(creator: creator, videoStream: videoStream,
+                thumbnailStream: thumbnailStream, title: 'test-title', reel: 'test-reel')
     }
 }
