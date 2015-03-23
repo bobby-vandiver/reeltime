@@ -29,7 +29,8 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         user = UserFactory.createTestUser()
         uncategorizedReel = user.reels[0]
         reel = ReelFactory.createReel(user, 'activity-test')
-        video = new Video(creator: user, title: 'title', masterPath: 'masterPath', available: true).save()
+        video = new Video(creator: user, title: 'title', masterPath: 'masterPath',
+                masterThumbnailPath: 'masterThumbnailPath', available: true).save()
 
         savedMaxActivitiesPerPage = activityService.maxActivitiesPerPage
         activityService.maxActivitiesPerPage = TEST_MAX_ACTIVITIES_PER_PAGE

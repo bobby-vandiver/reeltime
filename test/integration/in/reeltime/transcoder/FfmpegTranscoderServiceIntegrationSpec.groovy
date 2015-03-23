@@ -13,6 +13,7 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
 
     def playlistAndSegmentStorageService
     def videoStorageService
+    def thumbnailStorageService
 
     @IgnoreIf({!System.getProperty('FFMPEG') && !System.getenv('FFMPEG')})
     void "transcode video file using ffmpeg"() {
@@ -20,7 +21,10 @@ class FfmpegTranscoderServiceIntegrationSpec extends IntegrationSpec {
         def creator = UserFactory.createTestUser()
 
         def masterPath = videoStorageService.uniqueVideoPath
-        def video = new Video(creator: creator, title: 'change peter parker', masterPath:  masterPath).save()
+        def masterThumbnailPath = thumbnailStorageService.uniqueThumbnailPath
+
+        def video = new Video(creator: creator, title: 'change peter parker',
+                masterPath: masterPath, masterThumbnailPath: masterThumbnailPath).save()
 
         and:
         def videoFilePath = 'test/files/videos/spidey.mp4'

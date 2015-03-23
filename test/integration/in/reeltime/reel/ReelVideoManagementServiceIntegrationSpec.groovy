@@ -450,7 +450,8 @@ class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
     }
 
     private static Video createAndSaveVideo(User creator, String title = 'some video', String path = 'somewhere') {
-        new Video(creator: creator, title: title, masterPath: path, available: true).save()
+        new Video(creator: creator, title: title, masterPath: path,
+                masterThumbnailPath: path + '-thumbnail',  available: true).save()
     }
 
     // TODO: Pull into helper class

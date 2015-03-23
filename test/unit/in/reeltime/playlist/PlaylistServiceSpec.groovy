@@ -7,19 +7,17 @@ import in.reeltime.hls.playlist.MediaPlaylist
 import in.reeltime.hls.playlist.MediaSegment
 import in.reeltime.hls.playlist.StreamAttributes
 import in.reeltime.hls.playlist.VariantPlaylist
-import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.video.Video
 import spock.lang.Specification
 
 @TestFor(PlaylistService)
-@Mock([Video, PlaylistUri, Playlist, Segment, User, Reel])
+@Mock([Video, PlaylistUri, Playlist, Segment, User])
 class PlaylistServiceSpec extends Specification {
 
     PlaylistParserService playlistParserService
 
     User creator
-    Reel reel
 
     void setup() {
         playlistParserService = Mock(PlaylistParserService)
@@ -28,13 +26,12 @@ class PlaylistServiceSpec extends Specification {
         creator = new User(username: 'someone')
         creator.springSecurityService = Stub(SpringSecurityService)
         creator.save(validate: false)
-
-        reel = new Reel().save(validate: false)
     }
 
     void "combine metadata in variant playlist and one media playlist into model for a single stream"() {
         given:
-        def video = new Video(creator: creator, title: 'awesome', masterPath: 'pathToVideo', reels: [reel]).save()
+        def video = new Video(creator: creator, title: 'awesome',
+                masterPath: 'pathToVideo', masterThumbnailPath: 'pathToThumbnail').save()
         def variantPlaylistKey = 'master-playlist'
 
         and:
@@ -108,7 +105,8 @@ class PlaylistServiceSpec extends Specification {
 
     void "playlist has more than one stream variant"() {
         given:
-        def video = new Video(creator: creator, title: 'awesome', masterPath: 'pathToVideo', reels: [reel]).save()
+        def video = new Video(creator: creator, title: 'awesome',
+                masterPath: 'pathToVideo', masterThumbnailPath: 'pathToThumbnail').save()
 
         and:
         def stream1 = new StreamAttributes(uri: 'media-low.m3u8', bandwidth: 121, programId: 1, codecs: 'bar1', resolution: 'buzz1')

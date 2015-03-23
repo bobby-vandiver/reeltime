@@ -21,6 +21,7 @@ class VideoSpec extends Specification {
                 creator: user,
                 title: 'foo',
                 masterPath: 'sample.mp4',
+                masterThumbnailPath: 'sample.png',
                 playlists: [playlist],
                 playlistUris: [playlistUri],
         )

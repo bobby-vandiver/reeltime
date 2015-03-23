@@ -46,6 +46,7 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
                 creator: creator,
                 title: 'some video',
                 masterPath: 'something.mp4',
+                masterThumbnailPath: 'something.png'
         )
 
         video.addToPlaylists(playlist)

@@ -25,7 +25,7 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
                 codecs: 'avc1.42001e,mp4a.40.2'
         )
 
-        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore')
+        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore', masterThumbnailPath: 'ignore')
         video.addToPlaylists(playlist)
         video.save()
 
@@ -58,7 +58,7 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
         )
 
         and:
-        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore')
+        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore', masterThumbnailPath: 'ignore')
         video.addToPlaylists(playlist1)
         video.addToPlaylists(playlist2)
         video.save()
@@ -95,7 +95,7 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
         playlist.addToSegments(segment2)
 
         and:
-        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore')
+        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore', masterThumbnailPath: 'ignore')
         video.addToPlaylists(playlist)
         video.save()
 
