@@ -59,6 +59,10 @@ class ConfigInjector {
             playlistBase = config.reeltime.storage.playlists
         }
 
+        ctx.thumbnailStorageService.with {
+            thumbnailBase = config.reeltime.storage.thumbnails
+        }
+
         ctx.accountConfirmationService.with {
             fromAddress = config.reeltime.accountManagement.fromAddress
             confirmationCodeValidityLengthInDays = config.reeltime.accountManagement.confirmationCodeValidityLengthInDays

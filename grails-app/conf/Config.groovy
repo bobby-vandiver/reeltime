@@ -151,6 +151,9 @@ reeltime {
         // The S3 bucket name where the video segments and playlist are stored
         playlists = 'playlists-and-segments-production'
 
+        // The S3 bucket name where thumbnails are stored
+        thumbnails = 'thumbnails-production'
+
         // Number of times to attempt to generate a unique path before giving up
         pathGenerationMaxRetries = 5
     }
@@ -247,6 +250,7 @@ environments {
             storage {
                 videos = System.getProperty('java.io.tmpdir') + File.separator + 'master-videos'
                 playlists = System.getProperty('java.io.tmpdir') + File.separator + 'playlist-and-segments'
+                thumbnails = System.getProperty('java.io.tmpdir') + File.separator + 'thumbnails'
             }
 
             transcoder {
@@ -265,6 +269,7 @@ environments {
             storage {
                 videos = System.getProperty('java.io.tmpdir') + File.separator + 'master-videos'
                 playlists = System.getProperty('java.io.tmpdir') + File.separator + 'playlist-and-segments'
+                thumbnails = System.getProperty('java.io.tmpdir') + File.separator + 'thumbnails'
             }
 
             transcoder {
@@ -283,6 +288,7 @@ environments {
             storage {
                 videos = 'master-videos-acceptance'
                 playlists = 'playlists-and-segments-acceptance'
+                thumbnails = 'thumbnails-acceptance'
             }
 
             transcoder {
