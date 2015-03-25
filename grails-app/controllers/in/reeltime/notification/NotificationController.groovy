@@ -71,7 +71,7 @@ class NotificationController {
                     def keyPrefix = message.outputKeyPrefix
                     def variantPlaylistKey = message.playlists[0].name
 
-                    videoCreationService.addPlaylistsToCompletedVideo(jobId, keyPrefix, variantPlaylistKey)
+                    videoCreationService.completeVideoCreation(jobId, keyPrefix, variantPlaylistKey)
                 }
                 catch(TranscoderJobNotFoundException e) {
                     log.warn("Could not find transcoder job [$jobId] -- assuming it was already removed")

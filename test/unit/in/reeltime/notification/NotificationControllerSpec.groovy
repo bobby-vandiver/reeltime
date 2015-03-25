@@ -213,7 +213,7 @@ class NotificationControllerSpec extends Specification {
         controller.handleMessage()
 
         then:
-        1 * videoCreationService.addPlaylistsToCompletedVideo('1388444889472-t01s28', 'hls-small/', 'hls-small-master')
+        1 * videoCreationService.completeVideoCreation('1388444889472-t01s28', 'hls-small/', 'hls-small-master')
 
         and:
         response.status == 200
@@ -238,7 +238,7 @@ class NotificationControllerSpec extends Specification {
         controller.handleMessage()
 
         then:
-        1 * videoCreationService.addPlaylistsToCompletedVideo('1388444889472-t01s28', 'hls-small/', 'hls-small-master') >> { throw new TranscoderJobNotFoundException('TEST') }
+        1 * videoCreationService.completeVideoCreation('1388444889472-t01s28', 'hls-small/', 'hls-small-master') >> { throw new TranscoderJobNotFoundException('TEST') }
         1 * controller.log.warn('Could not find transcoder job [1388444889472-t01s28] -- assuming it was already removed')
 
         and:

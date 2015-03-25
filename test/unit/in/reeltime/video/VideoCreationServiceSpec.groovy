@@ -280,7 +280,7 @@ class VideoCreationServiceSpec extends Specification {
         def transcoderJob = new TranscoderJob(video: video, jobId: '1388444889472-t01s28').save(validate: false)
 
         when:
-        service.addPlaylistsToCompletedVideo('1388444889472-t01s28', 'hls-small/', 'hls-small-master')
+        service.completeVideoCreation('1388444889472-t01s28', 'hls-small/', 'hls-small-master')
 
         then:
         1 * service.transcoderJobService.loadJob('1388444889472-t01s28') >> transcoderJob
