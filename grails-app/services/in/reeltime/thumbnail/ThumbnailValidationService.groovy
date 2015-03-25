@@ -4,7 +4,7 @@ import org.apache.tika.Tika
 
 class ThumbnailValidationService {
 
-    boolean validateThumbnailStream(InputStream thumbnailStream) {
+    ThumbnailValidationResult validateThumbnailStream(InputStream thumbnailStream) {
         boolean valid = false
         Tika tika = new Tika()
 
@@ -19,6 +19,6 @@ class ThumbnailValidationService {
             log.warn("Exception occurred while validating thumbnail stream:", e)
         }
 
-        return valid
+        return new ThumbnailValidationResult(validFormat: valid)
     }
 }

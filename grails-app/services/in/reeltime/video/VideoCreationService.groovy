@@ -29,15 +29,20 @@ class VideoCreationService {
         setVideoStreamSizeIsValid(command, temp)
 
         if(temp) {
-            boolean validThumbnail = thumbnailValidationService.validateThumbnailStream(command.thumbnailStream)
-
-            if(validThumbnail) {
-                extractStreamsFromVideo(command, temp)
-                reloadVideoStreamFromTempFile(command, temp)
-                deleteTempFile(temp)
-            }
+            extractStreamsFromVideo(command, temp)
+            reloadVideoStreamFromTempFile(command, temp)
+            deleteTempFile(temp)
         }
+
+        validateThumbnail(command)
         return command.validate()
+    }
+
+    private void validateThumbnail(VideoCreationCommand command) {
+        if(command.thumbnailStream) {
+            def result = thumbnailValidationService.validateThumbnailStream(command.thumbnailStream)
+            command.thumbnailFormatIsValid = result.validFormat
+        }
     }
 
     private File writeVideoStreamToTempFile(VideoCreationCommand command) {

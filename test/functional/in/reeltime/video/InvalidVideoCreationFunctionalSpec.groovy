@@ -10,11 +10,15 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
     String videosWriteToken
     String videosReadWriteToken
 
+    File thumbnailFile
+
     void setup() {
         invalidToken = 'bad-mojo'
         videosReadToken = getAccessTokenWithScopeForTestUser('videos-read')
         videosWriteToken = getAccessTokenWithScopeForTestUser('videos-write')
         videosReadWriteToken = getAccessTokenWithScopesForTestUser(['videos-read', 'videos-write'])
+
+        thumbnailFile = new File('test/files/images/small.png')
     }
 
     void "no token present"() {
@@ -62,6 +66,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         and:
         def expectedErrors = [
                 '[video] is required',
+                '[thumbnail] is required',
                 '[reel] is required',
                 '[title] is required'
         ]
@@ -78,6 +83,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def request = createUploadRequest(videosWriteToken) {
             reel = 'Uncategorized'
             title = 'no-video'
+            thumbnail = thumbnailFile
         }
 
         when:
@@ -92,6 +98,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def request = createUploadRequest(videosWriteToken) {
             reel = 'Uncategorized'
             video = new File('test/files/videos/small.mp4')
+            thumbnail = thumbnailFile
         }
 
         when:
@@ -106,6 +113,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         def request = createUploadRequest(videosWriteToken) {
             title = 'no-reel'
             video = new File('test/files/videos/small.mp4')
+            thumbnail = thumbnailFile
         }
 
         when:
@@ -115,12 +123,44 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
         responseChecker.assertSingleErrorMessageResponse(response, 400, '[reel] is required')
     }
 
+    void "thumbnail param is missing"() {
+        given:
+        def request = createUploadRequest(videosWriteToken) {
+            reel = 'Uncategorized'
+            title = 'no-reel'
+            video = new File('test/files/videos/small.mp4')
+        }
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[thumbnail] is required')
+    }
+
+    void "unsupported thumbnail format"() {
+        given:
+        def request = createUploadRequest(videosWriteToken) {
+            reel = 'Uncategorized'
+            title = 'no-reel'
+            video = new File('test/files/videos/small.mp4')
+            thumbnail = new File('test/files/images/maddox.jpg')
+        }
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[thumbnail] must be png format')
+    }
+
     void "unknown reel specified"() {
         given:
         def request = createUploadRequest(videosWriteToken) {
             reel = 'unknown-reel'
             title = 'unknown reel test'
             video = new File('test/files/videos/small.mp4')
+            thumbnail = thumbnailFile
         }
 
         when:
@@ -136,6 +176,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
             reel = 'Uncategorized'
             title = 'video-is-only-aac'
             video = new File('test/files/videos/sample_mpeg4.mp4')
+            thumbnail = thumbnailFile
         }
 
         when:
@@ -154,6 +195,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
             reel = 'Uncategorized'
             title = 'video-has-no-valid-streams'
             video = new File('test/files/videos/empty')
+            thumbnail = thumbnailFile
         }
 
         when:
@@ -169,6 +211,7 @@ class InvalidVideoCreationFunctionalSpec extends FunctionalSpec {
             reel = 'Uncategorized'
             title = 'video-exceeds-max-length'
             video = new File('test/files/videos/spidey.mp4')
+            thumbnail = thumbnailFile
         }
 
         when:

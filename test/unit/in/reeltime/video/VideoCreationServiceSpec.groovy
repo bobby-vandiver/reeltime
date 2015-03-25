@@ -8,6 +8,7 @@ import in.reeltime.playlist.PlaylistService
 import in.reeltime.reel.Reel
 import in.reeltime.reel.ReelVideoManagementService
 import in.reeltime.playlist.PlaylistAndSegmentStorageService
+import in.reeltime.thumbnail.ThumbnailValidationResult
 import in.reeltime.transcoder.TranscoderJob
 import in.reeltime.transcoder.TranscoderJobService
 import in.reeltime.transcoder.TranscoderService
@@ -47,7 +48,7 @@ class VideoCreationServiceSpec extends Specification {
 
         service.thumbnailStorageService = Mock(ThumbnailStorageService)
         service.thumbnailValidationService = Mock(ThumbnailValidationService) {
-            validateThumbnailStream(_) >> true
+            validateThumbnailStream(_) >> new ThumbnailValidationResult(validFormat: true)
         }
 
         VideoCreationCommand.maxDuration = MAX_DURATION
@@ -242,10 +243,22 @@ class VideoCreationServiceSpec extends Specification {
         _   |   'aac'
     }
 
-    void "invalid thumbnail stream"() {
+    void "invalid thumbnail stream -- skip thumbnail dependent validation"() {
         given:
         def command = createCommandWithVideoStream('VIDEO'.bytes)
         command.thumbnailStream = null
+
+        expect:
+        !service.allowCreation(command)
+
+        and:
+        command.thumbnailFormatIsValid.is(null)
+    }
+
+    void "invalid thumbnail format"() {
+        given:
+        def command = createCommandWithVideoStream('VIDEO'.bytes)
+        def validationResult = new ThumbnailValidationResult(validFormat: false)
 
         when:
         def allowed = service.allowCreation(command)
@@ -254,7 +267,11 @@ class VideoCreationServiceSpec extends Specification {
         !allowed
 
         and:
-        1 * service.thumbnailValidationService.validateThumbnailStream(_) >> false
+        !command.thumbnailFormatIsValid.is(null)
+        !command.thumbnailFormatIsValid
+
+        and:
+        1 * service.thumbnailValidationService.validateThumbnailStream(_) >> validationResult
     }
 
     void "add playlist to completed video delegates to other services"() {

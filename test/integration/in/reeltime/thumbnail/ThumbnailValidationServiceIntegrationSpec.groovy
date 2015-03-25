@@ -9,18 +9,24 @@ class ThumbnailValidationServiceIntegrationSpec extends IntegrationSpec {
     def thumbnailValidationService
 
     void "null stream is invalid"() {
-        expect:
-        !thumbnailValidationService.validateThumbnailStream(null)
+        when:
+        def result = thumbnailValidationService.validateThumbnailStream(null)
+
+        then:
+        !result.validFormat
     }
 
     @Unroll
-    void "thumbnail [#filename] is valid [#valid]"() {
+    void "thumbnail [#filename] format is valid [#valid]"() {
         given:
         def file = FileLoader.imageFile(filename)
         def stream = new FileInputStream(file)
 
-        expect:
-        thumbnailValidationService.validateThumbnailStream(stream) == valid
+        when:
+        def result = thumbnailValidationService.validateThumbnailStream(stream)
+
+        then:
+        result.validFormat == valid
 
         where:
         filename                |   valid

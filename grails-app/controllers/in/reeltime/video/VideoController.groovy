@@ -60,6 +60,7 @@ class VideoController extends AbstractController {
     }
 
     private void sanitizePrivateData(VideoCreationCommand command) {
+        command.thumbnailFormatIsValid = null
         command.videoStreamSizeIsValid = null
         command.durationInSeconds = null
         command.h264StreamIsPresent = null

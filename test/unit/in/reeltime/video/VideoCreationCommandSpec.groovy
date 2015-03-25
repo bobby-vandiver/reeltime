@@ -92,6 +92,7 @@ class VideoCreationCommandSpec extends Specification {
     }
 
     void "thumbnail stream cannot be null"() {
+        given:
         def command = new VideoCreationCommand(thumbnailStream: null)
 
         expect:
@@ -99,6 +100,48 @@ class VideoCreationCommandSpec extends Specification {
 
         and:
         command.errors.getFieldError('thumbnailStream').code == 'nullable'
+    }
+
+    @Unroll
+    void "thumbnail stream present and format validity [#formatValidity] is valid [#valid]"() {
+        given:
+        def thumbnailStream = new ByteArrayInputStream('TEST'.bytes)
+        def command = new VideoCreationCommand(thumbnailFormatIsValid: formatValidity, thumbnailStream: thumbnailStream)
+
+        expect:
+        command.validate(['thumbnailFormatIsValid']) == valid
+
+        and:
+        command.errors.getFieldError('thumbnailFormatIsValid')?.code == code
+
+        where:
+        formatValidity  |   valid   |   code
+        false           |   false   |   'format'
+        true            |   true    |   null
+    }
+
+    void "thumbnail format is not checked when a thumbnail is not provided"() {
+        given:
+        def command = new VideoCreationCommand(thumbnailFormatIsValid: null, thumbnailStream: null)
+
+        expect:
+        command.validate(['thumbnailFormatIsValid'])
+    }
+
+    @Unroll
+    void "thumbnail metadata [#propertyName] cannot be known if thumbnail stream is null"() {
+        given:
+        def command = new VideoCreationCommand(("$propertyName"): value, thumbnailStream: null)
+
+        expect:
+        !command.validate([propertyName])
+
+        and:
+        command.errors.getFieldError(propertyName)?.code == code
+
+        where:
+        propertyName                |   value   |   code
+        'thumbnailFormatIsValid'    |   true    |   'invalid'
     }
 
     @Unroll

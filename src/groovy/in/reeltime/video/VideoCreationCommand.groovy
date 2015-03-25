@@ -14,6 +14,8 @@ class VideoCreationCommand {
     InputStream thumbnailStream
     InputStream videoStream
 
+    Boolean thumbnailFormatIsValid
+
     Boolean videoStreamSizeIsValid
     Integer durationInSeconds
 
@@ -31,6 +33,8 @@ class VideoCreationCommand {
         thumbnailStream nullable: false
         videoStream nullable: false
 
+        thumbnailFormatIsValid nullable: true, validator: thumbnailFormatIsValidValidator
+
         videoStreamSizeIsValid nullable: true, validator: videoStreamSizeIsValidValidator
         durationInSeconds nullable: true, validator: durationInSecondsValidator
 
@@ -41,6 +45,17 @@ class VideoCreationCommand {
     private static Closure reelNameValidator = { val, obj ->
         if(obj.creator && !obj.creator.hasReel(val)) {
             return 'unknown'
+        }
+    }
+
+    private static Closure thumbnailFormatIsValidValidator = { val, obj ->
+        thumbnailStreamDependentValidator(val, obj) { thumbnailStreamIsNull ->
+            if(!val) {
+                return 'format'
+            }
+            else if(thumbnailStreamIsNull) {
+                return 'invalid'
+            }
         }
     }
 
@@ -100,5 +115,15 @@ class VideoCreationCommand {
             return true
         }
         additionalValidation(videoStreamIsNull)
+    }
+
+    private static thumbnailStreamDependentValidator(val, obj, Closure additionalValidation) {
+        boolean thumbnailStreamIsNull = obj.thumbnailStream.is(null)
+        boolean valueIsNull = val.is(null)
+
+        if(valueIsNull && thumbnailStreamIsNull) {
+            return true
+        }
+        additionalValidation(thumbnailStreamIsNull)
     }
 }

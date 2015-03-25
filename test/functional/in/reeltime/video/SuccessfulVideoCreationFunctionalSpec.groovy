@@ -15,7 +15,10 @@ class SuccessfulVideoCreationFunctionalSpec extends FunctionalSpec {
     void "minimum required params"() {
         given:
         def video = new File('test/files/videos/small.mp4')
-        def request = requestFactory.uploadVideo(videosToken, 'minimum-viable-video', 'Uncategorized', video)
+        def thumbnail = new File('test/files/images/small.png')
+
+        and:
+        def request = requestFactory.uploadVideo(videosToken, 'minimum-viable-video', 'Uncategorized', video, thumbnail)
 
         when:
         def response = post(request)

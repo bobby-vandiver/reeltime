@@ -147,11 +147,12 @@ class ReelTimeRequestFactory {
         paginatedListRequest(token, pageNumber, urlFactory.listVideosUrl)
     }
 
-    RestRequest uploadVideo(String token, String videoTitle, String reelName, File videoFile) {
+    RestRequest uploadVideo(String token, String videoTitle, String reelName, File videoFile, File thumbnailFile) {
         new RestRequest(url: urlFactory.uploadUrl, token: token, isMultiPart: true, customizer: {
             title = videoTitle
             reel = reelName
             video = videoFile
+            thumbnail = thumbnailFile
         })
     }
 

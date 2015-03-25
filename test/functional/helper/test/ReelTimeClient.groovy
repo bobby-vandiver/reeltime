@@ -171,8 +171,9 @@ class ReelTimeClient {
 
     Long uploadVideoToReel(String token, String reel, String title) {
         def video = new File('test/files/videos/small.mp4')
+        def thumbnail = new File('test/files/images/small.png')
 
-        def request = requestFactory.uploadVideo(token, title, reel, video)
+        def request = requestFactory.uploadVideo(token, title, reel, video, thumbnail)
         def response = post(request)
 
         assertStatusOrFail(response, 202, "Failed to upload video.")
