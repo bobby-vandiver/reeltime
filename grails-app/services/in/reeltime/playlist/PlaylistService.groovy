@@ -12,8 +12,7 @@ class PlaylistService {
 
     def playlistParserService
 
-    def addPlaylists(Video video, String keyPrefix, String variantPlaylistKey) {
-
+    void addPlaylists(Video video, String keyPrefix, String variantPlaylistKey) {
         def videoId = video.id
         log.debug("Adding playlists to video [$videoId] with keyPrefix [$keyPrefix] and variantPlaylistKey [$variantPlaylistKey]")
 
@@ -56,8 +55,7 @@ class PlaylistService {
         video.save()
     }
 
-    def generateVariantPlaylist(Video video) {
-
+    String generateVariantPlaylist(Video video) {
         def writer = new StringWriter()
         def streams = video.playlists.collect { p ->
 
@@ -74,8 +72,7 @@ class PlaylistService {
         writer.toString()
     }
 
-    def generateMediaPlaylist(Playlist playlist, boolean allowCache) {
-
+    String generateMediaPlaylist(Playlist playlist, boolean allowCache) {
         def writer = new StringWriter()
         def segments = playlist.segments.sort()
 
