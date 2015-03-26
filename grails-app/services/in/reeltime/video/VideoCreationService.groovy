@@ -152,8 +152,8 @@ class VideoCreationService {
         reelVideoManagementService.addVideoToReel(reel, video)
 
         log.info("Created video with id [${video.id}] for user [${creator.username}]")
-        def outputPath = playlistAndSegmentStorageService.uniquePlaylistPath
-        transcoderService.transcode(video, outputPath)
+        def playlistPath = playlistAndSegmentStorageService.uniquePlaylistPath
+        transcoderService.transcode(video, playlistPath)
 
         videoService.storeVideo(video)
         return video
