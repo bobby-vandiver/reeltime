@@ -4,20 +4,20 @@ import in.reeltime.metadata.StreamMetadata
 
 class VideoCreationService {
 
-    def playlistAndSegmentStorageService
+    def videoService
     def videoStorageService
+    def reelVideoManagementService
+
+    def thumbnailService
+    def thumbnailStorageService
+    def thumbnailValidationService
+
+    def playlistService
+    def playlistAndSegmentStorageService
+    def streamMetadataService
 
     def transcoderService
     def transcoderJobService
-
-    def streamMetadataService
-    def playlistService
-
-    def videoService
-    def reelVideoManagementService
-
-    def thumbnailStorageService
-    def thumbnailValidationService
 
     def maxVideoStreamSizeInBytes
 
@@ -166,6 +166,8 @@ class VideoCreationService {
         transcoderJobService.complete(transcoderJob)
 
         def video = transcoderJob.video
+
         playlistService.addPlaylists(video, keyPrefix, variantPlaylistKey)
+        thumbnailService.addThumbnails(video)
     }
 }

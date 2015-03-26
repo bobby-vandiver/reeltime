@@ -16,6 +16,7 @@ import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 import test.helper.StreamMetadataListFactory
+import in.reeltime.thumbnail.ThumbnailService
 import in.reeltime.thumbnail.ThumbnailStorageService
 import in.reeltime.thumbnail.ThumbnailValidationService
 
@@ -46,7 +47,9 @@ class VideoCreationServiceSpec extends Specification {
 
         service.reelVideoManagementService = Mock(ReelVideoManagementService)
 
+        service.thumbnailService = Mock(ThumbnailService)
         service.thumbnailStorageService = Mock(ThumbnailStorageService)
+
         service.thumbnailValidationService = Mock(ThumbnailValidationService) {
             validateThumbnailStream(_) >> new ThumbnailValidationResult(validFormat: true)
         }
@@ -274,7 +277,7 @@ class VideoCreationServiceSpec extends Specification {
         1 * service.thumbnailValidationService.validateThumbnailStream(_) >> validationResult
     }
 
-    void "add playlist to completed video delegates to other services"() {
+    void "add playlists and thumbnails to completed video"() {
         given:
         def video = new Video()
         def transcoderJob = new TranscoderJob(video: video, jobId: '1388444889472-t01s28').save(validate: false)
@@ -286,6 +289,7 @@ class VideoCreationServiceSpec extends Specification {
         1 * service.transcoderJobService.loadJob('1388444889472-t01s28') >> transcoderJob
         1 * service.transcoderJobService.complete(transcoderJob)
         1 * service.playlistService.addPlaylists(video, 'hls-small/', 'hls-small-master')
+        1 * service.thumbnailService.addThumbnails(video)
     }
 
     private static VideoCreationCommand createCommandWithVideoStream(byte[] data) {
