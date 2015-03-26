@@ -19,85 +19,25 @@ class VideoCreationService {
     def transcoderService
     def transcoderJobService
 
+    def temporaryFileService
+
     def maxVideoStreamSizeInBytes
     def maxThumbnailStreamSizeInBytes
 
-    private static final int BUFFER_SIZE = 8 * 1024
-
     boolean allowCreation(VideoCreationCommand command) {
+        validateVideoStream(command)
+        validateThumbnailStream(command)
+        return command.validate()
+    }
 
-        def temp = writeInputStreamToTempFile(command.videoStream, maxVideoStreamSizeInBytes)
+    private void validateVideoStream(VideoCreationCommand command) {
+        def temp = temporaryFileService.writeInputStreamToTempFile(command.videoStream, maxVideoStreamSizeInBytes)
         setVideoStreamSizeIsValid(command, temp)
 
         if(temp) {
             extractStreamsFromVideo(command, temp)
             reloadVideoStreamFromTempFile(command, temp)
-            deleteTempFile(temp)
-        }
-
-        // FIXME: This is messy
-        temp = writeInputStreamToTempFile(command.thumbnailStream, maxThumbnailStreamSizeInBytes)
-
-        if(temp) {
-            reloadThumbnailStreamFromTempFile(command, temp)
-            validateThumbnail(command)
-
-            reloadThumbnailStreamFromTempFile(command, temp)
-            deleteTempFile(temp)
-        }
-
-        return command.validate()
-    }
-
-    private void validateThumbnail(VideoCreationCommand command) {
-        if(command.thumbnailStream) {
-            def result = thumbnailValidationService.validateThumbnailStream(command.thumbnailStream)
-            command.thumbnailFormatIsValid = result.validFormat
-        }
-    }
-
-    private File writeInputStreamToTempFile(InputStream inputStream, int maxStreamSizeInBytes) {
-        OutputStream outputStream = null
-        try {
-            if(!inputStream) {
-                log.warn("Input stream not available")
-                return null
-            }
-
-            log.debug("Creating temp file for stream")
-            def temp = File.createTempFile('input-stream', '.tmp')
-
-            def fos = new FileOutputStream(temp)
-            outputStream = new BufferedOutputStream(fos)
-
-            byte[] buffer = new byte[BUFFER_SIZE]
-
-            int totalBytesRead = 0
-            int bytesRead
-
-            log.debug("Reading stream into buffer")
-            while((bytesRead = inputStream.read(buffer)) >= 0) {
-                totalBytesRead += bytesRead
-
-                if(totalBytesRead > maxStreamSizeInBytes) {
-                    log.warn("Stream exceeds max allowed size")
-                    return null
-                }
-
-                log.trace("Writing $bytesRead bytes to the buffer")
-                outputStream.write(buffer, 0, bytesRead)
-            }
-            return temp
-        }
-        catch(IOException e) {
-            log.warn("Failed to write stream to temp file", e)
-            return null
-        }
-        finally {
-            if(outputStream) {
-                log.debug("Closing output stream for temp file")
-                outputStream.close()
-            }
+            temporaryFileService.deleteTempFile(temp)
         }
     }
 
@@ -122,26 +62,31 @@ class VideoCreationService {
         command.durationInSeconds = getLongestStreamDuration(streams)
     }
 
-    private static boolean streamIsPresent(List<StreamMetadata> streams, String codec) {
+    private boolean streamIsPresent(List<StreamMetadata> streams, String codec) {
         streams.find { it.codecName == codec } != null
     }
 
-    private static Integer getLongestStreamDuration(List<StreamMetadata> streams) {
+    private Integer getLongestStreamDuration(List<StreamMetadata> streams) {
         def longestStream = streams.max { it.durationInSeconds }
         longestStream?.durationInSeconds
     }
 
-    private static void reloadVideoStreamFromTempFile(VideoCreationCommand command, File temp) {
+    private void reloadVideoStreamFromTempFile(VideoCreationCommand command, File temp) {
         command.videoStream = new FileInputStream(temp)
     }
 
-    private static void reloadThumbnailStreamFromTempFile(VideoCreationCommand command, File temp) {
-        command.thumbnailStream = new FileInputStream(temp)
-    }
+    private void validateThumbnailStream(VideoCreationCommand command) {
+        def temp = temporaryFileService.writeInputStreamToTempFile(command.thumbnailStream, maxThumbnailStreamSizeInBytes)
 
-    private static void deleteTempFile(File temp) {
-        if(!temp.delete()) {
-            temp.deleteOnExit()
+        if(temp) {
+            command.thumbnailStream = new BufferedInputStream(new FileInputStream(temp))
+            command.thumbnailStream.mark(maxThumbnailStreamSizeInBytes)
+
+            def result = thumbnailValidationService.validateThumbnailStream(command.thumbnailStream)
+            command.thumbnailFormatIsValid = result.validFormat
+
+            command.thumbnailStream.reset()
+            temporaryFileService.deleteTempFile(temp)
         }
     }
 

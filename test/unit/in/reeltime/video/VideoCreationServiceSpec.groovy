@@ -8,6 +8,7 @@ import in.reeltime.playlist.PlaylistService
 import in.reeltime.reel.Reel
 import in.reeltime.reel.ReelVideoManagementService
 import in.reeltime.playlist.PlaylistAndSegmentStorageService
+import in.reeltime.storage.TemporaryFileService
 import in.reeltime.thumbnail.ThumbnailValidationResult
 import in.reeltime.transcoder.TranscoderJob
 import in.reeltime.transcoder.TranscoderJobService
@@ -25,6 +26,7 @@ import in.reeltime.thumbnail.ThumbnailValidationService
 class VideoCreationServiceSpec extends Specification {
 
     StreamMetadataService streamMetadataService
+    TemporaryFileService temporaryFileService
 
     private static final MAX_DURATION = 300
     private static final MAX_VIDEO_STREAM_SIZE = 1000
@@ -54,6 +56,10 @@ class VideoCreationServiceSpec extends Specification {
         service.thumbnailValidationService = Mock(ThumbnailValidationService) {
             validateThumbnailStream(_) >> new ThumbnailValidationResult(validFormat: true)
         }
+
+        // TODO: Use a mock and refactor stream tests
+        temporaryFileService = new TemporaryFileService()
+        service.temporaryFileService = temporaryFileService
 
         VideoCreationCommand.maxDuration = MAX_DURATION
         service.maxVideoStreamSizeInBytes = MAX_VIDEO_STREAM_SIZE
@@ -164,10 +170,10 @@ class VideoCreationServiceSpec extends Specification {
 
     void "video stream is larger than buffer but less than max size allowed"() {
         given:
-        service.maxVideoStreamSizeInBytes = 4 * service.BUFFER_SIZE
+        service.maxVideoStreamSizeInBytes = 4 * temporaryFileService.BUFFER_SIZE
 
         and:
-        def data = 'a' * (3 * service.BUFFER_SIZE)
+        def data = 'a' * (3 * temporaryFileService.BUFFER_SIZE)
         def command = createCommandWithVideoStream(data.bytes)
 
         expect:
