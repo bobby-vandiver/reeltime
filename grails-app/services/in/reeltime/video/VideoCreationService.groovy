@@ -20,12 +20,13 @@ class VideoCreationService {
     def transcoderJobService
 
     def maxVideoStreamSizeInBytes
+    def maxThumbnailStreamSizeInBytes
 
     private static final int BUFFER_SIZE = 8 * 1024
 
     boolean allowCreation(VideoCreationCommand command) {
 
-        def temp = writeVideoStreamToTempFile(command)
+        def temp = writeInputStreamToTempFile(command.videoStream, maxVideoStreamSizeInBytes)
         setVideoStreamSizeIsValid(command, temp)
 
         if(temp) {
@@ -34,7 +35,17 @@ class VideoCreationService {
             deleteTempFile(temp)
         }
 
-        validateThumbnail(command)
+        // FIXME: This is messy
+        temp = writeInputStreamToTempFile(command.thumbnailStream, maxThumbnailStreamSizeInBytes)
+
+        if(temp) {
+            reloadThumbnailStreamFromTempFile(command, temp)
+            validateThumbnail(command)
+
+            reloadThumbnailStreamFromTempFile(command, temp)
+            deleteTempFile(temp)
+        }
+
         return command.validate()
     }
 
@@ -45,17 +56,16 @@ class VideoCreationService {
         }
     }
 
-    private File writeVideoStreamToTempFile(VideoCreationCommand command) {
+    private File writeInputStreamToTempFile(InputStream inputStream, int maxStreamSizeInBytes) {
         OutputStream outputStream = null
         try {
-            def videoStream = command.videoStream
-            if(!videoStream) {
-                log.warn("Video stream not available")
+            if(!inputStream) {
+                log.warn("Input stream not available")
                 return null
             }
 
-            log.debug("Creating temp file for video stream")
-            def temp = File.createTempFile('can-create-video', '.tmp')
+            log.debug("Creating temp file for stream")
+            def temp = File.createTempFile('input-stream', '.tmp')
 
             def fos = new FileOutputStream(temp)
             outputStream = new BufferedOutputStream(fos)
@@ -65,12 +75,12 @@ class VideoCreationService {
             int totalBytesRead = 0
             int bytesRead
 
-            log.debug("Reading video stream into buffer")
-            while((bytesRead = videoStream.read(buffer)) >= 0) {
+            log.debug("Reading stream into buffer")
+            while((bytesRead = inputStream.read(buffer)) >= 0) {
                 totalBytesRead += bytesRead
 
-                if(totalBytesRead > maxVideoStreamSizeInBytes) {
-                    log.warn("Video stream exceeds max allowed size")
+                if(totalBytesRead > maxStreamSizeInBytes) {
+                    log.warn("Stream exceeds max allowed size")
                     return null
                 }
 
@@ -80,7 +90,7 @@ class VideoCreationService {
             return temp
         }
         catch(IOException e) {
-            log.warn("Failed to write video stream to temp file", e)
+            log.warn("Failed to write stream to temp file", e)
             return null
         }
         finally {
@@ -123,6 +133,10 @@ class VideoCreationService {
 
     private static void reloadVideoStreamFromTempFile(VideoCreationCommand command, File temp) {
         command.videoStream = new FileInputStream(temp)
+    }
+
+    private static void reloadThumbnailStreamFromTempFile(VideoCreationCommand command, File temp) {
+        command.thumbnailStream = new FileInputStream(temp)
     }
 
     private static void deleteTempFile(File temp) {

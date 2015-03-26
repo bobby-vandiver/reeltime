@@ -28,6 +28,7 @@ class VideoCreationServiceSpec extends Specification {
 
     private static final MAX_DURATION = 300
     private static final MAX_VIDEO_STREAM_SIZE = 1000
+    private static final MAX_THUMBNAIL_STREAM_SIZE = 1000
 
     void setup() {
         streamMetadataService = Mock(StreamMetadataService) {
@@ -56,6 +57,7 @@ class VideoCreationServiceSpec extends Specification {
 
         VideoCreationCommand.maxDuration = MAX_DURATION
         service.maxVideoStreamSizeInBytes = MAX_VIDEO_STREAM_SIZE
+        service.maxThumbnailStreamSizeInBytes = MAX_THUMBNAIL_STREAM_SIZE
     }
 
     void "store video stream, save the video object and then transcode it"() {

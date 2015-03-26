@@ -17,6 +17,7 @@ class ConfigInjector {
 
         ctx.videoCreationService.with {
             maxVideoStreamSizeInBytes = config.reeltime.metadata.maxVideoStreamSizeInBytes as int
+            maxThumbnailStreamSizeInBytes = config.reeltime.metadata.maxThumbnailStreamSizeInBytes as int
         }
 
         ctx.ffprobeService.with {

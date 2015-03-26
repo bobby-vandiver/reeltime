@@ -210,6 +210,10 @@ reeltime {
         // Max size in bytes of the submitted video stream
         // TODO: Determine average size of 2 minute MP4 video
         maxVideoStreamSizeInBytes = 30 * 1024 * 1024
+
+        // Max size in bytes of the submitted thumbnail video stream
+        // TODO: Determine average size of PNG thumbnail
+        maxThumbnailStreamSizeInBytes = 30 * 1024 * 1024
     }
 
     // Account management configuration
