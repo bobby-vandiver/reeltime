@@ -7,7 +7,9 @@ import in.reeltime.video.Video
 class FfmpegTranscoderService implements TranscoderService {
 
     def localFileSystemService
+
     def playlistService
+    def thumbnailService
 
     def ffmpeg
 
@@ -47,8 +49,13 @@ class FfmpegTranscoderService implements TranscoderService {
             log.info("Generating variant playlist")
             generateVariantPlaylist(outputPath, variant, playlist)
 
-            log.info("Making video [${video.id}] available for streaming")
+            log.info("Adding playlists")
             playlistService.addPlaylists(video, output + File.separator, variantPlaylistKey)
+
+            log.info("Adding thumbnails")
+            thumbnailService.addThumbnails(video)
+
+            log.info("Making video [${video.id}] available for streaming")
         }
         catch(Exception e) {
             throw new TranscoderException(e)
