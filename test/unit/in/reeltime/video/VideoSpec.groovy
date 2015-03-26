@@ -3,6 +3,8 @@ package in.reeltime.video
 import grails.test.mixin.TestFor
 import in.reeltime.playlist.Playlist
 import in.reeltime.playlist.PlaylistUri
+import in.reeltime.thumbnail.Thumbnail
+import in.reeltime.thumbnail.ThumbnailResolution
 import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -15,6 +17,7 @@ class VideoSpec extends Specification {
         def user = new User()
         def playlist = new Playlist()
         def playlistUri = new PlaylistUri(uri: 'somewhere')
+        def thumbnail = new Thumbnail(uri: 'anywhere', resolution: ThumbnailResolution.RESOLUTION_1X)
 
         when:
         def video = new Video(
@@ -22,6 +25,7 @@ class VideoSpec extends Specification {
                 title: 'foo',
                 masterPath: 'sample.mp4',
                 masterThumbnailPath: 'sample.png',
+                thumbnails: [thumbnail],
                 playlists: [playlist],
                 playlistUris: [playlistUri],
         )
@@ -34,6 +38,8 @@ class VideoSpec extends Specification {
         video.creator == user
         video.title == 'foo'
         video.masterPath == 'sample.mp4'
+        video.masterThumbnailPath == 'sample.png'
+        video.thumbnails == [thumbnail] as Set
         video.playlists == [playlist] as Set
         video.playlistUris == [playlistUri] as Set
     }
@@ -44,6 +50,21 @@ class VideoSpec extends Specification {
 
         then:
         !video.validate(['creator'])
+    }
+
+    @Unroll
+    void "[#key] can be empty"() {
+        when:
+        def video = new Video((key): [] as Set)
+
+        then:
+        video.validate([key])
+
+        where:
+        _   |   key
+        _   |   'thumbnails'
+        _   |   'playlists'
+        _   |   'playlistUris'
     }
 
     @Unroll

@@ -3,6 +3,7 @@ package in.reeltime.video
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.user.User
+import in.reeltime.thumbnail.Thumbnail
 import in.reeltime.playlist.Playlist
 import in.reeltime.playlist.PlaylistUri
 
@@ -21,6 +22,7 @@ class Video {
     static belongsTo = [creator: User]
 
     static hasMany = [
+            thumbnails: Thumbnail,
             playlists: Playlist,
             playlistUris: PlaylistUri
     ]
