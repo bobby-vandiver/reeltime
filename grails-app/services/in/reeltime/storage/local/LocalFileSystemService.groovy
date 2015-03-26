@@ -4,8 +4,8 @@ import static java.io.File.separator
 
 class LocalFileSystemService {
 
-    def inputBasePath
-    def outputBasePath
+    def videoBasePath
+    def playlistBasePath
 
     String getDirectory(String parent, String child) {
         def path = parent + separator + child
@@ -42,11 +42,11 @@ class LocalFileSystemService {
     }
 
     String getAbsolutePathToInputFile(String path) {
-        "${inputBasePath}${separator}${path}"
+        "${videoBasePath}${separator}${path}"
     }
 
     String getAbsolutePathToOutputFile(String path) {
-        "${outputBasePath}${separator}${path}"
+        "${playlistBasePath}${separator}${path}"
     }
 
 }

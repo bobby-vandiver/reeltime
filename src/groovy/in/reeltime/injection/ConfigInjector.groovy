@@ -47,8 +47,8 @@ class ConfigInjector {
         }
 
         ctx.localFileSystemService.with {
-            inputBasePath = config.reeltime.storage.videos
-            outputBasePath = config.reeltime.storage.playlists
+            videoBasePath = config.reeltime.storage.videos
+            playlistBasePath = config.reeltime.storage.playlists
         }
 
         ctx.videoStorageService.with {
