@@ -1,6 +1,7 @@
 package helper.rest
 
 import grails.plugins.rest.client.RestBuilder
+import org.springframework.http.converter.BufferedImageHttpMessageConverter
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.web.client.RestTemplate
@@ -19,5 +20,8 @@ class PatchedRestBuilder extends RestBuilder {
         if(mappingJackson2HttpMessageConverter) {
             messageConverters.remove(mappingJackson2HttpMessageConverter)
         }
+
+        def bufferedImageConverter = new BufferedImageHttpMessageConverter()
+        messageConverters.add(bufferedImageConverter)
     }
 }

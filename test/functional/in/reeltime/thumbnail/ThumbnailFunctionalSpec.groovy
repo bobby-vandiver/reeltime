@@ -3,8 +3,7 @@ package in.reeltime.thumbnail
 import grails.plugins.rest.client.RestResponse
 import in.reeltime.FunctionalSpec
 import spock.lang.Unroll
-
-import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
 
 class ThumbnailFunctionalSpec extends FunctionalSpec {
 
@@ -45,6 +44,7 @@ class ThumbnailFunctionalSpec extends FunctionalSpec {
     void "retrieve [#resolution] thumbnail"() {
         given:
         def request = requestFactory.getThumbnail(token, videoId, resolution)
+        request.customizer = { accept BufferedImage }
 
         when:
         def response = get(request)
@@ -59,9 +59,13 @@ class ThumbnailFunctionalSpec extends FunctionalSpec {
         'large'     |   225     |   225
     }
 
-    // TODO: Verify the resolution!
     private void assertThumbnailInResponse(RestResponse response, int height, int width) {
         responseChecker.assertStatusCode(response, 200)
         responseChecker.assertContentType(response, 'image/png')
+
+        def thumbnail = response.body as BufferedImage
+
+        assert thumbnail.height == height
+        assert thumbnail.width == width
     }
 }
