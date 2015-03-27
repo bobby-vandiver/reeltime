@@ -124,6 +124,10 @@ public class ReelTimeUrlFactory {
         getUrlForApiResource("videos/$videoId")
     }
 
+    String getThumbnailUrl(videoId) {
+        getUrlForApiResource("videos/$videoId/thumbnail")
+    }
+
     String getListReelsUrl() {
         getReelsUrl()
     }

@@ -166,6 +166,12 @@ class ReelTimeRequestFactory {
         new RestRequest(url: url, token: token)
     }
 
+    RestRequest getThumbnail(String token, videoId, resolution) {
+        def url = urlFactory.getThumbnailUrl(videoId)
+        def queryParams = (resolution != null) ? [resolution: resolution] : [:]
+        new RestRequest(url: url, queryParams: queryParams, token: token)
+    }
+
     RestRequest listReels(String token, pageNumber) {
         paginatedListRequest(token, pageNumber, urlFactory.listReelsUrl)
     }
