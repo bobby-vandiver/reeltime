@@ -130,5 +130,9 @@ class UrlMappings {
         "/api/videos/$video_id" (controller: 'video') {
             action = [GET: 'getVideo', DELETE: 'removeVideo']
         }
+
+        "/api/videos/$video_id/thumbnail" (controller: 'thumbnail') {
+            action = [GET: 'getThumbnail']
+        }
     }
 }

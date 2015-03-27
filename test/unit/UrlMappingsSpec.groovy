@@ -19,13 +19,14 @@ import in.reeltime.activity.NewsfeedController
 import in.reeltime.user.UserController
 import in.reeltime.user.UserFollowingController
 import in.reeltime.oauth2.TokenController
+import in.reeltime.thumbnail.ThumbnailController
 import spock.lang.Unroll
 
 @TestMixin(UrlMappingsUnitTestMixin)
 @Mock([VideoController, PlaylistController, SegmentController, ReelController, AudienceController,
         AccountController, AccountConfirmationController, AccountManagementController,
         ClientManagementController, ResetPasswordController, NewsfeedController,
-        UserController, UserFollowingController, TokenController,
+        UserController, UserFollowingController, TokenController, ThumbnailController,
         DevelopmentOnlyAccountController, NotificationController, ApplicationStatusController])
 class UrlMappingsSpec extends Specification {
 
@@ -75,6 +76,16 @@ class UrlMappingsSpec extends Specification {
             video_id = '124344'
             playlist_id = '5949'
             segment_id = '8891'
+        }
+    }
+
+    void "test thumbnail endpoint mapping"() {
+        given:
+        webRequest.currentRequest.method = 'GET'
+
+        expect:
+        assertForwardUrlMapping('/api/videos/7463/thumbnail', controller: 'thumbnail', action: 'getThumbnail') {
+            video_id = '7463'
         }
     }
 

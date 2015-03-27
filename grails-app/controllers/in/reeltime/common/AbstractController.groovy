@@ -2,6 +2,7 @@ package in.reeltime.common
 
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ReelNotFoundException
+import in.reeltime.exceptions.ThumbnailNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
 
@@ -88,6 +89,8 @@ abstract class AbstractController {
         catch(VideoNotFoundException e) {
             exceptionErrorMessageResponse(e, 'video.unknown', SC_NOT_FOUND)
         }
-
+        catch(ThumbnailNotFoundException e) {
+            exceptionErrorMessageResponse(e, 'thumbnail.unknown', SC_NOT_FOUND)
+        }
     }
 }
