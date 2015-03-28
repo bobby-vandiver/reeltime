@@ -21,20 +21,11 @@ class EmailManager extends TransactionSynchronizationAdapter {
         if(!TransactionSynchronizationManager.isSynchronizationActive()) {
             return
         }
-        registerSynchronizationWithManager()
+        TransactionSynchronizationManager.registerSynchronization(this)
 
         def email = new Email(to: to, from: from, subject: subject, body: body)
         def queue = emails.get()
         queue.add(email)
-    }
-
-    private void registerSynchronizationWithManager() {
-        for(TransactionSynchronization sync : TransactionSynchronizationManager.synchronizations) {
-            if(sync instanceof Email) {
-                return
-            }
-        }
-        TransactionSynchronizationManager.registerSynchronization(this)
     }
 
     @Override
