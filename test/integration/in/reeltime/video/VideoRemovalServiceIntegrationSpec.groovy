@@ -9,6 +9,7 @@ import in.reeltime.reel.ReelVideo
 import in.reeltime.transcoder.TranscoderJob
 import in.reeltime.user.User
 import in.reeltime.maintenance.ResourceRemovalTarget
+import in.reeltime.thumbnail.ThumbnailResolution
 import spock.lang.Unroll
 import test.helper.UserFactory
 
@@ -17,12 +18,14 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
     def videoRemovalService
 
     def videoStorageService
+    def thumbnailStorageService
     def playlistAndSegmentStorageService
 
     User creator
     Reel reel
 
     String videoBase
+    String thumbnailBase
     String playlistBase
 
     void setup() {
@@ -30,6 +33,7 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
         reel = creator.reels[0]
 
         videoBase = videoStorageService.videoBase
+        thumbnailBase = thumbnailStorageService.thumbnailBase
         playlistBase = playlistAndSegmentStorageService.playlistBase
     }
 
@@ -48,6 +52,10 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
                 masterPath: 'something.mp4',
                 masterThumbnailPath: 'something.png'
         )
+
+        video.addToThumbnails(resolution: ThumbnailResolution.RESOLUTION_1X, uri: 'thumbnail-1x')
+        video.addToThumbnails(resolution: ThumbnailResolution.RESOLUTION_2X, uri: 'thumbnail-2x')
+        video.addToThumbnails(resolution: ThumbnailResolution.RESOLUTION_3X, uri: 'thumbnail-3x')
 
         video.addToPlaylists(playlist)
 
@@ -97,6 +105,11 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         ResourceRemovalTarget.findByBaseAndRelative(videoBase, 'something.mp4') != null
+        ResourceRemovalTarget.findByBaseAndRelative(thumbnailBase, 'something.png') != null
+
+        ResourceRemovalTarget.findByBaseAndRelative(thumbnailBase, 'thumbnail-1x') != null
+        ResourceRemovalTarget.findByBaseAndRelative(thumbnailBase, 'thumbnail-2x') != null
+        ResourceRemovalTarget.findByBaseAndRelative(thumbnailBase, 'thumbnail-3x') != null
 
         ResourceRemovalTarget.findByBaseAndRelative(playlistBase, 'seg1.ts') != null
         ResourceRemovalTarget.findByBaseAndRelative(playlistBase, 'seg2.ts') != null
