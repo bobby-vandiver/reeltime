@@ -11,8 +11,6 @@ class PlaylistController extends AbstractController {
 
     def playlistService
 
-    static allowedMethods = [getVariantPlaylist: 'GET', getMediaPlaylist: 'GET']
-
     @Secured(["#oauth2.hasScope('videos-read')"])
     def getVariantPlaylist(VideoCommand command) {
         log.debug("Requested variant playlist for video [${command.video_id}]")

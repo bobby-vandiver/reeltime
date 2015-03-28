@@ -11,8 +11,6 @@ class NewsfeedController extends AbstractController {
 
     def newsfeedService
 
-    static allowedMethods = [listRecentActivity: 'GET']
-
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('users-read') and #oauth2.hasScope('audiences-read')"])
     def listRecentActivity(PagedListCommand command) {
         handleCommandRequest(command) {

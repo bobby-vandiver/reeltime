@@ -11,8 +11,6 @@ class SegmentController extends AbstractController {
 
     def playlistAndSegmentStorageService
 
-    static allowedMethods = [getSegment: 'GET']
-
     @Secured(["#oauth2.hasScope('videos-read')"])
     def getSegment(VideoCommand videoCommand, PlaylistCommand playlistCommand, SegmentCommand segmentCommand) {
 

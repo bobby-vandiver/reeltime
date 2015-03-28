@@ -16,8 +16,6 @@ class ClientManagementController extends AbstractController {
     def accountManagementService
     def authenticationService
 
-    static allowedMethods = [registerClient: 'POST', revokeClient: 'DELETE']
-
     @Secured(["permitAll"])
     def registerClient(ClientRegistrationCommand command) {
         handleCommandRequest(command) {

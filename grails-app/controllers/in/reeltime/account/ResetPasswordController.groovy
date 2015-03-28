@@ -16,8 +16,6 @@ class ResetPasswordController extends AbstractController {
     def userService
     def authenticationService
 
-    static allowedMethods = [sendEmail: 'POST', resetPassword: 'POST']
-
     @Secured(["permitAll"])
     def sendEmail(UsernameCommand command) {
         handleCommandRequest(command) {

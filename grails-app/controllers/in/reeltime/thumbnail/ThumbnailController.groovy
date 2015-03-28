@@ -10,8 +10,6 @@ class ThumbnailController extends AbstractController {
     def thumbnailService
     def thumbnailStorageService
 
-    static allowedMethods = [getThumbnail: 'GET']
-
     @Secured(["#oauth2.hasScope('videos-read')"])
     def getThumbnail(VideoCommand videoCommand, ThumbnailCommand thumbnailCommand) {
         log.debug("Requested thumbnail [${thumbnailCommand.resolution} for video [${videoCommand.video_id}]")

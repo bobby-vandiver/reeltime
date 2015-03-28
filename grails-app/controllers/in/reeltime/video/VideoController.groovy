@@ -18,8 +18,6 @@ class VideoController extends AbstractController {
     def videoCreationService
     def videoRemovalService
 
-    static allowedMethods = [listVideos: 'GET', upload: 'POST', status: 'GET', removeVideo: 'DELETE']
-
     @Secured(["#oauth2.hasScope('videos-read')"])
     def listVideos(PagedListCommand command) {
         log.debug "Listing all videos on page [${command.page}]"

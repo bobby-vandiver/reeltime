@@ -11,8 +11,6 @@ class DevelopmentOnlyAccountController extends AbstractController {
 
     def developmentOnlyAccountService
 
-    static allowedMethods = [confirmAccountForUser: 'POST', resetPasswordForUser: 'POST']
-
     private static final List<String> environmentsToAllow = ['test', 'development', 'acceptance']
 
     def beforeInterceptor = {

@@ -16,8 +16,6 @@ class NotificationController {
     def notificationService
     def videoCreationService
 
-    static allowedMethods = [handleMessage: 'POST']
-
     def beforeInterceptor = {
         if(messageIsNotAuthentic()) {
             render status: SC_BAD_REQUEST

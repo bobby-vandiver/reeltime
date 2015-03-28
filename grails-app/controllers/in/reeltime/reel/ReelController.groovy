@@ -17,12 +17,6 @@ class ReelController extends AbstractController {
     def reelRemovalService
     def reelVideoManagementService
 
-    static allowedMethods = [
-            listReels: 'GET',
-            listUserReels: 'GET', addReel: 'POST', deleteReel: 'DELETE',
-            listVideos: 'GET', addVideo: 'POST', removeVideo: 'DELETE'
-    ]
-
     @Secured(["#oauth2.hasScope('reels-read')"])
     def getReel(ReelCommand command) {
         log.debug "Getting reel [${command.reel_id}]"

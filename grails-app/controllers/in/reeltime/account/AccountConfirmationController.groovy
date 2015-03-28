@@ -15,8 +15,6 @@ class AccountConfirmationController extends AbstractController {
     def accountConfirmationService
     def authenticationService
 
-    static allowedMethods = [sendEmail: 'POST', confirmAccount: 'POST']
-
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-write')"])
     def sendEmail() {
         try {

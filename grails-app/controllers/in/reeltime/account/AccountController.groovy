@@ -12,8 +12,6 @@ class AccountController extends AbstractController {
     def accountRegistrationService
     def accountRemovalService
 
-    static allowedMethods = [registerAccount: 'POST', removeAccount: 'DELETE']
-
     @Secured(["permitAll"])
     def registerAccount(AccountRegistrationCommand command) {
         handleCommandRequest(command) {

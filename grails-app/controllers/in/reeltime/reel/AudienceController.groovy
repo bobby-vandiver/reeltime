@@ -11,8 +11,6 @@ class AudienceController extends AbstractController {
 
     def audienceService
 
-    static allowedMethods = [listMembers: 'GET', addMember: 'POST', removeMember: 'DELETE']
-
     @Secured(["#oauth2.hasScope('audiences-read')"])
     def listMembers(ReelCommand reelCommand, PagedListCommand pagedListCommand) {
         log.debug "List audience members for reel [${reelCommand.reel_id}] on page [${pagedListCommand.page}]"

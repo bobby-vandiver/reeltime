@@ -13,11 +13,6 @@ class UserFollowingController extends AbstractController {
     def userFollowingService
     def authenticationService
 
-    static allowedMethods = [
-            followUser: 'POST', unfollowUser: 'DELETE',
-            listFollowers: 'GET', listFollowees: 'GET'
-    ]
-
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('users-write')"])
     def followUser(UsernameCommand command) {
         handleCommandRequest(command) {

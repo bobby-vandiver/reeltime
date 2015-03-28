@@ -11,8 +11,6 @@ class AccountManagementController extends AbstractController {
     def accountManagementService
     def authenticationService
 
-    static allowedMethods = [changePassword: 'POST', changeDisplayName: 'POST']
-
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-write')"])
     def changePassword(ChangePasswordCommand command) {
         handleCommandRequest(command) {

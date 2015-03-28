@@ -10,8 +10,6 @@ class UserController extends AbstractController {
 
     def userService
 
-    static allowedMethods = [getUser: 'GET', listUsers: 'GET']
-
     @Secured(["#oauth2.hasScope('users-read')"])
     def getUser(UsernameCommand command) {
         log.debug "Getting details for user [${command.username}]"
