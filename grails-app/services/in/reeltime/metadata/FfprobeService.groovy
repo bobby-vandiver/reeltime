@@ -31,11 +31,12 @@ class FfprobeService {
     }
 
     private void ensurePathToFfprobeIsDefined() {
+        log.debug("Checking ffprobe path [$ffprobe]")
         if(!ffprobe || !ffprobeExists())
             throw new IllegalStateException('ffprobe could not be found')
     }
 
-    private void ffprobeExists() {
+    private boolean ffprobeExists() {
         new File(ffprobe).exists()
     }
 
