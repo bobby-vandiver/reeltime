@@ -264,6 +264,7 @@ class VideoCreationServiceSpec extends Specification {
 
         and:
         command.thumbnailFormatIsValid.is(null)
+        command.thumbnailStreamSizeIsValid.is(null)
     }
 
     void "invalid thumbnail format"() {
@@ -283,6 +284,29 @@ class VideoCreationServiceSpec extends Specification {
 
         and:
         1 * service.thumbnailValidationService.validateThumbnailStream(_) >> validationResult
+    }
+
+    @Unroll
+    void "thumbnail stream with data [#data] and max allowed size [#max] is allowed [#allowed]"() {
+        given:
+        service.maxThumbnailStreamSizeInBytes = max
+
+        and:
+        def command = createCommandWithVideoStream('VIDEO'.bytes)
+        command.thumbnailStream = new ByteArrayInputStream(data)
+
+        expect:
+        service.allowCreation(command) == allowed
+
+        and:
+        command.thumbnailStreamSizeIsValid == allowed
+
+        where:
+        max     |   data        |   allowed
+        0       |   'a'.bytes   |   false
+        1       |   'a'.bytes   |   true
+        1       |   'ab'.bytes  |   false
+        2       |   'a'.bytes   |   true
     }
 
     void "add playlists and thumbnails to completed video"() {

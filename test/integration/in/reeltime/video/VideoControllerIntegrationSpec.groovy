@@ -71,13 +71,32 @@ class VideoControllerIntegrationSpec extends IntegrationSpec {
         maxSizePlusOne++
 
         setupForCreationRequest()
-        createFileWithGivenSizeAsVideo(maxSizePlusOne)
+
+        def tempFile = createFileWithGivenSize(maxSizePlusOne)
+        addFileAsVideo(tempFile.path)
 
         when:
         controller.upload()
 
         then:
         assertErrorResponseContainsMessage('[video] exceeds max size')
+    }
+
+    void "submit thumbnail that exceeds max size"() {
+        given:
+        def maxSizePlusOne = grailsApplication.config.reeltime.metadata.maxThumbnailStreamSizeInBytes as int
+        maxSizePlusOne++
+
+        setupForCreationRequest()
+
+        def tempFile = createFileWithGivenSize(maxSizePlusOne)
+        addFileAsThumbnail(tempFile.path)
+
+        when:
+        controller.upload()
+
+        then:
+        assertErrorResponseContainsMessage('[thumbnail] exceeds max size')
     }
 
     private void setupForCreationRequest() {
@@ -102,7 +121,13 @@ class VideoControllerIntegrationSpec extends IntegrationSpec {
         controller.request.addFile(video)
     }
 
-    private void createFileWithGivenSizeAsVideo(int sizeInBytes) {
+    private void addFileAsThumbnail(String path) {
+        def stream = new FileInputStream(path)
+        def thumbnail = new GrailsMockMultipartFile('thumbnail', stream)
+        controller.request.addFile(thumbnail)
+    }
+
+    private File createFileWithGivenSize(int sizeInBytes) {
         def tempFile = File.createTempFile('video-creation-integration-test', '.tmp')
         tempFile.deleteOnExit()
 
@@ -110,7 +135,7 @@ class VideoControllerIntegrationSpec extends IntegrationSpec {
         randomAccessFile.length = sizeInBytes
         randomAccessFile.close()
 
-        addFileAsVideo(tempFile.path)
+        return tempFile
     }
 
     private void assertErrorResponseContainsMessage(String message) {

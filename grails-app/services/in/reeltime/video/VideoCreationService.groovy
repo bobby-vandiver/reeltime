@@ -32,27 +32,13 @@ class VideoCreationService {
 
     private void validateVideoStream(VideoCreationCommand command) {
         def temp = temporaryFileService.writeInputStreamToTempFile(command.videoStream, maxVideoStreamSizeInBytes)
-        setVideoStreamSizeIsValid(command, temp)
+        command.videoStreamSizeValidity = (temp != null)
 
         if(temp) {
             extractStreamsFromVideo(command, temp)
             reloadVideoStreamFromTempFile(command, temp)
             temporaryFileService.deleteTempFile(temp)
         }
-    }
-
-    private static void setVideoStreamSizeIsValid(VideoCreationCommand command, File temp) {
-        Boolean valid
-        if(!command.videoStream) {
-            valid = null
-        }
-        else if(temp) {
-            valid = true
-        }
-        else {
-            valid = false
-        }
-        command.videoStreamSizeIsValid = valid
     }
 
     private void extractStreamsFromVideo(VideoCreationCommand command, File temp) {
@@ -77,6 +63,7 @@ class VideoCreationService {
 
     private void validateThumbnailStream(VideoCreationCommand command) {
         def temp = temporaryFileService.writeInputStreamToTempFile(command.thumbnailStream, maxThumbnailStreamSizeInBytes)
+        command.thumbnailStreamSizeValidity = (temp != null)
 
         if(temp) {
             command.thumbnailStream = new BufferedInputStream(new FileInputStream(temp))

@@ -120,6 +120,25 @@ class VideoCreationCommandSpec extends Specification {
         true            |   true    |   null
     }
 
+    @Unroll
+    void "thumbnail stream size flag [#validSize] is valid [#valid]"() {
+        given:
+        def thumbnailStream = new ByteArrayInputStream('TEST'.bytes)
+        def command = new VideoCreationCommand(thumbnailStreamSizeIsValid: validSize, thumbnailStream: thumbnailStream)
+
+        expect:
+        command.validate(['thumbnailStreamSizeIsValid']) == valid
+
+        and:
+        command.errors.getFieldError('thumbnailStreamSizeIsValid')?.code == code
+
+        where:
+        validSize   |   valid   |   code
+        null        |   false   |   'exceedsMax'
+        false       |   false   |   'exceedsMax'
+        true        |   true    |   null
+    }
+
     void "thumbnail format is not checked when a thumbnail is not provided"() {
         given:
         def command = new VideoCreationCommand(thumbnailFormatIsValid: null, thumbnailStream: null)
@@ -141,6 +160,7 @@ class VideoCreationCommandSpec extends Specification {
 
         where:
         propertyName                |   value   |   code
+        'thumbnailStreamSizeIsValid'|   true    |   'invalid'
         'thumbnailFormatIsValid'    |   true    |   'invalid'
     }
 

@@ -14,6 +14,7 @@ class VideoCreationCommand {
     InputStream thumbnailStream
     InputStream videoStream
 
+    Boolean thumbnailStreamSizeIsValid
     Boolean thumbnailFormatIsValid
 
     Boolean videoStreamSizeIsValid
@@ -33,6 +34,7 @@ class VideoCreationCommand {
         thumbnailStream nullable: false
         videoStream nullable: false
 
+        thumbnailStreamSizeIsValid nullable: true, validator: thumbnailStreamSizeIsValidValidator
         thumbnailFormatIsValid nullable: true, validator: thumbnailFormatIsValidValidator
 
         videoStreamSizeIsValid nullable: true, validator: videoStreamSizeIsValidValidator
@@ -42,9 +44,28 @@ class VideoCreationCommand {
         aacStreamIsPresent nullable: true, validator: aacStreamValidator
     }
 
+    void setVideoStreamSizeValidity(boolean valid) {
+        videoStreamSizeIsValid = videoStream ? valid : null
+    }
+
+    void setThumbnailStreamSizeValidity(boolean valid) {
+        thumbnailStreamSizeIsValid = thumbnailStream ? valid : null
+    }
+
     private static Closure reelNameValidator = { val, obj ->
         if(obj.creator && !obj.creator.hasReel(val)) {
             return 'unknown'
+        }
+    }
+
+    private static Closure thumbnailStreamSizeIsValidValidator = { val, obj ->
+        thumbnailStreamDependentValidator(val, obj) { thumbnailStreamIsNull ->
+            if(!val) {
+                return 'exceedsMax'
+            }
+            else if(thumbnailStreamIsNull) {
+                return 'invalid'
+            }
         }
     }
 
