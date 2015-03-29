@@ -6,7 +6,6 @@ import in.reeltime.exceptions.AccountCodeException
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ConfirmationException
 
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
 import static javax.servlet.http.HttpServletResponse.SC_OK
 import static javax.servlet.http.HttpServletResponse.SC_SERVICE_UNAVAILABLE
 

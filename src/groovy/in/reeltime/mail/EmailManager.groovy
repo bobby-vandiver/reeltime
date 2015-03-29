@@ -1,7 +1,6 @@
 package in.reeltime.mail
 
 import groovy.util.logging.Slf4j
-import org.springframework.transaction.support.TransactionSynchronization
 import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
