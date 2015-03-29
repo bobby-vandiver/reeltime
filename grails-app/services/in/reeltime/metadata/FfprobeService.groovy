@@ -23,6 +23,9 @@ class FfprobeService {
             def jsonText = process.in.text
             log.debug("jsonText from ffprobe: $jsonText")
 
+            def errorText = process.err.text
+            log.debug("error text: $errorText")
+
             new JsonSlurper().parseText(jsonText)
         }
         catch(Exception e) {
