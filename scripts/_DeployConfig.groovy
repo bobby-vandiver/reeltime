@@ -42,6 +42,7 @@ Map loadProductionConfig() {
 
             launch: [
                     instanceProfileName: 'EC2-Instance-Production-Role',
+                    instanceType: 't2.micro',
                     securityGroup: 'NAT-SG'
             ],
 
@@ -93,6 +94,7 @@ Map loadSingleInstanceConfig() {
 
             launch: [
                     instanceProfileName: 'EC2-Instance-Acceptance-Role',
+                    instanceType: 't2.micro',
             ],
 
             postLaunch: [

@@ -6,6 +6,7 @@ includeTargets << new File("${basedir}/scripts/_Common.groovy")
 // Launch options
 LAUNCH_CONFIGURATION_NAMESPACE = 'aws:autoscaling:launchconfiguration'
 IAM_INSTANCE_PROFILE = 'IamInstanceProfile'
+INSTANCE_TYPE = 'InstanceType'
 SECURITY_GROUPS = 'SecurityGroups'
 
 // VPC options
@@ -38,6 +39,7 @@ JVM_INIT_HEAP_SIZE = 'Xms'
 getConfigurationOptionSettings = {
 
     String instanceProfileName = deployConfig.launch.instanceProfileName
+    String instanceType = deployConfig.launch.instanceType
 
     String environmentType = deployConfig.environment.type
     String healthCheckUrl = deployConfig.application.healthCheckUrl
@@ -49,6 +51,7 @@ getConfigurationOptionSettings = {
     Collection<ConfigurationOptionSetting> configurationOptions = [
 
             new ConfigurationOptionSetting(LAUNCH_CONFIGURATION_NAMESPACE, IAM_INSTANCE_PROFILE, instanceProfileName),
+            new ConfigurationOptionSetting(LAUNCH_CONFIGURATION_NAMESPACE, INSTANCE_TYPE, instanceType),
 
             new ConfigurationOptionSetting(ENVIRONMENT_NAMESPACE, ENVIRONMENT_TYPE, environmentType),
 
