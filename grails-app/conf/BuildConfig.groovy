@@ -44,10 +44,6 @@ grails.project.dependency.resolution = {
 
         // Repository for Spring Security RC plugin
         mavenRepo "http://repo.spring.io/milestone/"
-
-        // Repository for disable optimization JAR
-        // Source: https://github.com/renataogarcia/disableOptimizationsTransformation/issues/1
-        mavenRepo "https://raw.github.com/thecleancoder/mavenrepo/master/"
     }
 
     dependencies {
@@ -69,6 +65,7 @@ grails.project.dependency.resolution = {
         }
 
         // Disables Groovy optimizations for accurate Cobertura reporting
+        // Source: https://github.com/renataogarcia/disableOptimizationsTransformation/issues/1
         test 'com.github.renataogarcia:disable-groovy-compiler-optimizations-transformation:0.1-SNAPSHOT'
     }
 
