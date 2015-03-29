@@ -59,7 +59,7 @@ Map loadProductionConfig() {
             environment: [
                     name: 'reeltime-production',
                     type: 'LoadBalanced',
-                    solutionStackName: '64bit Amazon Linux 2014.03 v1.0.4 running Tomcat 7 Java 7',
+                    solutionStackName: '64bit Amazon Linux 2014.09 v1.2.0 running Tomcat 7 Java 7',
             ],
 
             application: [
@@ -105,9 +105,7 @@ Map loadSingleInstanceConfig() {
             environment: [
                     name: 'reeltime-acceptance',
                     type: 'SingleInstance',
-
-                    // TODO: Change to 64bit Amazon Linux 2014.09 v1.0.9 running Tomcat 7 Java 7
-                    solutionStackName: '64bit Amazon Linux 2014.03 v1.0.4 running Tomcat 7 Java 7',
+                    solutionStackName: '64bit Amazon Linux 2014.09 v1.2.0 running Tomcat 7 Java 7',
             ],
 
             application: [
