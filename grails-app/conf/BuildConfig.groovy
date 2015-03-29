@@ -94,7 +94,7 @@ grails.project.dependency.resolution = {
         // java.lang.ClassNotFoundException: grails.plugin.functional.spock.SpecTestTypeLoader
         compile ":functional-spock:0.7"
 
-        test ":code-coverage:1.2.7"
+        test ":code-coverage:2.0.3-3"
         test ":rest-client-builder:2.0.1"
     }
 }
