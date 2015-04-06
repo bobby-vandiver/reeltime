@@ -13,30 +13,30 @@ class CustomMarshallerRegistrar {
 
     private final Map<Class, Closure> marshallers = [
 
-        (RegistrationResult): { result ->
+        (RegistrationResult): { RegistrationResult result ->
             return [client_id: result.clientId, client_secret: result.clientSecret]
         },
 
-        (User): { user ->
+        (User): { User user ->
             return [username: user.username, display_name: user.displayName,
                     follower_count: user.numberOfFollowers, followee_count: user.numberOfFollowees]
         },
 
-        (Reel): { reel ->
+        (Reel): { Reel reel ->
             return [reel_id: reel.id, name: reel.name, audience_size: reel.numberOfAudienceMembers,
-                    video_count: reel.numberOfVideos]
+                    video_count: reel.numberOfVideos, owner: reel.owner]
         },
 
-        (Video): { video ->
+        (Video): { Video video ->
             return [video_id: video.id, title: video.title]
         },
 
-        (UserReelActivity): { activity ->
+        (UserReelActivity): { UserReelActivity activity ->
             def type = convertActivityType(activity.type)
             return [type: type, user: activity.user, reel: activity.reel]
         },
 
-        (UserReelVideoActivity): { activity ->
+        (UserReelVideoActivity): { UserReelVideoActivity activity ->
             def type = convertActivityType(activity.type)
             return [type: type, user: activity.user, reel: activity.reel, video: activity.video]
         }

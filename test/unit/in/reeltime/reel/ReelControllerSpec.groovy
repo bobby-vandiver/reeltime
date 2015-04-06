@@ -54,7 +54,6 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 4
 
         and:
         json.reel_id == reelId
@@ -165,7 +164,6 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json.reels.size() == 1
 
         and:
-        json.reels[0].size() == 4
         json.reels[0].reel_id == reel.id
         json.reels[0].name == 'foo'
         json.reels[0].audience_size == 0
@@ -198,14 +196,12 @@ class ReelControllerSpec extends AbstractControllerSpec {
         json.reels.size() == 2
 
         and:
-        json.reels[0].size() == 4
         json.reels[0].reel_id == reel1.id
         json.reels[0].name == 'foo'
         json.reels[0].audience_size == 0
         json.reels[0].video_count == 0
 
         and:
-        json.reels[1].size() == 4
         json.reels[1].reel_id == reel2.id
         json.reels[1].name == 'bar'
         json.reels[1].audience_size == 0

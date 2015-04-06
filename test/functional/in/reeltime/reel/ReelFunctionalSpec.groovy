@@ -268,6 +268,7 @@ class ReelFunctionalSpec extends FunctionalSpec {
         response.json.reel_id == someReelId
         response.json.audience_size == 0
         response.json.video_count == 0
+        response.json.owner.username == TEST_USER
     }
 
     void "get reel that has videos and audience members"() {
