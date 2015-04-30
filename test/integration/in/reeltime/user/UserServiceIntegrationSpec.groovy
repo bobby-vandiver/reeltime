@@ -65,6 +65,24 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
         !userService.emailInUse('unknown@test.com')
     }
 
+    void "client name not in use for user"() {
+        given:
+        def user = UserFactory.createUser('someone')
+        def clientName = user.clients[0].clientName + 'a'
+
+        expect:
+        userService.isClientNameAvailable('someone', clientName)
+    }
+
+    void "client name is already in use for user"() {
+        given:
+        def user = UserFactory.createUser('someone')
+        def clientName = user.clients[0].clientName
+
+        expect:
+        !userService.isClientNameAvailable('someone', clientName)
+    }
+
     void "create new user"() {
         given:
         def email = 'foo@test.com'

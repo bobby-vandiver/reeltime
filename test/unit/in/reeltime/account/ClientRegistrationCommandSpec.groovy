@@ -3,6 +3,7 @@ package in.reeltime.account
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import in.reeltime.security.AuthenticationService
+import in.reeltime.user.UserService
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -71,9 +72,36 @@ class ClientRegistrationCommandSpec extends Specification {
     }
 
     @Unroll
+    void "client_name is available [#available] and valid [#valid]"() {
+        def command = new ClientRegistrationCommand(username: 'foo', password: 'bar', client_name: 'buzz')
+
+        command.userService = Stub(UserService) {
+            isClientNameAvailable('foo', 'buzz') >> available
+        }
+
+        command.authenticationService = Stub(AuthenticationService) {
+            authenticateUser(_, _) >> true
+        }
+
+        expect:
+        command.validate(['client_name']) == valid
+
+        and:
+        command.errors.getFieldError('client_name')?.code == code
+
+        where:
+        available   |   valid   |   code
+        true        |   true    |   null
+        false       |   false   |   'unavailable'
+    }
+
+    @Unroll
     void "client_name [#clientName] is valid [#valid]"() {
         given:
-        def command = new AccountRegistrationCommand(client_name: clientName)
+        def command = new ClientRegistrationCommand(client_name: clientName)
+        command.authenticationService = Stub(AuthenticationService) {
+            authenticateUser(_, _) >> true
+        }
 
         expect:
         command.validate(['client_name']) == valid

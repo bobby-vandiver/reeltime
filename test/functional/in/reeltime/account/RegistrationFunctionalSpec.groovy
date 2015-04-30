@@ -258,6 +258,27 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         responseChecker.assertInvalidHttpMethods(urlFactory.registerClientUrl, ['get', 'put', 'delete'])
     }
 
+    void "register client name already in use for user"() {
+        given:
+        def request = new RestRequest(url: urlFactory.registerClientUrl, customizer: {
+            username = TEST_USER
+            password = TEST_PASSWORD
+            client_name = 'some new client'
+        })
+
+        when:
+        def response = post(request)
+
+        then:
+        response.status == 201
+
+        when:
+        response = post(request)
+
+        then:
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[client_name] is not available')
+    }
+
     void "register a new client for an existing user"() {
         given:
         def request = new RestRequest(url: urlFactory.registerClientUrl, customizer: {

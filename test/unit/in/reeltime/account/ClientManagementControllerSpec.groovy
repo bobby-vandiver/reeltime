@@ -5,6 +5,7 @@ import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.RegistrationException
 import in.reeltime.security.AuthenticationService
 import in.reeltime.user.User
+import in.reeltime.user.UserService
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.transaction.PlatformTransactionManager
@@ -29,6 +30,8 @@ class ClientManagementControllerSpec extends AbstractControllerSpec {
         controller.authenticationService = authenticationService
 
         user = new User(username: 'someone', displayName: 'someone display')
+
+        stubUserService()
     }
 
     void "respond with client credentials upon successful registration of a previously unknown client"() {
@@ -124,6 +127,17 @@ class ClientManagementControllerSpec extends AbstractControllerSpec {
         // Source: https://jira.grails.org/browse/GRAILS-10538
         authenticationService.transactionManager = Mock(PlatformTransactionManager) {
             getTransaction(_) >> Mock(TransactionStatus)
+        }
+    }
+
+    private void stubUserService() {
+        defineBeans {
+            userService(UserService)
+        }
+
+        def userService = grailsApplication.mainContext.getBean('userService')
+        userService.metaClass.isClientNameAvailable = { String username, String clientName ->
+            return true
         }
     }
 }

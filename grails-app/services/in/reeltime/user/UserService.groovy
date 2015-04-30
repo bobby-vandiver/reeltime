@@ -16,6 +16,11 @@ class UserService {
         User.findByEmail(email) != null
     }
 
+    boolean isClientNameAvailable(String username, String clientName) {
+        def user = loadUser(username)
+        user.clients.find { it.clientName == clientName } == null
+    }
+
     List<User> listUsers(int page) {
         int offset = (page - 1) * maxUsersPerPage
         User.list(max: maxUsersPerPage, offset: offset, sort: 'username')
