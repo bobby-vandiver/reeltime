@@ -140,6 +140,9 @@ environments {
     }
 }
 
+final int PRODUCTION_BCRYPT_COST_FACTOR = 16
+final int DEVELOPMENT_BCRYPT_COST_FACTOR = 4
+
 // The following ReelTime settings must NOT be exposed in an external configuration:
 reeltime {
 
@@ -226,6 +229,9 @@ reeltime {
 
         // How long until a reset password code becomes invalid
         resetPasswordCodeValidityLengthInMins = 60
+
+        // The BCrypt cost factor to use for storing codes
+        bcryptCostFactor = PRODUCTION_BCRYPT_COST_FACTOR
     }
 
     // User activity configuration
@@ -264,6 +270,10 @@ environments {
                     segmentFormat = '%s-%%05d.ts'
                 }
             }
+
+            accountManagement {
+                bcryptCostFactor = DEVELOPMENT_BCRYPT_COST_FACTOR
+            }
         }
     }
 
@@ -282,6 +292,10 @@ environments {
                     path = System.getProperty('FFMPEG') ?: System.getenv('FFMPEG')
                     segmentFormat = '%s-%%05d.ts'
                 }
+            }
+
+            accountManagement {
+                bcryptCostFactor = DEVELOPMENT_BCRYPT_COST_FACTOR
             }
         }
     }

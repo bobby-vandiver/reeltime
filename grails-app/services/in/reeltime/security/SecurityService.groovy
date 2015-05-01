@@ -14,11 +14,4 @@ class SecurityService {
         }
         return secret.toString()
     }
-
-    byte[] generateSalt(int size) {
-        def secureRandom = new SecureRandom()
-        def salt = new byte[size]
-        secureRandom.nextBytes(salt)
-        return salt
-    }
 }

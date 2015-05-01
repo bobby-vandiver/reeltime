@@ -64,6 +64,10 @@ class ConfigInjector {
             thumbnailBase = config.reeltime.storage.thumbnails
         }
 
+        ctx.accountCodeGenerationService.with {
+            costFactor = config.reeltime.accountManagement.bcryptCostFactor
+        }
+
         ctx.accountConfirmationService.with {
             fromAddress = config.reeltime.accountManagement.fromAddress
             confirmationCodeValidityLengthInDays = config.reeltime.accountManagement.confirmationCodeValidityLengthInDays

@@ -12,6 +12,7 @@ import java.security.SecureRandom
 class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
 
     def accountConfirmationService
+    def cryptoService
 
     User user
     int savedConfirmationCodeValidityLengthInDays
@@ -168,11 +169,8 @@ class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
         AccountCode.findById(anotherConfirmationId)
     }
 
-    private static AccountCode createAccountConfirmation(User user, String rawCode) {
-        def secureRandom = new SecureRandom()
-
-        byte[] salt = new byte[AccountCode.SALT_LENGTH]
-        secureRandom.nextBytes(salt)
+    private AccountCode createAccountConfirmation(User user, String rawCode) {
+        def salt = cryptoService.generateBCryptSalt(10)
 
         new AccountCode(user: user, code: rawCode, salt: salt,
                 type: AccountCodeType.AccountConfirmation).save(flush: true)

@@ -3,6 +3,7 @@ package in.reeltime.account
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.user.User
+import org.springframework.security.crypto.bcrypt.BCrypt
 
 import java.security.MessageDigest
 
@@ -10,27 +11,30 @@ import java.security.MessageDigest
 @EqualsAndHashCode(includes = ['user', 'code', 'salt'])
 class AccountCode {
 
-    static final SALT_LENGTH = 32
     static final CODE_LENGTH = 8
     static final ALLOWED_CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
+    transient cryptoService
+
     User user
     String code
-    byte[] salt
+    String salt
 
     AccountCodeType type
     Date dateCreated
 
-    static boolean saltIsUnique(byte[] salt) {
+    static boolean saltIsUnique(String salt) {
         AccountCode.countBySalt(salt) == 0
     }
 
     static constraints = {
         user nullable: false
         code blank: false, nullable: false
-        salt nullable: false, minSize: SALT_LENGTH, maxSize: SALT_LENGTH
+        salt blank: false, nullable: false
         type nullable: false
     }
+
+    static transients = ['cryptoService']
 
     def beforeInsert() {
         code = hashAndSaltCode(code, salt)
@@ -43,7 +47,7 @@ class AccountCode {
     }
 
     boolean isCodeCorrect(String plainTextCode) {
-        hashAndSaltCode(plainTextCode, salt) == code
+        cryptoService.checkBCrypt(plainTextCode, code)
     }
 
     boolean hasExpiredInDays(int validityLengthInDays) {
@@ -60,10 +64,7 @@ class AccountCode {
         return dateCreated.time < calendar.timeInMillis
     }
 
-    private static String hashAndSaltCode(String code, byte[] salt) {
-        MessageDigest messageDigest = MessageDigest.getInstance('SHA-256')
-        messageDigest.update(code.getBytes('utf-8'))
-        messageDigest.update(salt)
-        messageDigest.digest().toString()
+    private String hashAndSaltCode(String code, String salt) {
+        cryptoService.hashBCrypt(code, salt)
     }
 }

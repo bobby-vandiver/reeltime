@@ -22,26 +22,4 @@ class SecurityServiceSpec extends Specification {
         then:
         firstSecret != secondSecret
     }
-
-    void "generate salt of [#size] bytes"() {
-        expect:
-        service.generateSalt(size).size() == size
-
-        where:
-        _   |   size
-        _   |   0
-        _   |   1
-        _   |   5
-        _   |   8
-        _   |   30
-    }
-
-    void "generate different salts for subsequent requests of same size"() {
-        when:
-        def firstSalt = service.generateSalt(TEST_LENGTH)
-        def secondSalt = service.generateSalt(TEST_LENGTH)
-
-        then:
-        !Arrays.equals(firstSalt, secondSalt)
-    }
 }

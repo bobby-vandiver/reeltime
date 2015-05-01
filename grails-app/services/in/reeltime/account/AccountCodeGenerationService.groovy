@@ -2,13 +2,16 @@ package in.reeltime.account
 
 import in.reeltime.exceptions.AccountCodeException
 import in.reeltime.user.User
-import static in.reeltime.account.AccountCode.SALT_LENGTH
+
 import static in.reeltime.account.AccountCode.CODE_LENGTH
 import static in.reeltime.account.AccountCode.ALLOWED_CHARACTERS
 
 class AccountCodeGenerationService {
 
     def securityService
+    def cryptoService
+
+    def costFactor
 
     private static final int MAX_ATTEMPTS = 5
 
@@ -28,12 +31,12 @@ class AccountCodeGenerationService {
         return code
     }
 
-    private byte[] generateUniqueSalt() {
-        byte[] salt = null
+    private String generateUniqueSalt() {
+        String salt = null
         boolean generatedUniqueSalt = false
 
         for(int attempts = 0; attempts < MAX_ATTEMPTS && !generatedUniqueSalt; attempts++) {
-            salt = securityService.generateSalt(SALT_LENGTH)
+            salt = cryptoService.generateBCryptSalt(costFactor as int)
             generatedUniqueSalt = AccountCode.saltIsUnique(salt)
         }
 

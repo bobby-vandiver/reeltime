@@ -19,6 +19,8 @@ class ResetPasswordServiceIntegrationSpec extends MailServiceDependentIntegratio
     def authenticationService
     def accountRemovalService
 
+    def cryptoService
+
     User user
     int savedResetPasswordCodeValidityLengthInMins
 
@@ -223,11 +225,8 @@ class ResetPasswordServiceIntegrationSpec extends MailServiceDependentIntegratio
         !AccountCode.findById(resetPasswordCodeId)
     }
 
-    private static AccountCode createResetPasswordCode(User user, String rawCode) {
-        def secureRandom = new SecureRandom()
-
-        byte[] salt = new byte[AccountCode.SALT_LENGTH]
-        secureRandom.nextBytes(salt)
+    private AccountCode createResetPasswordCode(User user, String rawCode) {
+        def salt = cryptoService.generateBCryptSalt(10)
 
         new AccountCode(user: user, code: rawCode, salt: salt,
                 type: AccountCodeType.ResetPassword).save(flush: true)

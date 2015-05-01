@@ -5,6 +5,7 @@ import grails.test.mixin.TestFor
 import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
+import in.reeltime.security.CryptoService
 
 @TestFor(AccountCode)
 @Mock([User])
@@ -56,15 +57,15 @@ class AccountCodeSpec extends Specification {
         salt        |   valid
         null        |   false
         ''          |   false
-        '1234abcd'  |   false
-        'b' * 31    |   false
+        '1234abcd'  |   true
+        'b' * 31    |   true
         'b' * 32    |   true
-        'b' * 33    |   false
+        'b' * 33    |   true
     }
 
     void "check salt is unique"() {
         given:
-        byte[] salt = ('b' * 32).bytes
+        def salt = ('b' * 32)
 
         expect:
         AccountCode.saltIsUnique(salt)
@@ -72,8 +73,14 @@ class AccountCodeSpec extends Specification {
 
     void "check salt is not unique"() {
         given:
-        byte[] salt = ('b' * 32).bytes
-        new AccountCode(code: 'abcdefgh', salt: salt).save(validate: false)
+        def salt = ('b' * 32)
+
+        def accountCode = new AccountCode(code: 'abcdefgh', salt: salt)
+        accountCode.cryptoService = Stub(CryptoService) {
+            hashBCrypt('abcdefgh', salt) >> 'hashed'
+        }
+
+        accountCode.save(validate: false)
 
         expect:
         !AccountCode.saltIsUnique(salt)
