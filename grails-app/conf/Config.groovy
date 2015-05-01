@@ -11,6 +11,9 @@
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
 
+final int PRODUCTION_BCRYPT_COST_FACTOR = 16
+final int DEVELOPMENT_BCRYPT_COST_FACTOR = 4
+
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
@@ -128,6 +131,18 @@ grails.plugin.springsecurity.providerNames = [
         'daoAuthenticationProvider'
 ]
 
+grails.plugin.springsecurity.password.bcrypt.logrounds = PRODUCTION_BCRYPT_COST_FACTOR
+
+// Spring Security environment specific configuration
+environments {
+    development {
+        grails.plugin.springsecurity.password.bcrypt.logrounds = DEVELOPMENT_BCRYPT_COST_FACTOR
+    }
+    test {
+        grails.plugin.springsecurity.password.bcrypt.logrounds = DEVELOPMENT_BCRYPT_COST_FACTOR
+    }
+}
+
 // Database migration configuration
 environments {
     development {
@@ -139,9 +154,6 @@ environments {
         grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
     }
 }
-
-final int PRODUCTION_BCRYPT_COST_FACTOR = 16
-final int DEVELOPMENT_BCRYPT_COST_FACTOR = 4
 
 // The following ReelTime settings must NOT be exposed in an external configuration:
 reeltime {
