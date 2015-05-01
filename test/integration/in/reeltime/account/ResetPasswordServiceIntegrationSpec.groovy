@@ -228,7 +228,7 @@ class ResetPasswordServiceIntegrationSpec extends MailServiceDependentIntegratio
     private AccountCode createResetPasswordCode(User user, String rawCode) {
         def salt = cryptoService.generateBCryptSalt(10)
 
-        new AccountCode(user: user, code: rawCode, salt: salt,
+        new AccountCode(user: user, code: rawCode, salt: salt, cost: 10,
                 type: AccountCodeType.ResetPassword).save(flush: true)
     }
 

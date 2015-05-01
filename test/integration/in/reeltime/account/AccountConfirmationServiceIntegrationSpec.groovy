@@ -172,7 +172,7 @@ class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
     private AccountCode createAccountConfirmation(User user, String rawCode) {
         def salt = cryptoService.generateBCryptSalt(10)
 
-        new AccountCode(user: user, code: rawCode, salt: salt,
+        new AccountCode(user: user, code: rawCode, salt: salt, cost: 10,
                 type: AccountCodeType.AccountConfirmation).save(flush: true)
     }
 

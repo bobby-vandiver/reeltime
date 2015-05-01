@@ -18,7 +18,9 @@ class AccountCode {
 
     User user
     String code
+
     String salt
+    Integer cost
 
     AccountCodeType type
     Date dateCreated
@@ -31,6 +33,7 @@ class AccountCode {
         user nullable: false
         code blank: false, nullable: false
         salt blank: false, nullable: false
+        cost nullable: false, min: 4, max: 31
         type nullable: false
     }
 

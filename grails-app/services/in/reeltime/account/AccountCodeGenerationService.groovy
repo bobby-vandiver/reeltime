@@ -25,18 +25,20 @@ class AccountCodeGenerationService {
 
     private String generateCode(User user, AccountCodeType type) {
         def code = securityService.generateSecret(CODE_LENGTH, ALLOWED_CHARACTERS)
-        def salt = generateUniqueSalt()
 
-        new AccountCode(user: user, code: code, salt: salt, type: type).save()
+        def cost = costFactor as int
+        def salt = generateUniqueSalt(cost)
+
+        new AccountCode(user: user, code: code, salt: salt, cost: cost, type: type).save()
         return code
     }
 
-    private String generateUniqueSalt() {
+    private String generateUniqueSalt(int cost) {
         String salt = null
         boolean generatedUniqueSalt = false
 
         for(int attempts = 0; attempts < MAX_ATTEMPTS && !generatedUniqueSalt; attempts++) {
-            salt = cryptoService.generateBCryptSalt(costFactor as int)
+            salt = cryptoService.generateBCryptSalt(cost)
             generatedUniqueSalt = AccountCode.saltIsUnique(salt)
         }
 

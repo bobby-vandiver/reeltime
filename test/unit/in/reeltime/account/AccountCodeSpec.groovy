@@ -48,7 +48,7 @@ class AccountCodeSpec extends Specification {
     @Unroll
     void "salt [#salt] is valid [#valid]"() {
         given:
-        def accountCode = new AccountCode(salt: salt?.bytes)
+        def accountCode = new AccountCode(salt: salt)
 
         expect:
         accountCode.validate(['salt']) == valid
@@ -61,6 +61,25 @@ class AccountCodeSpec extends Specification {
         'b' * 31    |   true
         'b' * 32    |   true
         'b' * 33    |   true
+    }
+
+    @Unroll
+    void "cost [#cost] is valid [#valid]"() {
+        given:
+        def accountCode = new AccountCode(cost: cost)
+
+        expect:
+        accountCode.validate(['cost']) == valid
+
+        where:
+        cost        |   valid
+        null        |   false
+        -1          |   false
+        0           |   false
+        3           |   false
+        4           |   true
+        31          |   true
+        32          |   false
     }
 
     void "check salt is unique"() {
