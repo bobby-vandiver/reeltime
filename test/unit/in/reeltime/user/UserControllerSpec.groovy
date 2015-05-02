@@ -3,9 +3,11 @@ package in.reeltime.user
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
+import in.reeltime.reel.Reel
+import in.reeltime.reel.Audience
 
 @TestFor(UserController)
-@Mock([UserFollowing])
+@Mock([UserFollowing, User, Reel, Audience])
 class UserControllerSpec extends AbstractControllerSpec {
 
     UserService userService
@@ -21,6 +23,7 @@ class UserControllerSpec extends AbstractControllerSpec {
         def displayName = 'bar'
 
         def user = new User(username: username, displayName: displayName)
+        forceSaveUser(user)
 
         and:
         params.username = username
@@ -33,7 +36,6 @@ class UserControllerSpec extends AbstractControllerSpec {
 
         and:
         def json = getJsonResponse(response)
-        json.size() == 4
 
         and:
         json.username == username
@@ -61,6 +63,7 @@ class UserControllerSpec extends AbstractControllerSpec {
 
         and:
         def user = new User(username: 'foo', displayName: 'bar')
+        forceSaveUser(user)
 
         when:
         controller.listUsers()

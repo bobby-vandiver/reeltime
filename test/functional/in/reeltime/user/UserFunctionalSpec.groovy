@@ -44,6 +44,8 @@ class UserFunctionalSpec extends FunctionalSpec {
         response.json.display_name == 'Cowboy Bob'
         response.json.follower_count == 0
         response.json.followee_count == 0
+        response.json.reel_count == 1
+        response.json.audience_membership_count == 0
     }
 
     void "user is following other users and is being followed by other users"() {
@@ -70,6 +72,38 @@ class UserFunctionalSpec extends FunctionalSpec {
         response.json.display_name == 'Cowboy Bob'
         response.json.follower_count == 2
         response.json.followee_count == 1
+        response.json.reel_count == 1
+        response.json.audience_membership_count == 0
+    }
+
+    void "user has reels and is an audience member of other reels"() {
+        given:
+        def someoneToken = registerNewUserAndGetToken('someone', 'secret', 'Cowboy Bob', ALL_SCOPES)
+        def anyoneToken = registerNewUserAndGetToken('anyone', ALL_SCOPES)
+
+        and:
+        reelTimeClient.addReel(someoneToken, 'some-first')
+        reelTimeClient.addReel(someoneToken, 'some-second')
+        reelTimeClient.addReel(someoneToken, 'some-third')
+
+        and:
+        def reelId1 = reelTimeClient.addReel(anyoneToken, 'any-first')
+        def reelId2 = reelTimeClient.addReel(anyoneToken, 'any-second')
+
+        reelTimeClient.addAudienceMember(someoneToken, reelId1)
+        reelTimeClient.addAudienceMember(someoneToken, reelId2)
+
+        when:
+        def response = reelTimeClient.userProfile(token, 'someone')
+
+        then:
+        response.status == 200
+        response.json.username == 'someone'
+        response.json.display_name == 'Cowboy Bob'
+        response.json.follower_count == 0
+        response.json.followee_count == 0
+        response.json.reel_count == 4
+        response.json.audience_membership_count == 2
     }
 
     @Unroll

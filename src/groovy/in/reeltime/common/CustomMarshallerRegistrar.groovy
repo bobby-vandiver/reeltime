@@ -19,7 +19,8 @@ class CustomMarshallerRegistrar {
 
         (User): { User user ->
             return [username: user.username, display_name: user.displayName,
-                    follower_count: user.numberOfFollowers, followee_count: user.numberOfFollowees]
+                    follower_count: user.numberOfFollowers, followee_count: user.numberOfFollowees,
+                    reel_count: user.numberOfReels, audience_membership_count: user.numberOfAudienceMemberships]
         },
 
         (Reel): { Reel reel ->

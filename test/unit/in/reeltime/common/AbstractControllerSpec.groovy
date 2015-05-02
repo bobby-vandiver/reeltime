@@ -1,7 +1,9 @@
 package in.reeltime.common
 
+import grails.plugin.springsecurity.SpringSecurityService
 import groovy.json.JsonSlurper
 import in.reeltime.message.LocalizedMessageService
+import in.reeltime.user.User
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 
@@ -40,5 +42,10 @@ abstract class AbstractControllerSpec extends Specification {
         def json = new JsonSlurper().parseText(response.contentAsString) as Map
         assert json.size() == 1
         assert json.errors == [message]
+    }
+
+    protected void forceSaveUser(User user) {
+        user.springSecurityService = Stub(SpringSecurityService)
+        user.save(validate: false)
     }
 }

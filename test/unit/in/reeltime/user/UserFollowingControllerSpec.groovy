@@ -7,9 +7,11 @@ import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.security.AuthenticationService
 import spock.lang.Unroll
+import in.reeltime.reel.Reel
+import in.reeltime.reel.Audience
 
 @TestFor(UserFollowingController)
-@Mock([UserFollowing])
+@Mock([UserFollowing, User, Reel, Audience])
 class UserFollowingControllerSpec extends AbstractControllerSpec {
 
     UserService userService
@@ -29,7 +31,10 @@ class UserFollowingControllerSpec extends AbstractControllerSpec {
         controller.authenticationService = authenticationService
 
         follower = new User(username: 'follower', displayName: 'follower display')
+        forceSaveUser(follower)
+
         followee = new User(username: 'followee', displayName: 'followee display')
+        forceSaveUser(followee)
     }
 
     void "current user begins following a user"() {

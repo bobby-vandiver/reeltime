@@ -6,6 +6,7 @@ import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.video.Video
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
+import in.reeltime.reel.Audience
 
 @ToString(includeNames = true, includes = ['displayName', 'username'])
 @EqualsAndHashCode(includes = ['username'])
@@ -29,7 +30,13 @@ class User {
 
     static hasMany = [videos: Video, clients: Client, reels: Reel]
 
-	static transients = ['springSecurityService', 'numberOfFollowees', 'numberOfFollowers']
+	static transients = [
+            'springSecurityService',
+            'numberOfFollowees',
+            'numberOfFollowers',
+            'numberOfReels',
+            'numberOfAudienceMemberships'
+    ]
 
     static List<User> findAllByIdInListInAlphabeticalOrderByPage(List<Long> userIds, int page, int maxUsersPerPage) {
         int offset = (page - 1) * maxUsersPerPage
@@ -75,6 +82,14 @@ class User {
 
     int getNumberOfFollowers() {
         UserFollowing.countByFollowee(this)
+    }
+
+    int getNumberOfReels() {
+        Reel.countByOwner(this)
+    }
+
+    int getNumberOfAudienceMemberships() {
+        Audience.findAllByAudienceMember(this).size()
     }
 
     Set<Role> getAuthorities() {

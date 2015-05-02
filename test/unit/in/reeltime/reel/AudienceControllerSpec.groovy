@@ -1,5 +1,6 @@
 package in.reeltime.reel
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
@@ -9,7 +10,7 @@ import in.reeltime.user.User
 import in.reeltime.user.UserFollowing
 
 @TestFor(AudienceController)
-@Mock([UserFollowing])
+@Mock([UserFollowing, Reel, Audience, User])
 class AudienceControllerSpec extends AbstractControllerSpec {
 
     AudienceService audienceService
@@ -119,6 +120,7 @@ class AudienceControllerSpec extends AbstractControllerSpec {
     void "only one member in the audience"() {
         given:
         def member = new User(username: 'member', displayName: 'member display')
+        forceSaveUser(member)
 
         when:
         controller.listMembers()
@@ -140,7 +142,10 @@ class AudienceControllerSpec extends AbstractControllerSpec {
     void "multiple members in the audience"() {
         given:
         def member1 = new User(username: 'member1', displayName: 'member1 display')
+        forceSaveUser(member1)
+
         def member2 = new User(username: 'member2', displayName: 'member2 display')
+        forceSaveUser(member2)
 
         when:
         controller.listMembers()
