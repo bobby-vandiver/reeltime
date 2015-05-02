@@ -12,7 +12,9 @@
 // }
 
 final int PRODUCTION_BCRYPT_COST_FACTOR = 16
+final int ACCEPTANCE_BCRYPT_COST_FACTOR = 10
 final int DEVELOPMENT_BCRYPT_COST_FACTOR = 4
+final int TEST_BCRYPT_COST_FACTOR = 4
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
@@ -139,7 +141,10 @@ environments {
         grails.plugin.springsecurity.password.bcrypt.logrounds = DEVELOPMENT_BCRYPT_COST_FACTOR
     }
     test {
-        grails.plugin.springsecurity.password.bcrypt.logrounds = DEVELOPMENT_BCRYPT_COST_FACTOR
+        grails.plugin.springsecurity.password.bcrypt.logrounds = TEST_BCRYPT_COST_FACTOR
+    }
+    acceptance {
+        grails.plugin.springsecurity.password.bcrypt.logrounds = ACCEPTANCE_BCRYPT_COST_FACTOR
     }
 }
 
@@ -284,7 +289,7 @@ environments {
             }
 
             accountManagement {
-                bcryptCostFactor = DEVELOPMENT_BCRYPT_COST_FACTOR
+                bcryptCostFactor = TEST_BCRYPT_COST_FACTOR
             }
         }
     }
@@ -323,6 +328,10 @@ environments {
 
             transcoder {
                 pipeline = 'http-live-streaming-acceptance'
+            }
+
+            accountManagement {
+                bcryptCostFactor = ACCEPTANCE_BCRYPT_COST_FACTOR
             }
         }
     }
