@@ -19,6 +19,19 @@ class Audience {
         }
     }
 
+    static int countByAudienceMember(User member) {
+        def criteria = Audience.createCriteria()
+        def result = criteria.list {
+            members {
+                idEq(member.id)
+            }
+            projections {
+                count()
+            }
+        }
+        return result[0]
+    }
+
     static constraints = {
     }
 

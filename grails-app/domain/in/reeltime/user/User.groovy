@@ -89,7 +89,7 @@ class User {
     }
 
     int getNumberOfAudienceMemberships() {
-        Audience.findAllByAudienceMember(this).size()
+        Audience.countByAudienceMember(this)
     }
 
     Set<Role> getAuthorities() {
