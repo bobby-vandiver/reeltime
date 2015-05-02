@@ -123,7 +123,8 @@ codenarc {
         GrailsDomainReservedSqlKeywordName.doNotApplyToClassNames='ResourceRemovalTarget,AccessToken,RefreshToken'
 
         // The Client and User need access to the springSecurityService for encoding client secrets and passwords
-        GrailsDomainWithServiceReference.doNotApplyToClassNames='Client,User'
+        // Similarly, the AccountCode needs access to the cryptoService for encoding its codes and checks
+        GrailsDomainWithServiceReference.doNotApplyToClassNames='Client,User,AccountCode'
 
         // Exclude classes provided by the Spring Security Core or OAuth2 plugin
         GrailsDomainHasEquals.doNotApplyToClassNames='AccessToken, AuthorizationCode, Client, RefreshToken, User, Role, UserRole'

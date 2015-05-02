@@ -7,8 +7,6 @@ import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ConfirmationException
 import test.helper.UserFactory
 
-import java.security.SecureRandom
-
 class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
 
     def accountConfirmationService

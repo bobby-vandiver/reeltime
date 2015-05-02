@@ -10,8 +10,6 @@ import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ResetPasswordException
 import test.spec.MailServiceDependentIntegrationSpec
 
-import java.security.SecureRandom
-
 class ResetPasswordServiceIntegrationSpec extends MailServiceDependentIntegrationSpec {
 
     def resetPasswordService
