@@ -57,7 +57,9 @@ class User {
 	}
 
     static Closure reelsValidator = { val, obj ->
-        return obj.hasReel(Reel.UNCATEGORIZED_REEL_NAME)
+        withNewSession {
+            return obj.hasReel(Reel.UNCATEGORIZED_REEL_NAME)
+        }
     }
 
     boolean hasReel(String reelName) {
@@ -73,7 +75,12 @@ class User {
     }
 
     private Reel findReelByName(String reelName) {
-        reels.find { reel -> reel.name == reelName }
+        if(this.id) {
+            return Reel.findByOwnerAndName(this, reelName)
+        }
+        else {
+            return reels.find { reel -> reel.name == reelName }
+        }
     }
 
     int getNumberOfFollowees() {

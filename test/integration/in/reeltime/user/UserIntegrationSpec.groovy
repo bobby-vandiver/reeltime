@@ -18,6 +18,23 @@ class UserIntegrationSpec extends IntegrationSpec {
         userFollowingHelper = new UserFollowingHelper(userFollowingService: userFollowingService)
         user = UserFactory.createUser('someone')
     }
+
+    void "new user does not have uncategorized reel"() {
+        given:
+        def newUser = new User(username: 'joe')
+
+        expect:
+        !newUser.validate(['reels'])
+    }
+
+    void "removing uncategorized reel is invalid"() {
+        given:
+        user.reels = []
+
+        expect:
+        !user.validate(['reels'])
+    }
+
     @Unroll
     void "user has [#count] followers"() {
         given:
