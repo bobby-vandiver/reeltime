@@ -1,5 +1,6 @@
 package in.reeltime.video
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import in.reeltime.reel.Reel
@@ -8,6 +9,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestMixin(GrailsUnitTestMixin)
+@Mock([User])
 class VideoCreationCommandSpec extends Specification {
 
     private static final MAX_DURATION_IN_SECONDS = 300

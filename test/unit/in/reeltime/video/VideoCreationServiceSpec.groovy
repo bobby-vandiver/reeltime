@@ -22,7 +22,7 @@ import in.reeltime.thumbnail.ThumbnailStorageService
 import in.reeltime.thumbnail.ThumbnailValidationService
 
 @TestFor(VideoCreationService)
-@Mock([Video, TranscoderJob])
+@Mock([Video, TranscoderJob, User])
 class VideoCreationServiceSpec extends Specification {
 
     StreamMetadataService streamMetadataService

@@ -75,7 +75,7 @@ class User {
     }
 
     private Reel findReelByName(String reelName) {
-        if(this.id) {
+        if(User.exists(id)) {
             return Reel.findByOwnerAndName(this, reelName)
         }
         else {
