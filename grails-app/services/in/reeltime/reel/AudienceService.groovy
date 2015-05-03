@@ -3,7 +3,6 @@ package in.reeltime.reel
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.user.User
 
-
 class AudienceService {
 
     def reelService
@@ -16,13 +15,12 @@ class AudienceService {
 
     List<User> listMembers(Long reelId, int page) {
         def reel = reelService.loadReel(reelId)
-        def memberIds = reel.audience.members*.id?.flatten()?.toList() ?: []
-        User.findAllByIdInListInAlphabeticalOrderByPage(memberIds, page, maxMembersPerPage)
+        def memberIds = Audience.findAllMemberIdsByReel(reel)
+        User.findAllByIdInListInAlphabeticalOrderByPage(memberIds, page, maxMembersPerPage as int)
     }
 
     List<Reel> listReelsForAudienceMember(User member) {
-        def audiences = Audience.findAllByAudienceMember(member)
-        return audiences*.reel
+        Audience.findAllReelsByAudienceMember(member)
     }
 
     void addCurrentUserToAudience(Long reelId) {

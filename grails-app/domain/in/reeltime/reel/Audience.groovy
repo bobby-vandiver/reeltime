@@ -32,6 +32,28 @@ class Audience {
         return result[0]
     }
 
+    static List<Long> findAllMemberIdsByReel(Reel reel) {
+        Audience.withCriteria {
+            eq('reel', reel)
+            members {
+                projections {
+                    property('id')
+                }
+            }
+        } as List<Long>
+    }
+
+    static List<Reel> findAllReelsByAudienceMember(User member) {
+        Audience.withCriteria {
+            members {
+                idEq(member.id)
+            }
+            projections {
+                property('reel')
+            }
+        } as List<Reel>
+    }
+
     static constraints = {
     }
 
