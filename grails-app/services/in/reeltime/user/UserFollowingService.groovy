@@ -45,12 +45,12 @@ class UserFollowingService {
     }
 
     List<User> listFolloweesForFollower(User follower, int page) {
-        def followeeIds = UserFollowing.findAllByFollower(follower)?.collect { it.followee*.id }?.flatten()
+        def followeeIds = UserFollowing.findAllFolloweeIdsByFollower(follower)
         User.findAllByIdInListInAlphabeticalOrderByPage(followeeIds, page, maxUsersPerPage)
     }
 
     List<User> listFollowersForFollowee(User followee, int page) {
-        def followerIds = UserFollowing.findAllByFollowee(followee)?.collect { it.follower*.id }?.flatten()
+        def followerIds = UserFollowing.findAllFollowerIdsByFollowee(followee)
         User.findAllByIdInListInAlphabeticalOrderByPage(followerIds, page, maxUsersPerPage)
     }
 
