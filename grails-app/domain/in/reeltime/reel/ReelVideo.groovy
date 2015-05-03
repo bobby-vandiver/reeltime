@@ -22,6 +22,15 @@ class ReelVideo implements Serializable {
         version false
     }
 
+    static List<Long> findAllVideoIdsByReel(Reel reel) {
+        ReelVideo.withCriteria {
+            eq('reel', reel)
+            projections {
+                property('video.id')
+            }
+        } as List<Long>
+    }
+
     @Override
     int hashCode() {
         def builder = new HashCodeBuilder()

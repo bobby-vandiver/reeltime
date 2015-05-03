@@ -18,7 +18,7 @@ class ReelVideoManagementService {
 
     List<Video> listVideosInReel(Long reelId, int page) {
         def reel = reelService.loadReel(reelId)
-        def videoIds = ReelVideo.findAllByReel(reel)?.collect { it.video*.id }?.flatten()
+        def videoIds = ReelVideo.findAllVideoIdsByReel(reel)
 
         int offset = (page - 1) * maxVideosPerPage
         def params = [max: maxVideosPerPage, offset: offset, sort: 'dateCreated', order: 'desc']
