@@ -82,7 +82,7 @@ grails.project.dependency.resolution = {
 
         compile ":quartz:1.0.2"
 
-        compile ":spring-security-oauth2-provider:2.0-RC3"
+        compile ":spring-security-oauth2-provider:2.0-RC4"
         compile ":spring-security-core:2.0-RC4"
 
         compile ":codenarc:0.21"
