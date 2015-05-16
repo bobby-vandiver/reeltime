@@ -53,7 +53,7 @@ class ResetPasswordControllerSpec extends AbstractControllerSpec {
         and:
         1 * userService.loadUser(user.username) >> user
         1 * resetPasswordService.sendResetPasswordEmail(user, request.locale) >> { throw new AccountCodeException('TEST') }
-        1 * localizedMessageService.getMessage('resetPasswordEmail.internal.error', request.locale) >> TEST_MESSAGE
+        1 * localizedMessageService.getMessage('account.password.reset.email.internal.error', request.locale) >> TEST_MESSAGE
     }
 
     void "registration exception is thrown when resetting password and registering new client"() {

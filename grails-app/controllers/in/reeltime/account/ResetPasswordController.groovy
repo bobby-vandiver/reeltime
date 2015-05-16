@@ -26,7 +26,7 @@ class ResetPasswordController extends AbstractController {
                 render(status: SC_OK)
             }
             catch(AccountCodeException e) {
-                exceptionErrorMessageResponse(e, 'resetPasswordEmail.internal.error', SC_SERVICE_UNAVAILABLE)
+                exceptionErrorMessageResponse(e, 'account.password.reset.email.internal.error', SC_SERVICE_UNAVAILABLE)
             }
         }
     }
@@ -41,7 +41,7 @@ class ResetPasswordController extends AbstractController {
             }
         }
         catch(ResetPasswordException e) {
-            exceptionErrorMessageResponse(e, 'resetPassword.code.invalid', SC_BAD_REQUEST)
+            exceptionErrorMessageResponse(e, 'account.password.reset.code.invalid', SC_BAD_REQUEST)
         }
     }
 
