@@ -34,7 +34,7 @@ class AccountConfirmationService {
         def username = currentUser.username
 
         if(!accountConfirmationCodes) {
-            throw new AuthorizationException("The confirmation code is not associated with user [${username}]")
+            throw new ConfirmationException("The confirmation code is not associated with user [${username}]")
         }
 
         def accountConfirmation = accountConfirmationCodes.find { it.isCodeCorrect(code) }

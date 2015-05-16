@@ -6,6 +6,7 @@ import in.reeltime.exceptions.AccountCodeException
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ConfirmationException
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_OK
 import static javax.servlet.http.HttpServletResponse.SC_SERVICE_UNAVAILABLE
 
@@ -22,7 +23,7 @@ class AccountConfirmationController extends AbstractController {
             render(status: SC_OK)
         }
         catch(AccountCodeException e) {
-            exceptionErrorMessageResponse(e, 'accountConfirmationEmail.internal.error', SC_SERVICE_UNAVAILABLE)
+            exceptionErrorMessageResponse(e, 'account.confirmation.email.internal.error', SC_SERVICE_UNAVAILABLE)
         }
     }
 
@@ -34,7 +35,7 @@ class AccountConfirmationController extends AbstractController {
                 render(status: SC_OK)
             }
             catch(ConfirmationException e) {
-                throw new AuthorizationException("Account confirmation failed", e)
+                exceptionErrorMessageResponse(e, 'account.confirmation.code.invalid', SC_BAD_REQUEST)
             }
         }
     }

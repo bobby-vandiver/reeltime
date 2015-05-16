@@ -204,7 +204,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        responseChecker.assertUnauthorizedError(response)
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[code] is invalid')
     }
 
     void "register client with bad credentials"() {

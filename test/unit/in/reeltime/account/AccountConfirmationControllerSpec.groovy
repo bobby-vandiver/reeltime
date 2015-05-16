@@ -47,7 +47,7 @@ class AccountConfirmationControllerSpec extends AbstractControllerSpec {
         and:
         1 * authenticationService.getCurrentUser() >> user
         1 * accountConfirmationService.sendConfirmationEmail(user, request.locale) >> { throw new AccountCodeException('TEST') }
-        1 * localizedMessageService.getMessage('accountConfirmationEmail.internal.error', request.locale) >> TEST_MESSAGE
+        1 * localizedMessageService.getMessage('account.confirmation.email.internal.error', request.locale) >> TEST_MESSAGE
     }
 
     void "pass confirmation code to service to complete account confirmation"() {
@@ -72,7 +72,7 @@ class AccountConfirmationControllerSpec extends AbstractControllerSpec {
         controller.confirmAccount()
 
         then:
-        assertStatusCode(response, 403)
+        assertStatusCode(response, 400)
 
         and:
         1 * accountConfirmationService.confirmAccount(_) >> { throw new ConfirmationException('TEST') }

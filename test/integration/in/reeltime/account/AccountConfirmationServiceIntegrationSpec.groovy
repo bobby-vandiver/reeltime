@@ -119,7 +119,7 @@ class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
         }
 
         then:
-        def e = thrown(AuthorizationException)
+        def e = thrown(ConfirmationException)
         e.message == 'The confirmation code is not associated with user [current]'
 
         and:
@@ -137,7 +137,7 @@ class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {
         }
 
         then:
-        def e = thrown(AuthorizationException)
+        def e = thrown(ConfirmationException)
         e.message == 'The confirmation code is not associated with user [current]'
 
         and:
