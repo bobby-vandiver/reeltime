@@ -63,6 +63,7 @@ class ResetPasswordFunctionalSpec extends FunctionalSpec {
         'abcde'         |   'reset'     |   '[new_password] must be at least 6 characters long'
         'secret'        |   null        |   '[code] is required'
         'secret'        |   ''          |   '[code] is required'
+        'secret'        |   'invalid'   |   '[code] is invalid'
     }
 
     @Unroll
@@ -109,7 +110,7 @@ class ResetPasswordFunctionalSpec extends FunctionalSpec {
         def response = post(request)
 
         then:
-        responseChecker.assertUnauthorizedError(response)
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[code] is invalid')
     }
 
     void "authentic client not associated with user"() {
@@ -209,6 +210,7 @@ class ResetPasswordFunctionalSpec extends FunctionalSpec {
         'abcde'         |   'reset'     |   '[new_password] must be at least 6 characters long'
         'secret'        |   null        |   '[code] is required'
         'secret'        |   ''          |   '[code] is required'
+        'secret'        |   'invalid'   |   '[code] is invalid'
     }
 
     @Unroll

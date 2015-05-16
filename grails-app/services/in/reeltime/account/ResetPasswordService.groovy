@@ -46,7 +46,7 @@ class ResetPasswordService {
         def resetPasswordCodes = AccountCode.findAllByUserAndType(user, AccountCodeType.ResetPassword)
 
         if(!resetPasswordCodes) {
-            throw new AuthorizationException("The user has not requested a password reset")
+            throw new ResetPasswordException("The user has not requested a password reset")
         }
 
         def resetPasswordCode = resetPasswordCodes.find { it.isCodeCorrect(code) }

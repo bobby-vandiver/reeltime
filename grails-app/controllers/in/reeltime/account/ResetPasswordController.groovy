@@ -4,6 +4,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.AccountCodeException
 import in.reeltime.exceptions.RegistrationException
+import in.reeltime.exceptions.ResetPasswordException
 import in.reeltime.user.UsernameCommand
 
 import static javax.servlet.http.HttpServletResponse.*
@@ -32,11 +33,15 @@ class ResetPasswordController extends AbstractController {
 
     @Secured(["permitAll"])
     def resetPassword(ResetPasswordCommand command) {
-        if(command.isRegisteredClient()) {
-            resetPasswordForRegisteredClient(command)
+        try {
+            if (command.isRegisteredClient()) {
+                resetPasswordForRegisteredClient(command)
+            } else {
+                resetPasswordForNewClient(command)
+            }
         }
-        else {
-            resetPasswordForNewClient(command)
+        catch(ResetPasswordException e) {
+            exceptionErrorMessageResponse(e, 'resetPassword.code.invalid', SC_BAD_REQUEST)
         }
     }
 

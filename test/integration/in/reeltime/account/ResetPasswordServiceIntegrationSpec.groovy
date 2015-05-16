@@ -136,7 +136,7 @@ class ResetPasswordServiceIntegrationSpec extends MailServiceDependentIntegratio
         resetPasswordService.resetPassword(USERNAME, NEW_PASSWORD, RAW_RESET_PASSWORD_CODE)
 
         then:
-        def e = thrown(AuthorizationException)
+        def e = thrown(ResetPasswordException)
         e.message == "The user has not requested a password reset"
     }
 
