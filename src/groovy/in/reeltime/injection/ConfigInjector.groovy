@@ -82,6 +82,10 @@ class ConfigInjector {
             maxActivitiesPerPage = config.reeltime.activity.maxActivitiesPerPage
         }
 
+        ctx.clientService.with {
+            maxClientsPerPage = config.reeltime.browse.maxResultsPerPage
+        }
+
         ctx.userService.with {
             maxUsersPerPage = config.reeltime.browse.maxResultsPerPage
         }

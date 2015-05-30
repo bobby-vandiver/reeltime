@@ -6,6 +6,7 @@ import in.reeltime.user.User
 class ClientService {
 
     def securityService
+    def maxClientsPerPage
 
     // A length of 42 combined with the symbol set containing 70 choices above will give us a strength of 256-bits:
     // L = H / log(N) where L = 42, H = 256 and N= 70
@@ -58,6 +59,13 @@ class ClientService {
 
     String generateClientSecret() {
         securityService.generateSecret(REQUIRED_SECRET_LENGTH, ALLOWED_CHARACTERS)
+    }
+
+    List<Client> listClientsForUser(User user, int page) {
+        def clientIds = User.findAllClientIdsByUser(user)
+
+        int offset = (page - 1) * maxClientsPerPage
+        Client.findAllByIdInList(clientIds, [max: maxClientsPerPage, offset: offset, sort: 'clientName'])
     }
 
     void removeClientsForUser(User user) {

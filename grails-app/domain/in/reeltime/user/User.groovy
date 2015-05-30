@@ -43,6 +43,17 @@ class User {
         User.findAllByIdInList(userIds, [max: maxUsersPerPage, offset: offset, sort: 'username'])
     }
 
+    static List<Long> findAllClientIdsByUser(User user) {
+        User.withCriteria {
+            idEq(user.id)
+            clients {
+                projections {
+                    property('id')
+                }
+            }
+        } as List<Long>
+    }
+
 	static constraints = {
         displayName blank: false, nullable: false, matches: DISPLAY_NAME_REGEX
         email blank: false, nullable: false, email: true
