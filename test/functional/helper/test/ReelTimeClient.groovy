@@ -69,6 +69,24 @@ class ReelTimeClient {
         return response
     }
 
+    JSONElement registerNewClient(String username, String password, String clientName) {
+        def request = requestFactory.registerClient(username, password, clientName)
+        def response = post(request)
+
+        assertStatusOrFail(response, 201, "Failed to register new client.")
+
+        return response.json
+    }
+
+    JSONElement listClients(String token) {
+        def request = requestFactory.listClients(token)
+        def response = get(request)
+
+        assertStatusOrFail(response, 200, "Failed to list clients.")
+
+        return response.json
+    }
+
     void confirmAccountForUser(String token, String username) {
         def request = requestFactory.confirmAccountForUser(token, username)
         def response = post(request)

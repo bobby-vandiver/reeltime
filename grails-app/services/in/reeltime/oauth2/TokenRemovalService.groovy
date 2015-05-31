@@ -29,7 +29,7 @@ class TokenRemovalService {
         removeAllTokens(null, [client.clientId])
     }
 
-    private static void removeAllTokens(User user, Collection<String> clientIds) {
+    private void removeAllTokens(User user, Collection<String> clientIds) {
         def accessTokens = findAccessTokens(user, clientIds)
         def refreshTokens = findRefreshTokensFromAccessTokens(accessTokens)
 

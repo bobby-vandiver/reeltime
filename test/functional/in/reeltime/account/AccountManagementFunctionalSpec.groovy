@@ -1,6 +1,5 @@
 package in.reeltime.account
 
-import groovyx.net.http.HttpResponseException
 import helper.oauth2.AccessTokenRequester
 import in.reeltime.FunctionalSpec
 import spock.lang.Unroll
@@ -70,17 +69,6 @@ class AccountManagementFunctionalSpec extends FunctionalSpec {
         ''              |   '[new_password] is required'
         'a'             |   '[new_password] must be at least 6 characters long'
         'abc24'         |   '[new_password] must be at least 6 characters long'
-    }
-
-    void "attempt to revoke client access for unknown client"() {
-        given:
-        def request = requestFactory.revokeClient(token, clientId + 'a')
-
-        when:
-        def response = delete(request)
-
-        then:
-        responseChecker.assertUnauthorizedError(response)
     }
 
     void "successfully change password"() {

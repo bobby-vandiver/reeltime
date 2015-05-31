@@ -24,6 +24,18 @@ class ReelTimeRequestFactory {
         new RestRequest(url: urlFactory.removeAccountUrl, token: token)
     }
 
+    RestRequest listClients(String token) {
+        new RestRequest(url: urlFactory.listClientsUrl, token: token)
+    }
+
+    RestRequest registerClient(name, pass, clientName) {
+        new RestRequest(url: urlFactory.registerClientUrl, customizer: {
+            username = name
+            password = pass
+            client_name = clientName
+        })
+    }
+
     RestRequest revokeClient(String token, clientId) {
         def url = urlFactory.getRevokeClientUrl(clientId)
         new RestRequest(url: url, token: token)
