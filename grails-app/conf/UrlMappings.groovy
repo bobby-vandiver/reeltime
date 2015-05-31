@@ -27,11 +27,11 @@ class UrlMappings {
             action = [POST: 'registerAccount', DELETE: 'removeAccount']
         }
 
-        "/api/account/client" (controller: 'clientManagement') {
-            action = [POST: 'registerClient']
+        "/api/account/clients" (controller: 'clientManagement') {
+            action = [GET: 'listClients', POST: 'registerClient']
         }
 
-        "/api/account/client/$client_id" (controller: 'clientManagement') {
+        "/api/account/clients/$client_id" (controller: 'clientManagement') {
             action = [DELETE: 'revokeClient']
         }
 

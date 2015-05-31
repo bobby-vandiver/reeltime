@@ -57,11 +57,11 @@ public class ReelTimeUrlFactory {
     }
 
     String getRegisterClientUrl() {
-        getUrlForApiResource('account/client')
+        getUrlForApiResource('account/clients')
     }
 
     String getRevokeClientUrl(clientId) {
-        getUrlForApiResource("account/client/$clientId")
+        getUrlForApiResource("account/clients/$clientId")
     }
 
     String getConfirmationUrl() {

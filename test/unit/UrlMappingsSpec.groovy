@@ -158,20 +158,12 @@ class UrlMappingsSpec extends Specification {
         'DELETE'    |   'removeMember'
     }
 
-    void "test register new client endpoint mapping"() {
-        given:
-        webRequest.currentRequest.method = 'POST'
-
-        expect:
-        assertForwardUrlMapping('/api/account/client', controller: 'clientManagement', action: 'registerClient')
-    }
-
     void "test revoke client endpoint mapping"() {
         given:
         webRequest.currentRequest.method = 'DELETE'
 
         expect:
-        assertForwardUrlMapping('/api/account/client/device1', controller: 'clientManagement', action: 'revokeClient') {
+        assertForwardUrlMapping('/api/account/clients/device1', controller: 'clientManagement', action: 'revokeClient') {
             client_id = 'device1'
         }
     }
@@ -246,6 +238,8 @@ class UrlMappingsSpec extends Specification {
         '/api/newsfeed'                     |   'GET'       |   'newsfeed'              |   'listRecentActivity'
         '/api/account'                      |   'POST'      |   'account'               |   'registerAccount'
         '/api/account'                      |   'DELETE'    |   'account'               |   'removeAccount'
+        '/api/account/clients'              |   'GET'       |   'clientManagement'      |   'listClients'
+        '/api/account/clients'              |   'POST'      |   'clientManagement'      |   'registerClient'
         '/api/account/confirm'              |   'POST'      |   'accountConfirmation'   |   'confirmAccount'
         '/api/account/confirm/email'        |   'POST'      |   'accountConfirmation'   |   'sendEmail'
         '/api/account/display_name'         |   'POST'      |   'accountManagement'     |   'changeDisplayName'
