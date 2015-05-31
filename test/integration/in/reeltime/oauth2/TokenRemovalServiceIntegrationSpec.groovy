@@ -70,6 +70,36 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
         RefreshToken.findByValue(refreshTokenValue) == null
     }
 
+    void "user has multiple clients -- only revoke tokens for the specified client"() {
+        given:
+        def client1 = createClient('client1')
+        def client2 = createClient('client2')
+
+        and:
+        def user = createUser('someone', client1.clientId)
+        user.addToClients(client2)
+        user.save()
+
+        and:
+        def refreshToken1 = createRefreshToken()
+        def refreshToken2 = createRefreshToken()
+
+        and:
+        def accessToken1 = createAccessToken(user.username, client1.clientId, refreshToken1.value)
+        def accessToken2 = createAccessToken(user.username, client2.clientId, refreshToken2.value)
+
+        when:
+        tokenRemovalService.removeAllTokensForClient(client2)
+
+        then:
+        AccessToken.findByValue(accessToken1.value) != null
+        RefreshToken.findByValue(refreshToken1.value) != null
+
+        and:
+        AccessToken.findByValue(accessToken2.value) == null
+        RefreshToken.findByValue(refreshToken2.value) == null
+    }
+
     @Unroll
     void "remove all tokens associated with the specified user - [#clientCount] clients, [#accessTokenCount] access tokens and [#refreshTokenCount] refresh tokens"() {
         given:

@@ -169,7 +169,6 @@ class ClientManagementFunctionalSpec extends FunctionalSpec {
         responseChecker.assertUnauthorizedError(response)
     }
 
-    @Ignore("TODO: OAuth2 plugin hands back same access token for multiple clients")
     void "revoke client access for known client"() {
         given:
         def newClientId = reelTimeClient.registerNewClient(USERNAME, TEST_PASSWORD, 'revoke-test-client').client_id
