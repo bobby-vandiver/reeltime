@@ -3,6 +3,7 @@ package in.reeltime.account
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.RegistrationException
+import in.reeltime.search.PagedListCommand
 import in.reeltime.user.User
 
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
@@ -15,6 +16,7 @@ class ClientManagementController extends AbstractController {
     def accountRegistrationService
     def accountManagementService
     def authenticationService
+    def clientService
 
     @Secured(["permitAll"])
     def registerClient(ClientRegistrationCommand command) {
@@ -29,6 +31,16 @@ class ClientManagementController extends AbstractController {
             }
         }
     }
+
+    @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-read')"])
+    def listClients(PagedListCommand command) {
+        handleCommandRequest(command) {
+            render(status: SC_OK, contentType: APPLICATION_JSON) {
+                marshall(clients: clientService.listClientsForUser(currentUser, command.page))
+            }
+        }
+    }
+
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-write')"])
     def revokeClient(RevokeClientCommand command) {
         log.debug "Revoking access for client [${command.client_id}]"

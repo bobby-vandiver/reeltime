@@ -3,6 +3,7 @@ package in.reeltime.common
 import grails.converters.JSON
 import in.reeltime.activity.ActivityType
 import in.reeltime.activity.UserReelActivity
+import in.reeltime.oauth2.Client
 import in.reeltime.user.User
 import in.reeltime.reel.Reel
 import in.reeltime.video.Video
@@ -15,6 +16,10 @@ class CustomMarshallerRegistrar {
 
         (RegistrationResult): { RegistrationResult result ->
             return [client_id: result.clientId, client_secret: result.clientSecret]
+        },
+
+        (Client): { Client client ->
+            return [client_id: client.clientId, client_name: client.clientName]
         },
 
         (User): { User user ->

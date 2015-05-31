@@ -1,8 +1,11 @@
 package in.reeltime.account
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.RegistrationException
+import in.reeltime.oauth2.Client
+import in.reeltime.oauth2.ClientService
 import in.reeltime.security.AuthenticationService
 import in.reeltime.user.User
 import in.reeltime.user.UserService
@@ -12,24 +15,30 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionStatus
 
 @TestFor(ClientManagementController)
+@Mock([Client])
 class ClientManagementControllerSpec extends AbstractControllerSpec {
 
     AccountRegistrationService accountRegistrationService
     AccountManagementService accountManagementService
     AuthenticationService authenticationService
+    ClientService clientService
 
     User user
+    User currentUser
 
     void setup() {
         accountRegistrationService = Mock(AccountRegistrationService)
         accountManagementService = Mock(AccountManagementService)
         authenticationService = Mock(AuthenticationService)
+        clientService = Mock(ClientService)
 
         controller.accountRegistrationService = accountRegistrationService
         controller.accountManagementService = accountManagementService
         controller.authenticationService = authenticationService
+        controller.clientService = clientService
 
         user = new User(username: 'someone', displayName: 'someone display')
+        currentUser = new User(username: 'current')
 
         stubUserService()
     }
@@ -91,6 +100,43 @@ class ClientManagementControllerSpec extends AbstractControllerSpec {
         and:
         1 * accountRegistrationService.registerClientForExistingUser('user', 'client') >> { throw new RegistrationException('TEST') }
         1 * localizedMessageService.getMessage('registration.internal.error', request.locale) >> TEST_MESSAGE
+    }
+
+    void "use page 1 if page param is omitted"() {
+        when:
+        controller.listClients()
+
+        then:
+        1 * authenticationService.getCurrentUser() >> currentUser
+        1 * clientService.listClientsForUser(currentUser, 1) >> []
+    }
+
+    void "list clients"() {
+        given:
+        params.page = 3
+
+        and:
+        def client = new Client(clientId: 'cid', clientName: 'cname')
+        client.springSecurityService = Stub(SpringSecurityService)
+        client.save(validate: false)
+
+        when:
+        controller.listClients()
+
+        then:
+        assertStatusCodeAndContentType(response, 200)
+
+        and:
+        def json = getJsonResponse(response)
+        json.clients.size() == 1
+
+        and:
+        json.clients[0].client_id == client.clientId
+        json.clients[0].client_name == client.clientName
+
+        and:
+        1 * authenticationService.getCurrentUser() >> currentUser
+        1 * clientService.listClientsForUser(currentUser, 3) >> [client]
     }
 
     void "revoke client"() {
