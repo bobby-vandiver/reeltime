@@ -54,7 +54,7 @@ class AccountRegistrationServiceIntegrationSpec extends MailServiceDependentInte
         message.from == 'noreply@reeltime.in'
 
         and:
-        def messageRegex = /Hello (\w+), please enter the following code on your registered device: ([a-zA-z0-9]{8})/
+        def messageRegex = /Hello (\w+), please enter the following code on your registered device: ([a-zA-z0-9]{43})/
 
         def matcher = (message.body =~ messageRegex)
         matcher.matches()

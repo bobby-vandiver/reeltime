@@ -8,7 +8,7 @@ import in.reeltime.user.User
 @EqualsAndHashCode(includes = ['user', 'code', 'salt'])
 class AccountCode {
 
-    static final CODE_LENGTH = 8
+    static final CODE_LENGTH = 43
     static final ALLOWED_CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
     transient cryptoService
