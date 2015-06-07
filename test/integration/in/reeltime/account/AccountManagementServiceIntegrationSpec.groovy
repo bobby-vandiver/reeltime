@@ -3,7 +3,7 @@ package in.reeltime.account
 import grails.test.spock.IntegrationSpec
 import in.reeltime.user.User
 import in.reeltime.oauth2.Client
-import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.exceptions.ClientNotFoundException
 import test.helper.UserFactory
 
 class AccountManagementServiceIntegrationSpec extends IntegrationSpec {
@@ -74,7 +74,7 @@ class AccountManagementServiceIntegrationSpec extends IntegrationSpec {
         accountManagementService.revokeClient(user, 'uhoh')
 
         then:
-        def e = thrown(AuthorizationException)
+        def e = thrown(ClientNotFoundException)
         e.message == "Cannot revoke unknown client"
     }
 }

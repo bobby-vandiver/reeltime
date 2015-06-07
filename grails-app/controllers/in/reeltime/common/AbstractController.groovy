@@ -1,6 +1,7 @@
 package in.reeltime.common
 
 import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.exceptions.ClientNotFoundException
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.ThumbnailNotFoundException
 import in.reeltime.exceptions.UserNotFoundException
@@ -79,6 +80,9 @@ abstract class AbstractController {
         }
         catch(AuthorizationException e) {
             exceptionErrorMessageResponse(e, 'request.forbidden', SC_FORBIDDEN)
+        }
+        catch(ClientNotFoundException e) {
+            exceptionErrorMessageResponse(e, 'client.unknown', SC_NOT_FOUND)
         }
         catch(UserNotFoundException e) {
             exceptionErrorMessageResponse(e, 'user.unknown', SC_NOT_FOUND)

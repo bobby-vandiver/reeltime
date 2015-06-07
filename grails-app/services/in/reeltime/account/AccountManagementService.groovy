@@ -1,6 +1,6 @@
 package in.reeltime.account
 
-import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.exceptions.ClientNotFoundException
 import in.reeltime.user.User
 
 class AccountManagementService {
@@ -28,7 +28,7 @@ class AccountManagementService {
             it.clientId == clientId
         }
         if(!client) {
-            throw new AuthorizationException("Cannot revoke unknown client")
+            throw new ClientNotFoundException("Cannot revoke unknown client")
         }
 
         tokenRemovalService.removeAllTokensForClient(client)

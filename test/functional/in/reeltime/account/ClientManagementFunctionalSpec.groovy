@@ -166,7 +166,7 @@ class ClientManagementFunctionalSpec extends FunctionalSpec {
         def response = delete(request)
 
         then:
-        responseChecker.assertUnauthorizedError(response)
+        responseChecker.assertSingleErrorMessageResponse(response, 404, 'Requested client was not found')
     }
 
     void "revoke client access for known client"() {
