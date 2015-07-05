@@ -13,10 +13,38 @@ class TokenFunctionalSpec extends FunctionalSpec {
 
     void "invalid http methods for token revocation endpoint"() {
         given:
-        def url = urlFactory.getTokenRevocationUrl(token)
+        def url = urlFactory.getTokenRevocationUrl()
 
         expect:
-        responseChecker.assertInvalidHttpMethods(url, ['get', 'post', 'put'])
+        responseChecker.assertInvalidHttpMethods(url, ['get', 'put', 'delete'])
+    }
+
+    @Unroll
+    void "missing token [#tokenToRevoke]"() {
+        given:
+        def request = requestFactory.revokeToken(token, tokenToRevoke)
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertSingleErrorMessageResponse(response, 400, '[access_token] is required')
+
+        where:
+        _   |   tokenToRevoke
+        _   |   null
+        _   |   ''
+    }
+
+    void "invalid token should not leak the fact that it is invalid"() {
+        given:
+        def request = requestFactory.revokeToken(token, 'nonsense')
+
+        when:
+        def response = post(request)
+
+        then:
+        responseChecker.assertStatusCode(response, 200)
     }
 
     void "revoke token"() {
@@ -24,7 +52,7 @@ class TokenFunctionalSpec extends FunctionalSpec {
         def request = requestFactory.revokeToken(token, token)
 
         when:
-        def response = delete(request)
+        def response = post(request)
 
         then:
         responseChecker.assertStatusCode(response, 200)

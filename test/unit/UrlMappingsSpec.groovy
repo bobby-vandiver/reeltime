@@ -210,16 +210,6 @@ class UrlMappingsSpec extends Specification {
         }
     }
 
-    void "test token revocation mapping"() {
-        given:
-        webRequest.currentRequest.method = 'DELETE'
-
-        expect:
-        assertForwardUrlMapping('/api/tokens/unique', controller: 'token', action: 'revokeAccessToken') {
-            access_token = 'unique'
-        }
-    }
-
     @Unroll
     void "http method [#httpMethod] on [#url] url maps to controller [#controller] action [#action]"() {
         given:
@@ -236,6 +226,7 @@ class UrlMappingsSpec extends Specification {
         '/api/reels'                        |   'GET'       |   'reel'                  |   'listReels'
         '/api/reels'                        |   'POST'      |   'reel'                  |   'addReel'
         '/api/newsfeed'                     |   'GET'       |   'newsfeed'              |   'listRecentActivity'
+        '/api/tokens/revoke'                |   'POST'      |   'token'                 |   'revokeAccessToken'
         '/api/account'                      |   'POST'      |   'account'               |   'registerAccount'
         '/api/account'                      |   'DELETE'    |   'account'               |   'removeAccount'
         '/api/account/clients'              |   'GET'       |   'clientManagement'      |   'listClients'
