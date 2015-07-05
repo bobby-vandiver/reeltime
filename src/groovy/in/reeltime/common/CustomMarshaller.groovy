@@ -4,7 +4,7 @@ package in.reeltime.common
 // https://jira.grails.org/browse/GRAILS-11116
 class CustomMarshaller {
 
-    private CustomMarshallerRegistrar registrar = new CustomMarshallerRegistrar()
+    private CustomMarshallerRegistry registry = new CustomMarshallerRegistry()
 
     Object marshall(Object obj) {
         def clazz = obj?.class
@@ -26,8 +26,8 @@ class CustomMarshaller {
             }
             return map
         }
-        else if(registrar.hasMarshallerAvailable(clazz)) {
-            def marshaller = registrar.getMarshaller(clazz)
+        else if(registry.hasMarshallerAvailable(clazz)) {
+            def marshaller = registry.getMarshaller(clazz)
             def data = marshaller(obj)
             return marshall(data)
         }

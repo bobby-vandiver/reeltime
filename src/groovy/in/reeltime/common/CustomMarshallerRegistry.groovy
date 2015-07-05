@@ -10,7 +10,7 @@ import in.reeltime.video.Video
 import in.reeltime.activity.UserReelVideoActivity
 import in.reeltime.account.RegistrationResult
 
-class CustomMarshallerRegistrar {
+class CustomMarshallerRegistry {
 
     private final Map<Class, Closure> marshallers = [
 

@@ -1,6 +1,5 @@
 import grails.util.Environment
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler
-import in.reeltime.common.CustomMarshallerRegistrar
 import in.reeltime.mail.EmailManager
 
 beans = {
@@ -9,8 +8,6 @@ beans = {
     authenticationEntryPoint { it.parent = ref('oauth2AuthenticationEntryPoint') }
     accessDeniedHandler(OAuth2AccessDeniedHandler)
     
-    customMarshallerRegistrar(CustomMarshallerRegistrar)
-
     emailManager(EmailManager) {
         mailService = ref('mailService')
     }
