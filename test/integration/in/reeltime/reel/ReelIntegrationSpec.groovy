@@ -52,6 +52,27 @@ class ReelIntegrationSpec extends IntegrationSpec {
         _   |   10
     }
 
+    void "current user is an audience member"() {
+        given:
+        UserFactory.createUser('current')
+
+        expect:
+        SpringSecurityUtils.doWithAuth('current') {
+            audienceService.addCurrentUserToAudience(reel.id)
+            reel.currentUserIsAnAudienceMember
+        }
+    }
+
+    void "current user is not an audience member"() {
+        given:
+        UserFactory.createUser('current')
+
+        expect:
+        SpringSecurityUtils.doWithAuth('current') {
+            !reel.currentUserIsAnAudienceMember
+        }
+    }
+
     private void addVideosToReel(int count) {
         count.times {
             SpringSecurityUtils.doWithAuth(creator.username) {

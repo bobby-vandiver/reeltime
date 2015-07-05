@@ -35,7 +35,8 @@ class User {
             'numberOfFollowees',
             'numberOfFollowers',
             'numberOfReels',
-            'numberOfAudienceMemberships'
+            'numberOfAudienceMemberships',
+            'currentUserIsFollowing'
     ]
 
     static List<User> findAllByIdInListInAlphabeticalOrderByPage(List<Long> userIds, int page, int maxUsersPerPage) {
@@ -108,6 +109,11 @@ class User {
 
     int getNumberOfAudienceMemberships() {
         Audience.countByAudienceMember(this)
+    }
+
+    boolean getCurrentUserIsFollowing() {
+        def currentUser = springSecurityService.currentUser as User
+        UserFollowing.findByFollowerAndFollowee(currentUser, this) != null
     }
 
     Set<Role> getAuthorities() {

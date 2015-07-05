@@ -1,5 +1,6 @@
 package in.reeltime.user
 
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import spock.lang.Unroll
 import test.helper.ReelFactory
@@ -98,6 +99,27 @@ class UserIntegrationSpec extends IntegrationSpec {
         _   |   1
         _   |   2
         _   |   5
+    }
+
+    void "current user is following this user"() {
+        given:
+        def currentUser = UserFactory.createUser('current')
+        userFollowingService.startFollowingUser(currentUser, user)
+
+        expect:
+        SpringSecurityUtils.doWithAuth('current') {
+            user.currentUserIsFollowing
+        }
+    }
+
+    void "current user is not following this user"() {
+        given:
+        UserFactory.createUser('current')
+
+        expect:
+        SpringSecurityUtils.doWithAuth('current') {
+            !user.currentUserIsFollowing
+        }
     }
 
     private void createMultipleReels(int count) {
