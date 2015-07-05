@@ -23,14 +23,26 @@ class CustomMarshallerRegistry {
         },
 
         (User): { User user ->
-            return [username: user.username, display_name: user.displayName,
-                    follower_count: user.numberOfFollowers, followee_count: user.numberOfFollowees,
-                    reel_count: user.numberOfReels, audience_membership_count: user.numberOfAudienceMemberships]
+            return [
+                    username: user.username,
+                    display_name: user.displayName,
+                    follower_count: user.numberOfFollowers,
+                    followee_count: user.numberOfFollowees,
+                    reel_count: user.numberOfReels,
+                    audience_membership_count: user.numberOfAudienceMemberships,
+                    current_user_is_following: user.currentUserIsFollowing
+            ]
         },
 
         (Reel): { Reel reel ->
-            return [reel_id: reel.id, name: reel.name, audience_size: reel.numberOfAudienceMembers,
-                    video_count: reel.numberOfVideos, owner: reel.owner]
+            return [
+                    reel_id: reel.id,
+                    name: reel.name,
+                    audience_size: reel.numberOfAudienceMembers,
+                    video_count: reel.numberOfVideos,
+                    owner: reel.owner,
+                    current_user_is_an_audience_member: reel.currentUserIsAnAudienceMember
+            ]
         },
 
         (Video): { Video video ->
