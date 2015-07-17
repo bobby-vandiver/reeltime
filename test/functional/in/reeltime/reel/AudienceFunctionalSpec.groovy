@@ -88,7 +88,7 @@ class AudienceFunctionalSpec extends FunctionalSpec {
     void "current user is not a member of the audience"() {
         given:
         def reelId = reelTimeClient.getUncategorizedReelId(listReelsToken)
-        def nonTestUserWriteToken = registerNewUserAndGetToken('badMember', 'audiences-write')
+        def nonTestUserWriteToken = registerNewUserAndGetToken('badMember', ['audiences-write', 'reels-read'])
 
         and:
         def removeAudienceMemberUrl = urlFactory.getAudienceUrl(reelId)
@@ -99,6 +99,23 @@ class AudienceFunctionalSpec extends FunctionalSpec {
 
         then:
         responseChecker.assertUnauthorizedError(response)
+
+        and:
+        def reel = reelTimeClient.getReel(nonTestUserWriteToken, reelId)
+        reel.current_user_is_an_audience_member == false
+    }
+
+    void "current user is a member of the audience"() {
+        given:
+        def reelId = reelTimeClient.getUncategorizedReelId(listReelsToken)
+        def nonTestUserWriteToken = registerNewUserAndGetToken('goodMember', ['audiences-write', 'reels-read'])
+
+        when:
+        reelTimeClient.addAudienceMember(nonTestUserWriteToken, reelId)
+
+        then:
+        def reel = reelTimeClient.getReel(nonTestUserWriteToken, reelId)
+        reel.current_user_is_an_audience_member == true
     }
 
     void "no audience members"() {

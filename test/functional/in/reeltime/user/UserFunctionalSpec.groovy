@@ -39,13 +39,12 @@ class UserFunctionalSpec extends FunctionalSpec {
         def response = reelTimeClient.userProfile(token, 'someone')
 
         then:
-        response.status == 200
-        response.json.username == 'someone'
-        response.json.display_name == 'Cowboy Bob'
-        response.json.follower_count == 0
-        response.json.followee_count == 0
-        response.json.reel_count == 1
-        response.json.audience_membership_count == 0
+        response.username == 'someone'
+        response.display_name == 'Cowboy Bob'
+        response.follower_count == 0
+        response.followee_count == 0
+        response.reel_count == 1
+        response.audience_membership_count == 0
     }
 
     void "user is following other users and is being followed by other users"() {
@@ -67,13 +66,12 @@ class UserFunctionalSpec extends FunctionalSpec {
         def response = reelTimeClient.userProfile(token, 'someone')
 
         then:
-        response.status == 200
-        response.json.username == 'someone'
-        response.json.display_name == 'Cowboy Bob'
-        response.json.follower_count == 2
-        response.json.followee_count == 1
-        response.json.reel_count == 1
-        response.json.audience_membership_count == 0
+        response.username == 'someone'
+        response.display_name == 'Cowboy Bob'
+        response.follower_count == 2
+        response.followee_count == 1
+        response.reel_count == 1
+        response.audience_membership_count == 0
     }
 
     void "user has reels and is an audience member of other reels"() {
@@ -97,13 +95,12 @@ class UserFunctionalSpec extends FunctionalSpec {
         def response = reelTimeClient.userProfile(token, 'someone')
 
         then:
-        response.status == 200
-        response.json.username == 'someone'
-        response.json.display_name == 'Cowboy Bob'
-        response.json.follower_count == 0
-        response.json.followee_count == 0
-        response.json.reel_count == 4
-        response.json.audience_membership_count == 2
+        response.username == 'someone'
+        response.display_name == 'Cowboy Bob'
+        response.follower_count == 0
+        response.followee_count == 0
+        response.reel_count == 4
+        response.audience_membership_count == 2
     }
 
     @Unroll

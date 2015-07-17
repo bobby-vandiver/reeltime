@@ -124,13 +124,13 @@ class ReelTimeClient {
         return response.json
     }
 
-    RestResponse userProfile(String token, String username) {
+    JSONElement userProfile(String token, String username) {
         def request = requestFactory.userProfile(token, username)
         def response = get(request)
 
         assertStatusOrFail(response, 200, "Failed to get user details.")
 
-        return response
+        return response.json
     }
 
     JSONElement listUsers(String token, Integer page = null) {
@@ -269,6 +269,15 @@ class ReelTimeClient {
         def response = get(request)
 
         assertStatusOrFail(response, 200, "Failed to retrieve list of reels.")
+
+        return response.json
+    }
+
+    JSONElement getReel(String token, Long reelId) {
+        def request = requestFactory.getReel(token, reelId)
+        def response = get(request)
+
+        assertStatusOrFail(response, 200, "Failed to get reel [$reelId].")
 
         return response.json
     }

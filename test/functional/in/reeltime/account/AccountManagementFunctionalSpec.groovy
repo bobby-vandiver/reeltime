@@ -101,14 +101,14 @@ class AccountManagementFunctionalSpec extends FunctionalSpec {
 
     void "successfully change display name"() {
         given:
-        def currentDisplayName = reelTimeClient.userProfile(token, USERNAME).json.display_name
+        def currentDisplayName = reelTimeClient.userProfile(token, USERNAME).display_name
         def newDisplayName = currentDisplayName + 'a'
 
         when:
         reelTimeClient.changeDisplayName(token, newDisplayName)
 
         then:
-        def changedDisplayName = reelTimeClient.userProfile(token, USERNAME).json.display_name
+        def changedDisplayName = reelTimeClient.userProfile(token, USERNAME).display_name
         changedDisplayName == newDisplayName
     }
 }
