@@ -1,14 +1,16 @@
 package in.reeltime.reel
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.*
+import in.reeltime.user.User
 import in.reeltime.video.Video
 import spock.lang.Unroll
 
 @TestFor(ReelController)
-@Mock([Reel, Video, ReelVideo])
+@Mock([Reel, Video, ReelVideo, User])
 class ReelControllerSpec extends AbstractControllerSpec {
 
     ReelService reelService
@@ -18,6 +20,8 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     Reel reel
     Long reelId
+
+    User user
 
     void setup() {
         reelService = Mock(ReelService)
@@ -33,6 +37,10 @@ class ReelControllerSpec extends AbstractControllerSpec {
         reel = new Reel(name: 'test').save(validate: false)
         reelId = reel.id
 
+        user = new User(username: 'foo')
+        user.springSecurityService = Stub(SpringSecurityService)
+        user.save(validate: false)
+
         defineBeans {
             reelAuthorizationService(ReelAuthorizationService)
         }
@@ -40,7 +48,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     void "get reel"() {
         given:
-        def reel = new Reel(name: 'test').save(validate: false)
+        def reel = createReelWithStubbedSpringSecurityService('test', user)
         def reelId = reel.id
 
         and:
@@ -78,7 +86,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
         params.page = 3
 
         and:
-        def reel = new Reel(name: 'foo').save(validate: false)
+        def reel = createReelWithStubbedSpringSecurityService('foo', user)
 
         when:
         controller.listReels()
@@ -147,7 +155,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     void "reels list contains only one reel"() {
         given:
-        def reel = new Reel(name: 'foo').save(validate: false)
+        def reel = createReelWithStubbedSpringSecurityService('foo', user)
         assert reel.id > 0
 
         and:
@@ -175,11 +183,11 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     void "reels list contains multiple reels"() {
         given:
-        def reel1 = new Reel(name: 'foo').save(validate: false)
+        def reel1 = createReelWithStubbedSpringSecurityService('foo', user)
         assert reel1.id > 0
 
         and:
-        def reel2 = new Reel(name: 'bar').save(validate: false)
+        def reel2 = createReelWithStubbedSpringSecurityService('bar', user)
         assert reel2.id > 0
 
         and:
@@ -233,7 +241,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
     void "successfully add a new reel"() {
         given:
         def reelName = 'test-reel-name'
-        def reel = new Reel(name: reelName).save(validate: false)
+        def reel = createReelWithStubbedSpringSecurityService(reelName, user)
 
         and:
         params.name = reelName

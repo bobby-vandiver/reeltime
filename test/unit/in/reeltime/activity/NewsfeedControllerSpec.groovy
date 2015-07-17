@@ -54,7 +54,7 @@ class NewsfeedControllerSpec extends AbstractControllerSpec {
         def user = new User(username: 'someone')
         forceSaveUser(user)
 
-        def reel = new Reel(name: 'foo').save(validate: false)
+        def reel = createReelWithStubbedSpringSecurityService('foo', user)
         def video = new Video(id: 5678, title: 'bar').save(validate: false)
 
         def reelId = reel.id

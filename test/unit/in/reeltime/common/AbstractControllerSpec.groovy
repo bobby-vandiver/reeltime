@@ -3,6 +3,7 @@ package in.reeltime.common
 import grails.plugin.springsecurity.SpringSecurityService
 import groovy.json.JsonSlurper
 import in.reeltime.message.LocalizedMessageService
+import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import org.codehaus.groovy.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
@@ -45,7 +46,18 @@ abstract class AbstractControllerSpec extends Specification {
     }
 
     protected void forceSaveUser(User user) {
-        user.springSecurityService = Stub(SpringSecurityService)
+        user.springSecurityService = Stub(SpringSecurityService) {
+            getCurrentUser() >> new User()
+        }
         user.save(validate: false)
+    }
+
+    protected Reel createReelWithStubbedSpringSecurityService(String name, User theCurrentUser) {
+        def reel = new Reel(name: name)
+        reel.springSecurityService = Stub(SpringSecurityService) {
+            getCurrentUser() >> theCurrentUser
+        }
+        reel.save(validate: false)
+        return reel
     }
 }
