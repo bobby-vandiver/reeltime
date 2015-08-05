@@ -211,9 +211,12 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
     }
 
     @Unroll
-    void "empty criteria for activities -- users [#users], reels [#reels]"() {
+    void "activities exist but no users or reels specified -- users [#users], reels [#reels]"() {
+        given:
+        createActivityPage()
+
         when:
-        def list = activityService.findActivities(users, users)
+        def list = activityService.findActivities(users, reels)
 
         then:
         list.size() == 0

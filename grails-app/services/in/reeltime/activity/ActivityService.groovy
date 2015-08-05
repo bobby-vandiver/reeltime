@@ -66,6 +66,13 @@ class ActivityService {
     }
 
     List<UserReelActivity> findActivities(List<User> users, List<Reel> reels, Integer pageNumber = null) {
+        boolean noUsers = (users == null || users.empty)
+        boolean noReels = (reels == null || reels.empty)
+
+        if(noUsers && noReels) {
+            return []
+        }
+
         def offset = pageNumber ? (pageNumber - 1) * maxActivitiesPerPage : 0
         UserReelActivity.withCriteria {
             or {
