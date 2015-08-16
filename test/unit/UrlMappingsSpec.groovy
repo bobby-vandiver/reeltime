@@ -51,7 +51,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/api/playlists/1234.m3u8', controller: 'playlist', action: 'getVariantPlaylist') {
+        assertForwardUrlMapping('/api/playlists/1234', controller: 'playlist', action: 'getVariantPlaylist') {
             video_id = '1234'
         }
     }
@@ -61,7 +61,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/api/playlists/12434-949.m3u8', controller: 'playlist', action: 'getMediaPlaylist') {
+        assertForwardUrlMapping('/api/playlists/12434/949', controller: 'playlist', action: 'getMediaPlaylist') {
             video_id = '12434'
             playlist_id = '949'
         }
@@ -72,7 +72,7 @@ class UrlMappingsSpec extends Specification {
         webRequest.currentRequest.method = 'GET'
 
         expect:
-        assertForwardUrlMapping('/api/playlists/124344-5949-8891.ts', controller: 'segment', action: 'getSegment') {
+        assertForwardUrlMapping('/api/playlists/124344/5949/8891', controller: 'segment', action: 'getSegment') {
             video_id = '124344'
             playlist_id = '5949'
             segment_id = '8891'

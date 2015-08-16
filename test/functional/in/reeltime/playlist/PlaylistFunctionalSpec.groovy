@@ -85,31 +85,21 @@ class PlaylistFunctionalSpec extends FunctionalSpec {
         variantPlaylist.streams.size() > 0
 
         for(StreamAttributes stream in variantPlaylist.streams) {
-            def playlistId = extractMediaPlaylistIdFromUri(stream.uri)
+            def playlistId = extractIdFromUri(stream.uri)
             def mediaPlaylist = reelTimeClient.mediaPlaylist(token, videoId, playlistId)
 
             assert mediaPlaylist.segments.size() > 0
 
             for(MediaSegment segment in mediaPlaylist.segments) {
-                def segmentId = extractSegmentIdFromUri(segment.uri)
+                def segmentId = extractIdFromUri(segment.uri)
                 assert reelTimeClient.mediaSegment(token, videoId, playlistId, segmentId)
             }
         }
     }
 
-    private Long extractMediaPlaylistIdFromUri(String uri) {
-        def tokens = uri.tokenize('-')
-        def playlist = tokens[1]
-
-        def id = playlist.replace('.m3u8', '')
-        Long.parseLong(id)
-    }
-
-    private Long extractSegmentIdFromUri(String uri) {
-        def tokens = uri.tokenize('-')
-        def segment = tokens[2]
-
-        def id = segment.replace('.ts', '')
+    private Long extractIdFromUri(String uri) {
+        def position = uri.lastIndexOf('/') + 1
+        def id = uri.substring(position)
         Long.parseLong(id)
     }
 }

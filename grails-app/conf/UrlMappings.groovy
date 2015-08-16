@@ -63,15 +63,15 @@ class UrlMappings {
             action = [GET: 'listRecentActivity']
         }
 
-        "/api/playlists/${video_id}.m3u8" (controller: 'playlist') {
+        "/api/playlists/$video_id" (controller: 'playlist') {
             action = [GET: 'getVariantPlaylist']
         }
 
-        "/api/playlists/${video_id}-${playlist_id}.m3u8" (controller: 'playlist') {
+        "/api/playlists/$video_id/$playlist_id" (controller: 'playlist') {
             action = [GET: 'getMediaPlaylist']
         }
 
-        "/api/playlists/${video_id}-${playlist_id}-${segment_id}.ts" (controller: 'segment') {
+        "/api/playlists/$video_id/$playlist_id/$segment_id" (controller: 'segment') {
             action = [GET: 'getSegment']
         }
 
