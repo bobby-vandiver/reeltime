@@ -97,15 +97,15 @@ public class ReelTimeUrlFactory {
     }
 
     String getVariantPlaylistUrl(videoId) {
-        getUrlForApiResource("playlists/$videoId")
+        getUrlForApiResource("playlists/${videoId}.m3u8")
     }
 
     String getMediaPlaylistUrl(videoId, playlistId) {
-        getUrlForApiResource("playlists/$videoId/$playlistId")
+        getUrlForApiResource("playlists/${videoId}-${playlistId}.m3u8")
     }
 
     String getSegmentUrl(videoId, playlistId, segmentId) {
-        getUrlForApiResource("playlists/$videoId/$playlistId/$segmentId")
+        getUrlForApiResource("playlists/${videoId}-${playlistId}-${segmentId}.ts")
     }
 
     String getTokenRevocationUrl() {
