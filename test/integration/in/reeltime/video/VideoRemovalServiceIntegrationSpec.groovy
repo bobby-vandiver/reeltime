@@ -1,5 +1,6 @@
 package in.reeltime.video
 
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
 import in.reeltime.playlist.Playlist
 import in.reeltime.playlist.PlaylistType
@@ -10,6 +11,7 @@ import in.reeltime.transcoder.TranscoderJob
 import in.reeltime.user.User
 import in.reeltime.maintenance.ResourceRemovalTarget
 import in.reeltime.thumbnail.ThumbnailResolution
+import in.reeltime.exceptions.AuthorizationException
 import spock.lang.Unroll
 import test.helper.UserFactory
 
@@ -35,6 +37,28 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
         videoBase = videoStorageService.videoBase
         thumbnailBase = thumbnailStorageService.thumbnailBase
         playlistBase = playlistAndSegmentStorageService.playlistBase
+    }
+
+    void "video owner must be the currently logged in user requesting deletion"() {
+        given:
+        def notCreator = UserFactory.createUser('notCreator')
+
+        and:
+        def video = new Video(
+                creator: creator,
+                title: 'some video',
+                masterPath: 'something.mp4',
+                masterThumbnailPath: 'something.png'
+        ).save()
+
+        when:
+        SpringSecurityUtils.doWithAuth(notCreator.username) {
+            videoRemovalService.removeVideo(video)
+        }
+
+        then:
+        def e = thrown(AuthorizationException)
+        e.message == 'Only the creator of a video can delete it'
     }
 
     @Unroll
@@ -82,11 +106,13 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
         def transcoderJobId = transcoderJob.id
 
         when:
-        if(removeById) {
-            videoRemovalService.removeVideoById(videoId)
-        }
-        else {
-            videoRemovalService.removeVideo(video)
+        SpringSecurityUtils.doWithAuth(creator.username) {
+            if (removeById) {
+                videoRemovalService.removeVideoById(videoId)
+            }
+            else {
+                videoRemovalService.removeVideo(video)
+            }
         }
 
         then:

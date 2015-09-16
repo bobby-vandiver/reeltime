@@ -1,5 +1,6 @@
 package in.reeltime.video
 
+import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.user.User
 
 class VideoRemovalService {
@@ -14,6 +15,8 @@ class VideoRemovalService {
     def playlistAndSegmentStorageService
 
     def transcoderJobService
+
+    def authenticationService
     def userService
 
     void removeVideoById(Long videoId) {
@@ -22,6 +25,12 @@ class VideoRemovalService {
     }
 
     void removeVideo(Video video) {
+        def creator = video.creator
+
+        if (authenticationService.currentUser != creator) {
+            throw new AuthorizationException("Only the creator of a video can delete it")
+        }
+
         def videoId = video.id
 
         log.info "Removing video [$videoId] from all reels"
@@ -57,8 +66,6 @@ class VideoRemovalService {
 
         log.info "Removing the transcoder jobs associated with video [$videoId]"
         transcoderJobService.removeJobForVideo(video)
-
-        def creator = video.creator
 
         log.info "Removing video [$videoId] from creator [${creator.username}]"
         creator.removeFromVideos(video)

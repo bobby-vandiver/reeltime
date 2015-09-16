@@ -78,4 +78,19 @@ class VideoRemovalFunctionalSpec extends FunctionalSpec {
         def afterList = reelTimeClient.listVideosInReel(reelsReadToken, uncategorizedReelId).videos
         responseChecker.assertVideoIdNotInList(afterList, videoId)
     }
+
+    void "attempt to delete video that belongs to another user"() {
+        given:
+        def differentUserToken = registerNewUserAndGetToken('someone', ALL_SCOPES)
+        def videoId = reelTimeClient.uploadVideoToUncategorizedReel(videosReadWriteToken)
+
+        and:
+        def request = requestFactory.deleteVideo(differentUserToken, videoId)
+
+        when:
+        def response = delete(request)
+
+        then:
+        responseChecker.assertUnauthorizedError(response)
+    }
 }
