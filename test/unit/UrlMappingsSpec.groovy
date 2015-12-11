@@ -1,6 +1,6 @@
 import grails.test.mixin.Mock
-import grails.test.mixin.TestMixin
-import grails.test.mixin.web.UrlMappingsUnitTestMixin
+import grails.test.mixin.TestFor
+
 import spock.lang.Specification
 import in.reeltime.notification.NotificationController
 import in.reeltime.video.VideoController
@@ -22,7 +22,7 @@ import in.reeltime.oauth2.TokenController
 import in.reeltime.thumbnail.ThumbnailController
 import spock.lang.Unroll
 
-@TestMixin(UrlMappingsUnitTestMixin)
+@TestFor(UrlMappings)
 @Mock([VideoController, PlaylistController, SegmentController, ReelController, AudienceController,
         AccountController, AccountConfirmationController, AccountManagementController,
         ClientManagementController, ResetPasswordController, NewsfeedController,
