@@ -3,7 +3,7 @@ package in.reeltime.video
 import grails.validation.Validateable
 import in.reeltime.user.User
 
-@Validateable
+@Validateable(nullable = true)
 class VideoCreationCommand {
 
     User creator

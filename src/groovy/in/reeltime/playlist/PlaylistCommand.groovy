@@ -2,7 +2,7 @@ package in.reeltime.playlist
 
 import grails.validation.Validateable
 
-@Validateable
+@Validateable(nullable = true)
 class PlaylistCommand {
 
     Long playlist_id

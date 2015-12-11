@@ -2,7 +2,7 @@ package in.reeltime.thumbnail
 
 import grails.validation.Validateable
 
-@Validateable
+@Validateable(nullable = true)
 class ThumbnailCommand {
 
     String resolution

@@ -2,7 +2,7 @@ package in.reeltime.account
 
 import grails.validation.Validateable
 
-@Validateable
+@Validateable(nullable = true)
 class ClientRegistrationCommand {
 
     def authenticationService

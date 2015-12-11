@@ -3,7 +3,7 @@ package in.reeltime.account
 import grails.validation.Validateable
 import in.reeltime.user.User
 
-@Validateable
+@Validateable(nullable = true)
 class ChangePasswordCommand {
     String new_password
 

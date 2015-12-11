@@ -100,8 +100,8 @@ class UserSpec extends Specification {
         'foo@'              |   false
         'foo@b'             |   false
         '@coffee'           |   false
+        'foo@bar.baz.buzz'  |   false
         'foo@bar.com'       |   true
-        'foo@bar.baz.buzz'  |   true
     }
 
     @Unroll

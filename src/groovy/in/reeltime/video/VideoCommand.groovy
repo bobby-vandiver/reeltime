@@ -2,7 +2,7 @@ package in.reeltime.video
 
 import grails.validation.Validateable
 
-@Validateable
+@Validateable(nullable = true)
 class VideoCommand {
 
     Long video_id

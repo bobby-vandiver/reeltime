@@ -2,7 +2,7 @@ package in.reeltime.search
 
 import grails.validation.Validateable
 
-@Validateable
+@Validateable(nullable = true)
 class SearchCommand extends PagedListCommand {
 
     String type

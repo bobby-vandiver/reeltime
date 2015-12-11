@@ -2,7 +2,7 @@ package in.reeltime.reel
 
 import grails.validation.Validateable
 
-@Validateable
+@Validateable(nullable = true)
 class ReelCommand {
 
     Long reel_id

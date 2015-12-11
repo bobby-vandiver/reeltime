@@ -2,7 +2,7 @@ package in.reeltime.metadata
 
 import grails.validation.Validateable
 
-@Validateable
+@Validateable(nullable = true)
 class StreamMetadata {
 
     private static final DURATION_FORMAT = /(\d+)\.(\d+)/

@@ -2,7 +2,7 @@ package in.reeltime.search
 
 import grails.validation.Validateable
 
-@Validateable
+@Validateable(nullable = true)
 class PagedListCommand {
 
     private static final Integer DEFAULT_PAGE = 1

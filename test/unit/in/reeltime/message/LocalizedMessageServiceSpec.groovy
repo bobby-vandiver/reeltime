@@ -60,7 +60,7 @@ class LocalizedMessageServiceSpec extends Specification {
         1 * messageSource.getMessage(command.errors.allErrors[0], locale)
     }
 
-    @Validateable
+    @Validateable(nullable = true)
     private static class TestCommand {
         String word
 

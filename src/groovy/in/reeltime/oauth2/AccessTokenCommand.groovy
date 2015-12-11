@@ -2,7 +2,7 @@ package in.reeltime.oauth2
 
 import grails.validation.Validateable
 
-@Validateable
+@Validateable(nullable = true)
 class AccessTokenCommand {
 
     String access_token

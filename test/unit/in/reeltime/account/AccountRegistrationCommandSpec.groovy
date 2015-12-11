@@ -175,8 +175,8 @@ class AccountRegistrationCommandSpec extends Specification {
         'foo@'              |   false   |   'email.invalid'
         'foo@b'             |   false   |   'email.invalid'
         '@coffee'           |   false   |   'email.invalid'
+        'foo@bar.baz.buzz'  |   false   |   'email.invalid'
         'foo@bar.com'       |   true    |   null
-        'foo@bar.baz.buzz'  |   true    |   null
     }
 
     @Unroll

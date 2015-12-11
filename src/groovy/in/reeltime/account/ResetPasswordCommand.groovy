@@ -4,7 +4,7 @@ import grails.validation.Validateable
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.user.User
 
-@Validateable
+@Validateable(nullable = true)
 class ResetPasswordCommand {
 
     def authenticationService
