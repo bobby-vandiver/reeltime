@@ -22,6 +22,7 @@ grails.war.resources = { stagingDir, args ->
     }
 }
 
+grails.project.dependency.resolver = "maven"
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
@@ -57,33 +58,36 @@ grails.project.dependency.resolution = {
         compile 'org.apache.tika:tika-parsers:1.7'
         compile 'org.imgscalr:imgscalr-lib:4.2'
 
+        test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
+
         // FileUtils for test cleanup
         test 'commons-io:commons-io:2.4'
 
-        test 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.+', {
+        test 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1', {
             excludes "commons-logging", "xml-apis", "groovy"
         }
 
+        test 'org.hamcrest:hamcrest-all:1.3'
+
         // Disables Groovy optimizations for accurate Cobertura reporting
         // Source: https://github.com/renataogarcia/disableOptimizationsTransformation/issues/1
-        test 'com.github.renataogarcia:disable-groovy-compiler-optimizations-transformation:0.1-SNAPSHOT'
+//        test 'com.github.renataogarcia:disable-groovy-compiler-optimizations-transformation:0.1-SNAPSHOT'
     }
 
     plugins {
-        build ":tomcat:7.0.52.1"
+        build ":tomcat:7.0.55.3"
 
-        runtime ":hibernate:3.6.10.18"
-        runtime ":jquery:1.8.3"
-        runtime ":resources:1.2.7"
-        runtime ":database-migration:1.4.0"
+        runtime ":hibernate:3.6.10.19"
+        runtime ":jquery:1.11.1"
+        runtime ":database-migration:1.4.1"
 
-        compile ":scaffolding:2.0.3"
-        compile ':cache:1.1.6'
+        compile ":asset-pipeline:2.5.7"
+        compile ":scaffolding:2.1.2"
+        compile ':cache:1.1.8'
 
         compile ":quartz:1.0.2"
 
-        compile ":spring-security-oauth2-provider:2.0-RC4"
-        compile ":spring-security-core:2.0-RC4"
+        compile ":spring-security-oauth2-provider:2.0-RC5"
 
         compile ":codenarc:0.21"
 

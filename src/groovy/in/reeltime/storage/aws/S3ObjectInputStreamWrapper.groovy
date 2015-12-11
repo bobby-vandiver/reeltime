@@ -9,7 +9,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream
     stream has been closed and garbage collected.
 
     The original implementation of this stream does not keep a
-    handle to the client resulting in socket exceptions being
+    handle to the client resulting in socket in.reeltime.exceptions being
     thrown unexpectedly when the client is garbage collected
     before the stream has been closed.
 
