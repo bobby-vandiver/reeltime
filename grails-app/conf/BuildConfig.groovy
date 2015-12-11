@@ -58,8 +58,6 @@ grails.project.dependency.resolution = {
         compile 'org.apache.tika:tika-parsers:1.7'
         compile 'org.imgscalr:imgscalr-lib:4.2'
 
-        test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
-
         // FileUtils for test cleanup
         test 'commons-io:commons-io:2.4'
 
