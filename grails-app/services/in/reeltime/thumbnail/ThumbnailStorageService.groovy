@@ -1,5 +1,8 @@
 package in.reeltime.thumbnail
 
+import grails.transaction.Transactional
+
+@Transactional
 class ThumbnailStorageService {
 
     def pathGenerationService

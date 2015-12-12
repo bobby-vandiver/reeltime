@@ -1,9 +1,11 @@
 package in.reeltime.transcoder
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.TranscoderJobNotFoundException
 import in.reeltime.video.Video
 import static in.reeltime.transcoder.TranscoderJobStatus.*
 
+@Transactional
 class TranscoderJobService {
 
     void createJob(Video video, String jobId) {

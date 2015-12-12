@@ -1,5 +1,8 @@
 package in.reeltime.message
 
+import grails.transaction.Transactional
+
+@Transactional
 class LocalizedMessageService {
 
     def messageSource

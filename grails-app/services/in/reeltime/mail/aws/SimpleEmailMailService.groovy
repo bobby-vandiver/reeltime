@@ -1,8 +1,10 @@
 package in.reeltime.mail.aws
 
+import grails.transaction.Transactional
 import in.reeltime.mail.Email
 import in.reeltime.mail.MailService
 
+@Transactional
 class SimpleEmailMailService implements MailService {
 
     @Override

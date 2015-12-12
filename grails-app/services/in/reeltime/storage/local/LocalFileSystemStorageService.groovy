@@ -1,7 +1,9 @@
 package in.reeltime.storage.local
 
+import grails.transaction.Transactional
 import in.reeltime.storage.StorageService
 
+@Transactional
 class LocalFileSystemStorageService implements StorageService {
 
     def localFileSystemService

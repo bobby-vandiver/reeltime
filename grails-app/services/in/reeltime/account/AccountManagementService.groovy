@@ -1,8 +1,10 @@
 package in.reeltime.account
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.ClientNotFoundException
 import in.reeltime.user.User
 
+@Transactional
 class AccountManagementService {
 
     def userService

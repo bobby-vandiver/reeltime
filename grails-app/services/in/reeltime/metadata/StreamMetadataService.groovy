@@ -1,5 +1,8 @@
 package in.reeltime.metadata
 
+import grails.transaction.Transactional
+
+@Transactional
 class StreamMetadataService {
 
     def ffprobeService

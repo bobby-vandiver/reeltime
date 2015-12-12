@@ -1,5 +1,8 @@
 package in.reeltime.maintenance
 
+import grails.transaction.Transactional
+
+@Transactional
 class ResourceRemovalService {
 
     def storageService

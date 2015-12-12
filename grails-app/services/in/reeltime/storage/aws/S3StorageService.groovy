@@ -3,8 +3,10 @@ package in.reeltime.storage.aws
 import com.amazonaws.AmazonServiceException
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
+import grails.transaction.Transactional
 import in.reeltime.storage.StorageService
 
+@Transactional
 class S3StorageService implements StorageService {
 
     def awsService

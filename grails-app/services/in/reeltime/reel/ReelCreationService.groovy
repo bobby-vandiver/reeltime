@@ -1,8 +1,10 @@
 package in.reeltime.reel
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.user.User
 
+@Transactional
 class ReelCreationService {
 
     def reelService

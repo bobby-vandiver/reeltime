@@ -1,8 +1,10 @@
 package in.reeltime.metadata
 
+import grails.transaction.Transactional
 import groovy.json.JsonSlurper
 import in.reeltime.exceptions.ProbeException
 
+@Transactional
 class FfprobeService {
 
     String ffprobe

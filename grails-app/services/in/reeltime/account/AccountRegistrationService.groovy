@@ -1,7 +1,10 @@
 package in.reeltime.account
 
+import grails.transaction.Transactional
+
 import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
+@Transactional
 class AccountRegistrationService {
 
     def userService

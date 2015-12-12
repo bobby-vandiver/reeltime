@@ -1,5 +1,6 @@
 package in.reeltime.thumbnail
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.ThumbnailGenerationException
 import org.apache.commons.io.IOUtils
 import org.imgscalr.Scalr
@@ -9,6 +10,7 @@ import javax.imageio.ImageIO
 import static org.imgscalr.Scalr.Method.QUALITY
 import static org.imgscalr.Scalr.Mode.FIT_EXACT
 
+@Transactional
 class ThumbnailGenerationService {
 
     def thumbnailStorageService

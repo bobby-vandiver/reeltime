@@ -1,5 +1,8 @@
 package in.reeltime.storage
 
+import grails.transaction.Transactional
+
+@Transactional
 class PathGenerationService {
 
     def storageService

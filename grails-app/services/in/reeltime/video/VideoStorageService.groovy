@@ -1,5 +1,8 @@
 package in.reeltime.video
 
+import grails.transaction.Transactional
+
+@Transactional
 class VideoStorageService {
 
     def pathGenerationService

@@ -1,8 +1,10 @@
 package in.reeltime.mail.local
 
+import grails.transaction.Transactional
 import in.reeltime.mail.MailService
 import in.reeltime.mail.Email
 
+@Transactional
 class InMemoryMailService implements MailService {
 
     List<Email> sentMessages = [].asSynchronized()

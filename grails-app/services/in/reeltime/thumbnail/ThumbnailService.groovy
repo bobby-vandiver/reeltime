@@ -1,9 +1,11 @@
 package in.reeltime.thumbnail
 
+import grails.transaction.Transactional
 import in.reeltime.video.Video
 import in.reeltime.exceptions.ThumbnailNotFoundException
 import static in.reeltime.thumbnail.ThumbnailResolution.*
 
+@Transactional
 class ThumbnailService {
 
     def thumbnailGenerationService

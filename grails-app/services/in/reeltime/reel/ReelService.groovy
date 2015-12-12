@@ -1,7 +1,9 @@
 package in.reeltime.reel
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.ReelNotFoundException
 
+@Transactional
 class ReelService {
 
     def userService

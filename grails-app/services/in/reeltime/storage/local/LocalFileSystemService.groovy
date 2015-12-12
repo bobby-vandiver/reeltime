@@ -1,7 +1,10 @@
 package in.reeltime.storage.local
 
+import grails.transaction.Transactional
+
 import static java.io.File.separator
 
+@Transactional
 class LocalFileSystemService {
 
     def videoBasePath

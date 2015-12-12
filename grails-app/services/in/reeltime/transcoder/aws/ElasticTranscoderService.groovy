@@ -5,10 +5,12 @@ import com.amazonaws.services.elastictranscoder.model.CreateJobOutput
 import com.amazonaws.services.elastictranscoder.model.CreateJobPlaylist
 import com.amazonaws.services.elastictranscoder.model.CreateJobRequest
 import com.amazonaws.services.elastictranscoder.model.JobInput
+import grails.transaction.Transactional
 import in.reeltime.exceptions.TranscoderException
 import in.reeltime.transcoder.TranscoderService
 import in.reeltime.video.Video
 
+@Transactional
 class ElasticTranscoderService implements TranscoderService {
 
     def awsService

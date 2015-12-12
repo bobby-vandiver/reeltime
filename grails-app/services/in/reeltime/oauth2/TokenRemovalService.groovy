@@ -1,7 +1,9 @@
 package in.reeltime.oauth2
 
+import grails.transaction.Transactional
 import in.reeltime.user.User
 
+@Transactional
 class TokenRemovalService {
 
     void removeAccessToken(String token) {
