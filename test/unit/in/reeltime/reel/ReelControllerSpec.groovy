@@ -14,6 +14,7 @@ import spock.lang.Unroll
 class ReelControllerSpec extends AbstractControllerSpec {
 
     ReelService reelService
+    ReelAuthorizationService reelAuthorizationService
     ReelCreationService reelCreationService
     ReelRemovalService reelRemovalService
     ReelVideoManagementService reelVideoManagementService
@@ -25,6 +26,7 @@ class ReelControllerSpec extends AbstractControllerSpec {
 
     void setup() {
         reelService = Mock(ReelService)
+        reelAuthorizationService = Mock(ReelAuthorizationService)
         reelCreationService = Mock(ReelCreationService)
         reelRemovalService = Mock(ReelRemovalService)
         reelVideoManagementService = Mock(ReelVideoManagementService)
@@ -40,10 +42,6 @@ class ReelControllerSpec extends AbstractControllerSpec {
         user = new User(username: 'foo')
         user.springSecurityService = Stub(SpringSecurityService)
         user.save(validate: false)
-
-        defineBeans {
-            reelAuthorizationService(ReelAuthorizationService)
-        }
     }
 
     void "get reel"() {
@@ -244,10 +242,10 @@ class ReelControllerSpec extends AbstractControllerSpec {
         def reel = createReelWithStubbedSpringSecurityService(reelName, user)
 
         and:
-        params.name = reelName
+        def command = new AddReelCommand(name: reelName, reelAuthorizationService: reelAuthorizationService)
 
         when:
-        controller.addReel()
+        controller.addReel(command)
 
         then:
         assertStatusCodeAndContentType(response, 201)
@@ -266,13 +264,13 @@ class ReelControllerSpec extends AbstractControllerSpec {
     void "unable to add reel with invalid name"() {
         given:
         def reelName = 'invalid-reel'
-        params.name = reelName
+        def command = new AddReelCommand(name: reelName, reelAuthorizationService: reelAuthorizationService)
 
         and:
         def message = 'reel bad name'
 
         when:
-        controller.addReel()
+        controller.addReel(command)
 
         then:
         assertErrorMessageResponse(response, 400, message)

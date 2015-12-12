@@ -16,6 +16,8 @@ class AccountControllerSpec extends AbstractControllerSpec {
     AccountRegistrationService accountRegistrationService
     AccountRemovalService accountRemovalService
 
+    UserService userService
+
     void setup() {
         accountRegistrationService = Mock(AccountRegistrationService)
         accountRemovalService = Mock(AccountRemovalService)
@@ -23,9 +25,7 @@ class AccountControllerSpec extends AbstractControllerSpec {
         controller.accountRegistrationService = accountRegistrationService
         controller.accountRemovalService = accountRemovalService
 
-        defineBeans {
-            userService(UserService)
-        }
+        userService = Stub(UserService)
     }
 
     void "respond with client credentials upon successful registration"() {
@@ -46,25 +46,28 @@ class AccountControllerSpec extends AbstractControllerSpec {
         def registrationResult = new RegistrationResult(clientId: clientId, clientSecret: clientSecret)
 
         and:
-        params.username = username
-        params.password = password
-        params.display_name = displayName
-        params.email = email
-        params.client_name = clientName
+        def command = new AccountRegistrationCommand(
+                username: username,
+                password: password,
+                display_name: displayName,
+                email: email,
+                client_name: clientName,
+                userService: userService
+        )
 
         and:
-        def registrationCommandValidator = { AccountRegistrationCommand command, Locale locale ->
-            assert command.username == username
-            assert command.password == password
-            assert command.display_name == displayName
-            assert command.email == email
-            assert command.client_name == clientName
+        def registrationCommandValidator = { AccountRegistrationCommand c, Locale locale ->
+            assert c.username == username
+            assert c.password == password
+            assert c.display_name == displayName
+            assert c.email == email
+            assert c.client_name == clientName
             assert locale == request.locale
             return registrationResult
         }
 
         when:
-        controller.registerAccount()
+        controller.registerAccount(command)
 
         then:
         assertStatusCodeAndContentType(response, 201)
@@ -78,19 +81,22 @@ class AccountControllerSpec extends AbstractControllerSpec {
         json.client_secret == clientSecret
 
         and:
-        1 * accountRegistrationService.registerUserAndClient(*_) >> { command, locale -> registrationCommandValidator(command, locale) }
+        1 * accountRegistrationService.registerUserAndClient(*_) >> { c, locale -> registrationCommandValidator(c, locale) }
     }
 
     void "registration exception is thrown"() {
         given:
-        params.username = 'foo'
-        params.password = 'secret'
-        params.display_name = 'foo bar'
-        params.email = 'foo@test.com'
-        params.client_name = 'something'
+        def command = new AccountRegistrationCommand(
+                username: 'foo',
+                password: 'secret',
+                display_name: 'foo bar',
+                email: 'foo@test.com',
+                client_name: 'something',
+                userService: userService
+        )
 
         when:
-        controller.registerAccount()
+        controller.registerAccount(command)
 
         then:
         assertErrorMessageResponse(response, 503, TEST_MESSAGE)
