@@ -54,8 +54,13 @@ class AccountCodeGenerationServiceSpec extends Specification {
     void "salt must be unique for [#methodName] -- duplicate for first [#repeatCount] tries"() {
         given:
         int count = 0
-        AccountCode.metaClass.'static'.saltIsUnique = { String s ->
+
+        AccountCode.metaClass.'static'.saltIsUnique = { String salt ->
             return ++count >= repeatCount
+        }
+
+        AccountCode.metaClass.hashAndSaltCode = { String code, String salt ->
+            return code
         }
 
         expect:

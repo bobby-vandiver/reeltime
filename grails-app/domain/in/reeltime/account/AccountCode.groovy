@@ -64,7 +64,12 @@ class AccountCode {
         return dateCreated.time < calendar.timeInMillis
     }
 
-    private String hashAndSaltCode(String code, String salt) {
+    // Temporarily making the parameters untyped as a workaround for GROOVY-7368
+    // so the unit tests for AccountCodeGenerationService can override this method.
+    //
+    // GROOVY-7368: https://issues.apache.org/jira/browse/GROOVY-7368
+
+    private String hashAndSaltCode(/*String*/ code, /*String*/ salt) {
         cryptoService.hashBCrypt(code, salt)
     }
 }
