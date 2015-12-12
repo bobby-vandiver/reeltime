@@ -14,6 +14,7 @@ import in.reeltime.transcoder.TranscoderJob
 import in.reeltime.transcoder.TranscoderJobService
 import in.reeltime.transcoder.TranscoderService
 import in.reeltime.user.User
+import org.apache.commons.io.FileUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 import test.helper.StreamMetadataListFactory
@@ -25,12 +26,18 @@ import in.reeltime.thumbnail.ThumbnailValidationService
 @Mock([Video, TranscoderJob, User])
 class VideoCreationServiceSpec extends Specification {
 
-    StreamMetadataService streamMetadataService
-    TemporaryFileService temporaryFileService
-
     private static final MAX_DURATION = 300
     private static final MAX_VIDEO_STREAM_SIZE = 1000
     private static final MAX_THUMBNAIL_STREAM_SIZE = 1000
+
+    StreamMetadataService streamMetadataService
+    TestTemporaryFileService temporaryFileService
+
+    byte[] videoData
+    ByteArrayInputStream videoStream
+
+    byte[] thumbnailData
+    ByteArrayInputStream thumbnailStream
 
     void setup() {
         streamMetadataService = Mock(StreamMetadataService) {
@@ -57,13 +64,18 @@ class VideoCreationServiceSpec extends Specification {
             validateThumbnailStream(_) >> new ThumbnailValidationResult(validFormat: true)
         }
 
-        // TODO: Use a mock and refactor stream tests
-        temporaryFileService = new TemporaryFileService()
+        temporaryFileService = new TestTemporaryFileService()
         service.temporaryFileService = temporaryFileService
 
         VideoCreationCommand.maxDuration = MAX_DURATION
         service.maxVideoStreamSizeInBytes = MAX_VIDEO_STREAM_SIZE
         service.maxThumbnailStreamSizeInBytes = MAX_THUMBNAIL_STREAM_SIZE
+
+        videoData = 'VIDEO'.bytes
+        videoStream = new ByteArrayInputStream(videoData)
+
+        thumbnailData = 'THUMBNAIL'.bytes
+        thumbnailStream = new ByteArrayInputStream(thumbnailData)
     }
 
     void "store video stream, save the video object and then transcode it"() {
@@ -132,7 +144,10 @@ class VideoCreationServiceSpec extends Specification {
 
     void "video stream is required"() {
         given:
-        def command = new VideoCreationCommand(videoStream: null)
+        def command = createCommand(videoStream: null)
+
+        and:
+        temporaryFileService.expectVideoStream = false
 
         expect:
         !service.allowCreation(command)
@@ -140,7 +155,10 @@ class VideoCreationServiceSpec extends Specification {
 
     void "video stream size is valid flag should be null if video stream is not available"() {
         given:
-        def command = new VideoCreationCommand(videoStream: null)
+        def command = createCommand(videoStream: null)
+
+        and:
+        temporaryFileService.expectVideoStream = false
 
         when:
         service.allowCreation(command)
@@ -149,32 +167,32 @@ class VideoCreationServiceSpec extends Specification {
         command.videoStreamSizeIsValid == null
     }
 
-    @Unroll
-    void "video stream with data [#data] and max allowed size [#max] is allowed [#allowed]"() {
+    void "video stream exceeds max allowed size"() {
         given:
-        service.maxVideoStreamSizeInBytes = max
+        service.maxVideoStreamSizeInBytes = 1
 
         and:
-        def command = createCommandWithVideoStream(data)
+        def data = 'ab'
+        def command = createCommand(videoData: data.bytes)
+
+        and:
+        temporaryFileService.expectVideoStreamExceedsMaxSize = true
 
         expect:
-        service.allowCreation(command) == allowed
+        !service.allowCreation(command)
 
-        where:
-        max     |   data        |   allowed
-        0       |   'a'.bytes   |   false
-        1       |   'a'.bytes   |   true
-        1       |   'ab'.bytes  |   false
-        2       |   'a'.bytes   |   true
+        and:
+        !command.videoStreamSizeIsValid.is(null)
+        !command.videoStreamSizeIsValid
     }
 
     void "video stream is larger than buffer but less than max size allowed"() {
         given:
-        service.maxVideoStreamSizeInBytes = 4 * temporaryFileService.BUFFER_SIZE
+        service.maxVideoStreamSizeInBytes = 4 * TemporaryFileService.BUFFER_SIZE
 
         and:
-        def data = 'a' * (3 * temporaryFileService.BUFFER_SIZE)
-        def command = createCommandWithVideoStream(data.bytes)
+        def data = 'a' * (3 * TemporaryFileService.BUFFER_SIZE)
+        def command = createCommand(videoData: data.bytes)
 
         expect:
         service.allowCreation(command)
@@ -182,14 +200,13 @@ class VideoCreationServiceSpec extends Specification {
 
     void "reload the video stream after writing it to the temp file"() {
         given:
-        def data = 'TEST'.bytes
-        def command = createCommandWithVideoStream(data)
+        def command = createCommand()
 
         when:
         service.allowCreation(command)
 
         then:
-        command.videoStream.bytes == data
+        command.videoStream.bytes == videoData
     }
 
     void "extract max duration of streams in video"() {
@@ -203,7 +220,7 @@ class VideoCreationServiceSpec extends Specification {
         ]
 
         and:
-        def command = createCommandWithVideoStream('TEST'.bytes)
+        def command = createCommand()
 
         when:
         service.allowCreation(command)
@@ -217,7 +234,7 @@ class VideoCreationServiceSpec extends Specification {
 
     void "duration should be null if no streams were found"() {
         given:
-        def command = createCommandWithVideoStream('TEST'.bytes)
+        def command = createCommand()
 
         when:
         service.allowCreation(command)
@@ -237,7 +254,7 @@ class VideoCreationServiceSpec extends Specification {
         streams.remove(streamToRemove)
 
         and:
-        def command = createCommandWithVideoStream('TEST'.bytes)
+        def command = createCommand()
 
         when:
         def allowed = service.allowCreation(command)
@@ -256,8 +273,10 @@ class VideoCreationServiceSpec extends Specification {
 
     void "invalid thumbnail stream -- skip thumbnail dependent validation"() {
         given:
-        def command = createCommandWithVideoStream('VIDEO'.bytes)
-        command.thumbnailStream = null
+        def command = createCommand(thumbnailStream: null)
+
+        and:
+        temporaryFileService.expectThumbnailStream = false
 
         expect:
         !service.allowCreation(command)
@@ -269,7 +288,7 @@ class VideoCreationServiceSpec extends Specification {
 
     void "invalid thumbnail format"() {
         given:
-        def command = createCommandWithVideoStream('VIDEO'.bytes)
+        def command = createCommand()
         def validationResult = new ThumbnailValidationResult(validFormat: false)
 
         when:
@@ -286,27 +305,22 @@ class VideoCreationServiceSpec extends Specification {
         1 * service.thumbnailValidationService.validateThumbnailStream(_) >> validationResult
     }
 
-    @Unroll
-    void "thumbnail stream with data [#data] and max allowed size [#max] is allowed [#allowed]"() {
+    void "thumbnail stream exceeds max allowed size"() {
         given:
-        service.maxThumbnailStreamSizeInBytes = max
+        service.maxThumbnailStreamSizeInBytes = 1
 
         and:
-        def command = createCommandWithVideoStream('VIDEO'.bytes)
-        command.thumbnailStream = new ByteArrayInputStream(data)
+        def data = 'ab'
+        def command = createCommand(thumbnailData: data.bytes)
+
+        and:
+        temporaryFileService.expectThumbnailStreamExceedsMaxSize = true
 
         expect:
-        service.allowCreation(command) == allowed
+        !service.allowCreation(command)
 
         and:
-        command.thumbnailStreamSizeIsValid == allowed
-
-        where:
-        max     |   data        |   allowed
-        0       |   'a'.bytes   |   false
-        1       |   'a'.bytes   |   true
-        1       |   'ab'.bytes  |   false
-        2       |   'a'.bytes   |   true
+        !command.thumbnailStreamSizeIsValid
     }
 
     void "add playlists and thumbnails to completed video"() {
@@ -324,12 +338,83 @@ class VideoCreationServiceSpec extends Specification {
         1 * service.thumbnailService.addThumbnails(video)
     }
 
-    private static VideoCreationCommand createCommandWithVideoStream(byte[] data) {
+    private VideoCreationCommand createCommand(Map overrides = [:]) {
         def reel = new Reel(name: 'test-reel')
         def creator = new User(username: 'videoCreationTestUser', reels: [reel])
-        def videoStream = new ByteArrayInputStream(data)
-        def thumbnailStream = new ByteArrayInputStream('THUMBNAIL'.bytes)
-        new VideoCreationCommand(creator: creator, videoStream: videoStream,
-                thumbnailStream: thumbnailStream, title: 'test-title', reel: 'test-reel')
+
+        def command = new VideoCreationCommand(
+                creator: creator,
+                videoStream: videoStream,
+                thumbnailStream: thumbnailStream,
+                title: 'test-title',
+                reel: 'test-reel'
+        )
+
+        temporaryFileService.command = command
+
+        overrides.each { key, value ->
+            boolean valueIsByteArray = value instanceof byte[]
+
+            if(key == 'videoData' && valueIsByteArray) {
+                command.videoStream = new ByteArrayInputStream(value as byte[])
+            }
+            else if(key == 'thumbnailData' && valueIsByteArray) {
+                command.thumbnailStream = new ByteArrayInputStream(value as byte[])
+            }
+            else {
+                command."$key" = value
+            }
+        }
+
+        return command
+    }
+
+    private class TestTemporaryFileService extends TemporaryFileService {
+
+        VideoCreationCommand command
+
+        boolean expectVideoStream = true
+        boolean expectVideoStreamExceedsMaxSize = false
+
+        boolean expectThumbnailStream = true
+        boolean expectThumbnailStreamExceedsMaxSize = false
+
+        @Override
+        File writeInputStreamToTempFile(InputStream inputStream, int maxStreamSizeInBytes) {
+
+            if(expectVideoStream && inputStream == command.videoStream) {
+
+                if (expectVideoStreamExceedsMaxSize) {
+                    assert command.videoStream.bytes.size() > maxStreamSizeInBytes
+                    return null
+                }
+
+                return writeInputStream(command.videoStream)
+            }
+
+            if(expectThumbnailStream && inputStream == command.thumbnailStream) {
+
+                if (expectThumbnailStreamExceedsMaxSize) {
+                    assert command.thumbnailStream.bytes.size() > maxStreamSizeInBytes
+                    return null
+                }
+
+                return writeInputStream(command.thumbnailStream)
+            }
+
+            return null
+        }
+
+        @Override
+        void deleteTempFile(File temp) {
+            FileUtils.forceDelete(temp)
+        }
+
+        private File writeInputStream(InputStream inputStream) {
+            def file = File.createTempFile('video', '.tmp')
+            def fos = new FileOutputStream(file)
+            fos.write(inputStream.bytes)
+            return file
+        }
     }
 }
