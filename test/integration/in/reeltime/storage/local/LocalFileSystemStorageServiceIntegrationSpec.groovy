@@ -1,14 +1,14 @@
 package in.reeltime.storage.local
 
-import grails.test.mixin.TestFor
+import grails.test.spock.IntegrationSpec
 import in.reeltime.storage.StorageService
-import spock.lang.Specification
 import spock.lang.Unroll
 
 import static java.io.File.separator
 
-@TestFor(LocalFileSystemStorageService)
-class LocalFileSystemStorageServiceSpec extends Specification {
+class LocalFileSystemStorageServiceIntegrationSpec extends IntegrationSpec {
+
+    LocalFileSystemStorageService localFileSystemStorageService
 
     private String directory
     private String filename
@@ -21,23 +21,19 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         filename = 'test.txt'
         contents = 'THIS IS A TEST'
         inputStream = new ByteArrayInputStream(contents.bytes)
-
-        defineBeans {
-            localFileSystemService(LocalFileSystemService)
-        }
     }
 
     void "LocalFilesystemStorageService must be an instance of StorageService"() {
         expect:
-        service instanceof StorageService
+        localFileSystemStorageService instanceof StorageService
     }
 
     void "load from temp directory"() {
         given:
-        service.store(inputStream, directory, filename)
+        localFileSystemStorageService.store(inputStream, directory, filename)
 
         when:
-        def stream = service.load(directory, filename)
+        def stream = localFileSystemStorageService.load(directory, filename)
 
         then:
         stream.text == contents
@@ -49,10 +45,10 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         def filePath = relativePath + filename
 
         and:
-        service.store(inputStream, directory, filePath)
+        localFileSystemStorageService.store(inputStream, directory, filePath)
 
         when:
-        def stream = service.load(directory, filePath)
+        def stream = localFileSystemStorageService.load(directory, filePath)
 
         then:
         stream.text == contents
@@ -62,10 +58,10 @@ class LocalFileSystemStorageServiceSpec extends Specification {
     void "file at [#path] exists"() {
         given:
         def filePath = path + 'test.txt'
-        service.store(inputStream, directory, filePath)
+        localFileSystemStorageService.store(inputStream, directory, filePath)
 
         expect:
-        service.exists(directory, filePath)
+        localFileSystemStorageService.exists(directory, filePath)
 
         where:
         path << ['', 'foo' + separator + 'bar' + separator]
@@ -77,7 +73,7 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         def filePath = path + 'test.txt'
 
         expect:
-        !service.exists(directory, filePath)
+        !localFileSystemStorageService.exists(directory, filePath)
 
         where:
         path << ['', 'foo' + separator + 'bar' + separator]
@@ -85,7 +81,7 @@ class LocalFileSystemStorageServiceSpec extends Specification {
 
     void "store input stream to a file"() {
         when:
-        service.store(inputStream, directory, filename)
+        localFileSystemStorageService.store(inputStream, directory, filename)
 
         then:
         assertFileContents(contents, directory, filename)
@@ -100,7 +96,7 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         def absolutePath = directory + separator + relativePath
 
         when:
-        service.store(inputStream, directory, filePath)
+        localFileSystemStorageService.store(inputStream, directory, filePath)
 
         then:
         assertFileContents(contents, absolutePath, filename)
@@ -111,10 +107,10 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         storeFileForDeletion(directory, filename)
 
         when:
-        service.delete(directory, filename)
+        localFileSystemStorageService.delete(directory, filename)
 
         then:
-        !service.exists(directory, filename)
+        !localFileSystemStorageService.exists(directory, filename)
     }
 
     void "delete file specified by a nested path"() {
@@ -127,17 +123,17 @@ class LocalFileSystemStorageServiceSpec extends Specification {
         storeFileForDeletion(directory, filePath)
 
         when:
-        service.delete(directory, filePath)
+        localFileSystemStorageService.delete(directory, filePath)
 
         then:
-        !service.exists(absolutePath, filename)
+        !localFileSystemStorageService.exists(absolutePath, filename)
     }
 
     private void storeFileForDeletion(String directory, String filename) {
-        assert !service.exists(directory, filename)
+        assert !localFileSystemStorageService.exists(directory, filename)
 
-        service.store(inputStream, directory, filename)
-        assert service.exists(directory, filename)
+        localFileSystemStorageService.store(inputStream, directory, filename)
+        assert localFileSystemStorageService.exists(directory, filename)
     }
 
     private static void assertFileContents(String contents, String directory, String filename) {
