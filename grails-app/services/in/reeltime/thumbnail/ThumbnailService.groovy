@@ -16,16 +16,17 @@ class ThumbnailService {
             def uri = thumbnailGenerationService.generateThumbnail(video.masterThumbnailPath, resolution)
 
             def thumbnail = new Thumbnail(uri: uri, resolution: resolution)
-            video.addToThumbnails(thumbnail)
-
             storeThumbnail(thumbnail)
+
+            new ThumbnailVideo(thumbnail: thumbnail, video: video).save()
         }
-        videoService.storeVideo(video)
     }
 
     Thumbnail loadThumbnail(Long videoId, ThumbnailResolution resolution) {
         def video = videoService.loadVideo(videoId)
-        def thumbnail = Thumbnail.findByVideoAndResolution(video, resolution)
+
+        def thumbnails = ThumbnailVideo.findAllByVideo(video)*.thumbnail
+        def thumbnail = thumbnails.find { it.resolution == resolution }
 
         if(!thumbnail) {
             def message = "Thumbnail for video [${videoId}] and resolution [${resolution.name()}] not found"

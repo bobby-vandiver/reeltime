@@ -35,12 +35,19 @@ class ThumbnailServiceIntegrationSpec extends IntegrationSpec {
         video.thumbnails.find { it.resolution == RESOLUTION_1X } != null
         video.thumbnails.find { it.resolution == RESOLUTION_2X } != null
         video.thumbnails.find { it.resolution == RESOLUTION_3X } != null
+
+        and:
+        ThumbnailVideo.findAllByVideo(video).find { it.thumbnail.resolution == RESOLUTION_1X } != null
+        ThumbnailVideo.findAllByVideo(video).find { it.thumbnail.resolution == RESOLUTION_2X } != null
+        ThumbnailVideo.findAllByVideo(video).find { it.thumbnail.resolution == RESOLUTION_3X } != null
     }
 
     void "load thumbnail by resolution and video id"() {
         given:
-        video.addToThumbnails(uri: 'something', resolution: RESOLUTION_2X)
-        video.save()
+        new ThumbnailVideo(
+                thumbnail: new Thumbnail(uri: 'something', resolution: RESOLUTION_2X).save(),
+                video: video
+        ).save()
 
         when:
         def thumbnail = thumbnailService.loadThumbnail(video.id, RESOLUTION_2X)
