@@ -9,10 +9,10 @@ class VideoRemovalService {
     def reelVideoManagementService
 
     def resourceRemovalService
+    def playlistRemovalService
 
     def videoStorageService
     def thumbnailStorageService
-    def playlistAndSegmentStorageService
 
     def transcoderJobService
 
@@ -50,19 +50,8 @@ class VideoRemovalService {
             resourceRemovalService.scheduleForRemoval(thumbnailBase, thumbnail.uri)
         }
 
-        def playlistAndSegmentBase = playlistAndSegmentStorageService.playlistBase
-
-        log.info "Scheduling removal of playlists for video [$videoId]"
-        video.playlistUris.each { playlistUri ->
-            resourceRemovalService.scheduleForRemoval(playlistAndSegmentBase, playlistUri.uri)
-        }
-
-        log.info "Scheduling removal of video segments for video [$videoId]"
-        video.playlists.each { playlist ->
-            playlist.segments.each { segment ->
-                resourceRemovalService.scheduleForRemoval(playlistAndSegmentBase, segment.uri)
-            }
-        }
+        log.info "Removing playlists for video [$videoId]"
+        playlistRemovalService.removePlaylistsForVideo(video)
 
         log.info "Removing the transcoder jobs associated with video [$videoId]"
         transcoderJobService.removeJobForVideo(video)
