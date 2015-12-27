@@ -12,18 +12,26 @@ class PlaylistRemovalService {
         def playlistAndSegmentBase = playlistAndSegmentStorageService.playlistBase
 
         log.info "Scheduling removal of playlists for video [$videoId]"
+
         video.playlistUris.each { playlistUri ->
             resourceRemovalService.scheduleForRemoval(playlistAndSegmentBase, playlistUri.uri)
+
+            PlaylistUriVideo.findByVideoAndPlaylistUri(video, playlistUri).delete()
+            playlistUri.delete()
         }
-//        video.playlistUris.clear()
 
         log.info "Scheduling removal of video segments for video [$videoId]"
+
         video.playlists.each { playlist ->
             playlist.segments.each { segment ->
                 resourceRemovalService.scheduleForRemoval(playlistAndSegmentBase, segment.uri)
+
+                PlaylistSegment.findByPlaylistAndSegment(playlist, segment).delete()
+                segment.delete()
             }
-//            playlist.segments.clear()
+
+            PlaylistVideo.findByVideoAndPlaylist(video, playlist).delete()
+            playlist.delete()
         }
-//        video.playlists.clear()
     }
 }

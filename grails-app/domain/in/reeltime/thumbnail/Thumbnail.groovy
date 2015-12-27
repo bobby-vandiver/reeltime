@@ -11,11 +11,14 @@ class Thumbnail {
     ThumbnailResolution resolution
     String uri
 
-    static belongsTo = [video: Video]
+    static transients = ['video']
 
     static constraints = {
         resolution nullable: false
         uri nullable: false, blank: false, unique: true
-        video nullable: false
+    }
+
+    Video getVideo() {
+        ThumbnailVideo.findByThumbnail(this).video
     }
 }

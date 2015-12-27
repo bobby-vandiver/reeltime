@@ -18,19 +18,22 @@ class Playlist {
     int mediaSequence
     int targetDuration
 
-    SortedSet<Segment> segments
-
-    static belongsTo = [video: Video]
-    static hasMany = [segments: Segment]
-
-    int getLength() {
-        segments.size()
-    }
-
-    static transients = ['length']
+    static transients = ['length', 'segments', 'video']
 
     static constraints = {
         codecs nullable: true
         resolution nullable: true
+    }
+
+    Video getVideo() {
+        PlaylistVideo.findByPlaylist(this).video
+    }
+
+    List<Segment> getSegments() {
+        PlaylistSegment.findAllByPlaylist(this)*.segment.sort()
+    }
+
+    int getLength() {
+        segments.size()
     }
 }

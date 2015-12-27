@@ -11,11 +11,14 @@ class PlaylistUri {
     PlaylistType type
     String uri
 
-    static belongsTo = [video: Video]
+    static transients = ['video']
 
     static constraints = {
         type nullable: false
         uri nullable: false, blank: false, unique: true
-        video nullable: false
+    }
+
+    Video getVideo() {
+        PlaylistUriVideo.findByPlaylistUri(this).video
     }
 }

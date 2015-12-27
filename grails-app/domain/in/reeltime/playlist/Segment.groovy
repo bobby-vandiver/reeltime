@@ -11,12 +11,16 @@ class Segment implements Comparable {
     String uri
     String duration
 
-    static belongsTo = [playlist: Playlist]
+    static transients = ['playlist']
 
     static constraints = {
         segmentId min: 0
         uri blank: false, nullable: false, unique: true
         duration blank: false, nullable: false,  matches: /^\d+(.\d+)?/
+    }
+
+    Playlist getPlaylist() {
+        PlaylistSegment.findBySegment(this).playlist
     }
 
     @Override

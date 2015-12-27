@@ -9,6 +9,8 @@ class VideoRemovalService {
     def reelVideoManagementService
 
     def resourceRemovalService
+
+    def thumbnailRemovalService
     def playlistRemovalService
 
     def videoStorageService
@@ -40,15 +42,8 @@ class VideoRemovalService {
         def masterVideoBase = videoStorageService.videoBase
         resourceRemovalService.scheduleForRemoval(masterVideoBase, video.masterPath)
 
-        def thumbnailBase = thumbnailStorageService.thumbnailBase
-
-        log.info "Scheduling removal of master thumbnail for video [$videoId]"
-        resourceRemovalService.scheduleForRemoval(thumbnailBase, video.masterThumbnailPath)
-
-        log.info "Scheduling removal of thumbnails for video [$videoId]"
-        video.thumbnails.each { thumbnail ->
-            resourceRemovalService.scheduleForRemoval(thumbnailBase, thumbnail.uri)
-        }
+        log.info "Removing thumbnails for video [$videoId]"
+        thumbnailRemovalService.removeThumbnailsForVideo(video)
 
         log.info "Removing playlists for video [$videoId]"
         playlistRemovalService.removePlaylistsForVideo(video)
