@@ -1,10 +1,12 @@
 package in.reeltime.playlist
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(Playlist)
+@Mock([Segment, PlaylistSegment])
 class PlaylistSpec extends Specification {
 
     void "playlist requires HLS stream information"() {
@@ -52,11 +54,8 @@ class PlaylistSpec extends Specification {
 
     @Unroll
     void "playlist contains [#count] ordered segments"() {
-        given:
-        def segments = createOrderedSegments(count)
-
         when:
-        def playlist = new Playlist(segments: segments)
+        def playlist = createPlaylistWithOrderedSegments(count)
 
         then:
         playlist.segments.size() == count
@@ -76,7 +75,7 @@ class PlaylistSpec extends Specification {
         ]
 
         when:
-        def playlist = new Playlist(segments: segments)
+        def playlist = createPlaylistWithSegments(segments)
 
         then:
         playlist.segments*.segmentId == [0, 1]
@@ -87,11 +86,8 @@ class PlaylistSpec extends Specification {
 
     @Unroll
     void "length returns number of segments [#count]"() {
-        given:
-        def segments = createOrderedSegments(count)
-
         when:
-        def playlist = new Playlist(segments: segments)
+        def playlist = createPlaylistWithOrderedSegments(count)
 
         then:
         playlist.length == count
@@ -100,7 +96,23 @@ class PlaylistSpec extends Specification {
         count << [0, 3, 6]
     }
 
-    private static createOrderedSegments(count) {
+    private static Playlist createPlaylistWithOrderedSegments(count) {
+        def segments = createOrderedSegments(count)
+        createPlaylistWithSegments(segments)
+    }
+
+    private static Playlist createPlaylistWithSegments(Collection<Segment> segments) {
+        def playlist = new Playlist().save()
+
+        segments.each { segment ->
+            segment.save()
+            new PlaylistSegment(playlist: playlist, segment: segment).save()
+        }
+
+        return playlist
+    }
+
+    private static Collection<Segment> createOrderedSegments(count) {
         (0..<count).collect { id -> new Segment(segmentId: id, uri: "seg-$id", duration: '1.0') }
     }
 }

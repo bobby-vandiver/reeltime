@@ -48,20 +48,4 @@ class PlaylistUriSpec extends Specification {
         then:
         !uri.validate(['uri'])
     }
-
-    void "uri not associated with a video"() {
-        given:
-        def uri = new PlaylistUri(video: null)
-
-        expect:
-        !uri.validate(['video'])
-    }
-
-    void "must be associated with a video"() {
-        given:
-        def uri = new PlaylistUri(video: new Video())
-
-        expect:
-        uri.validate(['video'])
-    }
 }

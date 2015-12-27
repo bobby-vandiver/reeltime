@@ -7,28 +7,6 @@ import spock.lang.Unroll
 @TestFor(Segment)
 class SegmentSpec extends Specification {
 
-    void "playlist cannot be null"() {
-        when:
-        def segment = new Segment(playlist: null)
-
-        then:
-        !segment.validate(['playlist'])
-    }
-
-    void "segment must belong to a playlist"() {
-        given:
-        def playlist = new Playlist()
-
-        when:
-        def segment = new Segment(playlist: playlist)
-
-        then:
-        segment.validate(['playlist'])
-
-        and:
-        segment.playlist == playlist
-    }
-
     @Unroll
     void "segmentId [#value] is [#valid]"() {
         when:

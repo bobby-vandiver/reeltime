@@ -49,20 +49,4 @@ class ThumbnailSpec extends Specification {
         then:
         !thumbnail.validate(['uri'])
     }
-
-    void "thumbnail not associated with a video"() {
-        given:
-        def thumbnail = new Thumbnail(video: null)
-
-        expect:
-        !thumbnail.validate(['video'])
-    }
-
-    void "thumbnail must be associated with a video"() {
-        given:
-        def thumbnail = new Thumbnail(video: new Video())
-
-        expect:
-        thumbnail.validate(['video'])
-    }
 }

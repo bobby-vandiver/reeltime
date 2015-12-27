@@ -1,33 +1,31 @@
 package in.reeltime.video
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.playlist.Playlist
+import in.reeltime.playlist.PlaylistVideo
 import in.reeltime.playlist.PlaylistUri
+import in.reeltime.playlist.PlaylistUriVideo
 import in.reeltime.thumbnail.Thumbnail
-import in.reeltime.thumbnail.ThumbnailResolution
+import in.reeltime.thumbnail.ThumbnailVideo
 import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(Video)
+@Mock([Thumbnail, Playlist, PlaylistUri, ThumbnailVideo, PlaylistVideo, PlaylistUriVideo])
 class VideoSpec extends Specification {
 
     void "valid video"() {
         given:
         def user = new User()
-        def playlist = new Playlist()
-        def playlistUri = new PlaylistUri(uri: 'somewhere')
-        def thumbnail = new Thumbnail(uri: 'anywhere', resolution: ThumbnailResolution.RESOLUTION_1X)
 
         when:
         def video = new Video(
                 creator: user,
                 title: 'foo',
                 masterPath: 'sample.mp4',
-                masterThumbnailPath: 'sample.png',
-                thumbnails: [thumbnail],
-                playlists: [playlist],
-                playlistUris: [playlistUri],
+                masterThumbnailPath: 'sample.png'
         )
 
         then:
@@ -39,9 +37,11 @@ class VideoSpec extends Specification {
         video.title == 'foo'
         video.masterPath == 'sample.mp4'
         video.masterThumbnailPath == 'sample.png'
-        video.thumbnails == [thumbnail] as Set
-        video.playlists == [playlist] as Set
-        video.playlistUris == [playlistUri] as Set
+
+        and:
+        video.thumbnails.empty
+        video.playlists.empty
+        video.playlistUris.empty
     }
 
     void "creator cannot be null (videos cannot be orphans)"() {
@@ -50,21 +50,6 @@ class VideoSpec extends Specification {
 
         then:
         !video.validate(['creator'])
-    }
-
-    @Unroll
-    void "[#key] can be empty"() {
-        when:
-        def video = new Video((key): [] as Set)
-
-        then:
-        video.validate([key])
-
-        where:
-        _   |   key
-        _   |   'thumbnails'
-        _   |   'playlists'
-        _   |   'playlistUris'
     }
 
     @Unroll
@@ -100,5 +85,24 @@ class VideoSpec extends Specification {
         _   |   key
         _   |   'masterPath'
         _   |   'masterThumbnailPath'
+    }
+
+    @Unroll
+    void "#propertyName for #clazz with #joinClazz"() {
+        given:
+        def video = new Video().save(validate: false)
+        def obj = clazz.newInstance().save(validate: false)
+
+        joinClazz.newInstance(video: video, (joinClazzPropertyName): obj).save()
+
+        expect:
+        video."$propertyName".size() == 1
+        video."$propertyName".contains(obj)
+
+        where:
+        propertyName    |   clazz           |   joinClazz           |   joinClazzPropertyName
+        'thumbnails'    |   Thumbnail       |   ThumbnailVideo      |   'thumbnail'
+        'playlists'     |   Playlist        |   PlaylistVideo       |   'playlist'
+        'playlistUris'  |   PlaylistUri     |   PlaylistUriVideo    |   'playlistUri'
     }
 }
