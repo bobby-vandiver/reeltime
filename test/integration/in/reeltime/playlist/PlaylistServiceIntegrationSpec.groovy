@@ -23,13 +23,14 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
                 bandwidth: 474000,
                 resolution: '400x170',
                 codecs: 'avc1.42001e,mp4a.40.2'
-        )
+        ).save()
 
-        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore', masterThumbnailPath: 'ignore')
-        video.addToPlaylists(playlist)
-        video.save()
+        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore', masterThumbnailPath: 'ignore').save()
 
-        assert playlist.id != null
+        new PlaylistVideo(playlist: playlist, video: video).save()
+
+        expect:
+        playlist.id != null
 
         when:
         def output = playlistService.generateVariantPlaylist(video)
@@ -48,24 +49,24 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
                 bandwidth: 474000,
                 resolution: '400x170',
                 codecs: 'avc1.42001e,mp4a.40.2'
-        )
+        ).save()
 
         def playlist2 = new Playlist(
                 programId: 1,
                 bandwidth: 663000,
                 resolution: '440x200',
                 codecs: 'avc1.42001e,mp4a.40.2'
-        )
+        ).save()
 
         and:
-        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore', masterThumbnailPath: 'ignore')
-        video.addToPlaylists(playlist1)
-        video.addToPlaylists(playlist2)
-        video.save()
+        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore', masterThumbnailPath: 'ignore').save()
 
-        and:
-        assert playlist1.id != null
-        assert playlist2.id != null
+        new PlaylistVideo(playlist: playlist1, video: video).save()
+        new PlaylistVideo(playlist: playlist2, video: video).save()
+
+        expect:
+        playlist1.id != null
+        playlist2.id != null
 
         and:
         def stream1 = """#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=400x170,CODECS="avc1.42001e,mp4a.40.2",BANDWIDTH=474000
@@ -86,22 +87,23 @@ class PlaylistServiceIntegrationSpec extends IntegrationSpec {
     @Unroll
     void "generate media playlist and allow caching [#allowCacheText]"() {
         given:
-        def segment1 = new Segment(segmentId: 0, uri: 'hls-spidey00000.ts', duration: '11.308056')
-        def segment2 = new Segment(segmentId: 1, uri: 'hls-spidey00001.ts', duration: '11.262022')
+        def segment1 = new Segment(segmentId: 0, uri: 'hls-spidey00000.ts', duration: '11.308056').save()
+        def segment2 = new Segment(segmentId: 1, uri: 'hls-spidey00001.ts', duration: '11.262022').save()
 
         and:
-        def playlist = new Playlist(hlsVersion: 3, mediaSequence: 0, targetDuration: 12)
-        playlist.addToSegments(segment1)
-        playlist.addToSegments(segment2)
+        def playlist = new Playlist(hlsVersion: 3, mediaSequence: 0, targetDuration: 12).save()
+
+        new PlaylistSegment(playlist: playlist, segment: segment1).save()
+        new PlaylistSegment(playlist: playlist, segment: segment2).save()
 
         and:
-        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore', masterThumbnailPath: 'ignore')
-        video.addToPlaylists(playlist)
-        video.save()
+        def video = new Video(creator: creator, title: 'none', masterPath: 'ignore', masterThumbnailPath: 'ignore').save()
 
-        and:
-        assert segment1.id != null
-        assert segment2.id != null
+        new PlaylistVideo(playlist: playlist, video: video).save()
+
+        expect:
+        segment1.id != null
+        segment2.id != null
 
         and:
         def header = """#EXTM3U

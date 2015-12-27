@@ -23,8 +23,6 @@ class PlaylistService {
         def playlists = []
 
         log.info "Adding variant playlist uri [$variantPath] to tracked uris for video [$videoId]"
-//        video.addToPlaylistUris(type: PlaylistType.Variant, uri: variantPath)
-
         playlistUris << new PlaylistUri(type: PlaylistType.Variant, uri: variantPath).save()
 
         variantPlaylist.streams.each { stream ->
@@ -33,8 +31,6 @@ class PlaylistService {
             def mediaPlaylist = playlistParserService.parseMediaPlaylist(mediaPath) as MediaPlaylist
 
             log.info "Adding media playlist uri [$mediaPath] to tracked uris for video [$videoId]"
-//            video.addToPlaylistUris(type: PlaylistType.Media, uri: mediaPath)
-
             playlistUris << new PlaylistUri(type: PlaylistType.Media, uri: mediaPath).save()
 
             def playlist = new Playlist(
@@ -49,15 +45,11 @@ class PlaylistService {
 
             log.info("Adding segments to playlist for video [$videoId]")
             mediaPlaylist.segments.eachWithIndex { seg, idx ->
-//                playlist.addToSegments(segmentId: idx, uri: keyPrefix + seg.uri, duration: seg.duration)
-
                 def segment = new Segment(segmentId: idx, uri: keyPrefix + seg.uri, duration: seg.duration).save()
                 new PlaylistSegment(playlist: playlist, segment: segment).save()
             }
 
             log.info("Adding playlist to video [$videoId]")
-//            video.addToPlaylists(playlist)
-
             playlists << playlist
         }
 
