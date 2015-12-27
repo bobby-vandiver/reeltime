@@ -7,7 +7,7 @@ import in.reeltime.video.Video
 import spock.lang.Unroll
 
 @TestFor(PlaylistController)
-@Mock([Video, Playlist])
+@Mock([Video, Playlist, PlaylistVideo])
 class PlaylistControllerSpec extends AbstractControllerSpec {
 
     void "return a 404 if the video does not exist"() {
@@ -44,11 +44,10 @@ class PlaylistControllerSpec extends AbstractControllerSpec {
 
     void "return a 404 if the playlist does not belong to the video"() {
         given:
-        def playlist = new Playlist()
-        def video1 = new Video(title: 'has playlist')
+        def playlist = new Playlist().save()
+        def video1 = new Video(title: 'has playlist').save(validate: false)
 
-        video1.addToPlaylists(playlist)
-        video1.save(validate: false)
+        new PlaylistVideo(playlist: playlist, video: video1).save()
 
         and:
         def video2 = new Video(title: 'no playlist').save(validate: false)
@@ -70,11 +69,10 @@ class PlaylistControllerSpec extends AbstractControllerSpec {
 
     void "return a 200 and the media playlist for the requested video stream"() {
         given:
-        def playlist = new Playlist()
-        def video = new Video(title: 'has playlist', available: true)
+        def playlist = new Playlist().save()
+        def video = new Video(title: 'has playlist', available: true).save(validate: false)
 
-        video.addToPlaylists(playlist)
-        video.save(validate: false)
+        new PlaylistVideo(playlist: playlist, video: video).save()
 
         and:
         assert playlist.id

@@ -33,9 +33,11 @@ class PlaylistController extends AbstractController {
 
         handleMultipleCommandRequest([videoCommand, playlistCommand]) {
             def video = Video.findByIdAndAvailable(videoCommand.video_id, true)
-            def playlist = Playlist.findByIdAndVideo(playlistCommand.playlist_id, video)
+            
+            def playlist = Playlist.findById(playlistCommand.playlist_id)
+            def playlistBelongsToVideo = playlist && PlaylistVideo.findByPlaylistAndVideo(playlist, video)
 
-            if (playlist) {
+            if (playlistBelongsToVideo) {
                 response.status = SC_OK
                 response.contentType = 'application/x-mpegURL'
                 response.outputStream << playlistService.generateMediaPlaylist(playlist, true)

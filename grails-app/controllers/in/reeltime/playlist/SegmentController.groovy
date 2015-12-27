@@ -14,19 +14,22 @@ class SegmentController extends AbstractController {
     @Secured(["#oauth2.hasScope('videos-read')"])
     def getSegment(VideoCommand videoCommand, PlaylistCommand playlistCommand, SegmentCommand segmentCommand) {
 
-        def video_id = videoCommand.video_id
-        def playlist_id = playlistCommand.playlist_id
-        def segment_id = segmentCommand.segment_id
+        def videoId = videoCommand.video_id
+        def playlistId = playlistCommand.playlist_id
+        def segmentId = segmentCommand.segment_id
 
-        log.debug("Requested segment [${segment_id}] for playlist [${playlist_id}] belonging to video [${video_id}]")
+        log.debug("Requested segment [${segmentId}] for playlist [${playlistId}] belonging to video [${videoId}]")
 
         handleMultipleCommandRequest([videoCommand, playlistCommand, segmentCommand]) {
-            def video = Video.findByIdAndAvailable(video_id, true)
-            def playlist = Playlist.findByIdAndVideo(playlist_id, video)
+            def video = Video.findByIdAndAvailable(videoId, true)
 
-            def segment = Segment.findBySegmentIdAndPlaylist(segment_id, playlist)
+            def playlist = Playlist.findById(playlistId)
+            def playlistBelongsToVideo = PlaylistVideo.findByPlaylistAndVideo(playlist, video)
 
-            if (segment) {
+            def segment = Segment.findBySegmentId(segmentId)
+            def segmentBelongsToPlaylist = PlaylistSegment.findByPlaylistAndSegment(playlist, segment)
+
+            if (playlistBelongsToVideo && segmentBelongsToPlaylist) {
                 def stream = playlistAndSegmentStorageService.load(segment.uri) as InputStream
                 def content = stream.bytes
 

@@ -6,7 +6,7 @@ import in.reeltime.video.Video
 import spock.lang.Specification
 
 @TestFor(SegmentController)
-@Mock([Video, Playlist, Segment])
+@Mock([Video, Playlist, Segment, PlaylistVideo, PlaylistSegment])
 class SegmentControllerSpec extends Specification {
 
     void "return a 404 if the video exists but is not available"() {
@@ -27,15 +27,13 @@ class SegmentControllerSpec extends Specification {
 
     void "return a 404 if the playlist does not belong to the video"() {
         given:
-        def segment = new Segment(segmentId: 7819)
-
-        def playlist = new Playlist()
-        playlist.addToSegments(segment)
+        def segment = new Segment(segmentId: 7819).save(validate: false)
+        def playlist = new Playlist().save()
 
         and:
-        def video1 = new Video(title: 'has playlist', available: true)
-        video1.addToPlaylists(playlist)
-        video1.save(validate: false)
+        def video1 = new Video(title: 'has playlist', available: true).save(validate: false)
+
+        new PlaylistVideo(playlist: playlist, video: video1).save()
 
         and:
         def video2 = new Video(title: 'no playlist', available: true).save(validate: false)
@@ -59,15 +57,15 @@ class SegmentControllerSpec extends Specification {
 
     void "return a 200 and the requested segment data when playlist has only one segment"() {
         given:
-        def segment = new Segment(uri: 'something.ts', segmentId: 7819)
+        def segment = new Segment(uri: 'something.ts', segmentId: 7819).save(validate: false)
+        def playlist = new Playlist().save()
 
-        def playlist = new Playlist()
-        playlist.addToSegments(segment)
+        new PlaylistSegment(playlist: playlist, segment: segment).save()
 
         and:
-        def video = new Video(title: 'has playlist', available: true)
-        video.addToPlaylists(playlist)
-        video.save(validate: false)
+        def video = new Video(title: 'has playlist', available: true).save(validate: false)
+
+        new PlaylistVideo(playlist: playlist, video: video).save()
 
         and:
         assert playlist.id
@@ -99,17 +97,18 @@ class SegmentControllerSpec extends Specification {
 
     void "return a 200 and the requested segment data when playlist has multiple segments"() {
         given:
-        def segment1 = new Segment(uri: 'something.ts', segmentId: 7819)
-        def segment2 = new Segment(uri: 'something.ts', segmentId: 1492)
+        def segment1 = new Segment(uri: 'something.ts', segmentId: 7819).save(validate: false)
+        def segment2 = new Segment(uri: 'something.ts', segmentId: 1492).save(validate: false)
 
-        def playlist = new Playlist()
-        playlist.addToSegments(segment1)
-        playlist.addToSegments(segment2)
+        def playlist = new Playlist().save()
+
+        new PlaylistSegment(playlist: playlist, segment: segment1).save()
+        new PlaylistSegment(playlist: playlist, segment: segment2).save()
 
         and:
-        def video = new Video(title: 'has playlist', available: true)
-        video.addToPlaylists(playlist)
-        video.save(validate: false)
+        def video = new Video(title: 'has playlist', available: true).save(validate: false)
+
+        new PlaylistVideo(playlist: playlist, video: video).save()
 
         and:
         assert playlist.id
