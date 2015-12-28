@@ -22,26 +22,27 @@ class Video {
     boolean available
     Date dateCreated
 
-    User creator
-
-    static transients = ['thumbnails', 'playlists', 'playlistUris']
+    static transients = ['creator', 'thumbnails', 'playlists', 'playlistUris']
 
     static constraints = {
-        creator nullable: false
         title nullable: false, blank: false
         masterPath nullable: false, blank: false, unique: true
         masterThumbnailPath nullable: false, blank: false, unique: true
     }
 
-    Set<Thumbnail> getThumbnails() {
+    User getCreator() {
+        VideoCreator.findByVideo(this)?.creator
+    }
+
+    Collection<Thumbnail> getThumbnails() {
         ThumbnailVideo.findAllByVideo(this)*.thumbnail
     }
 
-    Set<Playlist> getPlaylists() {
+    Collection<Playlist> getPlaylists() {
         PlaylistVideo.findAllByVideo(this)*.playlist
     }
 
-    Set<PlaylistUri> getPlaylistUris() {
+    Collection<PlaylistUri> getPlaylistUris() {
         PlaylistUriVideo.findAllByVideo(this)*.playlistUri
     }
 }

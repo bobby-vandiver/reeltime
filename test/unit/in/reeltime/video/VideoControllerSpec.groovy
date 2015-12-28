@@ -13,7 +13,7 @@ import org.codehaus.groovy.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Unroll
 
 @TestFor(VideoController)
-@Mock([Video])
+@Mock([Video, VideoCreator])
 class VideoControllerSpec extends AbstractControllerSpec {
 
     User currentUser
@@ -185,8 +185,11 @@ class VideoControllerSpec extends AbstractControllerSpec {
     @Unroll
     void "requested video is available [#available] and requested by creator"() {
         given:
-        def video = new Video(creator: currentUser, title: 'test', available: available).save(validate: false)
+        def video = new Video(title: 'test', available: available).save(validate: false)
         def videoId = video.id
+
+        and:
+        new VideoCreator(video: video, creator: currentUser).save()
 
         and:
         params.video_id = videoId

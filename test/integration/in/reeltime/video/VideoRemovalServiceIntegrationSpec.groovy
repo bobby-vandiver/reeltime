@@ -51,11 +51,12 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         def video = new Video(
-                creator: creator,
                 title: 'some video',
                 masterPath: 'something.mp4',
                 masterThumbnailPath: 'something.png'
         ).save()
+
+        new VideoCreator(video: video, creator: creator).save()
 
         when:
         SpringSecurityUtils.doWithAuth(notCreator.username) {
@@ -81,13 +82,12 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
         assert playlist.segments.size() == 2
 
         def video = new Video(
-                creator: creator,
                 title: 'some video',
                 masterPath: 'something.mp4',
                 masterThumbnailPath: 'something.png'
-        )
+        ).save()
 
-        video.save()
+        new VideoCreator(video: video, creator: creator).save()
 
         def thumbnail1 = new Thumbnail(resolution: ThumbnailResolution.RESOLUTION_1X, uri: 'thumbnail-1x').save()
         def thumbnail2 = new Thumbnail(resolution: ThumbnailResolution.RESOLUTION_2X, uri: 'thumbnail-2x').save()
@@ -154,6 +154,8 @@ class VideoRemovalServiceIntegrationSpec extends IntegrationSpec {
         Thumbnail.findById(thumbnail3Id) == null
 
         and:
+        VideoCreator.findByVideo(video) == null
+
         PlaylistUriVideo.findAllByVideo(video).empty
         PlaylistVideo.findAllByVideo(video).empty
 

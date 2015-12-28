@@ -52,8 +52,7 @@ class VideoRemovalService {
         transcoderJobService.removeJobForVideo(video)
 
         log.info "Removing video [$videoId] from creator [${creator.username}]"
-        creator.removeFromVideos(video)
-        userService.storeUser(creator)
+        VideoCreator.findByVideoAndCreator(video, creator).delete()
 
         log.info "Deleting video [$videoId]"
         video.delete()

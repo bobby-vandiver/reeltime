@@ -4,6 +4,7 @@ import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.video.Video
+import in.reeltime.video.VideoCreator
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
 import in.reeltime.reel.AudienceMember
@@ -28,7 +29,7 @@ class User {
 	boolean accountLocked
 	boolean passwordExpired
 
-    static hasMany = [videos: Video, clients: Client, reels: Reel]
+    static hasMany = [clients: Client, reels: Reel]
 
 	static transients = [
             'springSecurityService',
@@ -36,7 +37,8 @@ class User {
             'numberOfFollowers',
             'numberOfReels',
             'numberOfAudienceMemberships',
-            'currentUserIsFollowing'
+            'currentUserIsFollowing',
+            'videos'
     ]
 
     static List<User> findAllByIdInListInAlphabeticalOrderByPage(List<Long> userIds, int page, int maxUsersPerPage) {
@@ -72,6 +74,10 @@ class User {
         withNewSession {
             return obj.hasReel(Reel.UNCATEGORIZED_REEL_NAME)
         }
+    }
+
+    Collection<Video> getVideos() {
+        VideoCreator.findAllByCreator(this)*.video
     }
 
     boolean hasReel(String reelName) {

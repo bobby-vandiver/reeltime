@@ -28,8 +28,13 @@ class VideoCreationServiceIntegrationSpec extends IntegrationSpec {
         def thumbnailStream = new File('test/files/images/small.png').newInputStream()
 
         and:
-        def command = new VideoCreationCommand(creator: creator, title: title, reel: reelName,
-                videoStream: videoStream, thumbnailStream: thumbnailStream)
+        def command = new VideoCreationCommand(
+                creator: creator,
+                title: title,
+                reel: reelName,
+                videoStream: videoStream,
+                thumbnailStream: thumbnailStream
+        )
 
         when:
         SpringSecurityUtils.doWithAuth(creator.username) {
@@ -37,12 +42,15 @@ class VideoCreationServiceIntegrationSpec extends IntegrationSpec {
         }
 
         then:
-        def video = Video.findByCreator(creator)
+        def video = VideoCreator.findByCreator(creator).video
 
         video.creator == creator
         video.title == title
         video.masterPath != null
         video.masterThumbnailPath != null
+
+        and:
+        creator.videos.contains(video)
 
         and:
         ReelVideo.findByReelAndVideo(reel, video) != null

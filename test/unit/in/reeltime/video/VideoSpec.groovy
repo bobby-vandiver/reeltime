@@ -1,5 +1,6 @@
 package in.reeltime.video
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.playlist.Playlist
@@ -13,16 +14,12 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(Video)
-@Mock([Thumbnail, Playlist, PlaylistUri, ThumbnailVideo, PlaylistVideo, PlaylistUriVideo])
+@Mock([User, Thumbnail, Playlist, PlaylistUri, VideoCreator, ThumbnailVideo, PlaylistVideo, PlaylistUriVideo])
 class VideoSpec extends Specification {
 
     void "valid video"() {
-        given:
-        def user = new User()
-
         when:
         def video = new Video(
-                creator: user,
                 title: 'foo',
                 masterPath: 'sample.mp4',
                 masterThumbnailPath: 'sample.png'
@@ -33,7 +30,6 @@ class VideoSpec extends Specification {
 
         and:
         !video.available
-        video.creator == user
         video.title == 'foo'
         video.masterPath == 'sample.mp4'
         video.masterThumbnailPath == 'sample.png'
@@ -42,14 +38,6 @@ class VideoSpec extends Specification {
         video.thumbnails.empty
         video.playlists.empty
         video.playlistUris.empty
-    }
-
-    void "creator cannot be null (videos cannot be orphans)"() {
-        when:
-        def video = new Video(creator: null)
-
-        then:
-        !video.validate(['creator'])
     }
 
     @Unroll
@@ -104,5 +92,20 @@ class VideoSpec extends Specification {
         'thumbnails'    |   Thumbnail       |   ThumbnailVideo      |   'thumbnail'
         'playlists'     |   Playlist        |   PlaylistVideo       |   'playlist'
         'playlistUris'  |   PlaylistUri     |   PlaylistUriVideo    |   'playlistUri'
+    }
+
+    void "get creator"() {
+        given:
+        def video = new Video().save(validate: false)
+
+        def user = new User()
+        user.springSecurityService = Stub(SpringSecurityService)
+        user.save(validate: false)
+
+        and:
+        new VideoCreator(video: video, creator: user).save()
+
+        expect:
+        video.creator == user
     }
 }

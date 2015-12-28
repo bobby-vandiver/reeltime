@@ -22,7 +22,7 @@ import in.reeltime.thumbnail.ThumbnailStorageService
 import in.reeltime.thumbnail.ThumbnailValidationService
 
 @TestFor(VideoCreationService)
-@Mock([Video, TranscoderJob, User])
+@Mock([Video, TranscoderJob, User, VideoCreator])
 class VideoCreationServiceSpec extends Specification {
 
     StreamMetadataService streamMetadataService
@@ -86,7 +86,6 @@ class VideoCreationServiceSpec extends Specification {
 
         and:
         def validateVideoArg = { Video v ->
-            assert v.creator == creator
             assert v.title == title
             assert v.masterPath == masterPath
             assert v.masterThumbnailPath == masterThumbnailPath

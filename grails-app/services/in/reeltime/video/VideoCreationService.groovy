@@ -1,6 +1,7 @@
 package in.reeltime.video
 
 import in.reeltime.metadata.StreamMetadata
+import in.reeltime.user.User
 
 class VideoCreationService {
 
@@ -92,17 +93,25 @@ class VideoCreationService {
         videoStorageService.store(videoStream, masterPath)
 
         def reel = creator.getReel(command.reel)
-        def video = new Video(creator: creator, title: title,
-                masterPath: masterPath, masterThumbnailPath: masterThumbnailPath)
+        def video = new Video(
+                title: title,
+                masterPath: masterPath,
+                masterThumbnailPath: masterThumbnailPath)
 
+        videoService.storeVideo(video)
+
+        addVideoForUser(creator, video)
         reelVideoManagementService.addVideoToReel(reel, video)
 
         log.info("Created video with id [${video.id}] for user [${creator.username}]")
         def playlistPath = playlistAndSegmentStorageService.uniquePlaylistPath
         transcoderService.transcode(video, playlistPath)
 
-        videoService.storeVideo(video)
         return video
+    }
+
+    private void addVideoForUser(User creator, Video video) {
+        new VideoCreator(video: video, creator: creator).save()
     }
 
     void completeVideoCreation(String transcoderJobId, String keyPrefix, String variantPlaylistKey) {
