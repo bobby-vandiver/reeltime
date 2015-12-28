@@ -29,24 +29,24 @@ class ReelRemovalService {
             throw new AuthorizationException("The ${name} reel cannot be deleted")
         }
 
-        def owner = reel.owner
-        activityService.reelDeleted(owner, reel)
-
-        owner.removeFromReels(reel)
-        reel.delete()
-        userService.storeUser(owner)
+        removeOwnership(reel)
     }
 
-    void removeReelsForUser(User user) {
+    void removeAllReelsForUser(User user) {
         Collection<Reel> reelsToRemove = []
         reelsToRemove.addAll(user.reels)
 
-        def uncategorizedReel = reelsToRemove.find { it.name == Reel.UNCATEGORIZED_REEL_NAME }
-        reelsToRemove.remove(uncategorizedReel)
-        prepareReelForRemoval(uncategorizedReel)
-
         reelsToRemove.each { reel ->
-            removeReel(reel)
+            prepareReelForRemoval(reel)
+            removeOwnership(reel)
         }
+    }
+
+    private void removeOwnership(Reel reel) {
+        def owner = reel.owner
+        activityService.reelDeleted(owner, reel)
+
+        UserReel.findByOwnerAndReel(owner, reel).delete()
+        reel.delete()
     }
 }

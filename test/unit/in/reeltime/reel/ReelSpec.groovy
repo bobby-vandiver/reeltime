@@ -8,22 +8,6 @@ import spock.lang.Unroll
 @TestFor(Reel)
 class ReelSpec extends Specification {
 
-    void "a reel without an owner is impossible"() {
-        given:
-        def reel = new Reel()
-
-        expect:
-        !reel.validate(['owner'])
-    }
-
-    void "a reel must have an owner"() {
-        given:
-        def reel = new Reel(owner: new User())
-
-        expect:
-        reel.validate(['owner'])
-    }
-
     @Unroll
     void "name [#name] is uncategorized [#uncategorized]"() {
         given:

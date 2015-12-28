@@ -2,6 +2,7 @@ package in.reeltime.oauth2
 
 import grails.test.spock.IntegrationSpec
 import in.reeltime.reel.Reel
+import in.reeltime.reel.UserReel
 import in.reeltime.user.User
 import spock.lang.Unroll
 
@@ -242,12 +243,15 @@ class TokenRemovalServiceIntegrationSpec extends IntegrationSpec {
 
     private static User createUser(String username, String clientId) {
         def client = Client.findByClientId(clientId)
-        def reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME)
+        def reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME).save()
 
-        new User(username: username, password: 'secret', displayName: username, email: "$username@test.com")
+        def user = new User(username: username, password: 'secret', displayName: username, email: "$username@test.com")
                 .addToClients(client)
-                .addToReels(reel)
                 .save()
+
+        new UserReel(owner: user, reel: reel).save()
+
+        return user
     }
 
     private AccessToken createAccessToken(String username, String clientId, String refreshTokenValue = null) {

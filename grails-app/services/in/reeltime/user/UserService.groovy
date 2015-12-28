@@ -3,6 +3,7 @@ package in.reeltime.user
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
+import in.reeltime.reel.UserReel
 
 class UserService {
 
@@ -28,10 +29,12 @@ class UserService {
 
     User createAndSaveUser(String username, String password, String displayName,
                            String email, Client client, Reel reel) {
-        new User(username: username, password: password, displayName: displayName, email: email)
+        def user = new User(username: username, password: password, displayName: displayName, email: email)
                 .addToClients(client)
-                .addToReels(reel)
                 .save()
+
+        new UserReel(owner: user, reel: reel).save()
+        return user
     }
 
     User loadUser(String username) {

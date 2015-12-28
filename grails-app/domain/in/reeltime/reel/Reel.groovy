@@ -19,20 +19,22 @@ class Reel {
     String name
     Date dateCreated
 
-    static belongsTo = [owner: User]
-
     static transients = [
             'springSecurityService',
             'numberOfVideos',
             'numberOfAudienceMembers',
             'currentUserIsAnAudienceMember',
             'uncategorizedReel',
-            'audience'
+            'audience',
+            'owner'
     ]
 
     static constraints = {
         name nullable: false, blank: false, minSize: MINIMUM_NAME_LENGTH, maxSize: MAXIMUM_NAME_LENGTH
-        owner nullable: false
+    }
+
+    User getOwner() {
+        UserReel.findByReel(this)?.owner
     }
 
     Collection<User> getAudience() {

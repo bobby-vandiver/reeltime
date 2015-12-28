@@ -91,16 +91,15 @@ class ReelRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         SpringSecurityUtils.doWithAuth(owner.username) {
-            reelRemovalService.removeReelsForUser(targetUser)
+            reelRemovalService.removeAllReelsForUser(targetUser)
         }
 
         then:
-        owner.reels.size() == 1
-        owner.hasReel(UNCATEGORIZED_REEL_NAME)
+        owner.reels.size() == 0
 
         and:
-        def audience = AudienceMember.findAllByReel(uncategorizedReel)*.member
-        audience.size() == 0
+        AudienceMember.findAllByReel(uncategorizedReel)*.member.size() == 0
+        UserReel.findAllByOwner(owner).size() == 0
 
         and:
         Video.findById(video.id) != null
@@ -109,7 +108,7 @@ class ReelRemovalServiceIntegrationSpec extends IntegrationSpec {
         ReelVideo.findAllByReelAndVideo(uncategorizedReel, video).size() == 0
     }
 
-    void "removing all reels only removes videos and audience members from the uncategorized reel and deletes others"() {
+    void "removing all reels deletes the uncategorized reel and deletes others"() {
         given:
         def uncategorizedReel = owner.reels[0]
         def video = VideoFactory.createVideo(notOwner, 'test')
@@ -132,19 +131,19 @@ class ReelRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         SpringSecurityUtils.doWithAuth(owner.username) {
-            reelRemovalService.removeReelsForUser(targetUser)
+            reelRemovalService.removeAllReelsForUser(targetUser)
         }
 
         then:
-        owner.reels.size() == 1
+        owner.reels.size() == 0
 
         and:
-        owner.hasReel(UNCATEGORIZED_REEL_NAME)
+        !owner.hasReel(UNCATEGORIZED_REEL_NAME)
         !owner.hasReel('other')
 
         and:
-        def audience = AudienceMember.findAllByReel(uncategorizedReel)*.member
-        audience.size() == 0
+        AudienceMember.findAllByReel(uncategorizedReel)*.member.size() == 0
+        UserReel.findAllByOwner(owner).size() == 0
 
         and:
         Video.findById(video.id) != null

@@ -144,9 +144,7 @@ class ReelServiceIntegrationSpec extends IntegrationSpec {
             def reel = ReelFactory.createReel(owner, "reel $i")
             ageReel(reel, i)
             reels << reel
-            owner.addToReels(reel)
         }
-        owner.save()
         return reels
     }
 

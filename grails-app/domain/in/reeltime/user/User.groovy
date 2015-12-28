@@ -7,6 +7,7 @@ import in.reeltime.video.Video
 import in.reeltime.video.VideoCreator
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
+import in.reeltime.reel.UserReel
 import in.reeltime.reel.AudienceMember
 
 @ToString(includeNames = true, includes = ['displayName', 'username'])
@@ -29,7 +30,7 @@ class User {
 	boolean accountLocked
 	boolean passwordExpired
 
-    static hasMany = [clients: Client, reels: Reel]
+    static hasMany = [clients: Client]
 
 	static transients = [
             'springSecurityService',
@@ -38,6 +39,7 @@ class User {
             'numberOfReels',
             'numberOfAudienceMemberships',
             'currentUserIsFollowing',
+            'reels',
             'videos'
     ]
 
@@ -63,17 +65,14 @@ class User {
 		username blank: false, nullable: false, matches: USERNAME_REGEX, unique: true
 		password blank: false, nullable: false
         clients nullable: false
-        reels nullable: false, minSize: 1, validator: reelsValidator
 	}
 
 	static mapping = {
 		password column: '`password`'
 	}
 
-    static Closure reelsValidator = { val, obj ->
-        withNewSession {
-            return obj.hasReel(Reel.UNCATEGORIZED_REEL_NAME)
-        }
+    Collection<Reel> getReels() {
+        UserReel.findAllByOwner(this)*.reel
     }
 
     Collection<Video> getVideos() {
@@ -94,7 +93,7 @@ class User {
 
     private Reel findReelByName(String reelName) {
         if(User.exists(id)) {
-            return Reel.findByOwnerAndName(this, reelName)
+            return UserReel.findAllByOwner(this)*.reel.find { it.name == reelName }
         }
         else {
             return reels.find { reel -> reel.name == reelName }
@@ -110,7 +109,7 @@ class User {
     }
 
     int getNumberOfReels() {
-        Reel.countByOwner(this)
+        UserReel.countByOwner(this)
     }
 
     int getNumberOfAudienceMemberships() {

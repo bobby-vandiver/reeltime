@@ -1,5 +1,7 @@
 package in.reeltime.reel
 
+import grails.plugin.springsecurity.SpringSecurityService
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.security.AuthenticationService
 import in.reeltime.user.User
@@ -7,6 +9,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(ReelAuthorizationService)
+@Mock([User, Reel, UserReel])
 class ReelAuthorizationServiceSpec extends Specification {
 
     AuthenticationService authenticationService
@@ -18,8 +21,14 @@ class ReelAuthorizationServiceSpec extends Specification {
         authenticationService = Mock(AuthenticationService)
         service.authenticationService = authenticationService
 
-        owner = new User(username:'owner')
-        notOwner = new User(username:'notOwner')
+        owner = createUser('owner')
+        notOwner = createUser('notOwner')
+    }
+
+    private User createUser(String username) {
+        User user = new User(username: username)
+        user.springSecurityService = Stub(SpringSecurityService)
+        user.save(validate: false)
     }
 
     @Unroll
@@ -46,7 +55,7 @@ class ReelAuthorizationServiceSpec extends Specification {
 
     void "reel owner is not the current user"() {
         given:
-        def reel = new Reel(owner: owner)
+        def reel = new Reel().save(validate: false)
 
         when:
         def result = service.currentUserIsReelOwner(reel)
@@ -60,7 +69,8 @@ class ReelAuthorizationServiceSpec extends Specification {
 
     void "reel owner is the current user"() {
         given:
-        def reel = new Reel(owner: owner)
+        def reel = new Reel().save(validate: false)
+        new UserReel(owner: owner, reel: reel).save()
 
         when:
         def result = service.currentUserIsReelOwner(reel)

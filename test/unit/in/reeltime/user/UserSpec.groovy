@@ -6,11 +6,12 @@ import grails.test.mixin.TestFor
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
+import in.reeltime.reel.UserReel
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestFor(User)
-@Mock([Client])
+@Mock([Client, Reel, UserReel])
 class UserSpec extends Specification {
 
     @Unroll
@@ -130,19 +131,14 @@ class UserSpec extends Specification {
         3       |   true
     }
 
-    void "reels list cannot be null"() {
-        given:
-        def user = new User(reels: null)
-
-        expect:
-        !user.validate(['reels'])
-    }
-
     @Unroll
     void "user has reel [#reelToCheck] [#truth] when reel [#reelToAdd] is the only reel"() {
         given:
-        def reel = new Reel(name: reelToAdd)
-        def user = new User(reels: [reel])
+        def reel = createReel(name: reelToAdd)
+        def user = createUser()
+
+        and:
+        assignReelOwnership(user, [reel])
 
         expect:
         user.hasReel(reelToCheck) == truth
@@ -155,8 +151,11 @@ class UserSpec extends Specification {
 
     void "get reel by name when user has reel"() {
         given:
-        def reel = new Reel(name: 'something')
-        def user = new User(reels: [reel])
+        def reel = createReel(name: 'something')
+        def user = createUser()
+
+        and:
+        assignReelOwnership(user, [reel])
 
         expect:
         user.getReel('something') == reel
@@ -164,7 +163,7 @@ class UserSpec extends Specification {
 
     void "cannot get unknown reel by name if user does not have the reel"() {
         given:
-        def user = new User(username: 'joe')
+        def user = createUser(username: 'joe')
 
         when:
         user.getReel('something')
@@ -174,36 +173,14 @@ class UserSpec extends Specification {
         e.message == "User [joe] does not have reel named [something]"
     }
 
-    void "user must have an uncategorized reel"() {
-        given:
-        def reel = new Reel(name: reelName)
-        def user = new User(reels: [reel])
+    private User createUser(Map overrides = [:]) {
+        def user = new User()
+        user.springSecurityService = Stub(SpringSecurityService)
 
-        expect:
-        user.validate(['reels']) == valid
-
-        where:
-        reelName                        |   valid
-        Reel.UNCATEGORIZED_REEL_NAME    |   true
-        'foo'                           |   false
-    }
-
-    @Unroll
-    void "[#count] reels is valid [#valid]"() {
-        given:
-        def reels = createReels(count)
-        def user = new User(reels: reels)
-
-        expect:
-        user.validate(['reels']) == valid
-
-        where:
-        count   |   valid
-        0       |   false
-        1       |   true
-        2       |   true
-        10      |   true
-        100     |   true
+        overrides.each { key, value ->
+            user."$key" = value
+        }
+        user.save(validate: false)
     }
 
     private Collection<Client> createClients(int count) {
@@ -219,14 +196,29 @@ class UserSpec extends Specification {
         return client
     }
 
+    private static Reel createReel(Map overrides = [:]) {
+        def reel = new Reel()
+
+        overrides.each { key, value ->
+            reel."$key" = value
+        }
+        reel.save(validate: false)
+    }
+
     private static Collection<Reel> createReels(int count) {
         def reels = []
 
         if(count > 0) {
-            reels << new Reel(name: Reel.UNCATEGORIZED_REEL_NAME)
+            reels << createReel(name: Reel.UNCATEGORIZED_REEL_NAME)
             count--
         }
-        count.times { reels << new Reel() }
+        count.times { reels << createReel() }
         return reels
+    }
+
+    private static void assignReelOwnership(User user, Collection<Reel> reels) {
+        reels.each { reel ->
+            new UserReel(owner: user, reel: reel).save()
+        }
     }
 }

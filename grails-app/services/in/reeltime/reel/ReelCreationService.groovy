@@ -11,13 +11,9 @@ class ReelCreationService {
     def activityService
     def authenticationService
 
-    Reel createReel(String reelName) {
-        new Reel(name: reelName)
-    }
-
-    Reel createReelForUser(User owner, String reelName) {
-        def reel = createReel(reelName)
-        reel.owner = owner
+    Reel createAndSaveReel(String reelName) {
+        def reel = new Reel(name: reelName)
+        reelService.storeReel(reel)
         return reel
     }
 
@@ -27,11 +23,8 @@ class ReelCreationService {
             throw new InvalidReelNameException("Reel named [$reelName] already exists")
         }
 
-        def reel = createReelForUser(currentUser, reelName)
-        currentUser.addToReels(reel)
-
-        userService.storeUser(currentUser)
-        reelService.storeReel(reel)
+        def reel = createAndSaveReel(reelName)
+        new UserReel(owner: currentUser, reel: reel).save()
 
         activityService.reelCreated(currentUser, reel)
         return reel

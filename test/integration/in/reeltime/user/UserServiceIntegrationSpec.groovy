@@ -19,7 +19,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
     void setup() {
         client = new Client(clientName: 'test-name', clientId: 'test-id').save()
-        reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME)
+        reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME).save()
 
         savedMaxUsersPerPage = userService.maxUsersPerPage
         userService.maxUsersPerPage = TEST_MAX_USERS_PER_PAGE

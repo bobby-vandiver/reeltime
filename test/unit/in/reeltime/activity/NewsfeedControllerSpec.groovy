@@ -6,13 +6,14 @@ import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.reel.AudienceMember
 import in.reeltime.reel.Reel
 import in.reeltime.reel.ReelVideo
+import in.reeltime.reel.UserReel
 import in.reeltime.user.User
 import in.reeltime.user.UserFollowing
 import in.reeltime.video.Video
 import spock.lang.Unroll
 
 @TestFor(NewsfeedController)
-@Mock([User, UserFollowing, Reel, Video, ReelVideo, AudienceMember])
+@Mock([User, UserFollowing, Reel, Video, ReelVideo, AudienceMember, UserReel])
 class NewsfeedControllerSpec extends AbstractControllerSpec {
 
     NewsfeedService newsfeedService

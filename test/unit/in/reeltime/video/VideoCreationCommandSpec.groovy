@@ -1,15 +1,17 @@
 package in.reeltime.video
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import in.reeltime.reel.Reel
+import in.reeltime.reel.UserReel
 import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestMixin(GrailsUnitTestMixin)
-@Mock([User])
+@Mock([User, Reel, UserReel])
 class VideoCreationCommandSpec extends Specification {
 
     private static final MAX_DURATION_IN_SECONDS = 300
@@ -73,8 +75,13 @@ class VideoCreationCommandSpec extends Specification {
 
     void "creator does have the reel"() {
         given:
-        def reel = new Reel(name: 'test')
-        def creator = new User(reels: [reel])
+        def reel = new Reel(name: 'test').save(validate: false)
+
+        def creator = new User()
+        creator.springSecurityService = Stub(SpringSecurityService)
+        creator.save(validate: false)
+
+        new UserReel(owner: creator, reel: reel).save()
 
         def command = new VideoCreationCommand(creator: creator, reel: 'test')
 

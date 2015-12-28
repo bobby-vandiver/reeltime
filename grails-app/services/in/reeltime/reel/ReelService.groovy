@@ -31,7 +31,15 @@ class ReelService {
     List<Reel> listReelsByUsername(String username, int page) {
         def user = userService.loadUser(username)
         def params = paginationParams(page)
-        Reel.findAllByOwner(user, params)
+
+        def reelIds = UserReel.withCriteria {
+            eq('owner', user)
+            projections {
+                property('reel.id')
+            }
+        } as List<Long>
+
+        Reel.findAllByIdInList(reelIds, params)
     }
 
     private paginationParams(int page) {

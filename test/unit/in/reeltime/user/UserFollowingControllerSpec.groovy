@@ -9,9 +9,10 @@ import in.reeltime.security.AuthenticationService
 import spock.lang.Unroll
 import in.reeltime.reel.Reel
 import in.reeltime.reel.AudienceMember
+import in.reeltime.reel.UserReel
 
 @TestFor(UserFollowingController)
-@Mock([UserFollowing, User, Reel, AudienceMember])
+@Mock([UserFollowing, User, Reel, AudienceMember, UserReel])
 class UserFollowingControllerSpec extends AbstractControllerSpec {
 
     UserService userService

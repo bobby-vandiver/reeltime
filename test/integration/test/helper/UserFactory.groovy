@@ -2,6 +2,7 @@ package test.helper
 
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
+import in.reeltime.reel.UserReel
 import in.reeltime.user.User
 
 class UserFactory {
@@ -30,11 +31,13 @@ class UserFactory {
                 clientSecret: clientSecret
         ).save()
 
-        def reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME)
+        def reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME).save()
 
-        new User(username: username, password: password, displayName: displayName, email: email)
+        def user = new User(username: username, password: password, displayName: displayName, email: email)
                 .addToClients(client)
-                .addToReels(reel)
                 .save()
+
+        new UserReel(owner: user, reel: reel).save()
+        return user
     }
 }

@@ -22,7 +22,7 @@ class AccountRegistrationService {
         def clientSecret = clientService.generateClientSecret()
 
         def client = clientService.createAndSaveClient(clientName, clientId, clientSecret)
-        def reel = reelCreationService.createReel(UNCATEGORIZED_REEL_NAME)
+        def reel = reelCreationService.createAndSaveReel(UNCATEGORIZED_REEL_NAME)
 
         def user = userService.createAndSaveUser(username, password, displayName, email, client, reel)
 

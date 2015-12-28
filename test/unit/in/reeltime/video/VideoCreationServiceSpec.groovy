@@ -1,5 +1,6 @@
 package in.reeltime.video
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.metadata.StreamMetadata
@@ -7,6 +8,7 @@ import in.reeltime.metadata.StreamMetadataService
 import in.reeltime.playlist.PlaylistService
 import in.reeltime.reel.Reel
 import in.reeltime.reel.ReelVideoManagementService
+import in.reeltime.reel.UserReel
 import in.reeltime.playlist.PlaylistAndSegmentStorageService
 import in.reeltime.storage.TemporaryFileService
 import in.reeltime.thumbnail.ThumbnailValidationResult
@@ -22,7 +24,7 @@ import in.reeltime.thumbnail.ThumbnailStorageService
 import in.reeltime.thumbnail.ThumbnailValidationService
 
 @TestFor(VideoCreationService)
-@Mock([Video, TranscoderJob, User, VideoCreator])
+@Mock([Video, TranscoderJob, User, VideoCreator, Reel, UserReel])
 class VideoCreationServiceSpec extends Specification {
 
     StreamMetadataService streamMetadataService
@@ -69,8 +71,14 @@ class VideoCreationServiceSpec extends Specification {
     void "store video stream, save the video object and then transcode it"() {
         given:
         def reelName = 'something'
-        def reel = new Reel(name: reelName)
-        def creator = new User(username: 'bob', reels: [reel])
+        def reel = new Reel(name: reelName).save(validate: false)
+
+        def creator = new User(username: 'bob')
+        creator.springSecurityService = Stub(SpringSecurityService)
+        creator.save(validate: false)
+
+        new UserReel(reel: reel, owner: creator).save()
+
         def title = 'fun times'
         def videoStream = new ByteArrayInputStream('yay'.bytes)
         def thumbnailStream = new ByteArrayInputStream('woo'.bytes)
@@ -323,9 +331,15 @@ class VideoCreationServiceSpec extends Specification {
         1 * service.thumbnailService.addThumbnails(video)
     }
 
-    private static VideoCreationCommand createCommandWithVideoStream(byte[] data) {
-        def reel = new Reel(name: 'test-reel')
-        def creator = new User(username: 'videoCreationTestUser', reels: [reel])
+    private VideoCreationCommand createCommandWithVideoStream(byte[] data) {
+        def reel = new Reel(name: 'test-reel').save(validate: false)
+
+        def creator = new User(username: 'videoCreationTestUser')
+        creator.springSecurityService = Stub(SpringSecurityService)
+        creator.save(validate: false)
+
+        new UserReel(reel: reel, owner: creator).save()
+
         def videoStream = new ByteArrayInputStream(data)
         def thumbnailStream = new ByteArrayInputStream('THUMBNAIL'.bytes)
         new VideoCreationCommand(creator: creator, videoStream: videoStream,

@@ -36,7 +36,7 @@ class AccountRemovalService {
         audienceService.removeMemberFromAllAudiences(currentUser)
 
         log.info "Remove reels for user [${username}]"
-        reelRemovalService.removeReelsForUser(currentUser)
+        reelRemovalService.removeAllReelsForUser(currentUser)
 
         log.info "Removing videos for user [${username}]"
         videoRemovalService.removeVideosForUser(currentUser)

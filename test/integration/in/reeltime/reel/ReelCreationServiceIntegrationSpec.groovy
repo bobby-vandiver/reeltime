@@ -10,9 +10,7 @@ import in.reeltime.activity.ActivityType
 
 class ReelCreationServiceIntegrationSpec extends IntegrationSpec {
 
-    def reelService
     def reelCreationService
-
     def activityService
 
     User owner
@@ -25,15 +23,12 @@ class ReelCreationServiceIntegrationSpec extends IntegrationSpec {
 
     void "create reel"() {
         given:
-        def user = UserFactory.createUser('someone')
         def reelName = 'awesome reel'
 
         when:
-        def reel = reelCreationService.createReelForUser(user, reelName)
-        reelService.storeReel(reel)
+        def reel = reelCreationService.createAndSaveReel(reelName)
 
         then:
-        reel.owner == user
         reel.name == reelName
         reel.audience.size() == 0
     }

@@ -7,6 +7,7 @@ import in.reeltime.oauth2.Client
 import in.reeltime.user.UserFollowing
 import test.helper.UserFactory
 import in.reeltime.reel.AudienceMember
+import in.reeltime.reel.UserReel
 
 class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
@@ -62,7 +63,10 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         UserFollowing.findByFollowerOrFollowee(user, user) == null
+
+        and:
         AudienceMember.findAllByMember(user).size() == 0
+        UserReel.findAllByOwner(user).size() == 0
 
         and:
         Client.findByClientNameAndClientId(firstClientName, firstClientId) == null
@@ -70,9 +74,13 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
     }
 
     private RegistrationResult registerNewUser(String username, String password, String clientName) {
-        def command = new AccountRegistrationCommand(username: username, password: password,
-                display_name: username, email: "$username@test.com", client_name: clientName)
-
+        def command = new AccountRegistrationCommand(
+                username: username,
+                password: password,
+                display_name: username,
+                email: "$username@test.com",
+                client_name: clientName
+        )
         accountRegistrationService.registerUserAndClient(command, Locale.ENGLISH)
     }
 }
