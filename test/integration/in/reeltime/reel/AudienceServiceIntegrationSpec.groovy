@@ -56,10 +56,9 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         def alice = UserFactory.createUser('alice')
 
         and:
-        reel.audience.addToMembers(joe)
-        reel.audience.addToMembers(bob)
-        reel.audience.addToMembers(alice)
-        reel.save()
+        new AudienceMember(reel: reel, member: joe).save()
+        new AudienceMember(reel: reel, member: bob).save()
+        new AudienceMember(reel: reel, member: alice).save()
 
         when:
         def pageOne = audienceService.listMembers(reelId, 1)
@@ -137,7 +136,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         audienceService.removeMemberFromAllAudiences(member)
 
         then:
-        Audience.findAllByAudienceMember(member).size() == 0
+        AudienceMember.findAllByMember(member).size() == 0
 
         and:
         assertReelsExist(reelIds)
@@ -168,8 +167,7 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         e.message == "Owner of a reel cannot be a member of the reel's audience"
 
         and:
-        def audience = Audience.findByReel(reel)
-        audience.members.size() == 0
+        AudienceMember.findAllByReel(reel).empty
     }
 
     void "add the current user as an audience member"() {
@@ -187,9 +185,9 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         }
 
         then:
-        def audience = Audience.findByReel(reel)
-        audience.members.size() == 1
-        audience.members.contains(member)
+        def audience = AudienceMember.findAllByReel(reel)*.member
+        audience.size() == 1
+        audience.contains(member)
 
         and:
         def activities = activityService.findActivities([member], [])
@@ -214,8 +212,8 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
             audienceService.addCurrentUserToAudience(reelId)
         }
 
-        and:
-        assert Audience.findByReel(reel).members.size() == 1
+        expect:
+        AudienceMember.findAllByReel(reel)*.member.size() == 1
 
         when:
         SpringSecurityUtils.doWithAuth(memberUsername) {
@@ -223,8 +221,8 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         }
 
         then:
-        def audience = Audience.findByReel(reel)
-        audience.members.size() == 0
+        def audience = AudienceMember.findAllByReel(reel)*.member
+        audience.size() == 0
 
         and:
         def activities = activityService.findActivities([member], [])
@@ -249,8 +247,8 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
             audienceService.addCurrentUserToAudience(reelId)
         }
 
-        and:
-        assert Audience.findByReel(reel).members.size() == 1
+        expect:
+        AudienceMember.findAllByReel(reel)*.member.size() == 1
 
         when:
         SpringSecurityUtils.doWithAuth(notMemberUsername) {
@@ -262,12 +260,12 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         e.message == "Current user [$notMemberUsername] is not a member of the audience for reel [$reelId]"
 
         and:
-        def audience = Audience.findByReel(reel)
-        audience.members.size() == 1
+        def audience = AudienceMember.findAllByReel(reel)*.member
+        audience.size() == 1
 
         and:
-        audience.members.contains(member)
-        !audience.members.contains(notMember)
+        audience.contains(member)
+        !audience.contains(notMember)
     }
 
     @Unroll
@@ -286,8 +284,8 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
         Reel.findById(reelId) != null
 
         and:
-        def audience = Audience.findByReel(reel)
-        audience.members.size() == 0
+        def audience = AudienceMember.findAllByReel(reel)
+        audience.size() == 0
 
         where:
         _   |   count
@@ -302,10 +300,8 @@ class AudienceServiceIntegrationSpec extends IntegrationSpec {
 
         for(int i = 0; i < count; i++) {
             def member = UserFactory.createUser("member$i")
-            members.add(member)
-
-            reel.audience.addToMembers(member)
-            reel.save()
+            members << member
+            new AudienceMember(reel: reel, member: member).save()
         }
         return members
     }

@@ -6,7 +6,7 @@ import in.reeltime.user.User
 import in.reeltime.oauth2.Client
 import in.reeltime.user.UserFollowing
 import test.helper.UserFactory
-import in.reeltime.reel.Audience
+import in.reeltime.reel.AudienceMember
 
 class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
@@ -49,7 +49,7 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
             audienceService.addCurrentUserToAudience(reelId)
         }
 
-        assert Audience.findAllByAudienceMember(user).size() == 1
+        assert AudienceMember.findAllByMember(user).size() == 1
 
         when:
         SpringSecurityUtils.doWithAuth(username) {
@@ -62,7 +62,7 @@ class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 
         and:
         UserFollowing.findByFollowerOrFollowee(user, user) == null
-        Audience.findAllByAudienceMember(user).size() == 0
+        AudienceMember.findAllByMember(user).size() == 0
 
         and:
         Client.findByClientNameAndClientId(firstClientName, firstClientId) == null

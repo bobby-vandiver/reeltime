@@ -12,8 +12,7 @@ class ReelCreationService {
     def authenticationService
 
     Reel createReel(String reelName) {
-        def audience = new Audience(members: [])
-        new Reel(name: reelName, audience: audience)
+        new Reel(name: reelName)
     }
 
     Reel createReelForUser(User owner, String reelName) {

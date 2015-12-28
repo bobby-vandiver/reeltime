@@ -20,20 +20,23 @@ class Reel {
     Date dateCreated
 
     static belongsTo = [owner: User]
-    static hasOne = [audience: Audience]
 
     static transients = [
             'springSecurityService',
             'numberOfVideos',
             'numberOfAudienceMembers',
             'currentUserIsAnAudienceMember',
-            'uncategorizedReel'
+            'uncategorizedReel',
+            'audience'
     ]
 
     static constraints = {
         name nullable: false, blank: false, minSize: MINIMUM_NAME_LENGTH, maxSize: MAXIMUM_NAME_LENGTH
         owner nullable: false
-        audience unique: true
+    }
+
+    Collection<User> getAudience() {
+        AudienceMember.findAllByReel(this)*.member
     }
 
     int getNumberOfVideos() {
@@ -41,12 +44,12 @@ class Reel {
     }
 
     int getNumberOfAudienceMembers() {
-        audience?.members?.size() ?: 0
+        audience?.size() ?: 0
     }
 
     boolean getCurrentUserIsAnAudienceMember() {
         def currentUser = springSecurityService.currentUser as User
-        audience?.members?.contains(currentUser)
+        audience?.contains(currentUser)
     }
 
     boolean isUncategorizedReel() {

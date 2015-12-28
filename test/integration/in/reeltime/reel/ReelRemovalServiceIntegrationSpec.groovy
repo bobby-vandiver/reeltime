@@ -99,8 +99,8 @@ class ReelRemovalServiceIntegrationSpec extends IntegrationSpec {
         owner.hasReel(UNCATEGORIZED_REEL_NAME)
 
         and:
-        def audience = Audience.findByReel(uncategorizedReel)
-        audience.members.size() == 0
+        def audience = AudienceMember.findAllByReel(uncategorizedReel)*.member
+        audience.size() == 0
 
         and:
         Video.findById(video.id) != null
@@ -143,8 +143,8 @@ class ReelRemovalServiceIntegrationSpec extends IntegrationSpec {
         !owner.hasReel('other')
 
         and:
-        def audience = Audience.findByReel(uncategorizedReel)
-        audience.members.size() == 0
+        def audience = AudienceMember.findAllByReel(uncategorizedReel)*.member
+        audience.size() == 0
 
         and:
         Video.findById(video.id) != null

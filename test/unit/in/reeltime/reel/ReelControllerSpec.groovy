@@ -10,7 +10,7 @@ import in.reeltime.video.Video
 import spock.lang.Unroll
 
 @TestFor(ReelController)
-@Mock([Reel, Video, ReelVideo, User])
+@Mock([Reel, Video, ReelVideo, User, AudienceMember])
 class ReelControllerSpec extends AbstractControllerSpec {
 
     ReelService reelService

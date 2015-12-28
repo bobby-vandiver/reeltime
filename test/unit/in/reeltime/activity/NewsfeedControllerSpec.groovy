@@ -3,7 +3,7 @@ package in.reeltime.activity
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
-import in.reeltime.reel.Audience
+import in.reeltime.reel.AudienceMember
 import in.reeltime.reel.Reel
 import in.reeltime.reel.ReelVideo
 import in.reeltime.user.User
@@ -12,7 +12,7 @@ import in.reeltime.video.Video
 import spock.lang.Unroll
 
 @TestFor(NewsfeedController)
-@Mock([User, UserFollowing, Audience, Reel, Video, ReelVideo])
+@Mock([User, UserFollowing, Reel, Video, ReelVideo, AudienceMember])
 class NewsfeedControllerSpec extends AbstractControllerSpec {
 
     NewsfeedService newsfeedService

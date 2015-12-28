@@ -24,22 +24,6 @@ class ReelSpec extends Specification {
         reel.validate(['owner'])
     }
 
-    void "a reel with no audience is impossible"() {
-        given:
-        def reel = new Reel()
-
-        expect:
-        !reel.validate(['audience'])
-    }
-
-    void "a reel must have one audience"() {
-        given:
-        def reel = new Reel(audience: new Audience())
-
-        expect:
-        reel.validate(['audience'])
-    }
-
     @Unroll
     void "name [#name] is uncategorized [#uncategorized]"() {
         given:

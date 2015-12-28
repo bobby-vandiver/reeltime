@@ -8,10 +8,10 @@ import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.security.AuthenticationService
 import spock.lang.Unroll
 import in.reeltime.reel.Reel
-import in.reeltime.reel.Audience
+import in.reeltime.reel.AudienceMember
 
 @TestFor(UserFollowingController)
-@Mock([UserFollowing, User, Reel, Audience])
+@Mock([UserFollowing, User, Reel, AudienceMember])
 class UserFollowingControllerSpec extends AbstractControllerSpec {
 
     UserService userService

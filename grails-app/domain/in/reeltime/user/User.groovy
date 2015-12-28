@@ -6,7 +6,7 @@ import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.video.Video
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
-import in.reeltime.reel.Audience
+import in.reeltime.reel.AudienceMember
 
 @ToString(includeNames = true, includes = ['displayName', 'username'])
 @EqualsAndHashCode(includes = ['username'])
@@ -108,7 +108,7 @@ class User {
     }
 
     int getNumberOfAudienceMemberships() {
-        Audience.countByAudienceMember(this)
+        AudienceMember.countByMember(this)
     }
 
     boolean getCurrentUserIsFollowing() {

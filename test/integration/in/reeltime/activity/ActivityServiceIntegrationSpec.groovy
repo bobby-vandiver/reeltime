@@ -84,7 +84,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
         }
 
         when:
-        activityService.userJoinedAudience(user, reelToUse.audience)
+        activityService.userJoinedAudience(user, reelToUse)
 
         then:
         UserReelActivity.findByUserAndReelAndType(user, reelToUse, ActivityType.JoinReelAudience.value) != null
@@ -95,7 +95,7 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
 
     void "attempt to add join reel audience for reel with no create-reel activity"() {
         when:
-        activityService.userJoinedAudience(user, reel.audience)
+        activityService.userJoinedAudience(user, reel)
 
         then:
         def e = thrown(IllegalArgumentException)
@@ -105,10 +105,10 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
     void "attempt to add join reel audience activity multiple times"() {
         given:
         activityService.reelCreated(user, reel)
-        activityService.userJoinedAudience(user, reel.audience)
+        activityService.userJoinedAudience(user, reel)
 
         when:
-        activityService.userJoinedAudience(user, reel.audience)
+        activityService.userJoinedAudience(user, reel)
 
         then:
         def e = thrown(IllegalArgumentException)
@@ -118,10 +118,10 @@ class ActivityServiceIntegrationSpec extends IntegrationSpec {
     void "delete join reel audience activity"() {
         given:
         activityService.reelCreated(user, reel)
-        activityService.userJoinedAudience(user, reel.audience)
+        activityService.userJoinedAudience(user, reel)
 
         when:
-        activityService.userLeftAudience(user, reel.audience)
+        activityService.userLeftAudience(user, reel)
 
         then:
         UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience.value) == null

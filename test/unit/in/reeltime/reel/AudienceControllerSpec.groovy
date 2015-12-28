@@ -10,7 +10,7 @@ import in.reeltime.user.User
 import in.reeltime.user.UserFollowing
 
 @TestFor(AudienceController)
-@Mock([UserFollowing, Reel, Audience, User])
+@Mock([UserFollowing, Reel, User, AudienceMember])
 class AudienceControllerSpec extends AbstractControllerSpec {
 
     AudienceService audienceService

@@ -3,7 +3,6 @@ package in.reeltime.user
 import grails.test.spock.IntegrationSpec
 import in.reeltime.oauth2.Client
 import in.reeltime.exceptions.UserNotFoundException
-import in.reeltime.reel.Audience
 import in.reeltime.reel.Reel
 import spock.lang.Unroll
 import test.helper.UserFactory
@@ -20,7 +19,7 @@ class UserServiceIntegrationSpec extends IntegrationSpec {
 
     void setup() {
         client = new Client(clientName: 'test-name', clientId: 'test-id').save()
-        reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME, audience: new Audience())
+        reel = new Reel(name: Reel.UNCATEGORIZED_REEL_NAME)
 
         savedMaxUsersPerPage = userService.maxUsersPerPage
         userService.maxUsersPerPage = TEST_MAX_USERS_PER_PAGE

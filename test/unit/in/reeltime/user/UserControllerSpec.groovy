@@ -4,10 +4,10 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.reel.Reel
-import in.reeltime.reel.Audience
+import in.reeltime.reel.AudienceMember
 
 @TestFor(UserController)
-@Mock([UserFollowing, User, Reel, Audience])
+@Mock([UserFollowing, User, Reel, AudienceMember])
 class UserControllerSpec extends AbstractControllerSpec {
 
     UserService userService

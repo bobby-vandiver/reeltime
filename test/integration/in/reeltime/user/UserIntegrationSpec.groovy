@@ -2,11 +2,11 @@ package in.reeltime.user
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
+import in.reeltime.reel.AudienceMember
 import spock.lang.Unroll
 import test.helper.ReelFactory
 import test.helper.UserFactory
 import test.helper.UserFollowingHelper
-import in.reeltime.reel.Audience
 
 class UserIntegrationSpec extends IntegrationSpec {
 
@@ -133,10 +133,7 @@ class UserIntegrationSpec extends IntegrationSpec {
 
         count.times {
             def reel = ReelFactory.createReel(anotherUser, "test-${count}")
-            def audience = Audience.findByReel(reel)
-
-            audience.addToMembers(user)
-            audience.save()
+            new AudienceMember(reel: reel, member: user).save()
         }
     }
 }

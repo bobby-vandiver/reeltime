@@ -1,6 +1,5 @@
 package in.reeltime.activity
 
-import in.reeltime.reel.Audience
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.video.Video
@@ -26,8 +25,7 @@ class ActivityService {
         UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.CreateReel.value)?.delete()
     }
 
-    void userJoinedAudience(User user, Audience audience) {
-        def reel = audience.reel
+    void userJoinedAudience(User user, Reel reel) {
         if(!createReelActivityExists(reel) && !reel.isUncategorizedReel()) {
             throw new IllegalArgumentException("Create reel activity must exist before a join reel audience activity can be created for reel [${reel.id}]")
         }
@@ -38,8 +36,7 @@ class ActivityService {
         new UserReelActivity(user: user, reel: reel, type: ActivityType.JoinReelAudience.value).save()
     }
 
-    void userLeftAudience(User user, Audience audience) {
-        def reel = audience.reel
+    void userLeftAudience(User user, Reel reel) {
         log.info "User [${user.username}] has left the audience for reel [${reel.id}]"
         UserReelActivity.findByUserAndReelAndType(user, reel, ActivityType.JoinReelAudience.value)?.delete()
     }
