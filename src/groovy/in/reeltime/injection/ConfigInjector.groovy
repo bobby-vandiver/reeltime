@@ -111,7 +111,8 @@ class ConfigInjector {
         }
 
         ctx.authenticationService.with {
-            authenticationManager = ctx.getBean('authenticationManager') as AuthenticationManager
+            userAuthenticationManager = ctx.getBean('authenticationManager') as AuthenticationManager
+            clientAuthenticationManager = ctx.getBean('clientAuthenticationManager') as AuthenticationManager
         }
     }
 

@@ -1,6 +1,7 @@
 package in.reeltime.account
 
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
 import in.reeltime.exceptions.RegistrationException
@@ -161,7 +162,7 @@ class ClientManagementControllerSpec extends AbstractControllerSpec {
         }
         def authenticationService = grailsApplication.mainContext.getBean('authenticationService')
 
-        authenticationService.authenticationManager = Stub(AuthenticationManager) {
+        authenticationService.userAuthenticationManager = Stub(AuthenticationManager) {
             authenticate(_) >> {
                 if(!authenticated) {
                     throw new BadCredentialsException('TEST')

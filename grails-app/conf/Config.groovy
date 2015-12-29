@@ -109,15 +109,17 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
     '/oauth/token.dispatch':          ["isFullyAuthenticated() and request.getMethod().equals('POST')"]
 ]
 
-String sharedStatelessFilterChain = 'JOINED_FILTERS,-securityContextPersistenceFilter,-logoutFilter,-rememberMeAuthenticationFilter,-authenticationProcessingFilter'
+String tokenFilterChain = 'JOINED_FILTERS,-oauth2ProviderFilter,-securityContextPersistenceFilter,-logoutFilter,-authenticationProcessingFilter,-rememberMeAuthenticationFilter,-exceptionTranslationFilter'
+String oauth2ResourceFilterChain = 'JOINED_FILTERS,-securityContextPersistenceFilter,-logoutFilter,-authenticationProcessingFilter,-rememberMeAuthenticationFilter,-oauth2BasicAuthenticationFilter,-exceptionTranslationFilter'
+String awsResourceFilterChain = 'JOINED_FILTERS,-securityContextPersistenceFilter,-logoutFilter,-authenticationProcessingFilter,-rememberMeAuthenticationFilter,-oauth2ProviderFilter,-clientCredentialsTokenEndpointFilter,-oauth2BasicAuthenticationFilter,-exceptionTranslationFilter'
 
 // TODO: Configure filter chain for admin backend when available
 grails.plugin.springsecurity.filterChain.chainMap = [
-    '/oauth/token': "$sharedStatelessFilterChain,-oauth2ProviderFilter",
-    '/internal/**': sharedStatelessFilterChain,
-    '/aws/**': "$sharedStatelessFilterChain,-oauth2ProviderFilter,-clientCredentialsTokenEndpointFilter",
-    '/api/**': sharedStatelessFilterChain,
-    '/**': sharedStatelessFilterChain
+    '/oauth/token': tokenFilterChain,
+    '/internal/**': oauth2ResourceFilterChain,
+    '/api/**': oauth2ResourceFilterChain,
+    '/aws/**': awsResourceFilterChain,
+    '/**': oauth2ResourceFilterChain
 ]
 
 // Added by the Spring Security OAuth2 Provider plugin:
@@ -129,7 +131,6 @@ grails.plugin.springsecurity.oauthProvider.refreshTokenLookup.className = 'in.re
 grails.plugin.springsecurity.oauthProvider.realmName = 'ReelTime'
 
 grails.plugin.springsecurity.providerNames = [
-        'clientCredentialsAuthenticationProvider',
         'daoAuthenticationProvider'
 ]
 
