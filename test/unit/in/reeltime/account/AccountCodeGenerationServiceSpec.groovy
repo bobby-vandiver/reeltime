@@ -9,8 +9,8 @@ import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static in.reeltime.account.AccountCode.getALLOWED_CHARACTERS
-import static in.reeltime.account.AccountCode.getCODE_LENGTH
+import static in.reeltime.account.AccountCode.ALLOWED_CHARACTERS
+import static in.reeltime.account.AccountCode.CODE_LENGTH
 
 @TestFor(AccountCodeGenerationService)
 @Mock([AccountCode])

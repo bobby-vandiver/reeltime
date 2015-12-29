@@ -29,7 +29,7 @@ abstract class AbstractJoinDomainSpec extends Specification {
 
         expect:
         lhs.equals(rhs)
-        rhs.equals(rhs)
+        rhs.equals(lhs)
 
         and:
         lhs.hashCode() == rhs.hashCode()
@@ -106,7 +106,7 @@ abstract class AbstractJoinDomainSpec extends Specification {
 
         expect:
         lhs.equals(rhs)
-        rhs.equals(rhs)
+        rhs.equals(lhs)
 
         and:
         lhs.hashCode() == rhs.hashCode()
@@ -127,7 +127,7 @@ abstract class AbstractJoinDomainSpec extends Specification {
 
         expect:
         lhs.equals(rhs)
-        rhs.equals(rhs)
+        rhs.equals(lhs)
 
         and:
         lhs.hashCode() == rhs.hashCode()
@@ -145,7 +145,7 @@ abstract class AbstractJoinDomainSpec extends Specification {
 
         expect:
         lhs.equals(rhs)
-        rhs.equals(rhs)
+        rhs.equals(lhs)
 
         and:
         lhs.hashCode() == rhs.hashCode()

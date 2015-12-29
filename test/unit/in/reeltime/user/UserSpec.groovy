@@ -205,17 +205,6 @@ class UserSpec extends Specification {
         reel.save(validate: false)
     }
 
-    private static Collection<Reel> createReels(int count) {
-        def reels = []
-
-        if(count > 0) {
-            reels << createReel(name: Reel.UNCATEGORIZED_REEL_NAME)
-            count--
-        }
-        count.times { reels << createReel() }
-        return reels
-    }
-
     private static void assignReelOwnership(User user, Collection<Reel> reels) {
         reels.each { reel ->
             new UserReel(owner: user, reel: reel).save()

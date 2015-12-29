@@ -120,15 +120,15 @@ codenarc {
         GrailsStatelessService.enabled = false
 
         // The flagged field names are not reserved by H2 or MySQL
-        GrailsDomainReservedSqlKeywordName.doNotApplyToClassNames='ResourceRemovalTarget,AccessToken,RefreshToken'
+        GrailsDomainReservedSqlKeywordName.doNotApplyToClassNames='ResourceRemovalTarget, AccessToken, RefreshToken'
 
         // The Client and User need access to the springSecurityService for encoding client secrets and passwords
         // Similarly, the AccountCode needs access to the cryptoService for encoding its codes and checks
-        GrailsDomainWithServiceReference.doNotApplyToClassNames='Client,User,AccountCode'
+        GrailsDomainWithServiceReference.doNotApplyToClassNames='Client, User, AccountCode, Reel'
 
-        // Exclude classes provided by the Spring Security Core or OAuth2 plugin
-        GrailsDomainHasEquals.doNotApplyToClassNames='AccessToken, AuthorizationCode, Client, RefreshToken, User, Role, UserRole'
-        GrailsDomainHasToString.doNotApplyToClassNames='AccessToken, AuthorizationCode, Client, RefreshToken, User, Role, UserRole'
+        // Exclude classes provided by the Spring Security Core, OAuth2 plugin or manual join classes
+        GrailsDomainHasEquals.doNotApplyToClassNames='AccessToken, AuthorizationCode, Client, RefreshToken, User, Role, UserRole, AudienceMember, PlaylistSegment, PlaylistUriVideo, PlaylistVideo, ReelVideo, ThumbnailVideo, UserFollowing, UserReel, VideoCreator'
+        GrailsDomainHasToString.doNotApplyToClassNames='AccessToken, AuthorizationCode, Client, RefreshToken, User, Role, UserRole, AudienceMember, PlaylistSegment, PlaylistUriVideo, PlaylistVideo, ReelVideo, ThumbnailVideo, UserFollowing, UserReel, VideoCreator'
 
         // The UserRole class is provided by Spring Security Core and we do not want to modify the provided methods
         UnusedMethodParameter.doNotApplyToClassNames='UserRole'
