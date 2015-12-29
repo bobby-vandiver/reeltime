@@ -46,6 +46,8 @@ class PlaylistService {
             log.info("Adding segments to playlist for video [$videoId]")
             mediaPlaylist.segments.eachWithIndex { seg, idx ->
                 def segment = new Segment(segmentId: idx, uri: keyPrefix + seg.uri, duration: seg.duration).save()
+
+                log.info("Associating segment [$segment] with playlist [$playlist]")
                 new PlaylistSegment(playlist: playlist, segment: segment).save()
             }
 

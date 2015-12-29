@@ -27,8 +27,12 @@ class SegmentController extends AbstractController {
             def playlist = Playlist.findById(playlistId)
             def playlistBelongsToVideo = PlaylistVideo.findByPlaylistAndVideo(playlist, video)
 
-            def segment = Segment.findBySegmentId(segmentId)
-            def segmentBelongsToPlaylist = PlaylistSegment.findByPlaylistAndSegment(playlist, segment)
+            def segments = PlaylistSegment.findAllByPlaylist(playlist)*.segment
+            def segment = segments.find { it.segmentId == segmentId }
+
+            def segmentBelongsToPlaylist = (segment != null)
+
+            log.debug("Retrieved video [$video], playlist [$playlist] and segment [$segment]")
 
             if (playlistBelongsToVideo && segmentBelongsToPlaylist) {
                 def stream = playlistAndSegmentStorageService.load(segment.uri) as InputStream
