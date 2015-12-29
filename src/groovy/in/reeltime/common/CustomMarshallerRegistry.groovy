@@ -1,14 +1,14 @@
 package in.reeltime.common
 
 import grails.converters.JSON
+import in.reeltime.account.RegistrationResult
 import in.reeltime.activity.ActivityType
 import in.reeltime.activity.UserReelActivity
-import in.reeltime.oauth2.Client
-import in.reeltime.user.User
-import in.reeltime.reel.Reel
-import in.reeltime.video.Video
 import in.reeltime.activity.UserReelVideoActivity
-import in.reeltime.account.RegistrationResult
+import in.reeltime.oauth2.Client
+import in.reeltime.reel.Reel
+import in.reeltime.user.User
+import in.reeltime.video.Video
 
 class CustomMarshallerRegistry {
 

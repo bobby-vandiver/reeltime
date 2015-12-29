@@ -2,18 +2,18 @@ package in.reeltime.reel
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
+import in.reeltime.activity.ActivityType
 import in.reeltime.activity.UserReelVideoActivity
-import in.reeltime.user.User
-import in.reeltime.video.Video
+import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ReelNotFoundException
 import in.reeltime.exceptions.VideoNotFoundException
-import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.user.User
+import in.reeltime.video.Video
 import spock.lang.Unroll
 import test.helper.AutoTimeStampSuppressor
 import test.helper.ReelFactory
 import test.helper.UserFactory
 import test.helper.VideoFactory
-import in.reeltime.activity.ActivityType
 
 class ReelVideoManagementServiceIntegrationSpec extends IntegrationSpec {
 

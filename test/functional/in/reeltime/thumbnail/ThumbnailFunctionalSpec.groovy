@@ -3,6 +3,7 @@ package in.reeltime.thumbnail
 import grails.plugins.rest.client.RestResponse
 import in.reeltime.FunctionalSpec
 import spock.lang.Unroll
+
 import java.awt.image.BufferedImage
 
 class ThumbnailFunctionalSpec extends FunctionalSpec {

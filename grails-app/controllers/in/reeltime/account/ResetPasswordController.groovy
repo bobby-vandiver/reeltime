@@ -7,8 +7,8 @@ import in.reeltime.exceptions.RegistrationException
 import in.reeltime.exceptions.ResetPasswordException
 import in.reeltime.user.UsernameCommand
 
-import static javax.servlet.http.HttpServletResponse.*
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
+import static javax.servlet.http.HttpServletResponse.*
 
 class ResetPasswordController extends AbstractController {
 

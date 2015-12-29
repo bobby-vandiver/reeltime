@@ -3,9 +3,9 @@ package in.reeltime.hls.playlist.parser
 import in.reeltime.hls.playlist.StreamAttributes
 import in.reeltime.hls.playlist.VariantPlaylist
 
+import static in.reeltime.hls.playlist.parser.StreamAttributesParser.parseAttributes
 import static in.reeltime.hls.playlist.util.PlaylistParserUtils.ensureExtendedM3U
 import static in.reeltime.hls.playlist.util.PlaylistParserUtils.getTagAndParams
-import static in.reeltime.hls.playlist.parser.StreamAttributesParser.parseAttributes
 
 class VariantPlaylistParser {
 

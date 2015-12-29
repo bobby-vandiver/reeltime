@@ -4,11 +4,9 @@ import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonSlurper
 import in.reeltime.exceptions.TranscoderJobNotFoundException
 
-import static MessageType.MESSAGE_TYPE_HEADER
-import static MessageType.SUBSCRIPTION_CONFIRMATION
-import static MessageType.NOTIFICATION
-
-import static javax.servlet.http.HttpServletResponse.*
+import static MessageType.*
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
+import static javax.servlet.http.HttpServletResponse.SC_OK
 
 @Secured(["permitAll"])
 class NotificationController {

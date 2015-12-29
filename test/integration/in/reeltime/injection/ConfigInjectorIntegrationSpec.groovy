@@ -1,8 +1,8 @@
 package in.reeltime.injection
 
 import grails.test.spock.IntegrationSpec
-import in.reeltime.video.VideoCreationCommand
 import in.reeltime.maintenance.ResourceRemovalJob
+import in.reeltime.video.VideoCreationCommand
 import spock.lang.Unroll
 
 class ConfigInjectorIntegrationSpec extends IntegrationSpec {

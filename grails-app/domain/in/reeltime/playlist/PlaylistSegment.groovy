@@ -1,6 +1,5 @@
 package in.reeltime.playlist
 
-import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.common.AbstractJoinDomain
 

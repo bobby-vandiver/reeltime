@@ -4,8 +4,9 @@ import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.search.PagedListCommand
 
-import static javax.servlet.http.HttpServletResponse.*
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
+import static javax.servlet.http.HttpServletResponse.SC_CREATED
+import static javax.servlet.http.HttpServletResponse.SC_OK
 
 class UserFollowingController extends AbstractController {
 

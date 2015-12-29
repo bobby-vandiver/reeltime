@@ -5,7 +5,8 @@ import in.reeltime.common.AbstractController
 import in.reeltime.video.Video
 import in.reeltime.video.VideoCommand
 
-import static javax.servlet.http.HttpServletResponse.*
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
+import static javax.servlet.http.HttpServletResponse.SC_OK
 
 class SegmentController extends AbstractController {
 

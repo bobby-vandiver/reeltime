@@ -1,7 +1,8 @@
 package in.reeltime.status
 
 import grails.plugin.springsecurity.annotation.Secured
-import static javax.servlet.http.HttpServletResponse.*
+
+import static javax.servlet.http.HttpServletResponse.SC_OK
 
 class ApplicationStatusController {
 

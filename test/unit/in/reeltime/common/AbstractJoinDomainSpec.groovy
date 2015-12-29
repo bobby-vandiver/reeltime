@@ -1,8 +1,8 @@
 package in.reeltime.common
 
 import grails.plugin.springsecurity.SpringSecurityService
-import spock.lang.Specification
 import in.reeltime.user.User
+import spock.lang.Specification
 import spock.lang.Unroll
 
 abstract class AbstractJoinDomainSpec extends Specification {

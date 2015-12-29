@@ -5,7 +5,8 @@ import grails.util.Environment
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.UserNotFoundException
 
-import static javax.servlet.http.HttpServletResponse.*
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
+import static javax.servlet.http.HttpServletResponse.SC_OK
 
 class DevelopmentOnlyAccountController extends AbstractController {
 

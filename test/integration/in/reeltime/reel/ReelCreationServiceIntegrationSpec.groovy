@@ -2,11 +2,11 @@ package in.reeltime.reel
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
+import in.reeltime.activity.ActivityType
+import in.reeltime.exceptions.InvalidReelNameException
 import in.reeltime.user.User
 import spock.lang.Unroll
 import test.helper.UserFactory
-import in.reeltime.exceptions.InvalidReelNameException
-import in.reeltime.activity.ActivityType
 
 class ReelCreationServiceIntegrationSpec extends IntegrationSpec {
 

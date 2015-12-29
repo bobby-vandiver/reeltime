@@ -4,9 +4,9 @@ import grails.plugins.rest.client.RestResponse
 import helper.rest.AuthorizationAwareRestClient
 import in.reeltime.hls.playlist.MediaPlaylist
 import in.reeltime.hls.playlist.VariantPlaylist
-import org.codehaus.groovy.grails.web.json.JSONElement
-import in.reeltime.hls.playlist.parser.VariantPlaylistParser
 import in.reeltime.hls.playlist.parser.MediaPlaylistParser
+import in.reeltime.hls.playlist.parser.VariantPlaylistParser
+import org.codehaus.groovy.grails.web.json.JSONElement
 
 class ReelTimeClient {
 

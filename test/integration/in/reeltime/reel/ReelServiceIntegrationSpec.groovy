@@ -1,8 +1,8 @@
 package in.reeltime.reel
 
 import grails.test.spock.IntegrationSpec
-import in.reeltime.user.User
 import in.reeltime.exceptions.UserNotFoundException
+import in.reeltime.user.User
 import spock.lang.Unroll
 import test.helper.AutoTimeStampSuppressor
 import test.helper.ReelFactory

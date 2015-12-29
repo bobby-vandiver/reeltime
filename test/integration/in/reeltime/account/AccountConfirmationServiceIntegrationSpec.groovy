@@ -2,9 +2,8 @@ package in.reeltime.account
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
-import in.reeltime.user.User
-import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ConfirmationException
+import in.reeltime.user.User
 import test.helper.UserFactory
 
 class AccountConfirmationServiceIntegrationSpec extends IntegrationSpec {

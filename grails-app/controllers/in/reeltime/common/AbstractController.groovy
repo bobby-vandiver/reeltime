@@ -1,16 +1,9 @@
 package in.reeltime.common
 
-import in.reeltime.exceptions.AuthorizationException
-import in.reeltime.exceptions.ClientNotFoundException
-import in.reeltime.exceptions.ReelNotFoundException
-import in.reeltime.exceptions.ThumbnailNotFoundException
-import in.reeltime.exceptions.UserNotFoundException
-import in.reeltime.exceptions.VideoNotFoundException
+import in.reeltime.exceptions.*
 
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
+import static javax.servlet.http.HttpServletResponse.*
 
 abstract class AbstractController {
 

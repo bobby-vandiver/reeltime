@@ -1,7 +1,7 @@
 package in.reeltime.playlist
 
-import in.reeltime.hls.playlist.parser.VariantPlaylistParser
 import in.reeltime.hls.playlist.parser.MediaPlaylistParser
+import in.reeltime.hls.playlist.parser.VariantPlaylistParser
 
 class PlaylistParserService {
 

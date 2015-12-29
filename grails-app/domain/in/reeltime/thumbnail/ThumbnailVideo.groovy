@@ -1,6 +1,5 @@
 package in.reeltime.thumbnail
 
-import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.common.AbstractJoinDomain
 import in.reeltime.video.Video

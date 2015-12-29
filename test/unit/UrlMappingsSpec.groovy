@@ -1,25 +1,20 @@
 import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.UrlMappingsUnitTestMixin
-import spock.lang.Specification
+import in.reeltime.account.*
+import in.reeltime.activity.NewsfeedController
 import in.reeltime.notification.NotificationController
-import in.reeltime.video.VideoController
+import in.reeltime.oauth2.TokenController
 import in.reeltime.playlist.PlaylistController
 import in.reeltime.playlist.SegmentController
-import in.reeltime.account.AccountController
-import in.reeltime.account.AccountConfirmationController
-import in.reeltime.account.AccountManagementController
-import in.reeltime.account.ClientManagementController
-import in.reeltime.account.ResetPasswordController
-import in.reeltime.account.DevelopmentOnlyAccountController
-import in.reeltime.status.ApplicationStatusController
-import in.reeltime.reel.ReelController
 import in.reeltime.reel.AudienceController
-import in.reeltime.activity.NewsfeedController
+import in.reeltime.reel.ReelController
+import in.reeltime.status.ApplicationStatusController
+import in.reeltime.thumbnail.ThumbnailController
 import in.reeltime.user.UserController
 import in.reeltime.user.UserFollowingController
-import in.reeltime.oauth2.TokenController
-import in.reeltime.thumbnail.ThumbnailController
+import in.reeltime.video.VideoController
+import spock.lang.Specification
 import spock.lang.Unroll
 
 @TestMixin(UrlMappingsUnitTestMixin)

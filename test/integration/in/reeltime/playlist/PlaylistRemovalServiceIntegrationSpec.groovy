@@ -1,10 +1,9 @@
 package in.reeltime.playlist
 
 import grails.test.spock.IntegrationSpec
+import in.reeltime.maintenance.ResourceRemovalTarget
 import in.reeltime.user.User
 import in.reeltime.video.Video
-import in.reeltime.thumbnail.ThumbnailResolution
-import in.reeltime.maintenance.ResourceRemovalTarget
 import test.helper.UserFactory
 
 class PlaylistRemovalServiceIntegrationSpec extends IntegrationSpec {

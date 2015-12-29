@@ -1,6 +1,6 @@
 package in.reeltime.reel
 
-import static in.reeltime.reel.Reel.*
+import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
 class ReelAuthorizationService {
 

@@ -4,9 +4,9 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.playlist.Playlist
-import in.reeltime.playlist.PlaylistVideo
 import in.reeltime.playlist.PlaylistUri
 import in.reeltime.playlist.PlaylistUriVideo
+import in.reeltime.playlist.PlaylistVideo
 import in.reeltime.thumbnail.Thumbnail
 import in.reeltime.thumbnail.ThumbnailVideo
 import in.reeltime.user.User

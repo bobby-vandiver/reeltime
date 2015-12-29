@@ -1,6 +1,6 @@
 import grails.util.Environment
-import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler
 import in.reeltime.mail.EmailManager
+import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler
 
 beans = {
 

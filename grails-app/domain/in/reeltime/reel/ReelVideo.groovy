@@ -3,7 +3,6 @@ package in.reeltime.reel
 import groovy.transform.ToString
 import in.reeltime.common.AbstractJoinDomain
 import in.reeltime.video.Video
-import org.apache.commons.lang.builder.HashCodeBuilder
 
 @ToString(includeNames = true)
 class ReelVideo extends AbstractJoinDomain implements Serializable {

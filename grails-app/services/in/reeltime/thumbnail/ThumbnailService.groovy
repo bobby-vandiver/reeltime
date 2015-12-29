@@ -1,7 +1,8 @@
 package in.reeltime.thumbnail
 
-import in.reeltime.video.Video
 import in.reeltime.exceptions.ThumbnailNotFoundException
+import in.reeltime.video.Video
+
 import static in.reeltime.thumbnail.ThumbnailResolution.*
 
 class ThumbnailService {

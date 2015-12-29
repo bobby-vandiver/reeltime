@@ -1,9 +1,10 @@
 package in.reeltime.thumbnail
 
 import grails.test.mixin.TestFor
+import in.reeltime.exceptions.ThumbnailGenerationException
 import spock.lang.Specification
 import spock.lang.Unroll
-import in.reeltime.exceptions.ThumbnailGenerationException
+
 import javax.imageio.ImageIO
 
 @TestFor(ThumbnailGenerationService)

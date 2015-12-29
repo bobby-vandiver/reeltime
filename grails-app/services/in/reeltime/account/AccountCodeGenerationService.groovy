@@ -3,8 +3,8 @@ package in.reeltime.account
 import in.reeltime.exceptions.AccountCodeException
 import in.reeltime.user.User
 
-import static in.reeltime.account.AccountCode.CODE_LENGTH
 import static in.reeltime.account.AccountCode.ALLOWED_CHARACTERS
+import static in.reeltime.account.AccountCode.CODE_LENGTH
 
 class AccountCodeGenerationService {
 

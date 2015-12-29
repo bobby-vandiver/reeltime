@@ -3,7 +3,7 @@ package in.reeltime.oauth2
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 
-import static javax.servlet.http.HttpServletResponse.*
+import static javax.servlet.http.HttpServletResponse.SC_OK
 
 class TokenController extends AbstractController {
 

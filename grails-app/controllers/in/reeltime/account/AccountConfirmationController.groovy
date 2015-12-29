@@ -3,12 +3,9 @@ package in.reeltime.account
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.exceptions.AccountCodeException
-import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ConfirmationException
 
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
-import static javax.servlet.http.HttpServletResponse.SC_OK
-import static javax.servlet.http.HttpServletResponse.SC_SERVICE_UNAVAILABLE
+import static javax.servlet.http.HttpServletResponse.*
 
 class AccountConfirmationController extends AbstractController {
 

@@ -1,7 +1,6 @@
 package in.reeltime.reel
 
 import in.reeltime.exceptions.InvalidReelNameException
-import in.reeltime.user.User
 
 class ReelCreationService {
 

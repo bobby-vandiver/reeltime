@@ -4,8 +4,8 @@ import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.playlist.Playlist
 import in.reeltime.playlist.PlaylistUri
-import in.reeltime.playlist.PlaylistVideo
 import in.reeltime.playlist.PlaylistUriVideo
+import in.reeltime.playlist.PlaylistVideo
 import in.reeltime.thumbnail.Thumbnail
 import in.reeltime.thumbnail.ThumbnailVideo
 import in.reeltime.user.User

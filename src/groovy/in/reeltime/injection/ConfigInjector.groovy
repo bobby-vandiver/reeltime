@@ -1,8 +1,8 @@
 package in.reeltime.injection
 
-import org.springframework.context.ApplicationContext
-import in.reeltime.video.VideoCreationCommand
 import in.reeltime.maintenance.ResourceRemovalJob
+import in.reeltime.video.VideoCreationCommand
+import org.springframework.context.ApplicationContext
 import org.springframework.security.authentication.AuthenticationManager
 
 class ConfigInjector {

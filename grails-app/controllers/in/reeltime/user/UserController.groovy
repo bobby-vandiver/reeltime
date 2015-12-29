@@ -3,8 +3,9 @@ package in.reeltime.user
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.search.PagedListCommand
+
 import static in.reeltime.common.ContentTypes.APPLICATION_JSON
-import static javax.servlet.http.HttpServletResponse.*
+import static javax.servlet.http.HttpServletResponse.SC_OK
 
 class UserController extends AbstractController {
 

@@ -1,8 +1,8 @@
 package in.reeltime.user
 
 import grails.test.spock.IntegrationSpec
-import in.reeltime.oauth2.Client
 import in.reeltime.exceptions.UserNotFoundException
+import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
 import spock.lang.Unroll
 import test.helper.UserFactory

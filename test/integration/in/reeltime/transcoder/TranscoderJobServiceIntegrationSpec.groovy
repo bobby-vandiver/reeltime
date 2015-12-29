@@ -1,10 +1,10 @@
 package in.reeltime.transcoder
 
 import grails.test.spock.IntegrationSpec
+import in.reeltime.exceptions.TranscoderJobNotFoundException
 import in.reeltime.video.Video
 import test.helper.UserFactory
 import test.helper.VideoFactory
-import in.reeltime.exceptions.TranscoderJobNotFoundException
 
 import static in.reeltime.transcoder.TranscoderJobStatus.Complete
 

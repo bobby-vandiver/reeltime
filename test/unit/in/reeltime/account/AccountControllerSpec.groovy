@@ -4,8 +4,8 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import groovy.json.JsonSlurper
 import in.reeltime.common.AbstractControllerSpec
-import in.reeltime.exceptions.RegistrationException
 import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.exceptions.RegistrationException
 import in.reeltime.user.User
 import in.reeltime.user.UserService
 

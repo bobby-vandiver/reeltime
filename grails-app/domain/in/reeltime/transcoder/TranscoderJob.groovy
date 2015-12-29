@@ -3,7 +3,8 @@ package in.reeltime.transcoder
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.video.Video
-import static in.reeltime.transcoder.TranscoderJobStatus.*
+
+import static in.reeltime.transcoder.TranscoderJobStatus.Submitted
 
 @ToString(includeNames = true)
 @EqualsAndHashCode(includes = ['video'])

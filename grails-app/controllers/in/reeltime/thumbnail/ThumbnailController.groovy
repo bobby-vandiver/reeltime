@@ -3,7 +3,8 @@ package in.reeltime.thumbnail
 import grails.plugin.springsecurity.annotation.Secured
 import in.reeltime.common.AbstractController
 import in.reeltime.video.VideoCommand
-import static javax.servlet.http.HttpServletResponse.*
+
+import static javax.servlet.http.HttpServletResponse.SC_OK
 
 class ThumbnailController extends AbstractController {
 

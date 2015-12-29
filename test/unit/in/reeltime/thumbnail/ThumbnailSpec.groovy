@@ -1,7 +1,6 @@
 package in.reeltime.thumbnail
 
 import grails.test.mixin.TestFor
-import in.reeltime.video.Video
 import spock.lang.Specification
 import spock.lang.Unroll
 

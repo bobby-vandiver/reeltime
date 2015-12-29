@@ -2,12 +2,12 @@ package in.reeltime.account
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
-import in.reeltime.user.User
 import in.reeltime.oauth2.Client
-import in.reeltime.user.UserFollowing
-import test.helper.UserFactory
 import in.reeltime.reel.AudienceMember
 import in.reeltime.reel.UserReel
+import in.reeltime.user.User
+import in.reeltime.user.UserFollowing
+import test.helper.UserFactory
 
 class AccountRemovalServiceIntegrationSpec extends IntegrationSpec {
 

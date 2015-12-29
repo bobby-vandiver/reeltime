@@ -3,8 +3,8 @@ package helper.rest
 import grails.plugins.rest.client.RestBuilder
 import grails.plugins.rest.client.RestResponse
 
-import static helper.rest.HttpContentTypes.*
-import static helper.rest.HttpHeaders.*
+import static helper.rest.HttpContentTypes.MULTI_PART_FORM_DATA
+import static helper.rest.HttpHeaders.AUTHORIZATION
 
 class AuthorizationAwareRestClient {
 

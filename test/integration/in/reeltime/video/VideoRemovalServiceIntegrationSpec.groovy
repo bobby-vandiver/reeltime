@@ -2,22 +2,16 @@ package in.reeltime.video
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
-import in.reeltime.playlist.Playlist
-import in.reeltime.playlist.PlaylistSegment
-import in.reeltime.playlist.PlaylistType
-import in.reeltime.playlist.PlaylistUri
-import in.reeltime.playlist.PlaylistUriVideo
-import in.reeltime.playlist.PlaylistVideo
-import in.reeltime.playlist.Segment
+import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.maintenance.ResourceRemovalTarget
+import in.reeltime.playlist.*
 import in.reeltime.reel.Reel
 import in.reeltime.reel.ReelVideo
 import in.reeltime.thumbnail.Thumbnail
+import in.reeltime.thumbnail.ThumbnailResolution
 import in.reeltime.thumbnail.ThumbnailVideo
 import in.reeltime.transcoder.TranscoderJob
 import in.reeltime.user.User
-import in.reeltime.maintenance.ResourceRemovalTarget
-import in.reeltime.thumbnail.ThumbnailResolution
-import in.reeltime.exceptions.AuthorizationException
 import spock.lang.Unroll
 import test.helper.UserFactory
 

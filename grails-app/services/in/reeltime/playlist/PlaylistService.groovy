@@ -4,9 +4,9 @@ import in.reeltime.hls.playlist.MediaPlaylist
 import in.reeltime.hls.playlist.MediaSegment
 import in.reeltime.hls.playlist.StreamAttributes
 import in.reeltime.hls.playlist.VariantPlaylist
-import in.reeltime.video.Video
 import in.reeltime.hls.playlist.composer.MediaPlaylistComposer
 import in.reeltime.hls.playlist.composer.VariantPlaylistComposer
+import in.reeltime.video.Video
 
 class PlaylistService {
 

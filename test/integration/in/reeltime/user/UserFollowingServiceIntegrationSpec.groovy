@@ -1,10 +1,10 @@
 package in.reeltime.user
 
 import grails.test.spock.IntegrationSpec
+import in.reeltime.exceptions.AuthorizationException
 import spock.lang.Unroll
 import test.helper.UserFactory
 import test.helper.UserFollowingHelper
-import in.reeltime.exceptions.AuthorizationException
 
 class UserFollowingServiceIntegrationSpec extends IntegrationSpec {
     

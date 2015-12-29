@@ -5,13 +5,16 @@ import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.metadata.StreamMetadata
 import in.reeltime.metadata.StreamMetadataService
+import in.reeltime.playlist.PlaylistAndSegmentStorageService
 import in.reeltime.playlist.PlaylistService
 import in.reeltime.reel.Reel
 import in.reeltime.reel.ReelVideoManagementService
 import in.reeltime.reel.UserReel
-import in.reeltime.playlist.PlaylistAndSegmentStorageService
 import in.reeltime.storage.TemporaryFileService
+import in.reeltime.thumbnail.ThumbnailService
+import in.reeltime.thumbnail.ThumbnailStorageService
 import in.reeltime.thumbnail.ThumbnailValidationResult
+import in.reeltime.thumbnail.ThumbnailValidationService
 import in.reeltime.transcoder.TranscoderJob
 import in.reeltime.transcoder.TranscoderJobService
 import in.reeltime.transcoder.TranscoderService
@@ -19,9 +22,6 @@ import in.reeltime.user.User
 import spock.lang.Specification
 import spock.lang.Unroll
 import test.helper.StreamMetadataListFactory
-import in.reeltime.thumbnail.ThumbnailService
-import in.reeltime.thumbnail.ThumbnailStorageService
-import in.reeltime.thumbnail.ThumbnailValidationService
 
 @TestFor(VideoCreationService)
 @Mock([Video, TranscoderJob, User, VideoCreator, Reel, UserReel])

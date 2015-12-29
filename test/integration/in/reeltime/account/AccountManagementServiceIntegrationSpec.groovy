@@ -1,9 +1,9 @@
 package in.reeltime.account
 
 import grails.test.spock.IntegrationSpec
-import in.reeltime.user.User
-import in.reeltime.oauth2.Client
 import in.reeltime.exceptions.ClientNotFoundException
+import in.reeltime.oauth2.Client
+import in.reeltime.user.User
 import test.helper.UserFactory
 
 class AccountManagementServiceIntegrationSpec extends IntegrationSpec {

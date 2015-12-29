@@ -1,11 +1,12 @@
 package in.reeltime.thumbnail
 
 import grails.test.spock.IntegrationSpec
+import in.reeltime.exceptions.ThumbnailNotFoundException
 import in.reeltime.user.User
 import in.reeltime.video.Video
 import test.helper.UserFactory
 import test.helper.VideoFactory
-import in.reeltime.exceptions.ThumbnailNotFoundException
+
 import static in.reeltime.thumbnail.ThumbnailResolution.*
 
 class ThumbnailServiceIntegrationSpec extends IntegrationSpec {

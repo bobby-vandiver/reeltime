@@ -2,12 +2,12 @@ package in.reeltime.account
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.transaction.Transactional
+import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.exceptions.ResetPasswordException
 import in.reeltime.oauth2.AccessToken
 import in.reeltime.user.User
 import org.springframework.transaction.annotation.Propagation
 import test.helper.UserFactory
-import in.reeltime.exceptions.AuthorizationException
-import in.reeltime.exceptions.ResetPasswordException
 import test.spec.MailServiceDependentIntegrationSpec
 
 class ResetPasswordServiceIntegrationSpec extends MailServiceDependentIntegrationSpec {

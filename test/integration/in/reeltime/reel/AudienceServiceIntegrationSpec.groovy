@@ -2,11 +2,11 @@ package in.reeltime.reel
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
-import in.reeltime.user.User
+import in.reeltime.activity.ActivityType
 import in.reeltime.exceptions.AuthorizationException
+import in.reeltime.user.User
 import spock.lang.Unroll
 import test.helper.UserFactory
-import in.reeltime.activity.ActivityType
 
 class AudienceServiceIntegrationSpec extends IntegrationSpec {
 

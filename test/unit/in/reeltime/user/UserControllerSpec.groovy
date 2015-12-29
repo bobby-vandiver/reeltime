@@ -3,8 +3,8 @@ package in.reeltime.user
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractControllerSpec
-import in.reeltime.reel.Reel
 import in.reeltime.reel.AudienceMember
+import in.reeltime.reel.Reel
 import in.reeltime.reel.UserReel
 
 @TestFor(UserController)

@@ -3,12 +3,12 @@ package in.reeltime.user
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import in.reeltime.exceptions.ReelNotFoundException
-import in.reeltime.video.Video
-import in.reeltime.video.VideoCreator
 import in.reeltime.oauth2.Client
+import in.reeltime.reel.AudienceMember
 import in.reeltime.reel.Reel
 import in.reeltime.reel.UserReel
-import in.reeltime.reel.AudienceMember
+import in.reeltime.video.Video
+import in.reeltime.video.VideoCreator
 
 @ToString(includeNames = true, includes = ['displayName', 'username'])
 @EqualsAndHashCode(includes = ['username'])

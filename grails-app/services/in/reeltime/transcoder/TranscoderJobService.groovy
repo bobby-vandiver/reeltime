@@ -2,7 +2,8 @@ package in.reeltime.transcoder
 
 import in.reeltime.exceptions.TranscoderJobNotFoundException
 import in.reeltime.video.Video
-import static in.reeltime.transcoder.TranscoderJobStatus.*
+
+import static in.reeltime.transcoder.TranscoderJobStatus.Complete
 
 class TranscoderJobService {
 

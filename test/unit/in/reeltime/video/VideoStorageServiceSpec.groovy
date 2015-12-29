@@ -2,8 +2,8 @@ package in.reeltime.video
 
 import grails.test.mixin.TestFor
 import in.reeltime.storage.PathGenerationService
-import spock.lang.Specification
 import in.reeltime.storage.StorageService
+import spock.lang.Specification
 
 @TestFor(VideoStorageService)
 class VideoStorageServiceSpec extends Specification {

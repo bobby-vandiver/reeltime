@@ -2,11 +2,11 @@ package in.reeltime.reel
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.test.spock.IntegrationSpec
-import in.reeltime.user.User
-import test.helper.UserFactory
 import in.reeltime.exceptions.AuthorizationException
-import test.helper.VideoFactory
+import in.reeltime.user.User
 import in.reeltime.video.Video
+import test.helper.UserFactory
+import test.helper.VideoFactory
 
 import static in.reeltime.reel.Reel.UNCATEGORIZED_REEL_NAME
 
