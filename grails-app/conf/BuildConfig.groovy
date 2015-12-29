@@ -51,7 +51,7 @@ grails.project.dependency.resolution = {
 
         runtime 'mysql:mysql-connector-java:5.1.38'
 
-        compile 'commons-codec:commons-codec:1.9'
+        compile 'commons-codec:commons-codec:1.10'
         compile 'com.amazonaws:aws-java-sdk:1.10.43'
 
         compile 'org.apache.tika:tika-parsers:1.11'
