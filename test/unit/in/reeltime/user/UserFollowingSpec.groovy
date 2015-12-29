@@ -1,11 +1,38 @@
 package in.reeltime.user
 
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import spock.lang.Specification
+import in.reeltime.common.AbstractJoinDomainSpec
 import spock.lang.Unroll
 
 @TestFor(UserFollowing)
-class UserFollowingSpec extends Specification {
+@Mock([User])
+class UserFollowingSpec extends AbstractJoinDomainSpec {
+
+    @Override
+    Class getJoinClass() {
+        return UserFollowing
+    }
+
+    @Override
+    Class getLeftPropertyClass() {
+        return User
+    }
+
+    @Override
+    Class getRightPropertyClass() {
+        return User
+    }
+
+    @Override
+    String getLeftPropertyName() {
+        return 'follower'
+    }
+
+    @Override
+    String getRightPropertyName() {
+        return 'followee'
+    }
 
     @Unroll
     void "[#key] cannot be null"() {
