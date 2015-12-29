@@ -60,7 +60,7 @@ grails.project.dependency.resolution = {
         // FileUtils for test cleanup
         test 'commons-io:commons-io:2.4'
 
-        test 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.+', {
+        test 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1', {
             excludes "commons-logging", "xml-apis", "groovy"
         }
 
