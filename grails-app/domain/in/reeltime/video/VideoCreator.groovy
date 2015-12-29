@@ -1,17 +1,18 @@
 package in.reeltime.video
 
-import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
+import in.reeltime.common.AbstractJoinDomain
 import in.reeltime.user.User
 
 @ToString(includeNames = true)
-@EqualsAndHashCode(includes = ['video.id', 'creator.username'])
-class VideoCreator implements Serializable {
+class VideoCreator extends AbstractJoinDomain implements Serializable {
 
     private static final long serialVersionUID = 1
 
     Video video
     User creator
+
+    static transients = ['leftPropertyName', 'rightPropertyName']
 
     static constraints = {
         video nullable: false
@@ -21,5 +22,15 @@ class VideoCreator implements Serializable {
     static mapping = {
         id composite: ['video', 'creator']
         version false
+    }
+
+    @Override
+    String getLeftPropertyName() {
+        return 'video'
+    }
+
+    @Override
+    String getRightPropertyName() {
+        return 'creator'
     }
 }

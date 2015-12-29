@@ -1,15 +1,16 @@
 package in.reeltime.reel
 
-import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
+import in.reeltime.common.AbstractJoinDomain
 import in.reeltime.user.User
 
 @ToString(includeNames = true)
-@EqualsAndHashCode(includes = ['owner.username', 'reel.id'])
-class UserReel implements Serializable {
+class UserReel extends AbstractJoinDomain implements Serializable {
 
     User owner
     Reel reel
+
+    static transients = ['leftPropertyName', 'rightPropertyName']
 
     static constraints = {
         owner nullable: false
@@ -19,5 +20,15 @@ class UserReel implements Serializable {
     static mapping = {
         id composite: ['owner', 'reel']
         version false
+    }
+
+    @Override
+    String getLeftPropertyName() {
+        return 'owner'
+    }
+
+    @Override
+    String getRightPropertyName() {
+        return 'reel'
     }
 }

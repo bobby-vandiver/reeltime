@@ -1,16 +1,19 @@
 package in.reeltime.reel
 
 import groovy.transform.ToString
+import in.reeltime.common.AbstractJoinDomain
 import in.reeltime.video.Video
 import org.apache.commons.lang.builder.HashCodeBuilder
 
 @ToString(includeNames = true)
-class ReelVideo implements Serializable {
+class ReelVideo extends AbstractJoinDomain implements Serializable {
 
     private static final long serialVersionUID = 1
 
     Reel reel
     Video video
+
+    static transients = ['leftPropertyName', 'rightPropertyName']
 
     static constraints = {
         reel nullable: false
@@ -32,21 +35,12 @@ class ReelVideo implements Serializable {
     }
 
     @Override
-    int hashCode() {
-        def builder = new HashCodeBuilder()
-        if(reel) builder.append(reel.id)
-        if(video) builder.append(video.id)
-        builder.toHashCode()
+    String getLeftPropertyName() {
+        return 'reel'
     }
 
     @Override
-    boolean equals(Object other) {
-        if(!(other instanceof ReelVideo)) {
-            return false
-        }
-        boolean sameReel = (other.reel?.id == reel?.id)
-        boolean sameVideo = (other.video?.id == video?.id)
-
-        return sameReel && sameVideo
+    String getRightPropertyName() {
+        return 'video'
     }
 }

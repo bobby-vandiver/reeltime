@@ -5,32 +5,32 @@ import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractJoinDomainSpec
 import in.reeltime.user.User
 
-@TestFor(AudienceMember)
-@Mock([Reel, User])
-class AudienceMemberSpec extends AbstractJoinDomainSpec {
+@TestFor(UserReel)
+@Mock([User, Reel])
+class UserReelSpec extends AbstractJoinDomainSpec {
 
     @Override
     Class getJoinClass() {
-        return AudienceMember
+        return UserReel
     }
 
     @Override
     Class getLeftPropertyClass() {
-        return Reel
-    }
-
-    @Override
-    Class getRightPropertyClass() {
         return User
     }
 
     @Override
+    Class getRightPropertyClass() {
+        return Reel
+    }
+
+    @Override
     String getLeftPropertyName() {
-        return 'reel'
+        return 'owner'
     }
 
     @Override
     String getRightPropertyName() {
-        return 'member'
+        return 'reel'
     }
 }

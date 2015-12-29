@@ -1,36 +1,36 @@
-package in.reeltime.reel
+package in.reeltime.playlist
 
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import in.reeltime.common.AbstractJoinDomainSpec
-import in.reeltime.user.User
+import in.reeltime.video.Video
 
-@TestFor(AudienceMember)
-@Mock([Reel, User])
-class AudienceMemberSpec extends AbstractJoinDomainSpec {
+@TestFor(PlaylistVideo)
+@Mock([Playlist, Video])
+class PlaylistVideoSpec extends AbstractJoinDomainSpec {
 
     @Override
     Class getJoinClass() {
-        return AudienceMember
+        return PlaylistVideo
     }
 
     @Override
     Class getLeftPropertyClass() {
-        return Reel
+        return Playlist
     }
 
     @Override
     Class getRightPropertyClass() {
-        return User
+        return Video
     }
 
     @Override
     String getLeftPropertyName() {
-        return 'reel'
+        return 'playlist'
     }
 
     @Override
     String getRightPropertyName() {
-        return 'member'
+        return 'video'
     }
 }
