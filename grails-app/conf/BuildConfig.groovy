@@ -54,7 +54,7 @@ grails.project.dependency.resolution = {
         compile 'commons-codec:commons-codec:1.9'
         compile 'com.amazonaws:aws-java-sdk:1.10.43'
 
-        compile 'org.apache.tika:tika-parsers:1.7'
+        compile 'org.apache.tika:tika-parsers:1.11'
         compile 'org.imgscalr:imgscalr-lib:4.2'
 
         // FileUtils for test cleanup
