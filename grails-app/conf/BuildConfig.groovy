@@ -85,7 +85,7 @@ grails.project.dependency.resolution = {
         compile ":spring-security-oauth2-provider:2.0-RC5"
         compile ":spring-security-core:2.0.0"
 
-        compile ":codenarc:0.21"
+        compile ":codenarc:0.24.1"
 
         // This has to be a compile time dependency otherwise we will be unable to start
         // functional tests from Gant scripts.
