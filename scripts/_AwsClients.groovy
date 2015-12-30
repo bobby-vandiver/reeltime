@@ -89,18 +89,15 @@ AmazonS3 createS3Client(AWSCredentials credentials) {
     s3.metaClass.uploadFile = { File file, String bucket, String key ->
         def inputStream = new FileInputStream(file)
 
-        def data = inputStream.bytes
-        def totalSize = data.size()
+        long totalSize = file.length()
+        long totalSizeInMB = totalSize / MEGABYTE
 
         def metadata = new ObjectMetadata(contentLength: totalSize)
-        def binaryStream = new ByteArrayInputStream(data)
-
-        long totalSizeInMB = totalSize / MEGABYTE
 
         long megaBytesTransferred = 0
         long bytesTransferred = 0
 
-        def request = new PutObjectRequest(bucket, key, binaryStream, metadata)
+        def request = new PutObjectRequest(bucket, key, inputStream, metadata)
         request.generalProgressListener = new ProgressListener() {
             @Override
             void progressChanged(ProgressEvent progressEvent) {
