@@ -9,8 +9,10 @@ class FfprobeService {
 
     Map probeVideo(File video) {
         try {
-            log.debug("Entering ${this.class.simpleName} probeVideo for video [${video.absolutePath}]")
+            ensureVideoExists(video)
             ensurePathToFfprobeIsDefined()
+
+            log.debug("Probing video [${video.absolutePath}]")
 
             def command = "${ffprobe} ${ffprobeLogLevel} -print_format json -show_streams ${video.absolutePath}"
             log.debug("Executing command: $command")
@@ -30,6 +32,12 @@ class FfprobeService {
         }
         catch(Exception e) {
             throw new ProbeException(e)
+        }
+    }
+
+    private void ensureVideoExists(File video) {
+        if (!video || !video.exists()) {
+            throw new IllegalArgumentException("Unknown video file [${video?.absolutePath}]")
         }
     }
 

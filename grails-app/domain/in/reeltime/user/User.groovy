@@ -10,9 +10,11 @@ import in.reeltime.reel.UserReel
 import in.reeltime.video.Video
 import in.reeltime.video.VideoCreator
 
-@ToString(includeNames = true, includes = ['displayName', 'username'])
 @EqualsAndHashCode(includes = ['username'])
-class User {
+@ToString(includes = ['username', 'displayName'], includeNames = true, includePackage=false)
+class User implements Serializable {
+
+    private static final long serialVersionUID = 1
 
     static final USERNAME_REGEX = /^\w{2,15}$/
     static final DISPLAY_NAME_REGEX = /^\w{1}[\w ]{0,18}?\w{1}$/
@@ -20,15 +22,16 @@ class User {
 
 	transient springSecurityService
 
+    String username
+    String password
+    boolean enabled = true
+    boolean accountExpired
+    boolean accountLocked
+    boolean passwordExpired
+
     String displayName
 	String email
-	String username
-	String password
 	boolean verified
-	boolean enabled = true
-	boolean accountExpired
-	boolean accountLocked
-	boolean passwordExpired
 
     static hasMany = [clients: Client]
 
@@ -42,6 +45,18 @@ class User {
             'reels',
             'videos'
     ]
+
+    static constraints = {
+        displayName blank: false, nullable: false, matches: DISPLAY_NAME_REGEX
+        email blank: false, nullable: false, email: true
+        username blank: false, nullable: false, matches: USERNAME_REGEX, unique: true
+        password blank: false, nullable: false
+        clients nullable: false
+    }
+
+    static mapping = {
+        password column: '`password`'
+    }
 
     static List<User> findAllByIdInListInAlphabeticalOrderByPage(List<Long> userIds, int page, int maxUsersPerPage) {
         int offset = (page - 1) * maxUsersPerPage
@@ -59,17 +74,15 @@ class User {
         } as List<Long>
     }
 
-	static constraints = {
-        displayName blank: false, nullable: false, matches: DISPLAY_NAME_REGEX
-        email blank: false, nullable: false, email: true
-		username blank: false, nullable: false, matches: USERNAME_REGEX, unique: true
-		password blank: false, nullable: false
-        clients nullable: false
-	}
+    User(String username, String password) {
+        this()
+        this.username = username
+        this.password = password
+    }
 
-	static mapping = {
-		password column: '`password`'
-	}
+    Set<Role> getAuthorities() {
+        UserRole.findAllByUser(this)*.role
+    }
 
     Collection<Reel> getReels() {
         UserReel.findAllByOwner(this)*.reel
@@ -121,10 +134,6 @@ class User {
         UserFollowing.findByFollowerAndFollowee(currentUser, this) != null
     }
 
-    Set<Role> getAuthorities() {
-		UserRole.findAllByUser(this).collect { it.role } as Set
-	}
-
 	def beforeInsert() {
 		encodePassword()
 	}
@@ -136,6 +145,6 @@ class User {
 	}
 
 	protected void encodePassword() {
-		password = springSecurityService.encodePassword(password)
+        password = springSecurityService?.passwordEncoder ? springSecurityService.encodePassword(password) : password
 	}
 }

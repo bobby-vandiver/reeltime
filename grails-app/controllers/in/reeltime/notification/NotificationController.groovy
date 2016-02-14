@@ -7,6 +7,7 @@ import in.reeltime.exceptions.TranscoderJobNotFoundException
 import static MessageType.*
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_OK
+import static groovy.json.JsonOutput.toJson
 
 @Secured(["permitAll"])
 class NotificationController {
@@ -14,50 +15,46 @@ class NotificationController {
     def notificationService
     def videoCreationService
 
-    def beforeInterceptor = {
-        if(messageIsNotAuthentic()) {
-            render status: SC_BAD_REQUEST
-            return false
-        }
-    }
-
-    private boolean messageIsNotAuthentic() {
-        def message = request.JSON as Map
-        !notificationService.verifyMessage(message)
-    }
-
     def handleMessage() {
-        log.debug(request.JSON)
-        def messageType = request.getHeader(MESSAGE_TYPE_HEADER)
+        Map message = getMessageAsJson()
 
-        if(messageType == SUBSCRIPTION_CONFIRMATION) {
-            confirmSubscription()
-        }
-        else if(messageType == NOTIFICATION) {
-            handleNotification()
+        if(isMessageAuthentic(message)) {
+            def messageType = request.getHeader(MESSAGE_TYPE_HEADER)
+
+            if (messageType == SUBSCRIPTION_CONFIRMATION) {
+                confirmSubscription(message)
+            } else if (messageType == NOTIFICATION) {
+                handleNotification(message)
+            } else {
+                log.warn("Received an invalid message type: $messageType")
+                response.status = SC_BAD_REQUEST
+            }
         }
         else {
-            log.warn("Received an invalid message type: $messageType")
-            render(status: SC_BAD_REQUEST)
+            log.warn("Received an unauthenticated message")
+            response.status = SC_BAD_REQUEST
         }
     }
 
-    private void confirmSubscription() {
-        def topicArn = request.JSON.TopicArn
-        def token = request.JSON.Token
+    private boolean isMessageAuthentic(Map message) {
+        log.debug("Checking message authenticity")
+        notificationService.verifyMessage(message)
+    }
+
+    private void confirmSubscription(Map message) {
+        def topicArn = message.TopicArn
+        def token = message.Token
 
         if (topicArn && token) {
             notificationService.confirmSubscription(topicArn, token)
             render(status: SC_OK)
         }
         else {
-            render(status: SC_BAD_REQUEST)
+            response.status = SC_BAD_REQUEST
         }
     }
 
-    private void handleNotification() {
-        def message = messageAsJson
-
+    private void handleNotification(Map message) {
         def state = message.state
         def jobId = message.jobId
 
@@ -79,22 +76,31 @@ class NotificationController {
                 break
 
             case 'WARNING':
-                log.warn("Received warning notification for job [${jobId}]: ${request.inputStream.text}")
+                log.warn("Received warning notification for job [${jobId}]: ${toJson(message)}")
                 break
 
             case 'ERROR':
-                log.error("Received error notification for job [${jobId}]: ${request.inputStream.text}")
+                log.error("Received error notification for job [${jobId}]: ${toJson(message)}")
                 break
 
             default:
-                log.warn("Received unknown state [$state] for job [${jobId}]: ${request.inputStream.text}")
+                log.warn("Received unknown state [$state] for job [${jobId}]: ${toJson(message)}")
         }
 
         render(status: SC_OK)
     }
 
-    private def getMessageAsJson() {
-        def message = request.JSON.Message
-        new JsonSlurper().parseText(message)
+    private Map getMessageAsJson() {
+        try {
+            def slurper = new JsonSlurper()
+            def json = slurper.parse(request.inputStream) as Map
+
+            log.debug("Message json: ${json}")
+            return slurper.parseText(json.Message) as Map
+        }
+        catch (Exception e) {
+            log.warn("Malformed message", e)
+            return [:]
+        }
     }
 }

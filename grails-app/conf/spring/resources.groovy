@@ -1,16 +1,15 @@
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Environment
 import in.reeltime.mail.EmailManager
-import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler
+import in.reeltime.springsecurity.PatchedAnnotationFilterInvocationDefinition
 
 beans = {
-
-    // Entire application is secured by OAuth2 -- reuse the bean defined by OAuth2 plugin
-    authenticationEntryPoint { it.parent = ref('oauth2AuthenticationEntryPoint') }
-    accessDeniedHandler(OAuth2AccessDeniedHandler)
-    
     emailManager(EmailManager) {
         mailService = ref('mailService')
     }
+
+    configureSpringSecurityCorePluginOverrides.delegate = delegate
+    configureSpringSecurityCorePluginOverrides()
 
     String environmentName = Environment.currentEnvironment.name
     switch(environmentName) {
@@ -43,5 +42,21 @@ configureAwsBeans = {
 configureLocalBeans = {
     springConfig.addAlias 'storageService', 'localFileSystemStorageService'
     springConfig.addAlias 'transcoderService', 'ffmpegTranscoderService'
-    springConfig.addAlias 'mailService', 'inMemoryMailService'
+    springConfig.addAlias 'mailService', 'localMailService'
+}
+
+configureSpringSecurityCorePluginOverrides = {
+    def conf = SpringSecurityUtils.securityConfig
+
+    // Overriding this bean provided by Spring Security Core to disable the
+    // adding an intercept url rule for the defaultAction in an annotated controller.
+
+    objectDefinitionSource(PatchedAnnotationFilterInvocationDefinition) {
+        application = ref('grailsApplication')
+        grailsUrlConverter = ref('grailsUrlConverter')
+        httpServletResponseExtension = ref('httpServletResponseExtension')
+        if (conf.rejectIfNoRule instanceof Boolean) {
+            rejectIfNoRule = conf.rejectIfNoRule
+        }
+    }
 }

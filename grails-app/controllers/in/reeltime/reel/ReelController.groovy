@@ -21,7 +21,7 @@ class ReelController extends AbstractController {
     def getReel(ReelCommand command) {
         log.debug "Getting reel [${command.reel_id}]"
         handleCommandRequest(command) {
-            render(status: SC_OK, contentType: APPLICATION_JSON) {
+            doRender(status: SC_OK, contentType: APPLICATION_JSON) {
                 marshall(reelService.loadReel(command.reel_id))
             }
         }
@@ -31,7 +31,7 @@ class ReelController extends AbstractController {
     def listReels(PagedListCommand command) {
         log.debug "Listing all reels on page [${command.page}]"
         handleCommandRequest(command) {
-            render(status: SC_OK, contentType: APPLICATION_JSON) {
+            doRender(status: SC_OK, contentType: APPLICATION_JSON) {
                 marshall(reels: reelService.listReels(command.page))
             }
         }
@@ -41,7 +41,7 @@ class ReelController extends AbstractController {
     def listUserReels(UsernameCommand usernameCommand, PagedListCommand pagedListCommand) {
         log.debug "Listing reels for user [${usernameCommand.username}] on page [${pagedListCommand.page}]"
         handleMultipleCommandRequest([usernameCommand, pagedListCommand]) {
-            render(status: SC_OK, contentType: APPLICATION_JSON) {
+            doRender(status: SC_OK, contentType: APPLICATION_JSON) {
                 marshall(reels: reelService.listReelsByUsername(usernameCommand.username, pagedListCommand.page))
             }
         }
@@ -52,7 +52,7 @@ class ReelController extends AbstractController {
         log.debug "Adding reel [${command.name}]"
         handleCommandRequest(command) {
             try {
-                render(status: SC_CREATED, contentType: APPLICATION_JSON) {
+                doRender(status: SC_CREATED, contentType: APPLICATION_JSON) {
                     marshall(reelCreationService.addReel(command.name))
                 }
             }
@@ -76,7 +76,7 @@ class ReelController extends AbstractController {
     def listVideos(ReelCommand reelCommand, PagedListCommand pagedListCommand) {
         log.debug "Listing videos in reel [${reelCommand.reel_id}] on page [${pagedListCommand.page}]"
         handleMultipleCommandRequest([reelCommand, pagedListCommand]) {
-            render(status: SC_OK, contentType: APPLICATION_JSON) {
+            doRender(status: SC_OK, contentType: APPLICATION_JSON) {
                 marshall(videos: reelVideoManagementService.listVideosInReel(reelCommand.reel_id, pagedListCommand.page))
             }
         }

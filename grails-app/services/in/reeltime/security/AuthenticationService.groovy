@@ -1,42 +1,30 @@
 package in.reeltime.security
 
-import grails.transaction.Transactional
+import grails.plugin.springsecurity.SpringSecurityService
+import in.reeltime.oauth2.Client
 import in.reeltime.user.User
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.AuthenticationException
+import org.springframework.security.authentication.encoding.PasswordEncoder
 
 class AuthenticationService {
 
-    def springSecurityService
-
-    AuthenticationManager userAuthenticationManager
-    AuthenticationManager clientAuthenticationManager
+    SpringSecurityService springSecurityService
+    PasswordEncoder passwordEncoder
 
     User getCurrentUser() {
         springSecurityService.currentUser as User
     }
 
-    @Transactional(readOnly = true)
     boolean authenticateUser(String username, String password) {
-        return authenticate(userAuthenticationManager, username, password)
+        def user = User.findByUsername(username)
+        return user && checkCredentials(user.password, password)
     }
 
-    @Transactional(readOnly = true)
     boolean authenticateClient(String clientId, String clientSecret) {
-        return authenticate(clientAuthenticationManager, clientId, clientSecret)
+        def client = Client.findByClientId(clientId)
+        return client && checkCredentials(client.clientSecret, clientSecret)
     }
 
-    @Transactional(readOnly = true)
-    private boolean authenticate(AuthenticationManager authenticationManager, String principal, String credentials) {
-        try {
-            def authentication = new UsernamePasswordAuthenticationToken(principal, credentials)
-            authenticationManager.authenticate(authentication)
-            return true
-        }
-        catch(AuthenticationException e) {
-            log.warn("Failed to authenticate principal [$principal]: ${e.message}")
-            return false
-        }
+    private boolean checkCredentials(String encryptedCredentials, String plainTextCredentials) {
+        return passwordEncoder.isPasswordValid(encryptedCredentials, plainTextCredentials, null)
     }
 }

@@ -12,6 +12,18 @@ abstract class AbstractController {
     @Delegate
     final CustomMarshaller customMarshaller = new CustomMarshaller()
 
+    // Temporary workaround until PR #9350 is merged and released
+    // https://github.com/grails/grails-core/pull/9530
+
+    protected void doRender(Map argMap, Closure closure) {
+        def status = argMap.remove("status")
+
+        if(status) {
+            response.status = status as int
+        }
+        render(argMap, closure)
+    }
+
     protected void exceptionErrorMessageResponse(Exception e, String messageCode, int statusCode) {
         logException(e)
         errorMessageResponse(messageCode, statusCode)
@@ -29,13 +41,13 @@ abstract class AbstractController {
 
     protected void errorMessageResponse(String messageCode, int statusCode) {
         def message = localizedMessageService.getMessage(messageCode, request.locale)
-        render(status: statusCode, contentType: APPLICATION_JSON) {
+        doRender(status: statusCode, contentType: APPLICATION_JSON) {
             [errors: [message]]
         }
     }
 
     protected commandErrorMessageResponse(Object command, int statusCode) {
-        render(status: statusCode, contentType: APPLICATION_JSON) {
+        doRender(status: statusCode, contentType: APPLICATION_JSON) {
             [errors: localizedMessageService.getErrorMessages(command, request.locale)]
         }
     }
@@ -60,7 +72,7 @@ abstract class AbstractController {
             if (errors.isEmpty()) {
                 action()
             } else {
-                render(status: SC_BAD_REQUEST, contentType: APPLICATION_JSON) {
+                doRender(status: SC_BAD_REQUEST, contentType: APPLICATION_JSON) {
                     [errors: errors]
                 }
             }

@@ -61,7 +61,7 @@ class ResetPasswordController extends AbstractController {
                 String code = command.code
                 String clientName = command.client_name
 
-                render(status: SC_CREATED, contentType: APPLICATION_JSON) {
+                doRender(status: SC_CREATED, contentType: APPLICATION_JSON) {
                     marshall(resetPasswordService.resetPasswordForNewClient(username, newPassword, code, clientName))
                 }
             }

@@ -23,7 +23,7 @@ class VideoController extends AbstractController {
     def listVideos(PagedListCommand command) {
         log.debug "Listing all videos on page [${command.page}]"
         handleCommandRequest(command) {
-            render(status: SC_OK, contentType: APPLICATION_JSON) {
+            doRender(status: SC_OK, contentType: APPLICATION_JSON) {
                 marshall(videos: videoService.listVideos(command.page))
             }
         }
@@ -36,7 +36,7 @@ class VideoController extends AbstractController {
 
         try {
             if (videoCreationService.allowCreation(command)) {
-                render(status: SC_ACCEPTED, contentType: APPLICATION_JSON) {
+                doRender(status: SC_ACCEPTED, contentType: APPLICATION_JSON) {
                     marshall(videoCreationService.createVideo(command))
                 }
             } else {
@@ -87,7 +87,7 @@ class VideoController extends AbstractController {
                 throw new VideoNotFoundException("Video is unavailable and can only be found by its creator at this time")
             }
 
-            render(status: available ? SC_OK : SC_ACCEPTED, contentType: APPLICATION_JSON) {
+            doRender(status: available ? SC_OK : SC_ACCEPTED, contentType: APPLICATION_JSON) {
                 marshall(video)
             }
         }

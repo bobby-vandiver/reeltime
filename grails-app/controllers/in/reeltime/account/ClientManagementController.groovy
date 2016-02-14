@@ -20,7 +20,7 @@ class ClientManagementController extends AbstractController {
     def registerClient(ClientRegistrationCommand command) {
         handleCommandRequest(command) {
             try {
-                render(status: SC_CREATED, contentType: APPLICATION_JSON) {
+                doRender(status: SC_CREATED, contentType: APPLICATION_JSON) {
                     marshall(accountRegistrationService.registerClientForExistingUser(command.username, command.client_name))
                 }
             }
@@ -33,7 +33,7 @@ class ClientManagementController extends AbstractController {
     @Secured(["#oauth2.isUser() and #oauth2.hasScope('account-read')"])
     def listClients(PagedListCommand command) {
         handleCommandRequest(command) {
-            render(status: SC_OK, contentType: APPLICATION_JSON) {
+            doRender(status: SC_OK, contentType: APPLICATION_JSON) {
                 marshall(clients: clientService.listClientsForUser(currentUser, command.page))
             }
         }

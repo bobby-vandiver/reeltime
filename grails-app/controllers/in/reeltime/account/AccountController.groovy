@@ -16,7 +16,7 @@ class AccountController extends AbstractController {
     def registerAccount(AccountRegistrationCommand command) {
         handleCommandRequest(command) {
             try {
-                render(status: SC_CREATED, contentType: APPLICATION_JSON) {
+                doRender(status: SC_CREATED, contentType: APPLICATION_JSON) {
                     marshall(accountRegistrationService.registerUserAndClient(command, request.locale))
                 }
             }
