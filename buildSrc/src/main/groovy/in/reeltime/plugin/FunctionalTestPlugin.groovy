@@ -51,7 +51,7 @@ class FunctionalTestPlugin implements Plugin<Project> {
                 functionalTestRuntime configurations.testRuntime
             }
 
-            task(type: Test, dependsOn: assemble, 'functionalTest') {
+            task(type: Test, dependsOn: assemble, 'localFunctionalTest') {
                 description = 'Runs the functional tests against the local server.'
                 group = 'verification'
 
@@ -97,7 +97,7 @@ class FunctionalTestPlugin implements Plugin<Project> {
                 }
             }
 
-            check.dependsOn functionalTest
+            check.dependsOn localFunctionalTest
 
             task(type: Test, 'acceptanceTest') {
                 description = 'Runs the functional tests against the single instance AWS server.'
