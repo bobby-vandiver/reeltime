@@ -21,7 +21,7 @@ class LocalServer implements Server {
 
     void start() {
         String javaHome = System.getenv("JAVA_HOME")
-        ProcessBuilder builder = new ProcessBuilder("${javaHome}/bin/java", "-Dgrails.env=dev", "-jar", "${buildDir}/libs/${name}-${version}.jar")
+        ProcessBuilder builder = new ProcessBuilder("${javaHome}/bin/java", "-Dgrails.env=dev", "-jar", "${buildDir}/libs/${name}-${version}.war")
 
         displayStatus("Starting local server process...")
         process = builder.start()
