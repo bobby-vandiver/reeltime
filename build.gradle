@@ -113,18 +113,22 @@ sourceSets {
     }
 }
 
-test {
-    testLogging {
-        exceptionFormat = 'full'
-    }
+run {
+    systemProperty 'USE_LOCAL_MYSQL', System.getProperty('USE_LOCAL_MYSQL')
 }
 
 integrationTest {
-    testLogging {
-        exceptionFormat = 'full'
-    }
-
     outputs.upToDateWhen { false }
+}
+
+['test', 'integrationTest'].each { task ->
+    "$task" {
+        testLogging {
+            exceptionFormat = 'full'
+        }
+        systemProperty 'grails.env', 'test'
+        systemProperty 'USE_LOCAL_MYSQL', System.getProperty('USE_LOCAL_MYSQL')
+    }
 }
 
 task wrapper(type: Wrapper) {

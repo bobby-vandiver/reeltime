@@ -1,3 +1,5 @@
+// TODO: Convert to YAML and merge with application.yml
+
 final int PRODUCTION_BCRYPT_COST_FACTOR = 16
 final int DEVELOPMENT_BCRYPT_COST_FACTOR = 4
 final int TEST_BCRYPT_COST_FACTOR = 4
@@ -178,21 +180,26 @@ reeltime {
     }
 }
 
+final String LOCAL_MASTER_VIDEOS_DIR = System.getProperty('java.io.tmpdir') + File.separator + 'master-videos'
+final String LOCAL_PLAYLISTS_AND_SEGMENTS_DIR = System.getProperty('java.io.tmpdir') + File.separator + 'playlist-and-segments'
+final String LOCAL_THUMBNAILS_DIR = System.getProperty('java.io.tmpdir') + File.separator + 'thumbnails'
+
+final String FFMPEG_PATH = System.getProperty('FFMPEG') ?: System.getenv('FFMPEG')
+final String FFMPEG_SEGMENT_FORMAT = '%s-%%05d.ts'
+
 environments {
     test {
         reeltime {
-
             storage {
-                videos = System.getProperty('java.io.tmpdir') + File.separator + 'master-videos'
-                playlists = System.getProperty('java.io.tmpdir') + File.separator + 'playlist-and-segments'
-                thumbnails = System.getProperty('java.io.tmpdir') + File.separator + 'thumbnails'
+                videos = LOCAL_MASTER_VIDEOS_DIR
+                playlists = LOCAL_PLAYLISTS_AND_SEGMENTS_DIR
+                thumbnails = LOCAL_THUMBNAILS_DIR
             }
 
             transcoder {
-
                 ffmpeg {
-                    path = System.getProperty('FFMPEG') ?: System.getenv('FFMPEG')
-                    segmentFormat = '%s-%%05d.ts'
+                    path = FFMPEG_PATH
+                    segmentFormat = FFMPEG_SEGMENT_FORMAT
                 }
             }
 
@@ -204,18 +211,16 @@ environments {
 
     development {
         reeltime {
-
             storage {
-                videos = System.getProperty('java.io.tmpdir') + File.separator + 'master-videos'
-                playlists = System.getProperty('java.io.tmpdir') + File.separator + 'playlist-and-segments'
-                thumbnails = System.getProperty('java.io.tmpdir') + File.separator + 'thumbnails'
+                videos = LOCAL_MASTER_VIDEOS_DIR
+                playlists = LOCAL_PLAYLISTS_AND_SEGMENTS_DIR
+                thumbnails = LOCAL_THUMBNAILS_DIR
             }
 
             transcoder {
-
                 ffmpeg {
-                    path = System.getProperty('FFMPEG') ?: System.getenv('FFMPEG')
-                    segmentFormat = '%s-%%05d.ts'
+                    path = FFMPEG_PATH
+                    segmentFormat = FFMPEG_SEGMENT_FORMAT
                 }
             }
 
@@ -245,29 +250,57 @@ hibernate {
     cache.region.factory_class = 'org.hibernate.cache.ehcache.EhCacheRegionFactory'
 }
 
-// environment specific settings
 environments {
     development {
         dataSource {
-            dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
-            url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+            if(Boolean.getBoolean('USE_LOCAL_MYSQL')) {
+
+                throw new RuntimeException("mysql")
+                dbCreate = "create"
+
+                username = "root"
+                password = "mysql"
+
+                url = "jdbc:mysql://127.0.0.1:3306/reeltime"
+
+                driverClassName = "com.mysql.jdbc.Driver"
+                dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+
+                pooled = true
+
+                properties {
+                    maxActive = -1
+                    minEvictableIdleTimeMillis=1800000
+                    timeBetweenEvictionRunsMillis=1800000
+                    numTestsPerEvictionRun=3
+                    testOnBorrow=true
+                    testWhileIdle=true
+                    testOnReturn=true
+                    validationQuery="SELECT 1"
+                }
+            }
+            else {
+                throw new RuntimeException("h2")
+                dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
+                url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+            }
         }
     }
     test {
         dataSource {
-            // TODO: Determine some way to refactor common MySQL configuration
             if(Boolean.getBoolean('USE_LOCAL_MYSQL')) {
                 dbCreate = "create"
 
                 username = "root"
                 password = "mysql"
 
-                driverClassName = "com.mysql.jdbc.Driver"
-                url = "jdbc:mysql://127.0.0.1:33066/test"
+                url = "jdbc:mysql://127.0.0.1:3306/reeltime"
 
+                driverClassName = "com.mysql.jdbc.Driver"
                 dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 
                 pooled = true
+
                 properties {
                     maxActive = -1
                     minEvictableIdleTimeMillis=1800000
@@ -293,8 +326,10 @@ environments {
             username = System.getProperty("DATABASE_USERNAME")
             password = System.getProperty("DATABASE_PASSWORD")
 
-            driverClassName = "com.mysql.jdbc.Driver"
             url = System.getProperty("JDBC_CONNECTION_STRING")
+
+            driverClassName = "com.mysql.jdbc.Driver"
+            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 
             pooled = true
 
