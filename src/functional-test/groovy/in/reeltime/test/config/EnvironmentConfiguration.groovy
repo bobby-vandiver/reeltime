@@ -17,8 +17,8 @@ class EnvironmentConfiguration {
         return getEnvironmentName() == "local"
     }
 
-    static boolean isAcceptanceEnvironment() {
-        return getEnvironmentName() == "acceptance"
+    static boolean isRemoteEnvironment() {
+        return getEnvironmentName() == "remote"
     }
 
     static synchronized String getBaseUrl() {
@@ -26,12 +26,11 @@ class EnvironmentConfiguration {
             if (isLocalEnvironment()) {
                 baseUrl = "http://localhost:8080/"
             }
-            else if (isAcceptanceEnvironment()) {
-                AWSCredentials credentials = loadAWSCredentials()
-                AWSElasticBeanstalk eb = new AWSElasticBeanstalkClient(credentials)
-
-                EnvironmentDescription awsEnvironment = findAcceptanceEnvironment(eb)
-                baseUrl = awsEnvironment ? "http://" + awsEnvironment.CNAME + "/" : null
+            else if (isRemoteEnvironment()) {
+                String protocol = System.properties["in.reeltime.testing.remote.protocol"]
+                String hostname = System.properties["in.reeltime.testing.remote.hostname"]
+                String port = System.properties["in.reeltime.testing.remote.port"]
+                baseUrl = "$protocol://$hostname:$port/"
             }
         }
         return baseUrl
@@ -42,17 +41,5 @@ class EnvironmentConfiguration {
             environmentName = System.properties["in.reeltime.testing.environment"]
         }
         return environmentName
-    }
-
-    private static AWSCredentials loadAWSCredentials() {
-        String accessKey = System.properties["AWSAccessKey"]
-        String secretKey = System.properties["AWSSecretKey"]
-        new BasicAWSCredentials(accessKey, secretKey)
-    }
-
-    private static EnvironmentDescription findAcceptanceEnvironment(AWSElasticBeanstalk eb) {
-        return eb.describeEnvironments().environments.find {
-            it.applicationName == "ReelTime" && it.environmentName == "reeltime-acceptance"
-        }
     }
 }

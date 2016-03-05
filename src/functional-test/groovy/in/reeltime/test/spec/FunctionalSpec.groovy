@@ -77,8 +77,8 @@ abstract class FunctionalSpec extends Specification {
         return EnvironmentConfiguration.isLocalEnvironment()
     }
 
-    static boolean isAcceptanceTest() {
-        return EnvironmentConfiguration.isAcceptanceEnvironment()
+    static boolean isRemoteFunctionalTest() {
+        return EnvironmentConfiguration.isRemoteEnvironment()
     }
 
     protected void registerTestUser() {

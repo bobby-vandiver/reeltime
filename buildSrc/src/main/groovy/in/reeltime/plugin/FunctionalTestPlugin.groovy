@@ -1,18 +1,13 @@
 package in.reeltime.plugin
 
 import groovy.transform.CompileStatic
-import in.reeltime.deployment.aws.AWSClientFactory
-import in.reeltime.deployment.aws.client.EnhancedAWSElasticBeanstalk
-import in.reeltime.deployment.configuration.DeploymentConfiguration
-import in.reeltime.deployment.configuration.GrailsEnvironment
-import in.reeltime.deployment.server.AcceptanceServer
 import in.reeltime.deployment.server.LocalServer
+import in.reeltime.deployment.server.RemoteServer
 import in.reeltime.deployment.server.ServerReachability
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
-import static in.reeltime.deployment.configuration.EnvironmentName.ACCEPTANCE
 
 /**
  * Functional test plugin. Heavily based on the IntegrationTestPlugin from Grails core.
@@ -72,8 +67,8 @@ class FunctionalTestPlugin implements Plugin<Project> {
                 ]
 
                 reports {
-                    html.destination = project.file("$html.destination/functional")
-                    junitXml.destination = project.file("$junitXml.destination/functional")
+                    html.destination = project.file("$html.destination/localFunctional")
+                    junitXml.destination = project.file("$junitXml.destination/localFunctional")
                 }
 
                 LocalServer localServer = new LocalServer(project)
@@ -99,8 +94,8 @@ class FunctionalTestPlugin implements Plugin<Project> {
 
             check.dependsOn localFunctionalTest
 
-            task(type: Test, 'acceptanceTest') {
-                description = 'Runs the functional tests against the single instance AWS server.'
+            task(type: Test, 'remoteFunctionalTest') {
+                description = 'Runs the functional tests against a remote server.'
                 group = 'verification'
 
                 testClassesDir = sourceSets.functionalTest.output.classesDir
@@ -115,31 +110,28 @@ class FunctionalTestPlugin implements Plugin<Project> {
                 maxParallelForks = 1
 
                 systemProperties = [
-                        "in.reeltime.testing.environment": "acceptance",
-                        "AWSAccessKey": System.properties["AWSAccessKey"],
-                        "AWSSecretKey": System.properties["AWSSecretKey"]
+                        "in.reeltime.testing.environment": "remote",
+                        "in.reeltime.testing.remote.hostname": System.getProperty("REMOTE_HOSTNAME"),
+                        "in.reeltime.testing.remote.port": System.getProperty("REMOTE_PORT"),
+                        "in.reeltime.testing.remote.protocol": System.getProperty("REMOTE_PROTOCOL"),
                 ]
 
                 reports {
-                    html.destination = project.file("$html.destination/acceptance")
-                    junitXml.destination = project.file("$junitXml.destination/acceptance")
+                    html.destination = project.file("$html.destination/remoteFunctional")
+                    junitXml.destination = project.file("$junitXml.destination/remoteFunctional")
                 }
 
                 doFirst {
-                    String environment = GrailsEnvironment.grailsEnv
-
-                    if (environment != ACCEPTANCE) {
-                        throw new GradleException("Acceptance tests can only be run in the acceptance environment")
+                    if (!System.getProperty("REMOTE_HOSTNAME") || !System.getProperty("REMOTE_PORT") || !System.getProperty("REMOTE_PROTOCOL")) {
+                        throw new GradleException("usage: remoteFunctionalTest -DREMOTE_HOSTNAME=remoteHost -DREMOTE_PORT=remotePort -DREMOTE_PROTOCOL=https")
                     }
 
-                    DeploymentConfiguration deployConfig = new DeploymentConfiguration(environment)
+                    String hostname = System.getProperty("REMOTE_HOSTNAME")
+                    int port = System.getProperty("REMOTE_PORT") as int
 
-                    AWSClientFactory clientFactory = new AWSClientFactory()
-                    EnhancedAWSElasticBeanstalk eb = clientFactory.createEBClient()
+                    RemoteServer remoteServer = new RemoteServer(hostname, port)
 
-                    AcceptanceServer acceptanceServer = new AcceptanceServer(project, deployConfig, eb)
-
-                    if (!ServerReachability.waitUntilReachable(acceptanceServer)) {
+                    if (!ServerReachability.waitUntilReachable(remoteServer)) {
                         throw new GradleException("Server was unreachable")
                     }
                 }
