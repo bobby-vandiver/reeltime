@@ -115,6 +115,7 @@ sourceSets {
 
 run {
     systemProperty 'USE_LOCAL_MYSQL', System.getProperty('USE_LOCAL_MYSQL')
+    systemProperty 'ENABLE_SQL_LOGGING', System.getProperty('ENABLE_SQL_LOGGING')
 }
 
 integrationTest {
@@ -128,6 +129,7 @@ integrationTest {
         }
         systemProperty 'grails.env', 'test'
         systemProperty 'USE_LOCAL_MYSQL', System.getProperty('USE_LOCAL_MYSQL')
+        systemProperty 'ENABLE_SQL_LOGGING', System.getProperty('ENABLE_SQL_LOGGING')
     }
 }
 
