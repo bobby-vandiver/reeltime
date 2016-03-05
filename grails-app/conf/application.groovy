@@ -1,5 +1,4 @@
 final int PRODUCTION_BCRYPT_COST_FACTOR = 16
-final int ACCEPTANCE_BCRYPT_COST_FACTOR = 10
 final int DEVELOPMENT_BCRYPT_COST_FACTOR = 4
 final int TEST_BCRYPT_COST_FACTOR = 4
 
@@ -45,7 +44,8 @@ grails.plugin.springsecurity.providerNames = [
         'daoAuthenticationProvider'
 ]
 
-grails.plugin.springsecurity.password.bcrypt.logrounds = PRODUCTION_BCRYPT_COST_FACTOR
+grails.plugin.springsecurity.password.bcrypt.logrounds =
+        Integer.getInteger("BCRYPT_COST_FACTOR", PRODUCTION_BCRYPT_COST_FACTOR)
 
 // Spring Security environment specific configuration
 environments {
@@ -55,20 +55,15 @@ environments {
     test {
         grails.plugin.springsecurity.password.bcrypt.logrounds = TEST_BCRYPT_COST_FACTOR
     }
-    acceptance {
-        grails.plugin.springsecurity.password.bcrypt.logrounds = ACCEPTANCE_BCRYPT_COST_FACTOR
-    }
 }
 
 // Database migration configuration
+grails.plugin.databasemigration.updateOnStart = true
+grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
+
 environments {
-    development {
-        grails.plugin.databasemigration.updateOnStart = true
-        grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
-    }
-    acceptance {
-        grails.plugin.databasemigration.updateOnStart = true
-        grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
+    test {
+        grails.plugin.databasemigration.updateOnStart = false
     }
 }
 
@@ -78,13 +73,13 @@ reeltime {
     // S3 configuration
     storage {
         // The S3 bucket name where the master video files are stored
-        videos = 'master-videos-production'
+        videos = System.getProperty("MASTER_VIDEOS_BUCKET_NAME")
 
         // The S3 bucket name where the video segments and playlist are stored
-        playlists = 'playlists-and-segments-production'
+        playlists = System.getProperty("PLAYLISTS_AND_SEGMENTS_BUCKET_NAME")
 
         // The S3 bucket name where thumbnails are stored
-        thumbnails = 'thumbnails-production'
+        thumbnails = System.getProperty("THUMBNAILS_BUCKET_NAME")
 
         // Number of times to attempt to generate a unique path before giving up
         pathGenerationMaxRetries = 5
@@ -93,7 +88,7 @@ reeltime {
     // Elastic Transcoder configuration
     transcoder {
         // The name of the Elastic Transcoder pipeline to use for transcoding.
-        pipeline = 'http-live-streaming-production'
+        pipeline = System.getProperty("TRANSCODER_PIPELINE_NAME")
 
         // The default job input settings to use for all transcoding jobs
         input {
@@ -160,7 +155,8 @@ reeltime {
         resetPasswordCodeValidityLengthInMins = 60
 
         // The BCrypt cost factor to use for storing codes
-        bcryptCostFactor = PRODUCTION_BCRYPT_COST_FACTOR
+        bcryptCostFactor = Integer.getInteger("BCRYPT_COST_FACTOR", PRODUCTION_BCRYPT_COST_FACTOR)
+
     }
 
     // User activity configuration
@@ -228,25 +224,6 @@ environments {
             }
         }
     }
-
-    acceptance {
-        reeltime {
-
-            storage {
-                videos = 'master-videos-acceptance'
-                playlists = 'playlists-and-segments-acceptance'
-                thumbnails = 'thumbnails-acceptance'
-            }
-
-            transcoder {
-                pipeline = 'http-live-streaming-acceptance'
-            }
-
-            accountManagement {
-                bcryptCostFactor = ACCEPTANCE_BCRYPT_COST_FACTOR
-            }
-        }
-    }
 }
 
 // DataSource Configuration
@@ -261,11 +238,13 @@ dataSource {
         logSql = true
     }
 }
+
 hibernate {
     cache.use_second_level_cache = true
     cache.use_query_cache = false
     cache.region.factory_class = 'org.hibernate.cache.ehcache.EhCacheRegionFactory'
 }
+
 // environment specific settings
 environments {
     development {
@@ -277,7 +256,7 @@ environments {
     test {
         dataSource {
             // TODO: Determine some way to refactor common MySQL configuration
-            if(System.getProperty('USE_LOCAL_MYSQL') == 'true') {
+            if(Boolean.getBoolean('USE_LOCAL_MYSQL')) {
                 dbCreate = "create"
 
                 username = "root"
@@ -306,37 +285,20 @@ environments {
             }
         }
     }
-    acceptance {
-        // TODO: Database connection info should be passed in via environment variables
-        dataSource {
-            dbCreate = "create"
-
-            username = "acceptance"
-            password = "EGQu3kbNqQ2XYrnJ"
-
-            driverClassName = "com.mysql.jdbc.Driver"
-            url = "jdbc:mysql://reeltime-acceptance.ck88z1jzf5bj.us-east-1.rds.amazonaws.com:3306/acceptance_database"
-
-            dialect = org.hibernate.dialect.MySQL5InnoDBDialect
-
-            pooled = true
-            properties {
-                maxActive = -1
-                minEvictableIdleTimeMillis=1800000
-                timeBetweenEvictionRunsMillis=1800000
-                numTestsPerEvictionRun=3
-                testOnBorrow=true
-                testWhileIdle=true
-                testOnReturn=true
-                validationQuery="SELECT 1"
-            }
-        }
-    }
     production {
         dataSource {
+            // TODO: Make this validate once database schema has finalized and changelogs generated
             dbCreate = "update"
-            url = "jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
+
+            username = System.getProperty("DATABASE_USERNAME")
+            password = System.getProperty("DATABASE_PASSWORD")
+
+            driverClassName = "com.mysql.jdbc.Driver"
+            url = System.getProperty("JDBC_CONNECTION_STRING")
+
             pooled = true
+
+            // TODO: Determine what properties need to be set for MySQL
             properties {
                maxActive = -1
                minEvictableIdleTimeMillis=1800000
