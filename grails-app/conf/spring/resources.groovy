@@ -14,9 +14,8 @@ beans = {
     String environmentName = Environment.currentEnvironment.name
     switch(environmentName) {
 
-        // Use AWS backed services for production and acceptance
+        // Use AWS backed services for production
         case 'production':
-        case 'acceptance':
             configureAwsBeans.delegate = delegate
             configureAwsBeans ()
             break

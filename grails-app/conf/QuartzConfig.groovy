@@ -46,14 +46,6 @@ environments {
             props(jdbcProps)
         }
     }
-    acceptance {
-        quartz {
-            autoStartup = false
-            jdbcStore = true
-
-            props(jdbcProps)
-        }
-    }
     production {
         quartz {
             autoStartup = false

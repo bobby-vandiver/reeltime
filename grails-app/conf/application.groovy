@@ -254,8 +254,6 @@ environments {
     development {
         dataSource {
             if(Boolean.getBoolean('USE_LOCAL_MYSQL')) {
-
-                throw new RuntimeException("mysql")
                 dbCreate = "create"
 
                 username = "root"
@@ -280,7 +278,6 @@ environments {
                 }
             }
             else {
-                throw new RuntimeException("h2")
                 dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
                 url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
             }
