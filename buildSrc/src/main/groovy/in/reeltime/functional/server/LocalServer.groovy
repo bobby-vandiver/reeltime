@@ -1,9 +1,9 @@
-package in.reeltime.deployment.server
+package in.reeltime.functional.server
 
 import groovy.transform.ToString
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import static in.reeltime.deployment.log.StatusLogger.*
+import static in.reeltime.functional.log.StatusLogger.*
 
 @ToString(includeFields = true, includePackage = false)
 class LocalServer implements Server {

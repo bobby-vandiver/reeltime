@@ -1,9 +1,9 @@
-package in.reeltime.plugin
+package in.reeltime.functional.plugin
 
 import groovy.transform.CompileStatic
-import in.reeltime.deployment.server.LocalServer
-import in.reeltime.deployment.server.RemoteServer
-import in.reeltime.deployment.server.ServerReachability
+import in.reeltime.functional.server.LocalServer
+import in.reeltime.functional.server.RemoteServer
+import in.reeltime.functional.server.ServerReachability
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project

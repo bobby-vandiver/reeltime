@@ -30,9 +30,8 @@ apply plugin: 'idea'
 apply plugin: "org.grails.grails-web"
 apply plugin: "org.grails.grails-gsp"
 
-// Custom plugins from buildSrc
+// Custom plugin from buildSrc
 apply plugin: "functional-test"
-apply plugin: "deployment"
 
 ext {
     grailsVersion = project.grailsVersion

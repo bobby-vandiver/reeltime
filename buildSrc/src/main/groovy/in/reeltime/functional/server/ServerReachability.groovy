@@ -1,6 +1,6 @@
-package in.reeltime.deployment.server
+package in.reeltime.functional.server
 
-import static in.reeltime.deployment.log.StatusLogger.*
+import static in.reeltime.functional.log.StatusLogger.*
 
 class ServerReachability {
 

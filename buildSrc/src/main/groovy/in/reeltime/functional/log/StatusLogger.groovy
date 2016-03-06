@@ -1,4 +1,4 @@
-package in.reeltime.deployment.log
+package in.reeltime.functional.log
 
 import java.text.SimpleDateFormat
 
