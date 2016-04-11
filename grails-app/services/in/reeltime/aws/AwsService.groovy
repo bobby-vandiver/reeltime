@@ -2,6 +2,8 @@ package in.reeltime.aws
 
 import com.amazonaws.services.elastictranscoder.AmazonElasticTranscoderClient
 import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient
 import com.amazonaws.services.sns.AmazonSNSClient
 import org.springframework.beans.factory.InitializingBean
 
@@ -15,6 +17,7 @@ class AwsService implements InitializingBean {
         interfaceSimpleNamesToAwsClientClasses = [
                 AmazonElasticTranscoder: AmazonElasticTranscoderClient,
                 AmazonS3: AmazonS3Client,
+                AmazonSimpleEmailService: AmazonSimpleEmailServiceClient,
                 AmazonSNS: AmazonSNSClient
         ].asImmutable()
     }

@@ -4,6 +4,8 @@ import com.amazonaws.services.elastictranscoder.AmazonElasticTranscoder
 import com.amazonaws.services.elastictranscoder.AmazonElasticTranscoderClient
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient
 import com.amazonaws.services.sns.AmazonSNS
 import com.amazonaws.services.sns.AmazonSNSClient
 import grails.test.mixin.integration.Integration
@@ -34,6 +36,7 @@ class AwsServiceIntegrationSpec extends Specification {
         interfaceClass              |   clientClass
         AmazonElasticTranscoder     |   AmazonElasticTranscoderClient
         AmazonS3                    |   AmazonS3Client
+        AmazonSimpleEmailService    |   AmazonSimpleEmailServiceClient
         AmazonSNS                   |   AmazonSNSClient
     }
 }
