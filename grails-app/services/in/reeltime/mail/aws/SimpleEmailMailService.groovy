@@ -1,21 +1,35 @@
 package in.reeltime.mail.aws
 
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailService
+import com.amazonaws.services.simpleemail.model.Body
+import com.amazonaws.services.simpleemail.model.Content
+import com.amazonaws.services.simpleemail.model.Destination
+import com.amazonaws.services.simpleemail.model.Message
+import com.amazonaws.services.simpleemail.model.SendEmailRequest
 import in.reeltime.mail.Email
 import in.reeltime.mail.MailService
 
 class SimpleEmailMailService implements MailService {
 
+    def awsService
+
     @Override
     void sendMail(Email email) {
-        // TODO: Integrate with SES
-        log.debug "Entering [${this.class.name}..."
+        def destination = new Destination([email.to])
+        def subjectContent = new Content(email.subject)
 
-        def to = email.to
-        def from = email.from
-        def subject = email.subject
-        def body = email.body
+        def bodyContent = new Content(email.body)
+        def body = new Body(bodyContent)
 
-        // TODO: This should be modified to not log the body, which contains the confirmation code, in production!
-        log.info "Sending email from [$from] to [$to] with subject [$subject] and body [$body]"
+        def message = new Message(subjectContent, body)
+
+        def ses = awsService.createClient(AmazonSimpleEmailService) as AmazonSimpleEmailService
+
+        log.info "Sending email to [${email.to}] with subject [${email.subject}]"
+
+        def request = new SendEmailRequest(email.from, destination, message)
+        def result = ses.sendEmail(request)
+
+        log.debug "Email sent to [${email.to}] with subject [${email.subject}] -- messageId [${result.messageId}]"
     }
 }
