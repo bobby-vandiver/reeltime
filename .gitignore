@@ -3,3 +3,4 @@ build/
 .gradle/
 *.iml
 mysql-container-id
+emails-in-use.txt

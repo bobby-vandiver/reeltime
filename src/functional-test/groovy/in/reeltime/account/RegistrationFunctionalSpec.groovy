@@ -26,7 +26,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
     void "register a new user"() {
         given:
         def request = createRegisterRequest {
-            email = 'someone@somewhere.com'
+            email = EmailFormatter.emailForUsername('newUser')
             username = 'newUser'
             password = 'n3wP4s$w0rd!'
             display_name = 'new user'
@@ -77,7 +77,7 @@ class RegistrationFunctionalSpec extends FunctionalSpec {
 
         and:
         def request = createRegisterRequest {
-            email = 'email@test.com'
+            email = EmailFormatter.emailForUsername('email')
             username = name
             password = 'password'
             display_name = 'display'
