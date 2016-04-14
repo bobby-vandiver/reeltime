@@ -101,5 +101,8 @@ abstract class AbstractController {
         catch(ThumbnailNotFoundException e) {
             exceptionErrorMessageResponse(e, 'thumbnail.unknown', SC_NOT_FOUND)
         }
+        catch(MailServerNotFoundException e) {
+            exceptionErrorMessageResponse(e, 'mailServer.unknown', SC_NOT_FOUND)
+        }
     }
 }
