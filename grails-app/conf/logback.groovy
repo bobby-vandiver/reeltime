@@ -22,6 +22,8 @@ logger 'grails.app.taglib', DEBUG
 logger 'grails.plugin.springsecurity', DEBUG
 logger 'org.springframework.security', DEBUG
 
+logger 'liquibase', DEBUG
+
 if(System.getProperty('ENABLE_SQL_LOGGING') == 'true') {
     logger 'org.hibernate.type', TRACE
     logger 'org.hibernate.SQL', DEBUG

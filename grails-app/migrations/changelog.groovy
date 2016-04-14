@@ -1,3 +1,4 @@
 databaseChangeLog = {
-    include file: "changelog-quartz-tables.groovy"
+    include file: "changelog-quartz.groovy"
+    include file: "changelog-domain.groovy"
 }

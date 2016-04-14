@@ -60,14 +60,19 @@ environments {
 }
 
 // Database migration configuration
+grails.plugin.databasemigration.dropOnStart = false
 grails.plugin.databasemigration.updateOnStart = true
 grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
 
 environments {
+    development {
+        grails.plugin.databasemigration.dropOnStart = true
+    }
     test {
-        grails.plugin.databasemigration.updateOnStart = false
+        grails.plugin.databasemigration.dropOnStart = true
     }
 }
+
 
 // The following ReelTime settings must NOT be exposed in an external configuration:
 reeltime {
@@ -234,8 +239,6 @@ environments {
 // DataSource Configuration
 
 dataSource {
-    pooled = true
-    driverClassName = "org.h2.Driver"
     username = "sa"
     password = ""
 
@@ -254,8 +257,6 @@ environments {
     development {
         dataSource {
             if(Boolean.getBoolean('USE_LOCAL_MYSQL')) {
-                dbCreate = "create"
-
                 username = "root"
                 password = "mysql"
 
@@ -278,7 +279,6 @@ environments {
                 }
             }
             else {
-                dbCreate = "create-drop" // one of 'create', 'create-drop', 'update', 'validate', ''
                 url = "jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
             }
         }
@@ -286,8 +286,6 @@ environments {
     test {
         dataSource {
             if(Boolean.getBoolean('USE_LOCAL_MYSQL')) {
-                dbCreate = "create"
-
                 username = "root"
                 password = "mysql"
 
@@ -310,16 +308,12 @@ environments {
                 }
             }
             else {
-                dbCreate = "update"
                 url = "jdbc:h2:mem:testDb;MVCC=TRUE;LOCK_TIMEOUT=10000"
             }
         }
     }
     production {
         dataSource {
-            // TODO: Make this validate once database schema has finalized and changelogs generated
-            dbCreate = "update"
-
             username = System.getProperty("DATABASE_USERNAME")
             password = System.getProperty("DATABASE_PASSWORD")
 
