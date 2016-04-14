@@ -119,6 +119,8 @@ sourceSets {
 run {
     systemProperty 'USE_LOCAL_MYSQL', System.getProperty('USE_LOCAL_MYSQL')
     systemProperty 'ENABLE_SQL_LOGGING', System.getProperty('ENABLE_SQL_LOGGING')
+    systemProperty 'FFPROBE', System.getProperty('FFPROBE')
+    systemProperty 'FFMPEG', System.getProperty('FFMPEG')
 }
 
 integrationTest {
