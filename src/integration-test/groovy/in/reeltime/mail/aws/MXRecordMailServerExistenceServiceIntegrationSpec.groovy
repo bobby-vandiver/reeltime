@@ -1,4 +1,4 @@
-package in.reeltime.mail
+package in.reeltime.mail.aws
 
 import grails.test.mixin.integration.Integration
 import grails.transaction.Rollback
@@ -8,15 +8,15 @@ import spock.lang.Unroll
 
 @Integration
 @Rollback
-class MailServerIntegrationSpec extends Specification {
+class MXRecordMailServerExistenceServiceIntegrationSpec extends Specification {
 
     @Autowired
-    MailServerService mailServerService
+    MXRecordMailServerExistenceService MXRecordMailServerExistenceService
 
     @Unroll
     void "mail server [#host] exists [#exists]"() {
         expect:
-        mailServerService.exists(host) == exists
+        MXRecordMailServerExistenceService.exists(host) == exists
 
         where:
         host        |   exists

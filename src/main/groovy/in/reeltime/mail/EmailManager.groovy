@@ -1,6 +1,7 @@
 package in.reeltime.mail
 
 import groovy.util.logging.Slf4j
+import in.reeltime.exceptions.MailServerNotFoundException
 import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
@@ -8,6 +9,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 class EmailManager extends TransactionSynchronizationAdapter {
 
     MailService mailService
+    MailServerExistenceService mailServerExistenceService
 
     private static ThreadLocal<Queue<Email>> emails = new ThreadLocal<Queue>() {
         @Override
@@ -17,6 +19,8 @@ class EmailManager extends TransactionSynchronizationAdapter {
     }
 
     void sendMail(String to, String from, String subject, String body) {
+        verifyMailServerExistsForEmailAddress(to)
+
         if(!TransactionSynchronizationManager.isSynchronizationActive()) {
             return
         }
@@ -25,6 +29,14 @@ class EmailManager extends TransactionSynchronizationAdapter {
         def email = new Email(to: to, from: from, subject: subject, body: body)
         def queue = emails.get()
         queue.add(email)
+    }
+
+    private void verifyMailServerExistsForEmailAddress(String emailAddress) {
+        def host = EmailUtils.getHostFromEmailAddress(emailAddress)
+
+        if (!mailServerExistenceService.exists(host)) {
+            throw new MailServerNotFoundException("Mail server [$host] not found")
+        }
     }
 
     @Override

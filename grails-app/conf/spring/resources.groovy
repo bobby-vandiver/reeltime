@@ -6,6 +6,7 @@ import in.reeltime.springsecurity.PatchedAnnotationFilterInvocationDefinition
 beans = {
     emailManager(EmailManager) {
         mailService = ref('mailService')
+        mailServerExistenceService = ref('mailServerExistenceService')
     }
 
     configureSpringSecurityCorePluginOverrides.delegate = delegate
@@ -36,12 +37,14 @@ configureAwsBeans = {
     springConfig.addAlias 'storageService', 's3StorageService'
     springConfig.addAlias 'transcoderService', 'elasticTranscoderService'
     springConfig.addAlias 'mailService', 'simpleEmailMailService'
+    springConfig.addAlias 'mailServerExistenceService', 'MXRecordMailServerExistenceService'
 }
 
 configureLocalBeans = {
     springConfig.addAlias 'storageService', 'localFileSystemStorageService'
     springConfig.addAlias 'transcoderService', 'ffmpegTranscoderService'
     springConfig.addAlias 'mailService', 'localMailService'
+    springConfig.addAlias 'mailServerExistenceService', 'localMailServerExistenceService'
 }
 
 configureSpringSecurityCorePluginOverrides = {

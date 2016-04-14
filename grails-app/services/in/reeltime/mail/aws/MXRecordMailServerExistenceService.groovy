@@ -1,11 +1,12 @@
-package in.reeltime.mail
+package in.reeltime.mail.aws
 
+import in.reeltime.mail.MailServerExistenceService
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.MXRecord
 import org.xbill.DNS.Record
 import org.xbill.DNS.Type
 
-class MailServerService {
+class MXRecordMailServerExistenceService implements MailServerExistenceService {
 
     boolean exists(String host) {
         boolean exists = false
