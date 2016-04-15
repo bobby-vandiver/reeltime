@@ -1,7 +1,9 @@
 package in.reeltime.security
 
+import grails.transaction.Transactional
 import org.springframework.security.crypto.bcrypt.BCrypt
 
+@Transactional
 class CryptoService {
 
     String generateBCryptSalt(int cost) {

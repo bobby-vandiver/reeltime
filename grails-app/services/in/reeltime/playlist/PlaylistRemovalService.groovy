@@ -1,7 +1,9 @@
 package in.reeltime.playlist
 
+import grails.transaction.Transactional
 import in.reeltime.video.Video
 
+@Transactional
 class PlaylistRemovalService {
 
     def resourceRemovalService

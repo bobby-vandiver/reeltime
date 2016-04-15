@@ -1,7 +1,9 @@
 package in.reeltime.video
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.VideoNotFoundException
 
+@Transactional
 class VideoService {
 
     def maxVideosPerPage

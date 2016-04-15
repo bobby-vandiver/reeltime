@@ -1,11 +1,13 @@
 package in.reeltime.mail.aws
 
+import grails.transaction.Transactional
 import in.reeltime.mail.MailServerExistenceService
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.MXRecord
 import org.xbill.DNS.Record
 import org.xbill.DNS.Type
 
+@Transactional
 class MXRecordMailServerExistenceService implements MailServerExistenceService {
 
     boolean exists(String host) {

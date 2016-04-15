@@ -1,5 +1,8 @@
 package in.reeltime.playlist
 
+import grails.transaction.Transactional
+
+@Transactional
 class PlaylistAndSegmentStorageService {
 
     def pathGenerationService

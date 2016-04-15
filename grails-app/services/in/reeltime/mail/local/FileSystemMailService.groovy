@@ -1,11 +1,13 @@
 package in.reeltime.mail.local
 
+import grails.transaction.Transactional
 import in.reeltime.mail.Email
 import in.reeltime.mail.MailService
 import in.reeltime.storage.local.LocalFileSystemStorageService
 
 import java.nio.charset.StandardCharsets
 
+@Transactional
 class FileSystemMailService implements MailService {
 
     Set<File> sentMessages = [].asSynchronized()

@@ -1,10 +1,12 @@
 package in.reeltime.user
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.UserNotFoundException
 import in.reeltime.oauth2.Client
 import in.reeltime.reel.Reel
 import in.reeltime.reel.UserReel
 
+@Transactional
 class UserService {
 
     def maxUsersPerPage

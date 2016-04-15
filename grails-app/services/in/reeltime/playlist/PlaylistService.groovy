@@ -1,5 +1,6 @@
 package in.reeltime.playlist
 
+import grails.transaction.Transactional
 import in.reeltime.hls.playlist.MediaPlaylist
 import in.reeltime.hls.playlist.MediaSegment
 import in.reeltime.hls.playlist.StreamAttributes
@@ -8,6 +9,7 @@ import in.reeltime.hls.playlist.composer.MediaPlaylistComposer
 import in.reeltime.hls.playlist.composer.VariantPlaylistComposer
 import in.reeltime.video.Video
 
+@Transactional
 class PlaylistService {
 
     def playlistParserService

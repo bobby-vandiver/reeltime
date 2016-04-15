@@ -1,7 +1,9 @@
 package in.reeltime.thumbnail
 
+import grails.transaction.Transactional
 import org.apache.tika.Tika
 
+@Transactional
 class ThumbnailValidationService {
 
     ThumbnailValidationResult validateThumbnailStream(InputStream thumbnailStream) {

@@ -1,8 +1,10 @@
 package in.reeltime.playlist
 
+import grails.transaction.Transactional
 import in.reeltime.hls.playlist.parser.MediaPlaylistParser
 import in.reeltime.hls.playlist.parser.VariantPlaylistParser
 
+@Transactional
 class PlaylistParserService {
 
     def playlistAndSegmentStorageService

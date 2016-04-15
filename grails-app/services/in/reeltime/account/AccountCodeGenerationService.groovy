@@ -1,11 +1,13 @@
 package in.reeltime.account
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.AccountCodeException
 import in.reeltime.user.User
 
 import static in.reeltime.account.AccountCode.ALLOWED_CHARACTERS
 import static in.reeltime.account.AccountCode.CODE_LENGTH
 
+@Transactional
 class AccountCodeGenerationService {
 
     def securityService

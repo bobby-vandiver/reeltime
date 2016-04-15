@@ -1,9 +1,11 @@
 package in.reeltime.activity
 
+import grails.transaction.Transactional
 import in.reeltime.reel.Reel
 import in.reeltime.user.User
 import in.reeltime.video.Video
 
+@Transactional
 class ActivityService {
 
     def maxActivitiesPerPage

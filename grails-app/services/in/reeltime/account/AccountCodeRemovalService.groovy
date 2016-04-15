@@ -1,7 +1,9 @@
 package in.reeltime.account
 
+import grails.transaction.Transactional
 import in.reeltime.user.User
 
+@Transactional
 class AccountCodeRemovalService {
 
     void removeConfirmationCodesForUser(User user) {

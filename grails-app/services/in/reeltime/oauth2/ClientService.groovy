@@ -1,8 +1,10 @@
 package in.reeltime.oauth2
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.RegistrationException
 import in.reeltime.user.User
 
+@Transactional
 class ClientService {
 
     def securityService

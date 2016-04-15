@@ -4,11 +4,13 @@ import com.amazonaws.AmazonClientException
 import com.amazonaws.services.sns.AmazonSNS
 import com.amazonaws.services.sns.model.ConfirmSubscriptionRequest
 import com.amazonaws.services.sns.util.SignatureChecker
+import grails.transaction.Transactional
 import in.reeltime.exceptions.NotificationException
 
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 
+@Transactional
 class NotificationService {
 
     def awsService

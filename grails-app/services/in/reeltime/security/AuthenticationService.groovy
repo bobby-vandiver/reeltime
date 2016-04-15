@@ -1,10 +1,12 @@
 package in.reeltime.security
 
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.transaction.Transactional
 import in.reeltime.oauth2.Client
 import in.reeltime.user.User
 import org.springframework.security.authentication.encoding.PasswordEncoder
 
+@Transactional
 class AuthenticationService {
 
     SpringSecurityService springSecurityService

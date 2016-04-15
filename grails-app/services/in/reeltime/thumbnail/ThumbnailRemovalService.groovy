@@ -1,7 +1,9 @@
 package in.reeltime.thumbnail
 
+import grails.transaction.Transactional
 import in.reeltime.video.Video
 
+@Transactional
 class ThumbnailRemovalService {
 
     def resourceRemovalService

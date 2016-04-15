@@ -1,9 +1,11 @@
 package in.reeltime.account
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.ResetPasswordException
 import in.reeltime.user.User
 
+@Transactional
 class ResetPasswordService {
 
     def userService

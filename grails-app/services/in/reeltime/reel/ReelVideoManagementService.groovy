@@ -1,9 +1,11 @@
 package in.reeltime.reel
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.exceptions.VideoNotFoundException
 import in.reeltime.video.Video
 
+@Transactional
 class ReelVideoManagementService {
 
     def reelService

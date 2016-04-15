@@ -1,9 +1,11 @@
 package in.reeltime.transcoder.local
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.TranscoderException
 import in.reeltime.transcoder.TranscoderService
 import in.reeltime.video.Video
 
+@Transactional
 class FfmpegTranscoderService implements TranscoderService {
 
     def localFileSystemService

@@ -1,5 +1,8 @@
 package in.reeltime.storage
 
+import grails.transaction.Transactional
+
+@Transactional
 class TemporaryFileService {
 
     private static final int BUFFER_SIZE = 8 * 1024

@@ -5,8 +5,10 @@ import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClient
 import com.amazonaws.services.sns.AmazonSNSClient
+import grails.transaction.Transactional
 import org.springframework.beans.factory.InitializingBean
 
+@Transactional
 class AwsService implements InitializingBean {
 
     private Map<String, Class> interfaceSimpleNamesToAwsClientClasses

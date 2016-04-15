@@ -1,8 +1,10 @@
 package in.reeltime.video
 
+import grails.transaction.Transactional
 import in.reeltime.metadata.StreamMetadata
 import in.reeltime.user.User
 
+@Transactional
 class VideoCreationService {
 
     def videoService

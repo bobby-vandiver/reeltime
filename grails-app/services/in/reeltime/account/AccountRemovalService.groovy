@@ -1,5 +1,8 @@
 package in.reeltime.account
 
+import grails.transaction.Transactional
+
+@Transactional
 class AccountRemovalService {
 
     def authenticationService

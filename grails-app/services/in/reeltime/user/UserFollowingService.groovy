@@ -1,7 +1,9 @@
 package in.reeltime.user
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.AuthorizationException
 
+@Transactional
 class UserFollowingService {
 
     def maxUsersPerPage

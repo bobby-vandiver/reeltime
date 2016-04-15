@@ -1,8 +1,10 @@
 package in.reeltime.reel
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.AuthorizationException
 import in.reeltime.user.User
 
+@Transactional
 class ReelRemovalService {
 
     def audienceService

@@ -1,7 +1,9 @@
 package in.reeltime.reel
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.InvalidReelNameException
 
+@Transactional
 class ReelCreationService {
 
     def reelService

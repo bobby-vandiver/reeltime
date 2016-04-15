@@ -1,5 +1,8 @@
 package in.reeltime.activity
 
+import grails.transaction.Transactional
+
+@Transactional
 class NewsfeedService {
 
     def activityService

@@ -6,9 +6,11 @@ import com.amazonaws.services.simpleemail.model.Content
 import com.amazonaws.services.simpleemail.model.Destination
 import com.amazonaws.services.simpleemail.model.Message
 import com.amazonaws.services.simpleemail.model.SendEmailRequest
+import grails.transaction.Transactional
 import in.reeltime.mail.Email
 import in.reeltime.mail.MailService
 
+@Transactional
 class SimpleEmailMailService implements MailService {
 
     def awsService

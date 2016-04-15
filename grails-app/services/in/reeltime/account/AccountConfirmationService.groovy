@@ -1,8 +1,10 @@
 package in.reeltime.account
 
+import grails.transaction.Transactional
 import in.reeltime.exceptions.ConfirmationException
 import in.reeltime.user.User
 
+@Transactional
 class AccountConfirmationService {
 
     def accountManagementService
