@@ -1,7 +1,8 @@
-package in.reeltime.mail.aws
+package in.reeltime.mail
 
 import grails.test.mixin.integration.Integration
 import grails.transaction.Rollback
+import in.reeltime.mail.MXRecordMailServerExistenceService
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
 import spock.lang.Unroll

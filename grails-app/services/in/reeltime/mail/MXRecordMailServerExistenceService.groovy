@@ -1,6 +1,5 @@
-package in.reeltime.mail.aws
+package in.reeltime.mail
 
-import in.reeltime.mail.MailServerExistenceService
 import org.xbill.DNS.Lookup
 import org.xbill.DNS.MXRecord
 import org.xbill.DNS.Record
