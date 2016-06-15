@@ -178,6 +178,20 @@ reeltime {
         maxResultsPerPage = 10
     }
 
+    // Email configuration
+    email {
+        mailgun {
+            // Base URL for the Mailgun API
+            baseUrl = 'https://api.mailgun.net/v3'
+
+            // The domain registered with Mailgun
+            domainName = 'reeltime.in'
+
+            // Mailgun API key
+            apiKey = System.getProperty('MAILGUN_API_KEY') ?: System.getenv('MAILGUN_API_KEY')
+        }
+    }
+
     // Internal maintenance configuration
     maintenance {
         // How many stored resources for the Quartz job to remove per execution

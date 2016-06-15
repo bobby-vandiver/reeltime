@@ -4,7 +4,6 @@ import grails.config.Config
 import in.reeltime.maintenance.ResourceRemovalJob
 import in.reeltime.video.VideoCreationCommand
 import org.springframework.context.ApplicationContext
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.encoding.PasswordEncoder
 
 class ConfigInjector {
@@ -114,6 +113,12 @@ class ConfigInjector {
 
         ctx.authenticationService.with {
             passwordEncoder = ctx.getBean('passwordEncoder') as PasswordEncoder
+        }
+
+        ctx.mailgunService.with {
+            apiKey = config.reeltime.email.mailgun.apiKey
+            baseUrl = config.reeltime.email.mailgun.baseUrl
+            domainName = config.reeltime.email.mailgun.domainName
         }
     }
 

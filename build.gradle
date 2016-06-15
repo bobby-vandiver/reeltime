@@ -73,6 +73,8 @@ dependencies {
     compile "org.grails.plugins:scaffolding"
     compile "org.grails.plugins:quartz:2.0.3"
 
+    compile "org.grails:grails-datastore-rest-client:4.0.7.RELEASE"
+
     compile "org.grails.plugins:spring-security-core:3.0.0"
     compile "org.grails.plugins:spring-security-oauth2-provider:3.0.0-RC1"
 
@@ -95,8 +97,6 @@ dependencies {
     testCompile "cglib:cglib:3.2.0"
     testCompile "cglib:cglib-nodep:3.2.0"
     testCompile "org.objenesis:objenesis:2.2"
-
-    testCompile "org.grails:grails-datastore-rest-client:4.0.7.RELEASE"
 
     testCompile "org.codehaus.groovy.modules.http-builder:http-builder:0.7.1", {
         ["commons-logging", "xml-apis", "groovy"].each { exclude module: it }

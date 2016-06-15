@@ -15,10 +15,10 @@ beans = {
     String environmentName = Environment.currentEnvironment.name
     switch(environmentName) {
 
-        // Use AWS backed services for production
+        // Use cloud based services for production
         case 'production':
-            configureAwsBeans.delegate = delegate
-            configureAwsBeans ()
+            configureCloudBeans.delegate = delegate
+            configureCloudBeans ()
             break
 
         // Use local file system, ffmpeg and in-memory implementations for local development and testing
@@ -33,10 +33,10 @@ beans = {
     }
 }
 
-configureAwsBeans = {
+configureCloudBeans = {
     springConfig.addAlias 'storageService', 's3StorageService'
     springConfig.addAlias 'transcoderService', 'elasticTranscoderService'
-    springConfig.addAlias 'mailService', 'simpleEmailMailService'
+    springConfig.addAlias 'mailService', 'mailgunService'
     springConfig.addAlias 'mailServerExistenceService', 'MXRecordMailServerExistenceService'
 }
 
