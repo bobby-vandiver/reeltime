@@ -16,7 +16,7 @@ class EmailFormatter {
     }
 
     static String emailForUsername(String username) {
-        String email = 'test-' + username + '@reeltime.com'
+        String email = 'test-' + username + '@reeltime.in'
         addEmail(email)
         return email
     }
