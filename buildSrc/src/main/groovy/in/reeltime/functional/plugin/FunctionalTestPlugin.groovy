@@ -46,7 +46,25 @@ class FunctionalTestPlugin implements Plugin<Project> {
                 functionalTestRuntime configurations.testRuntime
             }
 
-            task(type: Test, dependsOn: assemble, 'localFunctionalTest') {
+            LocalServer localServer = new LocalServer(project)
+
+            task(dependsOn: assemble, 'startLocalServer') {
+                doFirst {
+                    localServer.start()
+
+                    if (!ServerReachability.waitUntilReachable(localServer)) {
+                        throw new GradleException("Server was unreachable")
+                    }
+                }
+            }
+
+            task('stopLocalServer') {
+                doLast {
+                    localServer.stop()
+                }
+            }
+
+            task(type: Test, 'localFunctionalTest') {
                 description = 'Runs the functional tests against the local server.'
                 group = 'verification'
 
@@ -70,27 +88,13 @@ class FunctionalTestPlugin implements Plugin<Project> {
                     html.destination = project.file("$html.destination/localFunctional")
                     junitXml.destination = project.file("$junitXml.destination/localFunctional")
                 }
-
-                LocalServer localServer = new LocalServer(project)
-
-                Thread shutdownHook = new Thread({
-                    localServer.stop()
-                })
-
-                doFirst {
-                    localServer.start()
-                    Runtime.getRuntime().addShutdownHook(shutdownHook)
-
-                    if (!ServerReachability.waitUntilReachable(localServer)) {
-                        throw new GradleException("Server was unreachable")
-                    }
-                }
-
-                doLast {
-                    Runtime.getRuntime().removeShutdownHook(shutdownHook)
-                    localServer.stop()
-                }
             }
+
+            startLocalServer.finalizedBy stopLocalServer
+
+            localFunctionalTest.dependsOn startLocalServer
+
+            stopLocalServer.mustRunAfter localFunctionalTest
 
             check.dependsOn localFunctionalTest
 
