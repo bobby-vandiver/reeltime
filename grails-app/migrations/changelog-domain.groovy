@@ -6,7 +6,7 @@ databaseChangeLog = {
                 constraints(primaryKey: "true", primaryKeyName: "access_tokenPK")
             }
 
-            column(name: "authentication", type: "BINARY(4096)") {
+            column(name: "authentication", type: "BLOB(4096)") {
                 constraints(nullable: "false")
             }
 
@@ -112,7 +112,7 @@ databaseChangeLog = {
                 constraints(primaryKey: "true", primaryKeyName: "authorization_codePK")
             }
 
-            column(name: "authentication", type: "BINARY(4096)") {
+            column(name: "authentication", type: "BLOB(4096)") {
                 constraints(nullable: "false")
             }
 
@@ -338,7 +338,7 @@ databaseChangeLog = {
                 constraints(primaryKey: "true", primaryKeyName: "refresh_tokenPK")
             }
 
-            column(name: "authentication", type: "BINARY(4096)") {
+            column(name: "authentication", type: "BLOB(4096)") {
                 constraints(nullable: "false")
             }
 
