@@ -117,8 +117,17 @@ sourceSets {
 }
 
 run {
+    systemProperty 'grails.env', System.getProperty('grails.env')
+
     systemProperty 'USE_LOCAL_MYSQL', System.getProperty('USE_LOCAL_MYSQL')
     systemProperty 'ENABLE_SQL_LOGGING', System.getProperty('ENABLE_SQL_LOGGING')
+
+    systemProperty 'DATABASE_USERNAME', System.getProperty('DATABASE_USERNAME')
+    systemProperty 'DATABASE_PASSWORD', System.getProperty('DATABASE_PASSWORD')
+
+    systemProperty 'DATABASE_DROP_ALL', System.getProperty('DATABASE_DROP_ALL')
+    systemProperty 'JDBC_CONNECTION_STRING', System.getProperty('JDBC_CONNECTION_STRING')
+
     systemProperty 'FFPROBE', System.getProperty('FFPROBE')
     systemProperty 'FFMPEG', System.getProperty('FFMPEG')
 }
@@ -131,9 +140,12 @@ tasks.withType(Test) {
     testLogging {
         exceptionFormat = 'full'
     }
+
     systemProperty 'grails.env', 'test'
+
     systemProperty 'USE_LOCAL_MYSQL', System.getProperty('USE_LOCAL_MYSQL')
     systemProperty 'ENABLE_SQL_LOGGING', System.getProperty('ENABLE_SQL_LOGGING')
+
     systemProperty 'FFPROBE', System.getProperty('FFPROBE')
     systemProperty 'FFMPEG', System.getProperty('FFMPEG')
 }

@@ -60,7 +60,7 @@ environments {
 }
 
 // Database migration configuration
-grails.plugin.databasemigration.dropOnStart = false
+grails.plugin.databasemigration.dropOnStart = Boolean.getBoolean("DATABASE_DROP_ALL")
 grails.plugin.databasemigration.updateOnStart = true
 grails.plugin.databasemigration.updateOnStartFileNames = ['changelog.groovy']
 
@@ -255,6 +255,8 @@ environments {
 dataSource {
     username = "sa"
     password = ""
+
+    dbCreate = "none"
 
     if(System.getProperty('ENABLE_SQL_LOGGING') == 'true') {
         logSql = true
