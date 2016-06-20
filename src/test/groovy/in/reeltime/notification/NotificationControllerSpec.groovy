@@ -27,7 +27,7 @@ class NotificationControllerSpec extends Specification {
         def token = '2336412f37fb687f5d51e6e241d164b051479845a45fd1e10f1287fbc675dba8bb330f79de4343d9bc6e25954e0b9b47c04d6f9d46d7f52460b8f253675f7909d0d801fa1fb7af7aac2400e9491e815b2b506921d04a2a918d70a75f5768b654b6ad6da9bce8c4c98eb6f16857123e51'
         def topicArn = 'arn:aws:sns:us-east-1:166209233708:ets-listener'
 
-        def message = '{"Message": "{\\n  \\"SigningCertURL\\" : \\"' + signingCertUrl + '\\",  \\"Token\\" : \\"' + token + '\\",\\n  \\"TopicArn\\" : \\"' + topicArn + '\\",\\n\\n}",}'
+        def message = '{"SigningCertURL" : "' + signingCertUrl + '",  "Token" : "' + token + '",\n  "TopicArn" : "' + topicArn + '"}'
         def parsedMessage = [SigningCertURL: signingCertUrl, Token: token, TopicArn: topicArn]
 
         and:
@@ -94,7 +94,7 @@ class NotificationControllerSpec extends Specification {
         def token = '2336412f37fb687f5d51e6e241d164b051479845a45fd1e10f1287fbc675dba8bb330f79de4343d9bc6e25954e0b9b47c04d6f9d46d7f52460b8f253675f7909d0d801fa1fb7af7aac2400e9491e815b2b506921d04a2a918d70a75f5768b654b6ad6da9bce8c4c98eb6f16857123e51'
         def topicArn = 'arn:aws:sns:us-east-1:166209233708:ets-listener'
 
-        def message = '{"Message": "{\\n  \\"Token\\" : \\"' + token + '\\",\\n  \\"TopicArn\\" : \\"' + topicArn + '\\",\\n\\n}",}'
+        def message = '{"Token" : \"' + token + '\",\n  \"TopicArn\" : \"' + topicArn + '\",\n\n}"}'
 
         and:
         request.addHeader('x-amz-sns-message-type', 'SubscriptionConfirmation')

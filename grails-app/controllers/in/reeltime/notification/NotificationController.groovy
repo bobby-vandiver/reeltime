@@ -1,5 +1,6 @@
 package in.reeltime.notification
 
+import com.amazonaws.util.StringInputStream
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.json.JsonSlurper
 import in.reeltime.exceptions.TranscoderJobNotFoundException
@@ -16,7 +17,7 @@ class NotificationController {
     def videoCreationService
 
     def handleMessage() {
-        Map message = getMessageAsJson()
+        Map<String, String> message = parse(request.inputStream)
 
         if(isMessageAuthentic(message)) {
             def messageType = request.getHeader(MESSAGE_TYPE_HEADER)
@@ -24,7 +25,8 @@ class NotificationController {
             if (messageType == SUBSCRIPTION_CONFIRMATION) {
                 confirmSubscription(message)
             } else if (messageType == NOTIFICATION) {
-                handleNotification(message)
+                Map notification = parse(message.Message)
+                handleNotification(notification)
             } else {
                 log.warn("Received an invalid message type: $messageType")
                 response.status = SC_BAD_REQUEST
@@ -90,13 +92,17 @@ class NotificationController {
         render(status: SC_OK)
     }
 
-    private Map getMessageAsJson() {
+    private Map<String, String> parse(String message) {
+        return parse(new StringInputStream(message))
+    }
+
+    private Map<String, String> parse(InputStream inputStream) {
         try {
             def slurper = new JsonSlurper()
-            def json = slurper.parse(request.inputStream) as Map
+            def json = slurper.parse(inputStream) as Map
 
             log.debug("Message json: ${json}")
-            return slurper.parseText(json.Message) as Map
+            return json
         }
         catch (Exception e) {
             log.warn("Malformed message", e)
