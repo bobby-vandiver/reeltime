@@ -5,5 +5,6 @@ class RestRequest {
     String token
     boolean isMultiPart
     Map<String, Object> queryParams = [:]
+    Map<String, String> headers = [:]
     Closure customizer
 }

@@ -17,6 +17,10 @@ class NotificationController {
     def videoCreationService
 
     def handleMessage() {
+        request.headerNames.each { String header ->
+            log.debug "Header $header :: ${request.getHeader(header)}"
+        }
+
         Map<String, String> message = parse(request.inputStream)
 
         if(isMessageAuthentic(message)) {

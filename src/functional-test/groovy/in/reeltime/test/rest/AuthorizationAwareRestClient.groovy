@@ -6,6 +6,7 @@ import grails.plugins.rest.client.RestResponse
 import static in.reeltime.test.rest.HttpContentTypes.X_WWW_FORM_URL_ENCODED
 import static in.reeltime.test.rest.HttpContentTypes.MULTI_PART_FORM_DATA
 import static in.reeltime.test.rest.HttpHeaders.AUTHORIZATION
+import static in.reeltime.test.rest.HttpHeaders.CONTENT_TYPE
 
 class AuthorizationAwareRestClient {
 
@@ -29,16 +30,31 @@ class AuthorizationAwareRestClient {
 
     private RestResponse doRequest(String method, RestRequest request) {
         def url = attachQueryParams(request.url, request.queryParams)
+
         restClient."$method"(url) {
-            if(request.token) {
-                header AUTHORIZATION, "Bearer ${request.token}"
-            }
-            if(request.isMultiPart) {
-                contentType MULTI_PART_FORM_DATA
+            def headers = request.headers
+
+            if (headers.containsKey(AUTHORIZATION)) {
+                header AUTHORIZATION, headers.get(AUTHORIZATION)
             }
             else {
-                contentType X_WWW_FORM_URL_ENCODED
+                if (request.token) {
+                    header AUTHORIZATION, "Bearer ${request.token}"
+                }
             }
+
+            if (headers.containsKey(CONTENT_TYPE)) {
+                contentType headers.get(CONTENT_TYPE)
+            }
+            else {
+                if(request.isMultiPart) {
+                    contentType MULTI_PART_FORM_DATA
+                }
+                else {
+                    contentType X_WWW_FORM_URL_ENCODED
+                }
+            }
+
             if(request.customizer) {
                 request.customizer.delegate = delegate
                 request.customizer()
