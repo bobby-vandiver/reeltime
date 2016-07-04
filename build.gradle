@@ -149,7 +149,9 @@ integrationTest {
 
 tasks.withType(Test) {
     testLogging {
+        events 'passed', 'skipped', 'failed'
         exceptionFormat = 'full'
+        showStandardStreams = true
     }
 
     systemProperty 'grails.env', 'test'
