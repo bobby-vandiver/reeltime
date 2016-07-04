@@ -116,6 +116,17 @@ sourceSets {
     }
 }
 
+war {
+    from('.ebextensions') {
+        into '.ebextensions'
+    }
+
+    from('external') {
+        into 'external'
+        include 'ffprobe'
+    }
+}
+
 run {
     systemProperty 'grails.env', System.getProperty('grails.env')
 
