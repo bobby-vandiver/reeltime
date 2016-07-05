@@ -64,6 +64,10 @@ class ClientService {
     List<Client> listClientsForUser(User user, int page) {
         def clientIds = User.findAllClientIdsByUser(user)
 
+        if (clientIds.empty) {
+            return []
+        }
+
         int offset = (page - 1) * maxClientsPerPage
         Client.findAllByIdInList(clientIds, [max: maxClientsPerPage, offset: offset, sort: 'clientName'])
     }

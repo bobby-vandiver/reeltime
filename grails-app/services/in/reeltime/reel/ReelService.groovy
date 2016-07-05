@@ -39,7 +39,7 @@ class ReelService {
             }
         } as List<Long>
 
-        Reel.findAllByIdInList(reelIds, params)
+        return reelIds.empty ? [] : Reel.findAllByIdInList(reelIds, params)
     }
 
     private paginationParams(int page) {

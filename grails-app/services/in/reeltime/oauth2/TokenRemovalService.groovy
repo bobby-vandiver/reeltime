@@ -56,7 +56,7 @@ class TokenRemovalService {
 
     private static Collection<RefreshToken> findRefreshTokensFromAccessTokens(Collection<AccessToken> accessTokens) {
         def values = collectRefreshTokenValuesFromAccessTokens(accessTokens)
-        RefreshToken.findAllByValueInList(values)
+        return values.empty ? [] : RefreshToken.findAllByValueInList(values)
     }
 
     private static List<String> collectRefreshTokenValuesFromAccessTokens(Collection<AccessToken> accessTokens) {

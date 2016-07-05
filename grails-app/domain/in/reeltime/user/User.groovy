@@ -56,7 +56,7 @@ class User implements Serializable {
 
     static List<User> findAllByIdInListInAlphabeticalOrderByPage(List<Long> userIds, int page, int maxUsersPerPage) {
         int offset = (page - 1) * maxUsersPerPage
-        User.findAllByIdInList(userIds, [max: maxUsersPerPage, offset: offset, sort: 'username'])
+        return userIds.empty ? [] : User.findAllByIdInList(userIds, [max: maxUsersPerPage, offset: offset, sort: 'username'])
     }
 
     static List<Long> findAllClientIdsByUser(User user) {

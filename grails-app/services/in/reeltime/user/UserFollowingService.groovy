@@ -46,12 +46,12 @@ class UserFollowingService {
 
     List<User> listFolloweesForFollower(User follower, int page) {
         def followeeIds = UserFollowing.findAllFolloweeIdsByFollower(follower)
-        User.findAllByIdInListInAlphabeticalOrderByPage(followeeIds, page, maxUsersPerPage)
+        return followeeIds.empty ? [] : User.findAllByIdInListInAlphabeticalOrderByPage(followeeIds, page, maxUsersPerPage)
     }
 
     List<User> listFollowersForFollowee(User followee, int page) {
         def followerIds = UserFollowing.findAllFollowerIdsByFollowee(followee)
-        User.findAllByIdInListInAlphabeticalOrderByPage(followerIds, page, maxUsersPerPage)
+        return followerIds.empty ? [] : User.findAllByIdInListInAlphabeticalOrderByPage(followerIds, page, maxUsersPerPage)
     }
 
     void removeFollowerFromAllFollowings(User follower) {

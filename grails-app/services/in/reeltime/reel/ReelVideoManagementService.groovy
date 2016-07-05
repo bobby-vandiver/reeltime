@@ -20,6 +20,10 @@ class ReelVideoManagementService {
         def reel = reelService.loadReel(reelId)
         def videoIds = ReelVideo.findAllVideoIdsByReel(reel)
 
+        if (videoIds.empty) {
+            return []
+        }
+
         int offset = (page - 1) * maxVideosPerPage
         def params = [max: maxVideosPerPage, offset: offset, sort: 'dateCreated', order: 'desc']
 
