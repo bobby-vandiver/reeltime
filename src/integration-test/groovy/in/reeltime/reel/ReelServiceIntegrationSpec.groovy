@@ -5,13 +5,12 @@ import grails.test.mixin.integration.Integration
 import grails.test.runtime.DirtiesRuntime
 import grails.transaction.Rollback
 import in.reeltime.exceptions.UserNotFoundException
+import in.reeltime.test.factory.ReelFactory
+import in.reeltime.test.factory.UserFactory
 import in.reeltime.user.User
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
 import spock.lang.Unroll
-import in.reeltime.test.timestamp.AutoTimeStampSuppressor
-import in.reeltime.test.factory.ReelFactory
-import in.reeltime.test.factory.UserFactory
 
 @Integration
 @Rollback
@@ -25,12 +24,6 @@ class ReelServiceIntegrationSpec extends Specification {
 
     User owner
     User notOwner
-
-    AutoTimeStampSuppressor timeStampSuppressor
-
-    void setup() {
-        timeStampSuppressor = new AutoTimeStampSuppressor(grailsApplication: grailsApplication)
-    }
 
     void "cannot list reels for an unknown user"() {
         when:
@@ -171,11 +164,9 @@ class ReelServiceIntegrationSpec extends Specification {
         return reels
     }
 
-    private void ageReel(Reel reel, int daysInTheFuture) {
-        timeStampSuppressor.withAutoTimestampSuppression(reel) {
-            reel.dateCreated = new Date() + daysInTheFuture
-            reel.save()
-        }
+    private static void ageReel(Reel reel, int daysInTheFuture) {
+        reel.dateCreated = new Date() + daysInTheFuture
+        reel.save(flush: true)
     }
 
     private static void assertListsContainSameElements(Collection<?> actual, Collection<?> expected) {

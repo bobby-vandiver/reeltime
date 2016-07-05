@@ -4,12 +4,11 @@ import grails.core.GrailsApplication
 import grails.test.mixin.integration.Integration
 import grails.test.runtime.DirtiesRuntime
 import grails.transaction.Rollback
+import in.reeltime.test.factory.UserFactory
+import in.reeltime.test.factory.VideoFactory
 import in.reeltime.user.User
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
-import in.reeltime.test.timestamp.AutoTimeStampSuppressor
-import in.reeltime.test.factory.UserFactory
-import in.reeltime.test.factory.VideoFactory
 
 @Integration
 @Rollback
@@ -22,13 +21,8 @@ class VideoServiceIntegrationSpec extends Specification {
     GrailsApplication grailsApplication
 
     User creator
-    AutoTimeStampSuppressor timeStampSuppressor
 
     static final int TEST_MAX_VIDEOS_PER_PAGE = 3
-
-    void setup() {
-        timeStampSuppressor = new AutoTimeStampSuppressor(grailsApplication: grailsApplication)
-    }
 
     @DirtiesRuntime
     void "do not list videos that are not available for streaming"() {
@@ -94,10 +88,8 @@ class VideoServiceIntegrationSpec extends Specification {
 
     private createAndAgeVideo(String title, int daysInFuture) {
         def video = VideoFactory.createVideo(creator, title)
-        timeStampSuppressor.withAutoTimestampSuppression(video) {
-            video.dateCreated = new Date() + daysInFuture
-            video.save()
-        }
+        video.dateCreated = new Date() + daysInFuture
+        video.save(flush: true)
         return video
     }
 }

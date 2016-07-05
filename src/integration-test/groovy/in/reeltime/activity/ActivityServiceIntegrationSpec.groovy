@@ -5,15 +5,14 @@ import grails.test.mixin.integration.Integration
 import grails.test.runtime.DirtiesRuntime
 import grails.transaction.Rollback
 import in.reeltime.reel.Reel
+import in.reeltime.test.factory.ReelFactory
+import in.reeltime.test.factory.UserFactory
+import in.reeltime.test.factory.VideoFactory
 import in.reeltime.user.User
 import in.reeltime.video.Video
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
 import spock.lang.Unroll
-import in.reeltime.test.timestamp.AutoTimeStampSuppressor
-import in.reeltime.test.factory.ReelFactory
-import in.reeltime.test.factory.UserFactory
-import in.reeltime.test.factory.VideoFactory
 
 @Integration
 @Rollback
@@ -29,13 +28,7 @@ class ActivityServiceIntegrationSpec extends Specification {
     Reel theReel
     Video theVideo
 
-    AutoTimeStampSuppressor timeStampSuppressor
-
     static final int TEST_MAX_ACTIVITIES_PER_PAGE = 3
-
-    void setup() {
-        timeStampSuppressor = new AutoTimeStampSuppressor(grailsApplication: grailsApplication)
-    }
 
     User getUser() {
         if(theUser == null) {
@@ -282,24 +275,18 @@ class ActivityServiceIntegrationSpec extends Specification {
         def now = new Date()
 
         def createReel = new UserReelActivity(user: user, reel: reel, type: ActivityType.CreateReel.value)
-        timeStampSuppressor.withAutoTimestampSuppression(createReel) {
-            createReel.dateCreated = now
-            createReel.save(flush: true)
-        }
+        createReel.dateCreated = now
+        createReel.save(flush: true)
         assert UserActivity.findByType(ActivityType.CreateReel.value) != null
 
         def userJoinedAudience = new UserReelActivity(user: user, reel: reel, type: ActivityType.JoinReelAudience.value)
-        timeStampSuppressor.withAutoTimestampSuppression(userJoinedAudience) {
-            userJoinedAudience.dateCreated = now
-            userJoinedAudience.save(flush: true)
-        }
+        userJoinedAudience.dateCreated = now
+        userJoinedAudience.save(flush: true)
         assert UserActivity.findByType(ActivityType.JoinReelAudience.value) != null
 
         def videoAddedToReel = new UserReelVideoActivity(user: user, reel: reel, video: video, type: ActivityType.AddVideoToReel.value)
-        timeStampSuppressor.withAutoTimestampSuppression(videoAddedToReel) {
-            videoAddedToReel.dateCreated = now
-            videoAddedToReel.save()
-        }
+        videoAddedToReel.dateCreated = now
+        videoAddedToReel.save()
         assert UserActivity.findByType(ActivityType.AddVideoToReel.value) != null
 
         when:
