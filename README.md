@@ -15,7 +15,7 @@ This project is provided as-is.
 Clients
 -------
 
-TODO: Include link to iOS client repo. 
+See the [ReelTime iOS](https://github.com/bobby-vandiver/reeltime-ios) repository. 
 
 Running Locally
 ---------------
@@ -79,7 +79,7 @@ All endpoints in ReelTime are secured using OAuth 2.0 via the [Grails Spring Sec
 A client discovery endpoint is supported to facilitate the registration of unique clients that are scoped to the user.
 
 The included `FunctionalTestPlugin` provides support for running the comprehensive suite of functional tests against
-either a local instance of the application or a remote instance running else where. See also the [reeltime-deploy]()
+either a local instance of the application or a remote instance running else where. See also the [reeltime-deploy](https://github.com/bobby-vandiver/reeltime-deploy)
 project for the tool that was used to provision and deploy a scaled-down acceptance test environment in AWS.
 
 The source code along with the automated tests should be sufficient to understand how the system is designed to work. 
