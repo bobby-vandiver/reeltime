@@ -1,225 +1,85 @@
-Production Environment Set Up
-=============================
+ReelTime: A Video Blogging Application
+======================================
 
-The following steps must be performed in the AWS Console.
+![](./reeltime-logo.jpg =100x100)
 
-Additional pre-deployment configuration is handled by the script(s) located in the 
-`reeltime-config` repository.
+ReelTime is a video blogging social media application that allows users to create 2 minute videos and collect them 
+in custom playlists called reels. Each reel can contain videos created by the user, videos created by other users 
+or a mix of videos. 
 
-The final configuration necessary for deploying to the production environment is handled by as
-part of the `deploy` Grails script. 
+The original idea of ReelTime belongs to [Michael Carusi](https://www.michaelcarusi.com/). 
+All implementation work has been done by [Bobby Vandiver](https://github.com/bobby-vandiver).
 
-*Note*: The AWS CLI is used throughout to demonstrate the configuration of the relevant
-components. These are taken from a working load-balanced, production environment.
+This project is provided as-is.
 
-Create the VPC
---------------
+Clients
+-------
 
-1. From the VPC Dashboard, select "Start Up VPC Wizard".
- 
-2. Select the "VPC with Public and Private Subnets" configuration.
+TODO: Include link to iOS client repo. 
 
-3. Press the "Select" button.
+Running Locally
+---------------
 
-4. Assign the VPC, public subnet and private subnets names.
+To run locally, the `FFPROBE` and `FFMPEG` environment variables should be set with the absolute paths to the
+`ffprobe` and `ffmpeg` binaries provided in the `external` directory at the root of the project.
 
-5. Make sure the public and private subnets are in the *same* Availability Zone.
-   This is necessary to ensure the load balancer launched in the public subnet
-   and the EC2 instances launched in the private subnet are able to communicate.
-   
-6. Press the "Create VPC" button.
-
-Executing `aws ec2 describe-vpcs` will look like this:
-
-```
-{
-    "Vpcs": [
-        {
-            "VpcId": "vpc-20f35345", 
-            "InstanceTenancy": "default", 
-            "Tags": [
-                {
-                    "Value": "VPC Test 2", 
-                    "Key": "Name"
-                }
-            ], 
-            "State": "available", 
-            "DhcpOptionsId": "dopt-2f646c4d", 
-            "CidrBlock": "10.0.0.0/16", 
-            "IsDefault": false
-        } 
-    ]
-}
+```shell
+FFPROBE="./external/ffprobe" FFMPEG="./external/ffmpeg" ./gradlew run
 ```
 
-Executing `aws ec2 describe-subnets` will look like this: 
+Terminology
+-----------
 
-```
-{
-    "Subnets": [
-        {
-            "VpcId": "vpc-20f35345", 
-            "Tags": [
-                {
-                    "Value": "Private subnet", 
-                    "Key": "Name"
-                }
-            ], 
-            "CidrBlock": "10.0.1.0/24", 
-            "MapPublicIpOnLaunch": false, 
-            "DefaultForAz": false, 
-            "State": "available", 
-            "AvailabilityZone": "us-east-1d", 
-            "SubnetId": "subnet-5531327d", 
-            "AvailableIpAddressCount": 250
-        }, 
-        {
-            "VpcId": "vpc-20f35345", 
-            "Tags": [
-                {
-                    "Value": "Public subnet", 
-                    "Key": "Name"
-                }
-            ], 
-            "CidrBlock": "10.0.0.0/24", 
-            "MapPublicIpOnLaunch": false, 
-            "DefaultForAz": false, 
-            "State": "available", 
-            "AvailabilityZone": "us-east-1d", 
-            "SubnetId": "subnet-5631327e", 
-            "AvailableIpAddressCount": 248
-        } 
-    ]
-}
-```
+The following defines terms in the context of the application. These are represented by Grails domain classes within
+the application.
 
-Name the NAT
-------------
+* Activity
+    - An event that can occur, e.g. "Joe added a new video to his Super Cool Vlogging Reel".
 
-When the wizard is finished creating the VPC, there will be a NAT instance running in the public subnet.
+* Audience
+    - A group of 0 or more users following a reel.
+    
+* Audience Member
+    - A user who is following a reel.
+    
+* Follower
+    - A user who is following another user.
+    
+* Followee
+    - A user who is being followed by another user.
+    
+* Playlist
+    - An HTTP Live Streaming (HLS) playlist for a video.
 
-1. Go to the "Your VPCs" menu and write down the VPC ID for the newly created VPC.
-   
-2. Go to the "Instances" menu from the EC2 Dashboard.
-   
-3. Locate the NAT instance created in the new VPC.
+* Reel
+    - A playlist that contains videos grouped by theme, e.g. "My Wonderful Life Reel".
 
-4. Give the NAT instance a name.
+* Segment
+    - An HTTP Live Streaming (HLS) video segment.
 
-Create Security Groups
-----------------------
+* Thumbnail
+    - A small thumbnail of a video.
 
-All security groups created below should be assigned the newly created VPC.
+* Video
+    - A two minute video blog entry.
+    
+* User
+    - A user who can create videos, watch videos and/or collect videos within in a Reel.
 
-The JSON output is obtained by using the AWS CLI and executing: `aws ec2 describe-security-groups`
+(Brief) Technical Notes
+-----------------------
 
-### Create NAT Security Group
+ReelTime started life as a Grails 2.x application and was later upgraded to run on Grails 3.x.
 
-1. Go to "Security Groups" from either the VPC Dashboard or the EC2 Dashboard.
- 
-2. Create a security group for the NAT instance.
- 
-3. Remove all inbound rules.
- 
-4. Ensure an outbound rule exists allowing the EC2 instances in the private
-   subnet to communicate with the internet, i.e. the other AWS resources used.
-   
-The security group named "NAT-SG" will look like this:
- 
-```
-        {
-            "IpPermissionsEgress": [
-                {
-                    "IpProtocol": "-1", 
-                    "IpRanges": [
-                        {
-                            "CidrIp": "0.0.0.0/0"
-                        }
-                    ], 
-                    "UserIdGroupPairs": []
-                }
-            ], 
-            "Description": "NAT security group for VPC Test 2", 
-            "Tags": [
-                {
-                    "Value": "NAT-SG", 
-                    "Key": "Name"
-                }
-            ], 
-            "IpPermissions": [], 
-            "GroupName": "NAT-SG", 
-            "VpcId": "vpc-20f35345", 
-            "OwnerId": "166209233708", 
-            "GroupId": "sg-83dc98e6"
-        }
-```        
+ReelTime is designed to run on Amazon Web Services (AWS) and leverage the Elastic Transcoder Service for turning 
+storing MP4 video files in S3 and turning them into proper HTTP Live Streaming (HLS) video stream. When running 
+locally, ReelTime can leverage ffmpeg and the local file system to support the same workflow. 
 
-### Update Default VPC Security Group
-   
-1. Locate the default security group for the newly created VPC.
- 
-2. Remove all inbound rules.
+All endpoints in ReelTime are secured using OAuth 2.0 via the [Grails Spring Security OAuth 2.0 Provider plugin](https://github.com/bluesliverx/grails-spring-security-oauth2-provider).
+A client discovery endpoint is supported to facilitate the registration of unique clients that are scoped to the user.
 
-3. Add one inbound rule allowing all traffic with the NAT security group as the source.
+The included `FunctionalTestPlugin` provides support for running the comprehensive suite of functional tests against
+either a local instance of the application or a remote instance running else where. See also the [reeltime-deploy]()
+project for the tool that was used to provision and deploy a scaled-down acceptance test environment in AWS.
 
-4. Ensure an outbound rule exists allow all outbound traffic.
-
-The default security group for the VPC will look like this:
-
-```
-        {
-            "IpPermissionsEgress": [
-                {
-                    "IpProtocol": "-1", 
-                    "IpRanges": [
-                        {
-                            "CidrIp": "0.0.0.0/0"
-                        }
-                    ], 
-                    "UserIdGroupPairs": []
-                }
-            ], 
-            "Description": "default VPC security group", 
-            "IpPermissions": [
-                {
-                    "IpProtocol": "-1", 
-                    "IpRanges": [], 
-                    "UserIdGroupPairs": [
-                        {
-                            "UserId": "166209233708", 
-                            "GroupId": "sg-83dc98e6"
-                        }
-                    ]
-                }
-            ], 
-            "GroupName": "default", 
-            "VpcId": "vpc-20f35345", 
-            "OwnerId": "166209233708", 
-            "GroupId": "sg-30dc9855"
-        }
-```
-
-Update Deployment Configuration
--------------------------------
-
-Add the name of the NAT security group as the only launch security group name.
-If the security group name is "NAT-SG", the configuration would look like this:
-
-```
-              launch: [
-                      instanceProfileName: 'EC2-Instance-Test-Role',
-                      securityGroupNames: ['NAT-SG']
-              ],
-```
-
-Add the VPC ID and subnet names to the vpc configuration. If the VPC ID is "vpc-20f35345",
-the public subnet name is "Public subnet" and the private subnet name is "Private subnet",
-then the configuration would look like this:
-   
-```
-            vpc: [
-                    vpcId: 'vpc-20f35345',
-                    loadBalancerSubnetName: 'Public subnet',
-                    autoScalingSubnetName: 'Private subnet'
-            ],
-```
+The source code along with the automated tests should be sufficient to understand how the system is designed to work. 
