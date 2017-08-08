@@ -1,7 +1,7 @@
 ReelTime: A Video Blogging Application
 ======================================
 
-![](./reeltime-logo.jpg =100x100)
+![Logo](./reeltime-logo.jpg)
 
 ReelTime is a video blogging social media application that allows users to create 2 minute videos and collect them 
 in custom playlists called reels. Each reel can contain videos created by the user, videos created by other users 
